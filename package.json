@@ -8,7 +8,7 @@
   "scripts": {
     "reset:test": "dotenv -e ./.env.test -- ./restDB",
     "studio": "dotenv -e ./.env.test -- prisma studio",
-    "build": "nest build",
+    "build": "nest build && prisma migrate deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
