@@ -9,7 +9,6 @@ export class UserController {
      @HttpCode(200)
      create() {
           console.log("Controller hit")
-          // return "Endpoint hit"
           return this.userService.getUser();
      }
 }
