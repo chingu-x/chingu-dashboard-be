@@ -1,9 +1,9 @@
-import { Controller, Get, HttpCode, Post } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Controller, Get, HttpCode } from '@nestjs/common';
+// import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-     constructor(private userService: UserService) { }
+     // constructor(private userService: UserService) { }
 
      @Get()
      @HttpCode(200)
