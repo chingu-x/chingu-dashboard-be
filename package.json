@@ -6,8 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-      "reset:test": "dotenv -e ./.env.test -- ./restDB",
-      "studio": "dotenv -e ./.env.test -- prisma studio",
+    "reset:test": "dotenv -e ./.env.test -- ./restDB",
+    "studio": "dotenv -e ./.env.test -- prisma studio",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -28,6 +28,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.2.0",
+    "dotenv": "^16.3.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
