@@ -10,8 +10,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Gender {
+  id           String @id @default(uuid())
+  abbreviation String @unique
+  description  String
+  User         User[]
+}
+
 model User {
-    id String @id @db.Uuid()
-    name String 
-    createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  githubId    String
+  discordId   String
+  twitterId   String?
+  linkedinId  String?
+  email       String   @unique
+  gender      Gender?  @relation(fields: [genderId], references: [id])
+  genderId    String?
+  countryCode String?
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
+model Voyage {
+  id         String       @id @default(uuid())
+  number     String
+  startDate  DateTime     @db.Timestamptz()
+  endDate    DateTime     @db.Timestamptz()
+  createdAt  DateTime     @default(now()) @db.Timestamptz()
+  VoyageTeam VoyageTeam[]
+}
+
+enum VoyageTeamStatus {
+  ACTIVE
+  DROPPED
+}
+
+model Tier {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime     @default(now()) @db.Timestamptz()
+  VoyageTeam  VoyageTeam[]
+}
+
+model VoyageTeam {
+  id            String           @id @default(uuid())
+  voyage        Voyage           @relation(fields: [voyageId], references: [id])
+  voyageId      String
+  name          String
+  status        VoyageTeamStatus @default(ACTIVE)
+  repoUrl       String
+  repoUrlBE     String?
+  deployedUrl   String?
+  deployedUrlBE String?
+  tier          Tier             @relation(fields: [tierId], references: [id])
+  tierId        String
+  endDate       DateTime
+  createdAt     DateTime         @default(now()) @db.Timestamptz()
 }

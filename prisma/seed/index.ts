@@ -3,39 +3,52 @@ import * as process from "process";
 
 const prisma = new PrismaClient()
 
+const Genders = require('./data/genders')
+const Tiers = require('./data/tiers')
+
 const Users = require('./data/users')
+const Voyages = require('./data/voyages')
 
-const addUsers = async() => {
+const addTiers = async () => {
+    await prisma.tier.deleteMany()
+    await prisma.tier.createMany({
+        data: Tiers
+    })
+}
+
+const addGenders = async () => {
+    await prisma.gender.deleteMany()
+    await prisma.gender.createMany({
+        data: Genders
+    })
+}
+
+const addUsers = async () => {
+    await prisma.user.deleteMany()
+    await Promise.all(Users.map(user=>prisma.user.create({
+        data:user
+    })))
+}
+const addVoyages = async () => {
+    await prisma.voyage.deleteMany()
+    await prisma.voyage.createMany({
+        data: Voyages
+    })
+}
+
+
+(async function () {
     try {
-        await prisma.user.deleteMany()
-        await Promise.all(
-            Users.map(async (user) =>
-                prisma.user.create({
-                    data: user
-                })
-            )
-        )
+        await addTiers()
+        await addGenders()
+        await addUsers()
+        await addVoyages()
+
         console.log('Database seeding completed.')
-    }
-    catch (e){
-        console.log(`Error seeding database: ${e}`)
-    }
-}
-const addVoyages = async() => {
-
-}
-
-async function main() {
-    await addUsers()
-    await addVoyages()
-}
-
-
-main()
-    .catch((e) => {
+    } catch (e) {
         console.error(e);
         process.exit(1);
-    })
-    .finally(async () => {
+    } finally {
         await prisma.$disconnect();
-    });
+    }
+})()
