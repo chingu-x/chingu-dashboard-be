@@ -11,10 +11,11 @@ datasource db {
 }
 
 model Gender {
-  id           String @id @default(uuid())
-  abbreviation String @unique
+  id           String   @id @default(uuid())
+  abbreviation String   @unique
   description  String
   User         User[]
+  createdAt    DateTime @default(now()) @db.Timestamptz()
 }
 
 model User {
@@ -29,6 +30,8 @@ model User {
   gender      Gender?  @relation(fields: [genderId], references: [id])
   genderId    String?
   countryCode String?
+  timeZone    String
+  comment     String?
   createdAt   DateTime @default(now()) @db.Timestamptz()
 }
 
@@ -68,4 +71,19 @@ model VoyageTeam {
   tierId        String
   endDate       DateTime
   createdAt     DateTime         @default(now()) @db.Timestamptz()
+}
+
+model VoyageRole {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  createdAt   DateTime @default(now()) @db.Timestamptz()
+}
+
+model VoyageTeamMember {
+  userId       String
+  voyageTeamId String
+  role         String
+
+  @@id([userId, voyageTeamId])
 }
