@@ -19,71 +19,86 @@ model Gender {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  firstName   String
-  lastName    String
-  githubId    String
-  discordId   String
-  twitterId   String?
-  linkedinId  String?
-  email       String   @unique
-  gender      Gender?  @relation(fields: [genderId], references: [id])
-  genderId    String?
-  countryCode String?
-  timeZone    String
-  comment     String?
-  createdAt   DateTime @default(now()) @db.Timestamptz()
+  id               String             @id @default(uuid())
+  firstName        String
+  lastName         String
+  githubId         String
+  discordId        String
+  twitterId        String?
+  linkedinId       String?
+  email            String             @unique
+  gender           Gender?            @relation(fields: [genderId], references: [id])
+  genderId         String?
+  countryCode      String?
+  timeZone         String
+  comment          String?
+  createdAt        DateTime           @default(now()) @db.Timestamptz()
+  VoyageTeamMember VoyageTeamMember[]
 }
 
 model Voyage {
   id         String       @id @default(uuid())
-  number     String
+  number     String       @unique
   startDate  DateTime     @db.Timestamptz()
   endDate    DateTime     @db.Timestamptz()
   createdAt  DateTime     @default(now()) @db.Timestamptz()
   VoyageTeam VoyageTeam[]
 }
 
-enum VoyageTeamStatus {
-  ACTIVE
-  DROPPED
+model VoyageStatus {
+  id               String             @id @default(uuid())
+  name             String             @unique
+  description      String
+  createdAt        DateTime           @default(now()) @db.Timestamptz()
+  VoyageTeam       VoyageTeam[]
+  VoyageTeamMember VoyageTeamMember[]
 }
 
 model Tier {
   id          String       @id @default(uuid())
-  name        String
+  name        String       @unique
   description String
   createdAt   DateTime     @default(now()) @db.Timestamptz()
   VoyageTeam  VoyageTeam[]
 }
 
 model VoyageTeam {
-  id            String           @id @default(uuid())
-  voyage        Voyage           @relation(fields: [voyageId], references: [id])
+  id            String       @id @default(uuid())
+  voyage        Voyage       @relation(fields: [voyageId], references: [id])
   voyageId      String
-  name          String
-  status        VoyageTeamStatus @default(ACTIVE)
+  name          String       @unique
+  status        VoyageStatus @relation(fields: [statusId], references: [id])
+  statusId      String
   repoUrl       String
   repoUrlBE     String?
   deployedUrl   String?
   deployedUrlBE String?
-  tier          Tier             @relation(fields: [tierId], references: [id])
+  tier          Tier         @relation(fields: [tierId], references: [id])
   tierId        String
   endDate       DateTime
-  createdAt     DateTime         @default(now()) @db.Timestamptz()
+  createdAt     DateTime     @default(now()) @db.Timestamptz()
+
+  VoyageTeamMember VoyageTeamMember[]
 }
 
 model VoyageRole {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String
-  createdAt   DateTime @default(now()) @db.Timestamptz()
+  id               String             @id @default(uuid())
+  name             String             @unique
+  description      String
+  createdAt        DateTime           @default(now()) @db.Timestamptz()
+  VoyageTeamMember VoyageTeamMember[]
 }
 
 model VoyageTeamMember {
+  member       User         @relation(fields: [userId], references: [id])
   userId       String
+  voyageTeam   VoyageTeam   @relation(fields: [voyageTeamId], references: [id])
   voyageTeamId String
-  role         String
+  voyageRole   VoyageRole   @relation(fields: [voyageRoleId], references: [id])
+  voyageRoleId String
+  status       VoyageStatus @relation(fields: [statusId], references: [id])
+  statusId     String
+  hrPerSprint  Float
 
   @@id([userId, voyageTeamId])
 }

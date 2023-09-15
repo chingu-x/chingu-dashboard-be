@@ -6,16 +6,12 @@ const prisma = new PrismaClient()
 const Genders = require('./data/genders')
 const Tiers = require('./data/tiers')
 const VoyageRoles = require('./data/voyage-roles')
+const VoyageStatus = require('./data/voyage-status')
 
 const Users = require('./data/users')
 const Voyages = require('./data/voyages')
-
-const addTiers = async () => {
-    await prisma.tier.deleteMany()
-    await prisma.tier.createMany({
-        data: Tiers
-    })
-}
+const VoyageTeams = require('./data/voyage-teams')
+const VoyageTeamMembers = require('./data/voyage-team-members')
 
 const populateTable = async (tableName:string, data) => {
     await prisma[tableName].deleteMany()
@@ -30,20 +26,17 @@ const populateTableWithRelations = async (tableName:string, data) => {
         data:row
     })))
 }
-const addVoyages = async () => {
-    await prisma.voyage.deleteMany()
-    await prisma.voyage.createMany({
-        data: Voyages
-    })
-}
-
 
 (async function () {
     try {
         await populateTable("tier", Tiers)
         await populateTable("gender", Genders)
+        await populateTable("voyageRole", VoyageRoles)
+        await populateTable("voyageStatus", VoyageStatus)
         await populateTableWithRelations("user", Users)
         await populateTableWithRelations("voyage", Voyages)
+        await populateTableWithRelations("voyageTeam", VoyageTeams)
+        await populateTableWithRelations("voyageTeamMember", VoyageTeamMembers)
 
         console.log('Database seeding completed.')
     } catch (e) {

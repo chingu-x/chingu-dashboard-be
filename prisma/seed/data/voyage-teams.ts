@@ -1,10 +1,16 @@
+const VoyageTeamStatus = require('./voyage-status')
+
 module.exports = [
     {
         voyage:{
             connect: { number: '46'}
         },
         name: "team 4",
-        status: "ACTIVE",
+        status:{
+            connect: {
+                name: VoyageTeamStatus[0].name
+            }
+        },
         repoUrl: "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
         repoUrlBE: "https://github.com/chingu-voyages/Handbook",
         deployedUrl: "https://www.chingu.io/",
@@ -19,7 +25,11 @@ module.exports = [
             connect: { number: '46'}
         },
         name: "team 3",
-        status: "ACTIVE",
+        status:{
+            connect: {
+                name: VoyageTeamStatus[0].name
+            }
+        },
         repoUrl: "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
         tier: {
             connect: { name: "Tier 2"}
