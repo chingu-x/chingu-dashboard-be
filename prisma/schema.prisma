@@ -34,6 +34,7 @@ model User {
   comment          String?
   createdAt        DateTime           @default(now()) @db.Timestamptz()
   VoyageTeamMember VoyageTeamMember[]
+  ProjectIdea      ProjectIdea[]
 }
 
 model Voyage {
@@ -79,6 +80,7 @@ model VoyageTeam {
   createdAt     DateTime     @default(now()) @db.Timestamptz()
 
   VoyageTeamMember VoyageTeamMember[]
+  ProjectIdea      ProjectIdea[]
 }
 
 model VoyageRole {
@@ -99,6 +101,41 @@ model VoyageTeamMember {
   status       VoyageStatus @relation(fields: [statusId], references: [id])
   statusId     String
   hrPerSprint  Float
+  createdAt    DateTime     @default(now()) @db.Timestamptz()
 
   @@id([userId, voyageTeamId])
+}
+
+model ProjectIdea {
+  id            String     @id @default(uuid())
+  contributedBy User       @relation(fields: [userId], references: [id])
+  userId        String
+  voyageTeam    VoyageTeam @relation(fields: [voyageTeamId], references: [id])
+  voyageTeamId  String
+  title         String
+  description   String
+  vision        String
+  voteCount     Int        @default(0)
+  createdAt     DateTime   @default(now()) @db.Timestamptz()
+}
+
+model TechStackCategory {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  description   String
+  createdAt     DateTime        @default(now()) @db.Timestamptz()
+  TechStackItem TechStackItem[]
+}
+
+model TechStackItem {
+  id         String            @id @default(uuid())
+  name       String            @unique
+  category   TechStackCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+  createdAt  DateTime          @default(now()) @db.Timestamptz()
+}
+
+model TeamTechStack {
+  id   String @id @default(uuid())
+  name String
 }

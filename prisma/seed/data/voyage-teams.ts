@@ -1,11 +1,12 @@
 const VoyageTeamStatus = require('./voyage-status')
 
+
 module.exports = [
     {
         voyage:{
             connect: { number: '46'}
         },
-        name: "team 4",
+        name: "v46-tier2-team-4",
         status:{
             connect: {
                 name: VoyageTeamStatus[0].name
@@ -24,7 +25,7 @@ module.exports = [
         voyage:{
             connect: { number: '46'}
         },
-        name: "team 3",
+        name: "v46-tier3-team-45",
         status:{
             connect: {
                 name: VoyageTeamStatus[0].name
