@@ -27,7 +27,7 @@ model User {
   twitterId        String?
   linkedinId       String?
   email            String             @unique
-  gender           Gender?            @relation(fields: [genderId], references: [id])
+  gender           Gender?            @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   genderId         String?
   countryCode      String?
   timeZone         String
@@ -63,20 +63,20 @@ model Tier {
 }
 
 model VoyageTeam {
-  id            String       @id @default(uuid())
-  voyage        Voyage       @relation(fields: [voyageId], references: [id])
-  voyageId      String
-  name          String       @unique
-  status        VoyageStatus @relation(fields: [statusId], references: [id])
-  statusId      String
+  id            String        @id @default(uuid())
+  voyage        Voyage?       @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageId      String?
+  name          String        @unique
+  status        VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId      String?
   repoUrl       String
   repoUrlBE     String?
   deployedUrl   String?
   deployedUrlBE String?
-  tier          Tier         @relation(fields: [tierId], references: [id])
-  tierId        String
+  tier          Tier?         @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  tierId        String?
   endDate       DateTime
-  createdAt     DateTime     @default(now()) @db.Timestamptz()
+  createdAt     DateTime      @default(now()) @db.Timestamptz()
 
   VoyageTeamMember  VoyageTeamMember[]
   ProjectIdea       ProjectIdea[]
@@ -93,14 +93,14 @@ model VoyageRole {
 
 model VoyageTeamMember {
   id                    String                  @id @default(uuid())
-  member                User                    @relation(fields: [userId], references: [id])
+  member                User                    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   userId                String
-  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id])
+  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId          String
-  voyageRole            VoyageRole              @relation(fields: [voyageRoleId], references: [id])
-  voyageRoleId          String
-  status                VoyageStatus            @relation(fields: [statusId], references: [id])
-  statusId              String
+  voyageRole            VoyageRole?             @relation(fields: [voyageRoleId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageRoleId          String?
+  status                VoyageStatus?           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId              String?
   hrPerSprint           Float
   createdAt             DateTime                @default(now()) @db.Timestamptz()
   TeamTechStackItemVote TeamTechStackItemVote[]
@@ -108,16 +108,16 @@ model VoyageTeamMember {
 }
 
 model ProjectIdea {
-  id            String           @id @default(uuid())
-  contributedBy VoyageTeamMember @relation(fields: [userId], references: [id])
-  userId        String
-  voyageTeam    VoyageTeam       @relation(fields: [voyageTeamId], references: [id])
+  id            String            @id @default(uuid())
+  contributedBy VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  userId        String?
+  voyageTeam    VoyageTeam        @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId  String
   title         String
   description   String
   vision        String
-  voteCount     Int              @default(0)
-  createdAt     DateTime         @default(now()) @db.Timestamptz()
+  voteCount     Int               @default(0)
+  createdAt     DateTime          @default(now()) @db.Timestamptz()
 }
 
 model TechStackCategory {
@@ -131,17 +131,17 @@ model TechStackCategory {
 model TechStackItem {
   id            String              @id @default(uuid())
   name          String              @unique
-  category      TechStackCategory   @relation(fields: [categoryId], references: [id])
-  categoryId    String
+  category      TechStackCategory?  @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  categoryId    String?
   createdAt     DateTime            @default(now()) @db.Timestamptz()
   TeamTechStack TeamTechStackItem[]
 }
 
 model TeamTechStackItem {
   id                    String                  @id @default(uuid())
-  tech                  TechStackItem           @relation(fields: [techId], references: [id])
+  tech                  TechStackItem           @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   techId                String
-  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id])
+  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId          String
   createdAt             DateTime                @default(now()) @db.Timestamptz()
   TeamTechStackItemVote TeamTechStackItemVote[]
@@ -149,9 +149,9 @@ model TeamTechStackItem {
 
 model TeamTechStackItemVote {
   id           String            @id @default(uuid())
-  teamTech     TeamTechStackItem @relation(fields: [teamTechId], references: [id])
+  teamTech     TeamTechStackItem @relation(fields: [teamTechId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   teamTechId   String
-  votedBy      VoyageTeamMember  @relation(fields: [teamMemberId], references: [id])
-  teamMemberId String
+  votedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  teamMemberId String?
   createdAt    DateTime          @default(now()) @db.Timestamptz()
 }
