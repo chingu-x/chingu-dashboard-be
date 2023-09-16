@@ -1,6 +1,6 @@
 export {}
 
-const Users = require('./users')
+const VoyageTeamMembers = require('./voyage-team-members')
 const VoyageTeams = require('./voyage-teams')
 
 
@@ -8,7 +8,7 @@ module.exports = [
     {
         contributedBy: {
             connect: {
-                email: Users[0].email
+                member:VoyageTeamMembers[0]
             }
         },
         voyageTeam:{

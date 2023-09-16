@@ -34,7 +34,6 @@ model User {
   comment          String?
   createdAt        DateTime           @default(now()) @db.Timestamptz()
   VoyageTeamMember VoyageTeamMember[]
-  ProjectIdea      ProjectIdea[]
 }
 
 model Voyage {
@@ -79,8 +78,9 @@ model VoyageTeam {
   endDate       DateTime
   createdAt     DateTime     @default(now()) @db.Timestamptz()
 
-  VoyageTeamMember VoyageTeamMember[]
-  ProjectIdea      ProjectIdea[]
+  VoyageTeamMember  VoyageTeamMember[]
+  ProjectIdea       ProjectIdea[]
+  TeamTechStackItem TeamTechStackItem[]
 }
 
 model VoyageRole {
@@ -92,31 +92,32 @@ model VoyageRole {
 }
 
 model VoyageTeamMember {
-  member       User         @relation(fields: [userId], references: [id])
-  userId       String
-  voyageTeam   VoyageTeam   @relation(fields: [voyageTeamId], references: [id])
-  voyageTeamId String
-  voyageRole   VoyageRole   @relation(fields: [voyageRoleId], references: [id])
-  voyageRoleId String
-  status       VoyageStatus @relation(fields: [statusId], references: [id])
-  statusId     String
-  hrPerSprint  Float
-  createdAt    DateTime     @default(now()) @db.Timestamptz()
-
-  @@id([userId, voyageTeamId])
+  id                    String                  @id @default(uuid())
+  member                User                    @relation(fields: [userId], references: [id])
+  userId                String
+  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id])
+  voyageTeamId          String
+  voyageRole            VoyageRole              @relation(fields: [voyageRoleId], references: [id])
+  voyageRoleId          String
+  status                VoyageStatus            @relation(fields: [statusId], references: [id])
+  statusId              String
+  hrPerSprint           Float
+  createdAt             DateTime                @default(now()) @db.Timestamptz()
+  TeamTechStackItemVote TeamTechStackItemVote[]
+  ProjectIdea           ProjectIdea[]
 }
 
 model ProjectIdea {
-  id            String     @id @default(uuid())
-  contributedBy User       @relation(fields: [userId], references: [id])
+  id            String           @id @default(uuid())
+  contributedBy VoyageTeamMember @relation(fields: [userId], references: [id])
   userId        String
-  voyageTeam    VoyageTeam @relation(fields: [voyageTeamId], references: [id])
+  voyageTeam    VoyageTeam       @relation(fields: [voyageTeamId], references: [id])
   voyageTeamId  String
   title         String
   description   String
   vision        String
-  voteCount     Int        @default(0)
-  createdAt     DateTime   @default(now()) @db.Timestamptz()
+  voteCount     Int              @default(0)
+  createdAt     DateTime         @default(now()) @db.Timestamptz()
 }
 
 model TechStackCategory {
@@ -128,14 +129,29 @@ model TechStackCategory {
 }
 
 model TechStackItem {
-  id         String            @id @default(uuid())
-  name       String            @unique
-  category   TechStackCategory @relation(fields: [categoryId], references: [id])
-  categoryId String
-  createdAt  DateTime          @default(now()) @db.Timestamptz()
+  id            String              @id @default(uuid())
+  name          String              @unique
+  category      TechStackCategory   @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  createdAt     DateTime            @default(now()) @db.Timestamptz()
+  TeamTechStack TeamTechStackItem[]
 }
 
-model TeamTechStack {
-  id   String @id @default(uuid())
-  name String
+model TeamTechStackItem {
+  id                    String                  @id @default(uuid())
+  tech                  TechStackItem           @relation(fields: [techId], references: [id])
+  techId                String
+  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id])
+  voyageTeamId          String
+  createdAt             DateTime                @default(now()) @db.Timestamptz()
+  TeamTechStackItemVote TeamTechStackItemVote[]
+}
+
+model TeamTechStackItemVote {
+  id           String            @id @default(uuid())
+  teamTech     TeamTechStackItem @relation(fields: [teamTechId], references: [id])
+  teamTechId   String
+  votedBy      VoyageTeamMember  @relation(fields: [teamMemberId], references: [id])
+  teamMemberId String
+  createdAt    DateTime          @default(now()) @db.Timestamptz()
 }

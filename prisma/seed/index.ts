@@ -14,6 +14,7 @@ const Voyages = require('./data/voyages')
 const VoyageTeams = require('./data/voyage-teams')
 const VoyageTeamMembers = require('./data/voyage-team-members')
 const TechStackItems = require('./data/tech-stack-items')
+const TeamTechStackItems = require('./data/team-tech-stack-items')
 
 const ProjectIdeas = require('./data/project-ideas')
 
@@ -42,9 +43,16 @@ const populateTableWithRelations = async (tableName:string, data) => {
         await populateTableWithRelations("voyage", Voyages)
         await populateTableWithRelations("voyageTeam", VoyageTeams)
         await populateTableWithRelations("voyageTeamMember", VoyageTeamMembers)
-        await populateTableWithRelations("projectIdea", ProjectIdeas)
+        //await populateTableWithRelations("projectIdea", ProjectIdeas)
         await populateTableWithRelations("techStackItem", TechStackItems)
+        await populateTableWithRelations("teamTechStackItem", TeamTechStackItems)
 
+
+        /* TODO:
+            might have to populate project ideas, and techstackvotes here
+            so we can grab the IDs
+            basically anything which needs Voyage Team Member IDs
+         */
         console.log('Database seeding completed.')
     } catch (e) {
         console.error(e);
