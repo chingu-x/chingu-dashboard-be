@@ -20,13 +20,6 @@ const ProjectIdeas = require('./data/project-ideas')
 
 const populateTable = async (tableName:string, data) => {
     await prisma[tableName].deleteMany()
-    await prisma[tableName].createMany({
-        data
-    })
-}
-
-const populateTableWithRelations = async (tableName:string, data) => {
-    await prisma[tableName].deleteMany()
     await Promise.all(data.map(row=>prisma[tableName].create({
         data:row
     })))
@@ -39,17 +32,16 @@ const populateTableWithRelations = async (tableName:string, data) => {
         await populateTable("voyageRole", VoyageRoles)
         await populateTable("voyageStatus", VoyageStatus)
         await populateTable("techStackCategory", TechStackCategories)
-        await populateTableWithRelations("user", Users)
-        await populateTableWithRelations("voyage", Voyages)
-        await populateTableWithRelations("voyageTeam", VoyageTeams)
-        await populateTableWithRelations("voyageTeamMember", VoyageTeamMembers)
-        //await populateTableWithRelations("projectIdea", ProjectIdeas)
-        await populateTableWithRelations("techStackItem", TechStackItems)
-        await populateTableWithRelations("teamTechStackItem", TeamTechStackItems)
-
+        await populateTable("user", Users)
+        await populateTable("voyage", Voyages)
+        await populateTable("voyageTeam", VoyageTeams)
+        await populateTable("voyageTeamMember", VoyageTeamMembers)
+        //await populateTable("projectIdea", ProjectIdeas)
+        await populateTable("techStackItem", TechStackItems)
+        await populateTable("teamTechStackItem", TeamTechStackItems)
 
         /* TODO:
-            
+
             might have to populate project ideas, and techstackvotes here
             so we can grab the IDs
             basically anything which needs Voyage Team Member IDs
