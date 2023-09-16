@@ -79,7 +79,6 @@ model VoyageTeam {
   createdAt     DateTime      @default(now()) @db.Timestamptz()
 
   VoyageTeamMember  VoyageTeamMember[]
-  ProjectIdea       ProjectIdea[]
   TeamTechStackItem TeamTechStackItem[]
 }
 
@@ -111,8 +110,6 @@ model ProjectIdea {
   id            String            @id @default(uuid())
   contributedBy VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   userId        String?
-  voyageTeam    VoyageTeam        @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamId  String
   title         String
   description   String
   vision        String

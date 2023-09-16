@@ -1,5 +1,6 @@
 import {PrismaClient} from "@prisma/client";
 import * as process from "process";
+import {connect} from "rxjs";
 
 const prisma = new PrismaClient()
 
@@ -18,10 +19,10 @@ const TeamTechStackItems = require('./data/team-tech-stack-items')
 
 const ProjectIdeas = require('./data/project-ideas')
 
-const populateTable = async (tableName:string, data) => {
+const populateTable = async (tableName: string, data) => {
     await prisma[tableName].deleteMany()
-    await Promise.all(data.map(row=>prisma[tableName].create({
-        data:row
+    await Promise.all(data.map(row => prisma[tableName].create({
+        data: row
     })))
 }
 
@@ -45,7 +46,29 @@ const populateTable = async (tableName:string, data) => {
             might have to populate project ideas, and techstackvotes here
             so we can grab the IDs
             basically anything which needs Voyage Team Member IDs
+
+        */
+        /*
+        const voyageTeamMember = await prisma.voyageTeamMember.findFirst({
+            include: {
+                voyageTeam: true,
+                member: true
+            }
+        })
+
+        await prisma.projectIdea.create(
+            {
+                data: {
+                    ...ProjectIdeas[0],
+                    contributedBy: {
+                        connect: { member: voyageTeamMember.member.id}
+                    }
+                }
+            }
+        )
+        
          */
+
         console.log('Database seeding completed.')
     } catch (e) {
         console.error(e);
