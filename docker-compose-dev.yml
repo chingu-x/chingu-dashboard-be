@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    restart: always
+    env_file:
+      - .env.dev
+    ports:
+      - "5433:5432"
+    hostname: chingu
+    environment:
+      POSTGRES_USER: chingu
+      POSTGRES_PASSWORD: chingu
+      POSTGRES_DB: dashboard
+      PGPORT: 5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    env_file:
+      - .env.dev
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "4000:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: chinguadmin@chingu.com
+      PGADMIN_DEFAULT_PASSWORD: chingu5432
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  api:
+    build: .
+    restart: always
+    env_file:
+      - .env.dev
+    ports:
+      - "8000:8000"
+      - "5555:5555"
+    depends_on:
+      - postgres
+volumes:
+  pgdata:
+  pgadmin-data:

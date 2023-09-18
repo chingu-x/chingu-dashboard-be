@@ -56,7 +56,7 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## Test<a name="tests"></a>
 
 ```bash
 # unit tests
@@ -65,6 +65,87 @@ $ yarn run test
 # e2e tests
 $ yarn run test:e2e
 
+# integration tests
+$ yarn run test:int
+
 # test coverage
 $ yarn run test:cov
 ```
+
+## Docker 
+
+By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run [Prisma Studio](#prismaStudio) and even [tests](#dockerTests).
+
+### Running the DB and API in Docker
+
+With Docker open, from the project's root run: 
+
+```bash
+# spin up project Docker images
+$ yarn start:docker:dev
+```
+
+#### Migrate Prisma schema + Setup <a name="prismaStudio">Prisma studio</a>
+
+With the Docker images running, either from the cli in your ide on in the Docker cli for the API image, run:
+
+```bash
+# run Prisma schema migration with dev .env variables
+$ yarn migrate:dev
+
+# run Prisma schema migration with test .env variables
+$ yarn migrate:test
+```
+
+Then to set up Prisma studio:
+
+```bash
+# setup Prisma Studio
+$ yarn studio
+```
+
+Docker containers and Prisma Studio should now be running on the [default ports](#deafultPorts)
+
+### <a name="tearDown">Tearing down Docker services<a/>
+
+To stop and tear down the Docker services:
+```bash
+# tear down Docker development services
+$ yarn down:dev
+
+# tear down Docker test services
+$ yarn down:test
+```
+
+### <a name="dockerTests"></a> Running tests with Docker
+
+You can start the test DB and API:
+
+```bash
+# run docker test db only
+$ yarn start:docker:test
+
+# run docker test db with API
+$ yarn start:docker:test:all
+```
+
+When that is running, run your tests as shown [above](#tests)
+When you've finished testing just [tear down the container manually](#tearDown)
+
+If you don't have the full Docker image running and want to run integration tests you can quickly spin up a Postgres image and run your tests against it. 
+
+If you're using Linux, Mac OS, or Windows with Bash configured:
+
+```bash
+# run Jest integration tests through Docker test image
+$ yarn test:docker
+```
+
+This command will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
+
+#### <a name="deafultPorts">Default ports with Docker:<a/>
+
+- API: `8000`
+- Postgres: `5433`
+- PGAdmin: `4000`
+- Prisma Studio: `5555`

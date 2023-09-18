@@ -74,6 +74,7 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.dev
 .env.test
 .env.development.local
 .env.test.local
@@ -129,3 +130,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# Postgres
+pgdata
+pgadmin-data
