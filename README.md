@@ -7,7 +7,7 @@
 
 ## Description
 
-This is the Chingu Dashboard backend project
+This is the Chingu Dashboard backend project. Be sure to set your dev and test [.env files](#envfiles)
 
 ## Creating new components
 
@@ -142,6 +142,33 @@ $ yarn test:docker
 ```
 
 This command will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
+
+#### <a name="envfiles">Dev and Testing environment variable files</a>
+These files are only for development and testing purposes, set them in your root directory. They're pretty much the same and many of the variables are actually hardcoded into the Docker files for convenience, but that could change in future so be sure to copy across the entire files.
+
+```bash
+# .env.test
+DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+HOSTNAME=chingu
+POSTGRES_USER=chingu
+POSTGRES_PASSWORD=chingu
+POSTGRES_DB=dashboard
+PGADMIN_EMAIL=chinguadmin@chingu.com
+PGADMIN_PW=chingu5432
+PORT=8000
+```
+
+```bash
+# .env.dev
+DATABASE_URL=postgresql://chingu:chingu@chingu:5433/dashboard?schema=public
+HOSTNAME=chingu
+POSTGRES_USER=chingu
+POSTGRES_PASSWORD=chingu
+POSTGRES_DB=dashboard
+PGADMIN_EMAIL=chinguadmin@chingu.com
+PGADMIN_PW=chingu5432
+PORT=8000
+```
 
 #### <a name="deafultPorts">Default ports with Docker:<a/>
 
