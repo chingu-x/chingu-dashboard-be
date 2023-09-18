@@ -8,10 +8,7 @@ export class HealthCheckService {
 
     async createHealthCheck(data: HealthCheckDto): Promise<any> {
         return this.prisma.healthCheck.create({
-            data: {
-                statusCode: data.statusCode,
-                resMsg: data.resMsg,
-            },
+            data,
         });
     }
 }
