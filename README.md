@@ -58,7 +58,7 @@ $ yarn install
 # reset database/schema, and seed
 $ prisma migrate reset
 
-$ prisma db seed 
+$ npx prisma db seed 
 ```
 or 
 ```bash
