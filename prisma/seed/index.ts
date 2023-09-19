@@ -29,7 +29,7 @@ const deleteAllTables = async () => {
         await deleteAllTables()
         await populateTables()
         await populateTablesWithRelations()
-        console.log('===\nDatabase seeding completed.\n===')
+        console.log('===\n🌱 Database seeding completed.\n===')
     } catch (e) {
         console.error(e);
         process.exit(1);

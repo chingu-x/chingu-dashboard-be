@@ -60,6 +60,10 @@ $ prisma migrate reset
 
 $ prisma db seed 
 ```
+or 
+```bash
+$ yarn db:reset
+```
 
 ## Running the app
 
