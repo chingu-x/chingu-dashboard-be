@@ -1,6 +1,6 @@
 import {PrismaClient} from "@prisma/client";
 import * as process from "process";
-import {connect} from "rxjs";
+import {populateTablesWithRelations} from "./relations";
 
 const prisma = new PrismaClient()
 
@@ -16,8 +16,6 @@ const VoyageTeams = require('./data/voyage-teams')
 const VoyageTeamMembers = require('./data/voyage-team-members')
 const TechStackItems = require('./data/tech-stack-items')
 const TeamTechStackItems = require('./data/team-tech-stack-items')
-
-const ProjectIdeas = require('./data/project-ideas')
 
 const deleteAllTables = async () => {
     const tablenames = await prisma.$queryRaw<
@@ -35,13 +33,14 @@ const deleteAllTables = async () => {
     } catch (error) {
         console.log({ error })
     }
+    console.log('===\nAll tables deleted.\n===')
 }
 
 const populateTable = async (tableName: string, data) => {
-    // await prisma[tableName].deleteMany()
     await Promise.all(data.map(row => prisma[tableName].create({
         data: row
     })))
+    console.log(`${tableName} table populated.`)
 }
 
 (async function () {
@@ -56,39 +55,12 @@ const populateTable = async (tableName: string, data) => {
         await populateTable("voyage", Voyages)
         await populateTable("voyageTeam", VoyageTeams)
         await populateTable("voyageTeamMember", VoyageTeamMembers)
-        //await populateTable("projectIdea", ProjectIdeas)
         await populateTable("techStackItem", TechStackItems)
         await populateTable("teamTechStackItem", TeamTechStackItems)
 
-        /* TODO:
+        await populateTablesWithRelations()
 
-            might have to populate project ideas, and techstackvotes here
-            so we can grab the IDs
-            basically anything which needs Voyage Team Member IDs
-
-        */
-
-        /*
-
-        const voyageTeamMember = await prisma.voyageTeamMember.findFirst({
-            include: {
-                voyageTeam: true,
-                member: true
-            }
-        })
-
-        await prisma.projectIdea.create(
-            {
-                data: {
-                    ...ProjectIdeas[0],
-                    contributedBy:voyageTeamMember.member.id
-                }
-            }
-        )
-
-*/
-
-        console.log('Database seeding completed.')
+        console.log('===\nDatabase seeding completed.\n===')
     } catch (e) {
         console.error(e);
         process.exit(1);

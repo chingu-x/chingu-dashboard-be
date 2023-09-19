@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "githubId" DROP NOT NULL,
+ALTER COLUMN "discordId" DROP NOT NULL;

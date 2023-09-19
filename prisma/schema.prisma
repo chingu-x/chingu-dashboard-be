@@ -19,39 +19,39 @@ model Gender {
 }
 
 model User {
-  id               String             @id @default(uuid()) @db.Uuid
-  firstName        String
-  lastName         String
-  githubId         String
-  discordId        String
-  twitterId        String?
-  linkedinId       String?
-  email            String             @unique
-  gender           Gender?            @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  genderId         Int?
-  countryCode      String?
-  timezone         String
-  comment          String?
-  createdAt        DateTime           @default(now()) @db.Timestamptz()
-  VoyageTeamMember VoyageTeamMember[]
+  id                String             @id @default(uuid()) @db.Uuid
+  firstName         String
+  lastName          String
+  githubId          String?
+  discordId         String?
+  twitterId         String?
+  linkedinId        String?
+  email             String             @unique
+  gender            Gender?            @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  genderId          Int?
+  countryCode       String?
+  timezone          String
+  comment           String?
+  createdAt         DateTime           @default(now()) @db.Timestamptz()
+  voyageTeamMembers VoyageTeamMember[]
 }
 
 model Voyage {
-  id         Int          @id @default(autoincrement())
-  number     String       @unique
-  startDate  DateTime     @db.Timestamptz()
-  endDate    DateTime     @db.Timestamptz()
-  createdAt  DateTime     @default(now()) @db.Timestamptz()
-  VoyageTeam VoyageTeam[]
+  id          Int          @id @default(autoincrement())
+  number      String       @unique
+  startDate   DateTime     @db.Timestamptz()
+  endDate     DateTime     @db.Timestamptz()
+  createdAt   DateTime     @default(now()) @db.Timestamptz()
+  voyageTeams VoyageTeam[]
 }
 
 model VoyageStatus {
-  id               Int                @id @default(autoincrement())
-  name             String             @unique
-  description      String
-  createdAt        DateTime           @default(now()) @db.Timestamptz()
-  VoyageTeam       VoyageTeam[]
-  VoyageTeamMember VoyageTeamMember[]
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  description       String
+  createdAt         DateTime           @default(now()) @db.Timestamptz()
+  voyageTeams       VoyageTeam[]
+  voyageTeamMembers VoyageTeamMember[]
 }
 
 model Tier {
@@ -59,7 +59,7 @@ model Tier {
   name        String       @unique
   description String
   createdAt   DateTime     @default(now()) @db.Timestamptz()
-  VoyageTeam  VoyageTeam[]
+  voyageTeams VoyageTeam[]
 }
 
 model VoyageTeam {
@@ -78,38 +78,38 @@ model VoyageTeam {
   endDate       DateTime
   createdAt     DateTime      @default(now()) @db.Timestamptz()
 
-  VoyageTeamMember  VoyageTeamMember[]
-  TeamTechStackItem TeamTechStackItem[]
+  voyageTeamMembers  VoyageTeamMember[]
+  teamTechStackItems TeamTechStackItem[]
 }
 
 model VoyageRole {
-  id               Int                @id @default(autoincrement())
-  name             String             @unique
-  description      String
-  createdAt        DateTime           @default(now()) @db.Timestamptz()
-  VoyageTeamMember VoyageTeamMember[]
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  description       String
+  createdAt         DateTime           @default(now()) @db.Timestamptz()
+  voyageTeamMembers VoyageTeamMember[]
 }
 
 model VoyageTeamMember {
-  id                    String                  @id @default(uuid())
-  member                User                    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  userId                String                  @db.Uuid
-  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamId          Int
-  voyageRole            VoyageRole?             @relation(fields: [voyageRoleId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  voyageRoleId          Int?
-  status                VoyageStatus?           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  statusId              Int?
-  hrPerSprint           Float
-  createdAt             DateTime                @default(now()) @db.Timestamptz()
-  TeamTechStackItemVote TeamTechStackItemVote[]
-  ProjectIdea           ProjectIdea[]
+  id                     Int                     @id @default(autoincrement())
+  member                 User                    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId                 String                  @db.Uuid
+  voyageTeam             VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamId           Int
+  voyageRole             VoyageRole?             @relation(fields: [voyageRoleId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageRoleId           Int?
+  status                 VoyageStatus?           @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId               Int?
+  hrPerSprint            Float
+  createdAt              DateTime                @default(now()) @db.Timestamptz()
+  teamTechStackItemVotes TeamTechStackItemVote[]
+  projectIdeas           ProjectIdea[]
 }
 
 model ProjectIdea {
   id            Int               @id @default(autoincrement())
   contributedBy VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  userId        String?
+  userId        Int?
   title         String
   description   String
   vision        String
@@ -118,30 +118,30 @@ model ProjectIdea {
 }
 
 model TechStackCategory {
-  id            Int             @id @default(autoincrement())
-  name          String          @unique
-  description   String
-  createdAt     DateTime        @default(now()) @db.Timestamptz()
-  TechStackItem TechStackItem[]
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  description    String
+  createdAt      DateTime        @default(now()) @db.Timestamptz()
+  techStackItems TechStackItem[]
 }
 
 model TechStackItem {
-  id            Int                 @id @default(autoincrement())
-  name          String              @unique
-  category      TechStackCategory?  @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  categoryId    Int?
-  createdAt     DateTime            @default(now()) @db.Timestamptz()
-  TeamTechStack TeamTechStackItem[]
+  id             Int                 @id @default(autoincrement())
+  name           String              @unique
+  category       TechStackCategory?  @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  categoryId     Int?
+  createdAt      DateTime            @default(now()) @db.Timestamptz()
+  teamTechStacks TeamTechStackItem[]
 }
 
 model TeamTechStackItem {
-  id                    Int                     @id @default(autoincrement())
-  tech                  TechStackItem           @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  techId                Int
-  voyageTeam            VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamId          Int
-  createdAt             DateTime                @default(now()) @db.Timestamptz()
-  TeamTechStackItemVote TeamTechStackItemVote[]
+  id                     Int                     @id @default(autoincrement())
+  tech                   TechStackItem           @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  techId                 Int
+  voyageTeam             VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamId           Int
+  createdAt              DateTime                @default(now()) @db.Timestamptz()
+  teamTechStackItemVotes TeamTechStackItemVote[]
 }
 
 model TeamTechStackItemVote {
@@ -149,6 +149,6 @@ model TeamTechStackItemVote {
   teamTech     TeamTechStackItem @relation(fields: [teamTechId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   teamTechId   Int
   votedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  teamMemberId String?
+  teamMemberId Int?
   createdAt    DateTime          @default(now()) @db.Timestamptz()
 }
