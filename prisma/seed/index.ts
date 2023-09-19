@@ -19,8 +19,26 @@ const TeamTechStackItems = require('./data/team-tech-stack-items')
 
 const ProjectIdeas = require('./data/project-ideas')
 
+const deleteAllTables = async () => {
+    const tablenames = await prisma.$queryRaw<
+        Array<{ tablename: string }>
+    >`SELECT tablename FROM pg_tables WHERE schemaname='public'`
+
+    const tables = tablenames
+        .map(({ tablename }) => tablename)
+        .filter((name) => name !== '_prisma_migrations')
+        .map((name) => `"public"."${name}"`)
+        .join(', ')
+
+    try {
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`)
+    } catch (error) {
+        console.log({ error })
+    }
+}
+
 const populateTable = async (tableName: string, data) => {
-    await prisma[tableName].deleteMany()
+    // await prisma[tableName].deleteMany()
     await Promise.all(data.map(row => prisma[tableName].create({
         data: row
     })))
@@ -28,6 +46,7 @@ const populateTable = async (tableName: string, data) => {
 
 (async function () {
     try {
+        await deleteAllTables()
         await populateTable("tier", Tiers)
         await populateTable("gender", Genders)
         await populateTable("voyageRole", VoyageRoles)
@@ -48,7 +67,9 @@ const populateTable = async (tableName: string, data) => {
             basically anything which needs Voyage Team Member IDs
 
         */
+
         /*
+
         const voyageTeamMember = await prisma.voyageTeamMember.findFirst({
             include: {
                 voyageTeam: true,
@@ -60,14 +81,12 @@ const populateTable = async (tableName: string, data) => {
             {
                 data: {
                     ...ProjectIdeas[0],
-                    contributedBy: {
-                        connect: { member: voyageTeamMember.member.id}
-                    }
+                    contributedBy:voyageTeamMember.member.id
                 }
             }
         )
-        
-         */
+
+*/
 
         console.log('Database seeding completed.')
     } catch (e) {

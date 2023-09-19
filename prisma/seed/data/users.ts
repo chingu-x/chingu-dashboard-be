@@ -12,7 +12,7 @@ module.exports = [
                 abbreviation: "F"
             }
         },
-        timeZone: 'Australia/Melbourne',
+        timezone: 'Australia/Melbourne',
         countryCode: 'AU'
     },
     {
@@ -24,7 +24,7 @@ module.exports = [
         gender: {
             connect: {abbreviation: "M"}
         },
-        timeZone: 'America/Los_Angeles',
+        timezone: 'America/Los_Angeles',
         comment: "This is a user comment",
         countryCode: 'US'
     }
