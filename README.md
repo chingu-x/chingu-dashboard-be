@@ -52,6 +52,19 @@ To install all the project's dependencies run:
 $ yarn install
 ```
 
+## Prisma
+
+```bash
+# reset database/schema, and seed
+$ npx prisma migrate reset
+
+$ npx prisma db seed 
+```
+or 
+```bash
+$ yarn db:reset
+```
+
 ## Running the app
 
 ```bash
