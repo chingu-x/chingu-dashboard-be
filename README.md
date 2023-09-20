@@ -149,12 +149,10 @@ These files are only for development and testing purposes, set them in your root
 ```bash
 # .env.test
 DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
-HOSTNAME=chingu
+HOSTNAME=localhost
 POSTGRES_USER=chingu
 POSTGRES_PASSWORD=chingu
 POSTGRES_DB=dashboard
-PGADMIN_EMAIL=chinguadmin@chingu.com
-PGADMIN_PW=chingu5432
 PORT=8000
 ```
 
@@ -165,8 +163,8 @@ HOSTNAME=chingu
 POSTGRES_USER=chingu
 POSTGRES_PASSWORD=chingu
 POSTGRES_DB=dashboard
-PGADMIN_EMAIL=chinguadmin@chingu.com
-PGADMIN_PW=chingu5432
+PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
+PGADMIN_DEFAULT_PASSWORD=chingu5432
 PORT=8000
 ```
 

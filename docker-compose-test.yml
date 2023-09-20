@@ -3,19 +3,15 @@ services:
   test-pgdb:
     container_name: test-pgdb
     image: postgres:15-alpine
+    env_file:
+      - .env.test
     ports:
       - "5433:5433"
-    hostname: localhost
     environment:
-      POSTGRES_USER: chingu
-      POSTGRES_PASSWORD: chingu
-      POSTGRES_DB: dashboard
       PGPORT: 5433
   api:
     build: .
     restart: always
-    env_file:
-      - .env.dev
     ports:
       - "8000:8000"
       - "5555:5555"
