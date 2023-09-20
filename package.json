@@ -30,7 +30,8 @@
     "test:docker": "chmod +x ./bin/docker_test.sh && ./bin/docker_test.sh",
     "pretest:e2e": "yarn reset:test",
     "test:e2e": "dotenv -e ./.env.test -- jest --config ./test/jest-e2e.json",
-    "test:int": "dotenv -e ./.env.test -- jest -i --no-cache --verbose --config ./test/jest-int.json"
+    "test:int": "dotenv -e ./.env.test -- jest -i --no-cache --verbose --config ./test/jest-int.json",
+    "db:reset": "prisma db push --force-reset && prisma db seed"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -84,5 +85,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed/index.ts"
   }
 }

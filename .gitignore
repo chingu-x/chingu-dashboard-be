@@ -131,7 +131,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-
 # Postgres
 pgdata
 pgadmin-data
+
+# Jetbrains IDE
+.idea/

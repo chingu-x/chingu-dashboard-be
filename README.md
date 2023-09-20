@@ -35,12 +35,34 @@ In this files we will have the business logic for each controller
 nest g service <name of service>
 ```
 
+## Environment variables
+
+The following variables should be on the .env file
+
+```
+DATABASE_URL="postgres://<username>:<password>@<host>:<database port>/<database name>"
+PORT=<application port>
+```
+
 ## Installation
 
 To install all the project's dependencies run:
 
 ```bash
 $ yarn install
+```
+
+## Prisma
+
+```bash
+# reset database/schema, and seed
+$ npx prisma migrate reset
+
+$ npx prisma db seed 
+```
+or 
+```bash
+$ yarn db:reset
 ```
 
 ## Running the app
