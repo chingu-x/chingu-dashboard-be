@@ -144,7 +144,7 @@ $ yarn test:docker
 This command will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
 
 #### <a name="envfiles">Dev and Testing environment variable files</a>
-These files are only for development and testing purposes, set them in your root directory. They're pretty much the same and many of the variables are actually hardcoded into the Docker files for convenience, but that could change in future so be sure to copy across the entire files.
+These files are only for development and testing purposes and are needed to run the Docker containers, set them in your root directory alongside the docker-compose.yml files. 
 
 ```bash
 # .env.test
