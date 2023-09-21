@@ -8,6 +8,5 @@ export class UserService {
     async getUser() {
         const users = await this.prisma.user.findMany();
         return users;
-        // return "End point hit from the service"
     }
 }
