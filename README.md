@@ -117,7 +117,7 @@ $ yarn docker:dev
 # spin up the Docker testing services (API, Postgres testing DB)
 $ yarn docker:test
 ```
-Docker will run in  detached mode, meaning it's effectively running in the background, so you can continue using your local terminal as normal whilst interacting with the services running on Docker.
+Docker will run in detached mode, meaning it's effectively running in the background, so you can continue using your local terminal as normal whilst interacting with the services running on Docker.
 
 When Docker is running make sure to setup the DB as directed [above](#prismaStudio) from your local terminal (e.g. the terminal integrated into your IDE).
 
@@ -130,6 +130,7 @@ Having spun up your Docker services and migrated + seeded your DB your services 
 - PGAdmin: `4000`
 - Prisma Studio: `5555`
 
+As well as connecting to the DB via PGAdmin you can also connect to it directly via the cli if you so choose, just run the following command in your terminal: `psql -h localhost -p 5433 -U chingu -d dashboard` then just enter the `POSTGRES_PASSWORD` from [here](#envfiles) 
 
 ### <a name="tearDown">Tearing down Docker services<a/>
 
