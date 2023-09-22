@@ -1,26 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { CreateIdeationDto } from './dto/create-ideation.dto';
-import { UpdateIdeationDto } from './dto/update-ideation.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+// import { CreateIdeationDto } from "./dto/create-ideation.dto";
+// import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+
+// const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
 
 @Injectable()
 export class IdeationService {
-  create(createIdeationDto: CreateIdeationDto) {
-    return 'This action adds a new ideation';
-  }
+    constructor(private prisma: PrismaService) {}
+    // create(createIdeationDto: CreateIdeationDto) {
+    //     return "This action adds a new ideation";
+    // }
 
-  findAll() {
-    return `This action returns all ideation`;
-  }
+    // findAll() {
+    //     return "This action returns all ideation";
+    // }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ideation`;
-  }
+    async getProjectIdeas(id: number) {
+        const query = await this.prisma.voyageTeamMember.findMany({
+            where: {
+                voyageTeamId: id,
+            },
+            include: {
+                projectIdeas: {
+                    include: {
+                        contributedBy: {
+                            include: {
+                                member: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-  update(id: number, updateIdeationDto: UpdateIdeationDto) {
-    return `This action updates a #${id} ideation`;
-  }
+        console.log(query);
 
-  remove(id: number) {
-    return `This action removes a #${id} ideation`;
-  }
+        return query;
+    }
+
+    // update(id: number, updateIdeationDto: UpdateIdeationDto) {
+    //     return `This action updates a #${id} ideation`;
+    // }
+
+    // remove(id: number) {
+    //     return `This action removes a #${id} ideation`;
+    // }
 }
