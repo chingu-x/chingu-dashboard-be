@@ -7,8 +7,7 @@ services:
       - .env.dev
     restart: always
     ports:
-      - "5433:5432"
-    hostname: chingu
+      - "5433:5433"
     environment:
       PGPORT: 5433
     volumes:
@@ -32,7 +31,6 @@ services:
       - .env.dev
     ports:
       - "8000:8000"
-      - "5555:5555"
     depends_on:
       - postgres
 volumes:

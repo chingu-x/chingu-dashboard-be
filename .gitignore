@@ -137,3 +137,6 @@ pgadmin-data
 
 # Jetbrains IDE
 .idea/
+
+# Misc system generated
+.DS_Store

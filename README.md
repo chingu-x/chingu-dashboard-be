@@ -7,41 +7,47 @@
 
 ## Description
 
-This is the Chingu Dashboard backend project. Be sure to set your dev and test [.env files](#envfiles)
+This is the Chingu Dashboard backend project. Be sure to set your .env.dev [environment variables file](#envfiles)
 
 ## Creating new components
 
+To generate Modules, Controllers and Services inline with the NestJs documentation we recommend using the `Nest cli`, which you can download from their [site](https://docs.nestjs.com/cli/overview)
+
 ### Module
 
-In this files we will handle each module of the project, but in general it basically has to call the controller and the service
-
 ```bash
-nest g module <name of module>
+# Generate a new module
+$ nest g module <name of module>
 ```
 
 ### Controller
 
-In this files we will handle each controller of the module, in this files we will have each route identified with its respective method
-
 ```bash
-nest g controller <name of controller>
+# Generate a new controller
+$ nest g controller <name of controller>
 ```
 
 ### Service
 
-In this files we will have the business logic for each controller
+```bash
+# Generate a new service
+$ nest g service <name of service>
+```
+
+## 
+
+## <a name="envfiles">Environment variables</a>
+This file is needed for development and testing purposes, set it in your root directory alongside the docker-compose.yml files. The file should be named `.env.dev`
 
 ```bash
-nest g service <name of service>
-```
-
-## Environment variables
-
-The following variables should be on the .env file
-
-```
-DATABASE_URL="postgres://<username>:<password>@<host>:<database port>/<database name>"
-PORT=<application port>
+# .env.dev
+DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+POSTGRES_USER=chingu
+POSTGRES_PASSWORD=chingu
+POSTGRES_DB=dashboard
+PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
+PGADMIN_DEFAULT_PASSWORD=chingu5432
+PORT=8000
 ```
 
 ## Installation
@@ -52,147 +58,105 @@ To install all the project's dependencies run:
 $ yarn install
 ```
 
-## Prisma
 
-```bash
-# reset database/schema, and seed
-$ npx prisma migrate reset
+## <a name="prismaStudio">Prisma</a>
 
-$ npx prisma db seed 
-```
-or 
+To prepare the DB
 ```bash
+# migrate db schema
+$ yarn migrate
+
+# seed db
 $ yarn db:reset
+
+# run Prisma Studio
+$ yarn studio
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ yarn run start
+$ yarn start
 
 # watch mode
-$ yarn run start:dev
+$ yarn start:dev
 
 # production mode
-$ yarn run start:prod
+$ yarn start:prod
 ```
 
 ## Test<a name="tests"></a>
 
 ```bash
 # unit tests
-$ yarn run test
+$ yarn test
 
 # e2e tests
-$ yarn run test:e2e
+$ yarn test:e2e
 
 # integration tests
-$ yarn run test:int
+$ yarn test:int
 
 # test coverage
-$ yarn run test:cov
+$ yarn test:cov
 ```
 
 ## Docker 
 
 By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run [Prisma Studio](#prismaStudio) and even [tests](#dockerTests).
 
-### Running the DB and API in Docker
+### Running the project in Docker
 
-With Docker open, from the project's root run: 
-
-```bash
-# spin up project Docker images
-$ yarn start:docker:dev
-```
-
-#### Migrate Prisma schema + Setup <a name="prismaStudio">Prisma studio</a>
-
-With the Docker images running, either from the cli in your ide on in the Docker cli for the API image, run:
+With Docker open, from the project's root you can run Docker in dev or testing mode: 
 
 ```bash
-# run Prisma schema migration with dev .env variables
-$ yarn migrate:dev
+# spin up dev Docker services (API, PGAdmin, Postgres DB)
+$ yarn docker:dev
 
-# run Prisma schema migration with test .env variables
-$ yarn migrate:test
+# spin up the Docker testing services (API, Postgres testing DB)
+$ yarn docker:test
 ```
+Docker will run in  detached mode, meaning it's effectively running in the background, so you can continue using your local terminal as normal whilst interacting with the services running on Docker.
 
-Then to set up Prisma studio:
+When Docker is running make sure to setup the DB as directed [above](#prismaStudio) from your local terminal (e.g. the terminal integrated into your IDE).
 
-```bash
-# setup Prisma Studio
-$ yarn studio
-```
+*When logging into PGAdmin set the `Host name/address` as `host.docker.internal` and follow the .env [above](#envfiles) for the other fields.*
 
-Docker containers and Prisma Studio should now be running on the [default ports](#deafultPorts)
-
-### <a name="tearDown">Tearing down Docker services<a/>
-
-To stop and tear down the Docker services:
-```bash
-# tear down Docker development services
-$ yarn down:dev
-
-# tear down Docker test services
-$ yarn down:test
-```
-
-### <a name="dockerTests"></a> Running tests with Docker
-
-You can start the test DB and API:
-
-```bash
-# run docker test db only
-$ yarn start:docker:test
-
-# run docker test db with API
-$ yarn start:docker:test:all
-```
-
-When that is running, run your tests as shown [above](#tests)
-When you've finished testing just [tear down the container manually](#tearDown)
-
-If you don't have the full Docker image running and want to run integration tests you can quickly spin up a Postgres image and run your tests against it. 
-
-If you're using Linux, Mac OS, or Windows with Bash configured:
-
-```bash
-# run Jest integration tests through Docker test image
-$ yarn test:docker
-```
-
-This command will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
-
-#### <a name="envfiles">Dev and Testing environment variable files</a>
-These files are only for development and testing purposes and are needed to run the Docker containers, set them in your root directory alongside the docker-compose.yml files. 
-
-```bash
-# .env.test
-DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
-HOSTNAME=localhost
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PORT=8000
-```
-
-```bash
-# .env.dev
-DATABASE_URL=postgresql://chingu:chingu@chingu:5433/dashboard?schema=public
-HOSTNAME=chingu
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
-PGADMIN_DEFAULT_PASSWORD=chingu5432
-PORT=8000
-```
-
-#### <a name="deafultPorts">Default ports with Docker:<a/>
+Having spun up your Docker services and migrated + seeded your DB your services will be running on the following default ports:
 
 - API: `8000`
 - Postgres: `5433`
 - PGAdmin: `4000`
 - Prisma Studio: `5555`
+
+
+### <a name="tearDown">Tearing down Docker services<a/>
+
+To stop and tear down the Docker services:
+```bash
+# tear down all Docker services but retain volumes
+$ yarn docker:down
+
+# tear down Docker services and remove all volumes
+$ yarn docker:clean
+```
+
+### <a name="dockerTests"></a> Running tests with Docker
+
+With the Docker test services running, run your tests as shown [above](#tests)
+When you've finished testing just [tear down the container](#tearDown)
+
+If you want to run integration or e2e tests on the fly you can quickly spin up a Postgres service and run your tests against it. 
+
+If you're using Linux, Mac OS, or Windows with Bash configured:
+
+```bash
+# run integration tests through Docker test image
+$ yarn docker:test:int
+
+# run e2e tests through Docker test image
+$ yarn docker:test:e2e
+```
+
+These commands will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
