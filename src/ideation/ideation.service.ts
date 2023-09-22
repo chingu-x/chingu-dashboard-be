@@ -21,12 +21,38 @@ export class IdeationService {
             where: {
                 voyageTeamId: id,
             },
-            include: {
+            select: {
                 projectIdeas: {
-                    include: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        vision: true,
+                        createdAt: true,
                         contributedBy: {
+                            select: {
+                                member: {
+                                    select: {
+                                        id: true,
+                                        avatar: true,
+                                        firstName: true,
+                                        lastName: true,
+                                    },
+                                },
+                            },
+                        },
+                        projectIdeaVotes: {
                             include: {
-                                member: true,
+                                votedBy: {
+                                    include: {
+                                        member: {
+                                            select: {
+                                                id: true,
+                                                avatar: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },
@@ -34,9 +60,9 @@ export class IdeationService {
             },
         });
 
-        console.log(query);
+        console.log(query.map((q) => Object.values(q).flat()).flat());
 
-        return query;
+        return query.map((q) => Object.values(q).flat()).flat();
     }
 
     // update(id: number, updateIdeationDto: UpdateIdeationDto) {
