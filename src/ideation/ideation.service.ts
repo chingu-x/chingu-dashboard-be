@@ -60,8 +60,6 @@ export class IdeationService {
             },
         });
 
-        console.log(query.map((q) => Object.values(q).flat()).flat());
-
         return query.map((q) => Object.values(q).flat()).flat();
     }
 
