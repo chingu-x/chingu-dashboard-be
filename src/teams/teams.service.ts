@@ -35,6 +35,7 @@ export class TeamsService {
           select: {
             firstName: true,
             lastName: true,
+            avatar: true,
             discordId: true,
             countryCode: true,
             timezone: true,
