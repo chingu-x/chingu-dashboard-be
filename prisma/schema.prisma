@@ -106,6 +106,8 @@ model VoyageTeamMember {
   teamTechStackItemVotes TeamTechStackItemVote[]
   projectIdeas           ProjectIdea[]
   ProjectIdeaVotes       ProjectIdeaVotes[]
+
+  @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
 
 model ProjectIdea {
