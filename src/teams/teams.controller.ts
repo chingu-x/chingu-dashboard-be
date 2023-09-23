@@ -10,14 +10,6 @@ import {UpdateTeamMemberDto} from "./dto/update-team-member.dto";
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
-  // Not implemented yet, this would be an admin route
-  /*
-  @Post()
-  create(@Body() createTeamDto: CreateTeamDto) {
-    return this.teamsService.create(createTeamDto);
-  }
-   */
-
   @Get()
   findAll() {
     return this.teamsService.findAll();
@@ -49,12 +41,4 @@ export class TeamsController {
       @Body() updateTeamMemberDto: UpdateTeamMemberDto) {
     return this.teamsService.updateTeamMemberById(teamId,userId, updateTeamMemberDto);
   }
-
-  // admin action
-  /*
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teamsService.remove(+id);
-  }
-   */
 }

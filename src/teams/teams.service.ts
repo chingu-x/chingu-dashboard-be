@@ -9,10 +9,6 @@ export class TeamsService {
   constructor(private prisma: PrismaService) {
   }
 
-  create(createTeamDto: CreateTeamDto) {
-    return 'This action adds a new team';
-  }
-
   findAll() {
     return this.prisma.voyageTeam.findMany({})
   }
@@ -69,13 +65,5 @@ export class TeamsService {
       },
       data: updateTeamMemberDto,
     })
-  }
-
-  update(id: number, updateTeamDto: UpdateTeamDto) {
-    return `This action updates a #${id} team`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} team`;
   }
 }
