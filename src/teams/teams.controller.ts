@@ -1,7 +1,5 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe} from '@nestjs/common';
+import {Controller, Get, Body, Patch, Param, ParseIntPipe} from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
 import {ApiTags} from "@nestjs/swagger";
 import {UpdateTeamMemberDto} from "./dto/update-team-member.dto";
 

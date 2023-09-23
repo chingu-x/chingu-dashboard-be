@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import {PrismaService} from "../prisma/prisma.service";
 
