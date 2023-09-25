@@ -149,7 +149,7 @@ model TechStackItem {
 model TeamTechStackItem {
   id                     Int                     @id @default(autoincrement())
   tech                   TechStackItem           @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  techId                 Int
+  techId                 Int                     @unique
   voyageTeam             VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId           Int
   createdAt              DateTime                @default(now()) @db.Timestamptz()

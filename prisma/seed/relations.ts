@@ -61,7 +61,7 @@ export const populateTablesWithRelations = async () => {
 
     await prisma.teamTechStackItem.update({
         where: {
-            id: teamTechStackItems[1].id,
+            id: teamTechStackItems[0].id,
         },
         data: {
             teamTechStackItemVotes: {
@@ -87,7 +87,7 @@ export const populateTablesWithRelations = async () => {
 
     await prisma.teamTechStackItem.update({
         where: {
-            id: teamTechStackItems[6].id,
+            id: teamTechStackItems[1].id,
         },
         data: {
             teamTechStackItemVotes: {
@@ -106,7 +106,7 @@ export const populateTablesWithRelations = async () => {
 
     await prisma.teamTechStackItem.update({
         where: {
-            id: teamTechStackItems[9].id,
+            id: teamTechStackItems[2].id,
         },
         data: {
             teamTechStackItemVotes: {
