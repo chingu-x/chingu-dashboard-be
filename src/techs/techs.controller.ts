@@ -10,7 +10,7 @@ export class TechsController {
   constructor(private readonly techsService: TechsService) {}
 
   @ApiOperation({description:"Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid"})
-  @Post('/team/:teamId/tech/:techId')
+  @Post('/team/:teamId/tech/:techId/new')
   addNewTechVote(
       @Param('teamId', ParseIntPipe) teamId: number,
       @Param('techId', ParseIntPipe) techId: number,
@@ -19,17 +19,21 @@ export class TechsController {
   }
 
   @ApiOperation({description:"Adds an existing tech (someone in the team has already voted/added) to the team, add the voter to the votedBy list. UserId:uuid"})
-  @Patch('/team/:teamId/tech/:techId')
+  @Patch('/team/:teamId/tech/:teamTechId')
   addExistingTechVote(
       @Param('teamId', ParseIntPipe) teamId: number,
-      @Param('techId', ParseIntPipe) techId: number,
+      @Param('teamTechId', ParseIntPipe) teamTechId: number,
       @Body() createTechVoteDto: CreateTechVoteDto) {
-    return this.techsService.addNewTechVote(teamId, techId, createTechVoteDto);
+    return this.techsService.addExistingTechVote(teamId, teamTechId, createTechVoteDto);
   }
 
   // addExistingTechVote
 
-  @ApiOperation({description:"Gets all selected tech for a team given a teamId (int)"})
+  @ApiOperation({
+    description:"Gets all selected tech for a team given a teamId (int) \n \
+    Note: id returned here is the teamTechId, not techId \
+    "
+  })
   @Get('/team/:teamId')
   findAllTechItemsByTeamId(
       @Param('teamId', ParseIntPipe) teamId: number

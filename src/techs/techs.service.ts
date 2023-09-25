@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTechDto } from './dto/create-tech.dto';
 import { UpdateTechDto } from './dto/update-tech.dto';
 import {PrismaService} from "../prisma/prisma.service";
 import {CreateTechVoteDto} from "./dto/create-tech-vote.dto";
@@ -31,6 +30,23 @@ export class TechsService {
     })
   }
 
+  async addExistingTechVote(teamId, teamTechId, createTechVoteDto: CreateTechVoteDto) {
+    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
+      where:{
+        userVoyageId: {
+          userId: createTechVoteDto.votedBy,
+          voyageTeamId: teamId,
+        }
+      }
+    })
+
+    return this.prisma.teamTechStackItemVote.create({
+      data:{
+        teamTechId,
+        teamMemberId: voyageMember.id
+      }
+    })
+  }
 
 
   findAllByTeamId(id:number) {
@@ -39,6 +55,7 @@ export class TechsService {
         voyageTeamId: id
       },
       select:{
+        id: true,
         tech: {
           select:{
             id: true,

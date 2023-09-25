@@ -163,4 +163,6 @@ model TeamTechStackItemVote {
   votedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   teamMemberId Int?
   createdAt    DateTime          @default(now()) @db.Timestamptz()
+
+  @@unique(fields: [teamTechId, teamMemberId], name: "userTeamStackVote")
 }
