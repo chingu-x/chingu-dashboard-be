@@ -1,6 +1,0 @@
-#! /bin/bash
-
-psql -U andresc -h localhost -c "DROP DATABASE chingutest"
-psql -U andresc -h localhost -c "CREATE DATABASE chingutest"
-
-yarn dotenv -e ./.env.test -- prisma migrate deploy
