@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  test-pgdb:
+    container_name: test-pgdb
+    image: postgres:15-alpine
+    env_file:
+      - .env.dev
+    ports:
+      - "5433:5433"
+    environment:
+      PGPORT: 5433
+  api:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - test-pgdb

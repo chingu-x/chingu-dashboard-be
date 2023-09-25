@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient {
         super({
             datasources: {
                 db: {
-                    url: process.env.DATABASE_URL as string,
+                    url: process.env.DATABASE_URL,
                 },
             },
         });

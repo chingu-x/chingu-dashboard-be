@@ -74,6 +74,7 @@ web_modules/
 
 # dotenv environment variable files
 .env
+.env.dev
 .env.test
 .env.development.local
 .env.test.local
@@ -130,5 +131,12 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Postgres
+pgdata
+pgadmin-data
+
 # Jetbrains IDE
 .idea/
+
+# Misc system generated
+.DS_Store
