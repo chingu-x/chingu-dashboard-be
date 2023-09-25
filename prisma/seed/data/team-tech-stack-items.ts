@@ -1,7 +1,7 @@
-const TechStackItems = require('./tech-stack-items')
-const VoyageTeams = require('./voyage-teams')
+import TechStackItems from './tech-stack-items'
+import VoyageTeams from './voyage-teams'
 
-module.exports = [
+export default [
     {
         tech:{
             connect:{

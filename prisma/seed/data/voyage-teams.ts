@@ -1,6 +1,6 @@
-const VoyageTeamStatus = require("./voyage-status");
+import VoyageTeamStatus from "./voyage-status";
 
-module.exports = [
+export default [
     {
         voyage: {
             connect: { number: "46" },

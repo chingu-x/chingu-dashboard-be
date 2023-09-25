@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         name: "Active",
         description: "member is active or the team is active"

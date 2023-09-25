@@ -1,5 +1,5 @@
-const TechStackCategories = require('./tech-stack-categories')
-module.exports = [
+import TechStackCategories from './tech-stack-categories'
+export default [
     {
         name: "Javascript",
         category: {
