@@ -9,6 +9,16 @@ import {CreateTechVoteDto} from "./dto/create-tech-vote.dto";
 export class TechsController {
   constructor(private readonly techsService: TechsService) {}
 
+  @ApiOperation({
+    description:"Gets all selected tech for a team given a teamId (int)"
+  })
+  @Get('/team/:teamId')
+  findAllTechItemsByTeamId(
+      @Param('teamId', ParseIntPipe) teamId: number
+  ) {
+    return this.techsService.findAllByTeamId(teamId);
+  }
+
   @ApiOperation({description:"Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid"})
   @Post('/team/:teamId/tech/:techId/new')
   addNewTechVote(
@@ -27,32 +37,13 @@ export class TechsController {
     return this.techsService.addExistingTechVote(teamId, teamTechId, createTechVoteDto);
   }
 
-  // addExistingTechVote
-
   @ApiOperation({
-    description:"Gets all selected tech for a team given a teamId (int) \n \
-    Note: id returned here is the teamTechId, not techId \
-    "
+    description:"Edit/Remove own vote"
   })
-  @Get('/team/:teamId')
-  findAllTechItemsByTeamId(
-      @Param('teamId', ParseIntPipe) teamId: number
-  ) {
-    return this.techsService.findAllByTeamId(teamId);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.techsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTechDto: UpdateTechDto) {
-    return this.techsService.update(+id, updateTechDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.techsService.remove(+id);
+  @Delete('/team/:teamId/tech/:teamTechId')
+  removeVote(@Param('teamId', ParseIntPipe) teamId: number,
+             @Param('teamTechId', ParseIntPipe) teamTechId: number,
+             @Body() createTechVoteDto: CreateTechVoteDto) {
+    return this.techsService.removeVote(teamId,teamTechId, createTechVoteDto);
   }
 }

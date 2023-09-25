@@ -7,6 +7,44 @@ import {CreateTechVoteDto} from "./dto/create-tech-vote.dto";
 export class TechsService {
   constructor(private prisma: PrismaService) {
   }
+
+  findAllByTeamId(id:number) {
+    return this.prisma.teamTechStackItem.findMany({
+      where: {
+        voyageTeamId: id
+      },
+      select:{
+        id: true,
+        tech: {
+          select:{
+            id: true,
+            category: {
+              select: {
+                name: true
+              }
+            },
+            name: true
+          }
+        },
+        teamTechStackItemVotes: {
+          select: {
+            votedBy: {
+              select: {
+                member: {
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    avatar: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+  }
+
   async addNewTechVote(teamId, techId, createTechVoteDto: CreateTechVoteDto) {
     const newTeamTechItem = await this.prisma.teamTechStackItem.create({
       data: {
@@ -48,53 +86,22 @@ export class TechsService {
     })
   }
 
-
-  findAllByTeamId(id:number) {
-    return this.prisma.teamTechStackItem.findMany({
-      where: {
-        voyageTeamId: id
-      },
-      select:{
-        id: true,
-        tech: {
-          select:{
-            id: true,
-            category: {
-              select: {
-                name: true
-              }
-            },
-            name: true
-          }
-        },
-        teamTechStackItemVotes: {
-          select: {
-            votedBy: {
-              select: {
-                member: {
-                  select: {
-                    firstName: true,
-                    lastName: true,
-                    avatar: true
-                  }
-                }
-              }
-            }
-            }
-          }
+  async removeVote(teamId, teamTechId, createTechVoteDto: CreateTechVoteDto) {
+    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
+      where:{
+        userVoyageId: {
+          userId: createTechVoteDto.votedBy,
+          voyageTeamId: teamId,
         }
+      }
     })
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} tech`;
-  }
-
-  update(id: number, updateTechDto: UpdateTechDto) {
-    return `This action updates a #${id} tech`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tech`;
+    return this.prisma.teamTechStackItemVote.delete({
+      where: {
+        userTeamStackVote:{
+          teamTechId,
+          teamMemberId: voyageMember.id
+        }
+      },
+    });
   }
 }
