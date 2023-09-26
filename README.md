@@ -7,7 +7,7 @@
 
 ## Description
 
-This is the Chingu Dashboard backend project. Be sure to set your .env.dev [environment variables file](#envfiles)
+This is the Chingu Dashboard backend project. Be sure to set your .env files [environment variables file](#envfiles)
 
 ## Creating new components
 
@@ -37,16 +37,23 @@ $ nest g service <name of service>
 ## 
 
 ## <a name="envfiles">Environment variables</a>
-This file is needed for development and testing purposes, set it in your root directory alongside the docker-compose.yml files. The file should be named `.env.dev`
+These files are needed for development and testing purposes, set them in your root directory alongside the docker-compose.yml files.
 
 ```bash
 # .env.dev
-DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard?schema=public
 POSTGRES_USER=chingu
 POSTGRES_PASSWORD=chingu
 POSTGRES_DB=dashboard
 PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
 PGADMIN_DEFAULT_PASSWORD=chingu5432
+PORT=8000
+
+# .env.test
+DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+POSTGRES_USER=chingu
+POSTGRES_PASSWORD=chingu
+POSTGRES_DB=dashboard
 PORT=8000
 ```
 
@@ -121,7 +128,7 @@ Docker will run in detached mode, meaning it's effectively running in the backgr
 
 When Docker is running make sure to setup the DB as directed [above](#prismaStudio) from your local terminal (e.g. the terminal integrated into your IDE).
 
-*When logging into PGAdmin set the `Host name/address` as `host.docker.internal` and follow the .env [above](#envfiles) for the other fields.*
+*When logging into PGAdmin set the `Host name/address` as `host.docker.internal` and follow the .envs [above](#envfiles) for the other fields.*
 
 Having spun up your Docker services and migrated + seeded your DB your services will be running on the following default ports:
 

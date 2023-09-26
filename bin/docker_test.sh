@@ -23,7 +23,7 @@ docker-compose exec postgres bash -c "$WAIT_FOR_PG_ISREADY"
 echo "Postgres ready to accept connections" & wait
 
 echo "Prisma schema migration..."
-yarn migrate & wait
+yarn postbuild & wait
 
 if [[ "$1" == "-i" ]]; then
   run_integration_tests

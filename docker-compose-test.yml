@@ -1,7 +1,7 @@
 version: "3.8"
 services:
-  test-pgdb:
-    container_name: test-pgdb
+  postgres:
+    container_name: postgres
     image: postgres:15-alpine
     env_file:
       - .env.dev
@@ -15,4 +15,4 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - test-pgdb
+      - postgres
