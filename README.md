@@ -7,7 +7,7 @@
 
 ## Description
 
-This is the Chingu Dashboard backend project. Be sure to set your .env files [environment variables file](#envfiles)
+This is the Chingu Dashboard backend project. Be sure to set your .env [environment variables files](#envfiles)
 
 ## Creating new components
 
