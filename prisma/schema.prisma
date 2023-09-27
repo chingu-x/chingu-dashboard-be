@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model HealthCheck {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  statusCode Int
+  resMsg String
+}
+
 model Gender {
   id           Int      @id @default(autoincrement())
   abbreviation String   @unique

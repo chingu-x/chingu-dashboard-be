@@ -1,10 +1,9 @@
-export {};
-const Users = require("./users");
-const VoyageTeams = require("./voyage-teams");
-const VoyageRoles = require("./voyage-roles");
-const VoyageStatus = require("./voyage-status");
+import Users from "./users";
+import VoyageTeams from "./voyage-teams";
+import VoyageRoles from "./voyage-roles";
+import VoyageStatus from "./voyage-status";
 
-module.exports = [
+export default [
     {
         member: {
             connect: {

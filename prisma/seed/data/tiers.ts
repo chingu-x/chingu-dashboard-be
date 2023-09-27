@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         name: 'Tier 1',
         description: 'HTML - Basic Javascript - Basic Algorithms (LANDING PAGES)'

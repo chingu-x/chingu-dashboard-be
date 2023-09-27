@@ -1,0 +1,10 @@
+node_modules
+.github
+.husky
+.eslintrc.js
+LICENSE
+README.md
+README.md.old
+.prettierrc
+dist
+.git

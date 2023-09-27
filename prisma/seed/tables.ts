@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const Genders = require("./data/genders");
-const Tiers = require("./data/tiers");
-const VoyageRoles = require("./data/voyage-roles");
-const VoyageStatus = require("./data/voyage-status");
-const TechStackCategories = require("./data/tech-stack-categories");
+import Genders from "./data/genders";
+import Tiers from "./data/tiers";
+import VoyageRoles from "./data/voyage-roles";
+import VoyageStatus from "./data/voyage-status";
+import TechStackCategories from "./data/tech-stack-categories";
 
-const Users = require("./data/users");
-const Voyages = require("./data/voyages");
-const VoyageTeams = require("./data/voyage-teams");
-const VoyageTeamMembers = require("./data/voyage-team-members");
-const TechStackItems = require("./data/tech-stack-items");
-const TeamTechStackItems = require("./data/team-tech-stack-items");
+import Users from "./data/users";
+import Voyages from "./data/voyages";
+import VoyageTeams from "./data/voyage-teams";
+import VoyageTeamMembers from "./data/voyage-team-members";
+import TechStackItems from "./data/tech-stack-items";
+import TeamTechStackItems from "./data/team-tech-stack-items";
 
 const populateTable = async (tableName: string, data) => {
     await Promise.all(

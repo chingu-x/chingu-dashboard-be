@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         firstName: 'Jessica',
         lastName: 'Williamson',
@@ -27,5 +27,31 @@ module.exports = [
         timezone: 'America/Los_Angeles',
         comment: "This is a user comment",
         countryCode: 'US'
+    },
+    {
+        firstName: 'Leonarda',
+        lastName: 'Rowe',
+        githubId: 'leo-github',
+        discordId: 'leo-discord',
+        email: 'leo.rowe@outlook.com',
+        gender: {
+            connect: {abbreviation: "F"}
+        },
+        timezone: 'America/Los_Angeles',
+        comment: "This is a user comment",
+        countryCode: 'US'
+    },
+    {
+        firstName: 'Joso',
+        lastName: 'Mađar',
+        githubId: 'joso-github',
+        discordId: 'joso-discord',
+        email: 'JosoMadar@dayrep.com',
+        gender: {
+            connect: {abbreviation: "M"}
+        },
+        timezone: 'Europe/Zagreb',
+        comment: "This is a user comment",
+        countryCode: 'HR'
     }
 ]
