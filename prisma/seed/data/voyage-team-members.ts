@@ -1,54 +1,53 @@
-export {}
-const Users = require('./users')
-const VoyageTeams = require('./voyage-teams')
-const VoyageRoles = require('./voyage-roles')
-const VoyageStatus = require('./voyage-status')
+import Users from "./users";
+import VoyageTeams from "./voyage-teams";
+import VoyageRoles from "./voyage-roles";
+import VoyageStatus from "./voyage-status";
 
-module.exports = [
+export default [
     {
         member: {
             connect: {
-                email: Users[0].email
-            }
+                email: Users[0].email,
+            },
         },
-        voyageTeam:{
+        voyageTeam: {
             connect: {
-                name: VoyageTeams[0].name
-            }
+                name: VoyageTeams[0].name,
+            },
         },
-        voyageRole:{
+        voyageRole: {
             connect: {
-                name: VoyageRoles[0].name
-            }
+                name: VoyageRoles[0].name,
+            },
         },
-        status:{
+        status: {
             connect: {
-                name: VoyageStatus[0].name
-            }
+                name: VoyageStatus[0].name,
+            },
         },
-        hrPerSprint: 10.5
+        hrPerSprint: 10.5,
     },
     {
         member: {
             connect: {
-                email: Users[1].email
-            }
+                email: Users[1].email,
+            },
         },
-        voyageTeam:{
+        voyageTeam: {
             connect: {
-                name: VoyageTeams[0].name
-            }
+                name: VoyageTeams[0].name,
+            },
         },
-        voyageRole:{
+        voyageRole: {
             connect: {
-                name: VoyageRoles[2].name
-            }
+                name: VoyageRoles[2].name,
+            },
         },
-        status:{
+        status: {
             connect: {
-                name: VoyageStatus[0].name
-            }
+                name: VoyageStatus[0].name,
+            },
         },
-        hrPerSprint: 12.4
-    }
-]
+        hrPerSprint: 12.4,
+    },
+];

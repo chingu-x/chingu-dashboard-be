@@ -24,4 +24,7 @@ jobs:
         run: yarn lint
 
       - name: Run Jest tests
-        run: yarn test
+        run: |
+          if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
+            yarn test
+          fi

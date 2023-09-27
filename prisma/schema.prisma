@@ -32,6 +32,7 @@ model User {
   id                String             @id @default(uuid()) @db.Uuid
   firstName         String
   lastName          String
+  avatar            String             @default("")
   githubId          String?
   discordId         String?
   twitterId         String?
@@ -114,17 +115,28 @@ model VoyageTeamMember {
   createdAt              DateTime                @default(now()) @db.Timestamptz()
   teamTechStackItemVotes TeamTechStackItemVote[]
   projectIdeas           ProjectIdea[]
+  ProjectIdeaVotes       ProjectIdeaVotes[]
+
+  @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
 
 model ProjectIdea {
+  id               Int                @id @default(autoincrement())
+  contributedBy    VoyageTeamMember?  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  userId           Int?
+  title            String
+  description      String
+  vision           String
+  createdAt        DateTime           @default(now()) @db.Timestamptz()
+  projectIdeaVotes ProjectIdeaVotes[]
+}
+
+model ProjectIdeaVotes {
   id            Int               @id @default(autoincrement())
-  contributedBy VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  votedBy       VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   userId        Int?
-  title         String
-  description   String
-  vision        String
-  voteCount     Int               @default(0)
-  createdAt     DateTime          @default(now()) @db.Timestamptz()
+  ProjectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id])
+  projectIdeaId Int?
 }
 
 model TechStackCategory {
