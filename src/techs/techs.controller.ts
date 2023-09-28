@@ -13,10 +13,10 @@ export class TechsController {
     description:"Gets all selected tech for a team given a teamId (int)"
   })
   @Get('/team/:teamId')
-  findAllTechItemsByTeamId(
+  getAllTechItemsByTeamId(
       @Param('teamId', ParseIntPipe) teamId: number
   ) {
-    return this.techsService.findAllByTeamId(teamId);
+    return this.techsService.getAllTechItemsByTeamId(teamId);
   }
 
   @ApiOperation({description:"Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid"})

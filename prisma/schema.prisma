@@ -10,14 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model HealthCheck {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   statusCode Int
-  resMsg String
+  resMsg     String
 }
 
 model Gender {
@@ -159,11 +158,13 @@ model TechStackItem {
 model TeamTechStackItem {
   id                     Int                     @id @default(autoincrement())
   tech                   TechStackItem           @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  techId                 Int                     @unique
+  techId                 Int
   voyageTeam             VoyageTeam              @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId           Int
   createdAt              DateTime                @default(now()) @db.Timestamptz()
   teamTechStackItemVotes TeamTechStackItemVote[]
+
+  @@unique(fields: [voyageTeamId, techId], name: "teamIdTechId")
 }
 
 model TeamTechStackItemVote {
