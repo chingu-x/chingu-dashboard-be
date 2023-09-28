@@ -1,11 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import { UpdateTechDto } from './dto/update-tech.dto';
 import {PrismaService} from "../prisma/prisma.service";
 import {CreateTechVoteDto} from "./dto/create-tech-vote.dto";
+import voyages from "../../prisma/seed/data/voyages";
 
 @Injectable()
 export class TechsService {
   constructor(private prisma: PrismaService) {
+  }
+
+  // Note: userId will eventually come from the auth header
+  findVoyageMemberId = async (userId:string, teamId: number): Promise<number>|null => {
+    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
+      where:{
+        userVoyageId: {
+          userId: userId,
+          voyageTeamId: teamId,
+        }
+      }
+    })
+    return voyageMember ? voyageMember.id: null
   }
 
   findAllByTeamId(id:number) {
@@ -46,62 +60,68 @@ export class TechsService {
   }
 
   async addNewTechVote(teamId, techId, createTechVoteDto: CreateTechVoteDto) {
-    const newTeamTechItem = await this.prisma.teamTechStackItem.create({
-      data: {
-        voyageTeamId: teamId,
-        techId: techId,
-      }
-    });
-    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
-      where:{
-        userVoyageId: {
-          userId: createTechVoteDto.votedBy,
+    const voyageMemberId = await this.findVoyageMemberId(createTechVoteDto.votedBy, teamId)
+    
+    if (voyageMemberId){
+      const newTeamTechItem = await this.prisma.teamTechStackItem.create({
+        data: {
           voyageTeamId: teamId,
+          techId: techId,
         }
-      }
-    })
-    return this.prisma.teamTechStackItemVote.create({
-      data:{
-        teamTechId: newTeamTechItem.id,
-        teamMemberId: voyageMember.id
-      }
-    })
+      });
+
+
+      return this.prisma.teamTechStackItemVote.create({
+        data:{
+          teamTechId: newTeamTechItem.id,
+          teamMemberId: voyageMemberId
+        }
+      })
+    }
+    throw new BadRequestException('Invalid User')
   }
 
   async addExistingTechVote(teamId, teamTechId, createTechVoteDto: CreateTechVoteDto) {
-    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
-      where:{
-        userVoyageId: {
-          userId: createTechVoteDto.votedBy,
-          voyageTeamId: teamId,
-        }
-      }
-    })
+    const voyageMemberId = await this.findVoyageMemberId(createTechVoteDto.votedBy, teamId)
 
     return this.prisma.teamTechStackItemVote.create({
       data:{
         teamTechId,
-        teamMemberId: voyageMember.id
+        teamMemberId: voyageMemberId
       }
     })
   }
 
   async removeVote(teamId, teamTechId, createTechVoteDto: CreateTechVoteDto) {
-    const voyageMember = await this.prisma.voyageTeamMember.findUnique({
-      where:{
-        userVoyageId: {
-          userId: createTechVoteDto.votedBy,
-          voyageTeamId: teamId,
-        }
-      }
-    })
-    return this.prisma.teamTechStackItemVote.delete({
+    const voyageMemberId = await this.findVoyageMemberId(createTechVoteDto.votedBy, teamId)
+
+    const deletedVote = await this.prisma.teamTechStackItemVote.delete({
       where: {
         userTeamStackVote:{
           teamTechId,
-          teamMemberId: voyageMember.id
+          teamMemberId: voyageMemberId
         }
       },
     });
+
+    // check if it was the last vote, if so, also delete the team tech item entry
+    const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
+      where:{
+        id: teamTechId
+      },
+      select: {
+        teamTechStackItemVotes: true
+      }
+    })
+
+    if (teamTechItem.teamTechStackItemVotes.length===0) {
+      return this.prisma.teamTechStackItem.delete({
+        where: {
+          id: teamTechId
+        }
+      })
+    }else {
+      return deletedVote
+    }
   }
 }

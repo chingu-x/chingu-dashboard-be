@@ -28,7 +28,7 @@ export class TechsController {
     return this.techsService.addNewTechVote(teamId, techId, createTechVoteDto);
   }
 
-  @ApiOperation({description:"Adds an existing tech (someone in the team has already voted/added) to the team, add the voter to the votedBy list. UserId:uuid"})
+  @ApiOperation({description:`Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"`})
   @Patch('/team/:teamId/tech/:teamTechId')
   addExistingTechVote(
       @Param('teamId', ParseIntPipe) teamId: number,
