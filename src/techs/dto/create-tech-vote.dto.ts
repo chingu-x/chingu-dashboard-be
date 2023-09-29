@@ -1,6 +1,6 @@
-import {ApiProperty} from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTechVoteDto {
     @ApiProperty()
-    votedBy: string
+    votedBy: string;
 }
