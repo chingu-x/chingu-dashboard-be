@@ -9,7 +9,6 @@ import {
     ParseIntPipe,
 } from "@nestjs/common";
 import { TechsService } from "./techs.service";
-import { UpdateTechDto } from "./dto/update-tech.dto";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateTechVoteDto } from "./dto/create-tech-vote.dto";
 
@@ -44,7 +43,8 @@ export class TechsController {
     }
 
     @ApiOperation({
-        description: `Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"`,
+        description:
+            "Votes for an existing tech / adds the voter to the votedBy list. VotedBy: \"UserId:uuid\"",
     })
     @Patch("/team/:teamId/tech/:teamTechId")
     addExistingTechVote(

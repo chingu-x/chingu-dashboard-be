@@ -1,8 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { UpdateTechDto } from "./dto/update-tech.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTechVoteDto } from "./dto/create-tech-vote.dto";
-import voyages from "../../prisma/seed/data/voyages";
 
 @Injectable()
 export class TechsService {
