@@ -33,6 +33,10 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+    volumes:
+      - /usr/src/app/node_modules
+      - .:/usr/src/app
+    command: ['yarn', 'start:dev']
 volumes:
   pgdata:
   pgadmin-data:
