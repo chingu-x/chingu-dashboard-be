@@ -48,7 +48,7 @@ To prepare the DB
 $ yarn migrate
 
 # seed db
-$ yarn db:reset
+$ yarn seed
 
 # run Prisma Studio
 $ yarn studio
