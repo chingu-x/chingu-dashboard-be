@@ -5,7 +5,7 @@ on:
       - dev
 
 jobs:
-  deploy:
+  prisma-deploy-dev:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
