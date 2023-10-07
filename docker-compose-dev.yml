@@ -17,7 +17,7 @@ services:
     container_name: pgadmin
     env_file:
       - .env.dev
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postgres
     ports:
