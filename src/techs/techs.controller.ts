@@ -46,7 +46,7 @@ export class TechsController {
         description:
             "Votes for an existing tech / adds the voter to the votedBy list. VotedBy: \"UserId:uuid\"",
     })
-    @Patch("/team/:teamId/tech/:teamTechId")
+    @Post("/team/:teamId/tech/:teamTechId")
     addExistingTechVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
