@@ -6,8 +6,6 @@ COPY package.json yarn.lock ./
 
 COPY prisma ./prisma/
 
-RUN yarn
+RUN yarn install
 
 COPY . .
-
-CMD ["yarn", "start:dev"]

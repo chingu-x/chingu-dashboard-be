@@ -17,7 +17,7 @@ services:
     container_name: pgadmin
     env_file:
       - .env.dev
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postgres
     ports:
@@ -31,8 +31,13 @@ services:
       - .env.dev
     ports:
       - "8000:8000"
+      - "5555:5555"
     depends_on:
       - postgres
+    volumes:
+      - /usr/src/app/node_modules
+      - .:/usr/src/app
+    command: ['yarn', 'start:dev']
 volumes:
   pgdata:
   pgadmin-data:

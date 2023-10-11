@@ -9,35 +9,9 @@
 
 This is the Chingu Dashboard backend project. Be sure to set your .env [environment variables files](#envfiles)
 
-## Creating new components
-
-To generate Modules, Controllers and Services inline with the NestJs documentation we recommend using the `Nest cli`, which you can download from their [site](https://docs.nestjs.com/cli/overview)
-
-### Module
-
-```bash
-# Generate a new module
-$ nest g module <name of module>
-```
-
-### Controller
-
-```bash
-# Generate a new controller
-$ nest g controller <name of controller>
-```
-
-### Service
-
-```bash
-# Generate a new service
-$ nest g service <name of service>
-```
-
-## 
-
 ## <a name="envfiles">Environment variables</a>
 These files are needed for development and testing purposes, set them in your root directory alongside the docker-compose.yml files.
+Make sure to match it exactly the same.
 
 ```bash
 # .env.dev
@@ -50,7 +24,7 @@ PGADMIN_DEFAULT_PASSWORD=chingu5432
 PORT=8000
 
 # .env.test
-DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard-test?schema=public
 POSTGRES_USER=chingu
 POSTGRES_PASSWORD=chingu
 POSTGRES_DB=dashboard
@@ -66,7 +40,7 @@ $ yarn install
 ```
 
 
-## <a name="prismaStudio">Prisma</a>
+## <a name="prismaStudio">Prisma</a> **IMPORTANT: If you're using the docker setup in this project, go to the docker section**
 
 To prepare the DB
 ```bash
@@ -74,7 +48,7 @@ To prepare the DB
 $ yarn migrate
 
 # seed db
-$ yarn db:reset
+$ yarn seed
 
 # run Prisma Studio
 $ yarn studio
@@ -111,7 +85,7 @@ $ yarn test:cov
 
 ## Docker 
 
-By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run [Prisma Studio](#prismaStudio) and even [tests](#dockerTests).
+By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run prisma Studio and even tests.
 
 ### Running the project in Docker
 
@@ -124,11 +98,22 @@ $ yarn docker:dev
 # spin up the Docker testing services (API, Postgres testing DB)
 $ yarn docker:test
 ```
-Docker will run in detached mode, meaning it's effectively running in the background, so you can continue using your local terminal as normal whilst interacting with the services running on Docker.
+Docker will run in detached mode, meaning it's effectively running in the background, however, you will need to use the various scripts inside the docker cli.
 
-When Docker is running make sure to setup the DB as directed [above](#prismaStudio) from your local terminal (e.g. the terminal integrated into your IDE).
+Once the services are spun up, go to your docker desktop and go to chingu-dashboard-be_api container and click into it.
 
-*When logging into PGAdmin set the `Host name/address` as `host.docker.internal` and follow the .envs [above](#envfiles) for the other fields.*
+After, click on the CLI to into the terminal inside the container.
+
+From here, type all the commands [above](#prismaStudio).
+
+For PG Admin (use default email and default password from the env.dev file):
+```
+hostname: postgres
+port: 5433
+maintenance database: dashboard
+username: chingu
+password: chingu
+```
 
 Having spun up your Docker services and migrated + seeded your DB your services will be running on the following default ports:
 
@@ -136,8 +121,6 @@ Having spun up your Docker services and migrated + seeded your DB your services 
 - Postgres: `5433`
 - PGAdmin: `4000`
 - Prisma Studio: `5555`
-
-As well as connecting to the DB via PGAdmin you can also connect to it directly via the cli if you so choose, just run the following command in your terminal: `psql -h localhost -p 5433 -U chingu -d dashboard` then just enter the `POSTGRES_PASSWORD` from [here](#envfiles) 
 
 ### <a name="tearDown">Tearing down Docker services<a/>
 
