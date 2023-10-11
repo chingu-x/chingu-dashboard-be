@@ -3,7 +3,6 @@ import {
     Get,
     Post,
     Body,
-    Patch,
     Param,
     Delete,
     ParseIntPipe,
@@ -44,7 +43,7 @@ export class TechsController {
 
     @ApiOperation({
         description:
-            "Votes for an existing tech / adds the voter to the votedBy list. VotedBy: \"UserId:uuid\"",
+            'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
     @Post("/team/:teamId/tech/:teamTechId")
     addExistingTechVote(
