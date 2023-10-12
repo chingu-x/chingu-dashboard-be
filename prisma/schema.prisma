@@ -10,14 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model HealthCheck {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   statusCode Int
-  resMsg String
+  resMsg     String
 }
 
 model Gender {
@@ -164,6 +163,8 @@ model TeamTechStackItem {
   voyageTeamId           Int
   createdAt              DateTime                @default(now()) @db.Timestamptz()
   teamTechStackItemVotes TeamTechStackItemVote[]
+
+  @@unique(fields: [voyageTeamId, techId], name: "teamIdTechId")
 }
 
 model TeamTechStackItemVote {
@@ -173,4 +174,6 @@ model TeamTechStackItemVote {
   votedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   teamMemberId Int?
   createdAt    DateTime          @default(now()) @db.Timestamptz()
+
+  @@unique(fields: [teamTechId, teamMemberId], name: "userTeamStackVote")
 }
