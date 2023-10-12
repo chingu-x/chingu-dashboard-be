@@ -1,4 +1,15 @@
 -- CreateTable
+CREATE TABLE "HealthCheck" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "statusCode" INTEGER NOT NULL,
+    "resMsg" TEXT NOT NULL,
+
+    CONSTRAINT "HealthCheck_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Gender" (
     "id" SERIAL NOT NULL,
     "abbreviation" TEXT NOT NULL,
@@ -13,6 +24,7 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
+    "avatar" TEXT NOT NULL DEFAULT '',
     "githubId" TEXT,
     "discordId" TEXT,
     "twitterId" TEXT,
@@ -105,10 +117,18 @@ CREATE TABLE "ProjectIdea" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "vision" TEXT NOT NULL,
-    "voteCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ProjectIdea_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ProjectIdeaVotes" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER,
+    "projectIdeaId" INTEGER,
+
+    CONSTRAINT "ProjectIdeaVotes_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -173,10 +193,19 @@ CREATE UNIQUE INDEX "VoyageTeam_name_key" ON "VoyageTeam"("name");
 CREATE UNIQUE INDEX "VoyageRole_name_key" ON "VoyageRole"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "VoyageTeamMember_userId_voyageTeamId_key" ON "VoyageTeamMember"("userId", "voyageTeamId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "TechStackCategory_name_key" ON "TechStackCategory"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TechStackItem_name_key" ON "TechStackItem"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TeamTechStackItem_voyageTeamId_techId_key" ON "TeamTechStackItem"("voyageTeamId", "techId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TeamTechStackItemVote_teamTechId_teamMemberId_key" ON "TeamTechStackItemVote"("teamTechId", "teamMemberId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_genderId_fkey" FOREIGN KEY ("genderId") REFERENCES "Gender"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -204,6 +233,12 @@ ALTER TABLE "VoyageTeamMember" ADD CONSTRAINT "VoyageTeamMember_statusId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "ProjectIdea" ADD CONSTRAINT "ProjectIdea_userId_fkey" FOREIGN KEY ("userId") REFERENCES "VoyageTeamMember"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectIdeaVotes" ADD CONSTRAINT "ProjectIdeaVotes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "VoyageTeamMember"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProjectIdeaVotes" ADD CONSTRAINT "ProjectIdeaVotes_projectIdeaId_fkey" FOREIGN KEY ("projectIdeaId") REFERENCES "ProjectIdea"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TechStackItem" ADD CONSTRAINT "TechStackItem_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "TechStackCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
