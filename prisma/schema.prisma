@@ -53,6 +53,19 @@ model Voyage {
   endDate     DateTime     @db.Timestamptz()
   createdAt   DateTime     @default(now()) @db.Timestamptz()
   voyageTeams VoyageTeam[]
+  Sprint      Sprint[]
+}
+
+model Sprint {
+  id          Int           @id @default(autoincrement())
+  voyageId    Int
+  number      Int
+  startDate   DateTime      @db.Timestamptz()
+  endDate     DateTime      @db.Timestamptz()
+  createdAt   DateTime      @default(now()) @db.Timestamptz()
+  updatedAt   DateTime      @updatedAt
+  voyage      Voyage        @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  TeamMeeting TeamMeeting[]
 }
 
 model VoyageStatus {
@@ -90,6 +103,7 @@ model VoyageTeam {
 
   voyageTeamMembers  VoyageTeamMember[]
   teamTechStackItems TeamTechStackItem[]
+  TeamMeeting        TeamMeeting[]
 }
 
 model VoyageRole {
@@ -115,6 +129,8 @@ model VoyageTeamMember {
   teamTechStackItemVotes TeamTechStackItemVote[]
   projectIdeas           ProjectIdea[]
   ProjectIdeaVotes       ProjectIdeaVotes[]
+  TeamResource           TeamResource[]
+  ProjectFeature         ProjectFeature[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -176,4 +192,59 @@ model TeamTechStackItemVote {
   createdAt    DateTime          @default(now()) @db.Timestamptz()
 
   @@unique(fields: [teamTechId, teamMemberId], name: "userTeamStackVote")
+}
+
+model TeamResource {
+  id           Int               @id @default(autoincrement())
+  teamMemberId Int?
+  url          String
+  title        String
+  createdAt    DateTime          @default(now()) @db.Timestamptz()
+  updatedAt    DateTime          @updatedAt
+  addedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: SetNull)
+}
+
+model FeatureCategory {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String
+  createdAt       DateTime         @default(now()) @db.Timestamptz()
+  updatedAt       DateTime         @updatedAt
+  projectFeatures ProjectFeature[]
+}
+
+model ProjectFeature {
+  id                Int               @id @default(autoincrement())
+  teamMemberId      Int?
+  featureCategoryId Int?
+  description       String
+  createdAt         DateTime          @default(now()) @db.Timestamptz()
+  updatedAt         DateTime          @updatedAt
+  category          FeatureCategory?  @relation(fields: [featureCategoryId], references: [id], onDelete: SetNull)
+  addedBy           VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: SetNull)
+}
+
+model TeamMeeting {
+  id           Int        @id @default(autoincrement())
+  sprintId     Int
+  sprint       Sprint     @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  voyageTeamId Int
+  voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
+  title        String
+  dateTime     DateTime
+  meetingLink  String
+  createdAt    DateTime   @default(now()) @db.Timestamptz()
+  updatedAt    DateTime   @updatedAt
+  Agenda       Agenda[]
+}
+
+model Agenda {
+  id            Int         @id @default(autoincrement())
+  teamMeetingId Int
+  teamMeeting   TeamMeeting @relation(fields: [teamMeetingId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  status        Boolean
+  createdAt     DateTime    @default(now()) @db.Timestamptz()
+  updatedAt     DateTime    @updatedAt
 }
