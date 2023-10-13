@@ -137,7 +137,7 @@ model VoyageTeamMember {
 
   teamTechStackItemVotes TeamTechStackItemVote[]
   projectIdeas           ProjectIdea[]
-  ProjectIdeaVotes       ProjectIdeaVotes[]
+  ProjectIdeaVotes       ProjectIdeaVote[]
   TeamResource           TeamResource[]
   ProjectFeature         ProjectFeature[]
 
