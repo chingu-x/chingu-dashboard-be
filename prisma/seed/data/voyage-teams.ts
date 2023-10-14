@@ -3,9 +3,9 @@ import VoyageTeamStatus from "./voyage-status";
 export default [
     {
         voyage: {
-            connect: { number: "46" },
+            connect: { number: "47" },
         },
-        name: "v46-tier2-team-4",
+        name: "v47-tier2-team-4",
         status: {
             connect: {
                 name: VoyageTeamStatus[0].name,
@@ -24,9 +24,9 @@ export default [
     },
     {
         voyage: {
-            connect: { number: "46" },
+            connect: { number: "47" },
         },
-        name: "v46-tier3-team-45",
+        name: "v47-tier3-team-45",
         status: {
             connect: {
                 name: VoyageTeamStatus[0].name,

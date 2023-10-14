@@ -1,10 +1,38 @@
 import {PrismaClient} from "@prisma/client";
-
 const prisma = new PrismaClient();
+
+const addDays = (date, days) => {
+    const newDate = new Date(date)
+    newDate.setDate(newDate.getDate() + days)
+    return newDate
+}
+
+const getSprintId = async (teamVoyageId, sprintNumber) => {
+    const sprint = await prisma.sprint.findUnique({
+        where: {
+            voyageSprintNumber: {
+                voyageId: teamVoyageId,
+                number: sprintNumber
+            }
+        }
+    })
+    return sprint.id
+}
+
+const getRandomDateDuringSprint = async(sprintId) => {
+    const sprint = await prisma.sprint.findUnique({
+        where:{
+            id: sprintId
+        }
+    })
+    return addDays(sprint.startDate, Math.floor(Math.random() * 6))
+}
 
 export const populateTablesWithRelations = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
     const teamTechStackItems = await prisma.teamTechStackItem.findMany({});
+    const voyages = await prisma.voyage.findMany({});
+    const voyageTeams = await prisma.voyageTeam.findMany({})
 
     await prisma.voyageTeamMember.update({
         where: {
@@ -234,4 +262,118 @@ export const populateTablesWithRelations = async () => {
             },
         },
     });
+
+    await prisma.voyage.update({
+        where: {
+            id: voyages[0].id
+        },
+        data: {
+            sprints: {
+                create: [
+                    {
+                        number: 1,
+                        startDate: voyages[0].startDate,
+                        endDate: addDays(voyages[0].startDate, 6),
+                    },
+                    {
+                        number: 2,
+                        startDate: addDays(voyages[0].startDate, 7),
+                        endDate: addDays(voyages[0].startDate, 13),
+                    },
+                    {
+                        number: 3,
+                        startDate: addDays(voyages[0].startDate, 14),
+                        endDate: addDays(voyages[0].startDate, 20),
+                    },
+                    {
+                        number: 4,
+                        startDate: addDays(voyages[0].startDate, 21),
+                        endDate: addDays(voyages[0].startDate, 27),
+                    },
+                    {
+                        number: 5,
+                        startDate: addDays(voyages[0].startDate, 28),
+                        endDate: addDays(voyages[0].startDate, 34),
+                    },
+                    {
+                        number: 6,
+                        startDate: addDays(voyages[0].startDate, 35),
+                        endDate: addDays(voyages[0].startDate, 41),
+                    },
+                ]
+            }
+        }
+    })
+
+    await prisma.voyage.update({
+        where: {
+            id: voyages[1].id
+        },
+        data: {
+            sprints: {
+                create: [
+                    {
+                        number: 1,
+                        startDate: voyages[1].startDate,
+                        endDate: addDays(voyages[1].startDate, 6),
+                    },
+                    {
+                        number: 2,
+                        startDate: addDays(voyages[1].startDate, 7),
+                        endDate: addDays(voyages[1].startDate, 13),
+                    },
+                    {
+                        number: 3,
+                        startDate: addDays(voyages[1].startDate, 14),
+                        endDate: addDays(voyages[1].startDate, 20),
+                    },
+                    {
+                        number: 4,
+                        startDate: addDays(voyages[1].startDate, 21),
+                        endDate: addDays(voyages[1].startDate, 27),
+                    },
+                    {
+                        number: 5,
+                        startDate: addDays(voyages[1].startDate, 28),
+                        endDate: addDays(voyages[1].startDate, 34),
+                    },
+                    {
+                        number: 6,
+                        startDate: addDays(voyages[1].startDate, 35),
+                        endDate: addDays(voyages[1].startDate, 41),
+                    },
+                ]
+            }
+        }
+    })
+
+    await prisma.voyageTeam.update({
+        where: {
+            id: voyageTeams[0].id,
+        },
+        data:{
+            teamMeetings:{
+                create: [
+                    {
+                        sprintId: await getSprintId(voyageTeams[0].voyageId, 1),
+                        title: "First sprint kickoff meeting",
+                        dateTime: await getRandomDateDuringSprint(await getSprintId(voyageTeams[0].voyageId, 1)),
+                        meetingLink: "meet.google.com/abcdefg",
+                    },
+                    {
+                        sprintId: await getSprintId(voyageTeams[0].voyageId, 2),
+                        title: "Second sprint meeting",
+                        dateTime: await getRandomDateDuringSprint(await getSprintId(voyageTeams[0].voyageId, 2)),
+                        meetingLink: "meet.google.com/hijklm",
+                    },
+                    {
+                        sprintId: await getSprintId(voyageTeams[0].voyageId, 3),
+                        title: "Third sprint meeting",
+                        dateTime: await getRandomDateDuringSprint(await getSprintId(voyageTeams[0].voyageId, 3)),
+                        meetingLink: "meet.google.com/opqrst",
+                    }
+                ]
+            }
+        }
+    })
 };
