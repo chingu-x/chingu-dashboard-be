@@ -260,7 +260,8 @@ model TeamMeeting {
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
   title        String
   dateTime     DateTime
-  meetingLink  String
+  meetingLink  String?
+  notes        String?
   createdAt    DateTime   @default(now()) @db.Timestamptz()
   updatedAt    DateTime   @updatedAt
 
