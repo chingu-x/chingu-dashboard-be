@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-// import { CreateIdeationDto } from "./dto/create-ideation.dto";
-// import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { CreateIdeationDto } from "./dto/create-ideation.dto";
+import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 
 // const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
 
@@ -12,9 +12,9 @@ export class IdeationService {
     //     return "This action adds a new ideation";
     // }
 
-    // findAll() {
-    //     return "This action returns all ideation";
-    // }
+    async findAll() {
+        return this.prisma.projectIdea.findMany({});
+    }
 
     async getProjectIdeas(id: number) {
         const query = await this.prisma.voyageTeamMember.findMany({
@@ -63,9 +63,14 @@ export class IdeationService {
         return query.map((q) => Object.values(q).flat()).flat();
     }
 
-    // update(id: number, updateIdeationDto: UpdateIdeationDto) {
-    //     return `This action updates a #${id} ideation`;
-    // }
+    update(id: number, updateIdeationDto: UpdateIdeationDto) {
+        return this.prisma.projectIdea.update({
+            where: {
+                id: id,
+            },
+            data: updateIdeationDto,
+        });
+    }
 
     // remove(id: number) {
     //     return `This action removes a #${id} ideation`;
