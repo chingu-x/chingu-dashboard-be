@@ -3,7 +3,8 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 
-// const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
+//const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
+//const UserId = 10;
 
 @Injectable()
 export class IdeationService {
@@ -11,7 +12,7 @@ export class IdeationService {
     async create(createIdeationDto: CreateIdeationDto) {
         const { title, description, vision } = createIdeationDto;
         const createdIdeation = await this.prisma.projectIdea.create({
-            data: { title, description, vision },
+            data: { userId: 3, title, description, vision },
         });
         return createdIdeation;
     }
