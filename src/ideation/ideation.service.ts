@@ -8,9 +8,13 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 @Injectable()
 export class IdeationService {
     constructor(private prisma: PrismaService) {}
-    // create(createIdeationDto: CreateIdeationDto) {
-    //     return "This action adds a new ideation";
-    // }
+    async create(createIdeationDto: CreateIdeationDto) {
+        const { title, description, vision } = createIdeationDto;
+        const createdIdeation = await this.prisma.projectIdea.create({
+            data: { title, description, vision },
+        });
+        return createdIdeation;
+    }
 
     async findAll() {
         return this.prisma.projectIdea.findMany({});
@@ -63,7 +67,7 @@ export class IdeationService {
         return query.map((q) => Object.values(q).flat()).flat();
     }
 
-    update(id: number, updateIdeationDto: UpdateIdeationDto) {
+    async update(id: number, updateIdeationDto: UpdateIdeationDto) {
         return this.prisma.projectIdea.update({
             where: {
                 id: id,
@@ -72,7 +76,7 @@ export class IdeationService {
         });
     }
 
-    remove(id: number) {
+    async remove(id: number) {
         const deleteIdeation = this.prisma.projectIdea.delete({
             where: {
                 id: id,
