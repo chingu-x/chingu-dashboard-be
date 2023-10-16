@@ -72,7 +72,12 @@ export class IdeationService {
         });
     }
 
-    // remove(id: number) {
-    //     return `This action removes a #${id} ideation`;
-    // }
+    remove(id: number) {
+        const deleteIdeation = this.prisma.projectIdea.delete({
+            where: {
+                id: id,
+            },
+        });
+        return deleteIdeation;
+    }
 }
