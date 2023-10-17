@@ -41,4 +41,15 @@ export class IdeationController {
     remove(@Param("id") id: string) {
         return this.ideationService.remove(+id);
     }
+    @Post(":projectIdeaId/vote/:userId")
+    async voteForProjectIdea(
+        @Param("projectIdeaId") projectIdeaId: number,
+        @Param("userId") userId: number,
+    ) {
+        const vote = await this.ideationService.voteForProjectIdea(
+            userId,
+            projectIdeaId,
+        );
+        return vote;
+    }
 }

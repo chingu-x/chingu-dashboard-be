@@ -114,7 +114,7 @@ model VoyageTeamMember {
   createdAt              DateTime                @default(now()) @db.Timestamptz()
   teamTechStackItemVotes TeamTechStackItemVote[]
   projectIdeas           ProjectIdea[]
-  ProjectIdeaVotes       ProjectIdeaVotes[]
+  ProjectIdeaVotes       ProjectIdeaVote[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -127,15 +127,18 @@ model ProjectIdea {
   description      String
   vision           String
   createdAt        DateTime           @default(now()) @db.Timestamptz()
-  projectIdeaVotes ProjectIdeaVotes[]
+  updatedAt        DateTime @default(now()) @db.Timestamptz() 
+  projectIdeaVotes ProjectIdeaVote[]
 }
 
-model ProjectIdeaVotes {
+model ProjectIdeaVote {
   id            Int               @id @default(autoincrement())
   votedBy       VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   userId        Int?
-  ProjectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id])
+  ProjectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id],onDelete: Cascade)
   projectIdeaId Int?
+  createdAt        DateTime           @default(now()) @db.Timestamptz()
+  updatedAt        DateTime @default(now()) @db.Timestamptz() 
 }
 
 model TechStackCategory {

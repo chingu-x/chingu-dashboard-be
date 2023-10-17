@@ -85,4 +85,15 @@ export class IdeationService {
         });
         return deleteIdeation;
     }
+
+    async voteForProjectIdea(userId: number, projectIdeaId: number) {
+        const createVote = await this.prisma.projectIdeaVotes.create({
+            data: {
+                userId,
+
+                projectIdeaId,
+            },
+        });
+        return createVote;
+    }
 }
