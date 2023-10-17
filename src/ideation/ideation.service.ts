@@ -23,7 +23,7 @@ export class IdeationService {
         return createdIdeation;
     }
 
-    async findAll() {
+    async findAll(id: number) {
         return this.prisma.projectIdea.findMany({});
     }
 
@@ -74,19 +74,23 @@ export class IdeationService {
         return query.map((q) => Object.values(q).flat()).flat();
     }
 
-    async update(id: number, updateIdeationDto: UpdateIdeationDto) {
+    async update(
+        id: number,
+        pId: number,
+        updateIdeationDto: UpdateIdeationDto,
+    ) {
         return this.prisma.projectIdea.update({
             where: {
-                id: id,
+                id: pId,
             },
             data: updateIdeationDto,
         });
     }
 
-    async remove(id: number) {
+    async remove(id: number, pId: number) {
         const deleteIdeation = this.prisma.projectIdea.delete({
             where: {
-                id: id,
+                id: pId,
             },
         });
         return deleteIdeation;

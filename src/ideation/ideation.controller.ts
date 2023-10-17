@@ -24,26 +24,27 @@ export class IdeationController {
         return this.ideationService.create(createIdeationDto);
     }
 
-    @Get()
-    findAll() {
-        return this.ideationService.findAll();
+    @Get(":id/project")
+    findAll(@Param("id") id: string) {
+        return this.ideationService.findAll(+id);
     }
     @Get(":id/projectIdeas")
     getProjectIdeas(@Param("id") id: string) {
         return this.ideationService.getProjectIdeas(+id);
     }
 
-    @Patch(":id")
+    @Patch(":id/stack/project/:pId")
     update(
         @Param("id") id: string,
+        @Param("pId") pId: string,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
-        return this.ideationService.update(+id, updateIdeationDto);
+        return this.ideationService.update(+id, +pId, updateIdeationDto);
     }
 
-    @Delete(":id")
-    remove(@Param("id") id: string) {
-        return this.ideationService.remove(+id);
+    @Delete(":id/stack/project/:pId")
+    remove(@Param("id") id: string, @Param("pId") pId: string) {
+        return this.ideationService.remove(+id, +pId);
     }
 
     /*@Post("/team/:teamId/ideation/:Id/new")
