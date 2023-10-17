@@ -11,8 +11,14 @@ export class IdeationService {
     constructor(private prisma: PrismaService) {}
     async create(createIdeationDto: CreateIdeationDto) {
         const { title, description, vision } = createIdeationDto;
+
         const createdIdeation = await this.prisma.projectIdea.create({
-            data: { userId: 3, title, description, vision },
+            data: {
+                userId: 3,
+                title,
+                description,
+                vision,
+            },
         });
         return createdIdeation;
     }
@@ -86,7 +92,7 @@ export class IdeationService {
         return deleteIdeation;
     }
 
-    async voteForProjectIdea(userId: number, projectIdeaId: number) {
+    /*async voteForProjectIdea(userId: number, projectIdeaId: number) {
         const createVote = await this.prisma.projectIdeaVotes.create({
             data: {
                 userId,
@@ -95,5 +101,5 @@ export class IdeationService {
             },
         });
         return createVote;
-    }
+    }*/
 }

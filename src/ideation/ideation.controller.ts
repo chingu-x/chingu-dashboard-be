@@ -15,8 +15,12 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 export class IdeationController {
     constructor(private readonly ideationService: IdeationService) {}
 
-    @Post()
-    create(@Body() createIdeationDto: CreateIdeationDto) {
+    @Post(":id/project/:tId")
+    create(
+        @Param("id") id: string,
+        @Param("tId") tId: string,
+        @Body() createIdeationDto: CreateIdeationDto,
+    ) {
         return this.ideationService.create(createIdeationDto);
     }
 
@@ -41,15 +45,17 @@ export class IdeationController {
     remove(@Param("id") id: string) {
         return this.ideationService.remove(+id);
     }
-    @Post(":projectIdeaId/vote/:userId")
-    async voteForProjectIdea(
-        @Param("projectIdeaId") projectIdeaId: number,
-        @Param("userId") userId: number,
+
+    /*@Post("/team/:teamId/ideation/:Id/new")
+    addNewTechVote(
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("techId", ParseIntPipe) techId: number,
+        @Body() createTechVoteDto: CreateTechVoteDto,
     ) {
-        const vote = await this.ideationService.voteForProjectIdea(
-            userId,
-            projectIdeaId,
+        return this.techsService.addNewTechVote(
+            teamId,
+            techId,
+            createTechVoteDto,
         );
-        return vote;
-    }
+    }*/
 }
