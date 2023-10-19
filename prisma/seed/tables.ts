@@ -40,8 +40,8 @@ export const populateTables = async () => {
     await populateTable("voyage", Voyages);
     await populateTable("voyageTeam", VoyageTeams);
     await populateTable("voyageTeamMember", VoyageTeamMembers);
-    await populateTable("techStackItem", TechStackItems);
-    await populateTable("teamTechStackItem", TeamTechStackItems);
+    // await populateTable("techStackItem", TechStackItems);
+    //await populateTable("teamTechStackItem", TeamTechStackItems);
     await populateTable("featureCategory", FeatureCategories);
     await populateTable("formType", FormTypes);
     await populateTable("inputType", InputTypes);

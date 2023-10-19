@@ -185,32 +185,22 @@ model TechStackCategory {
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @updatedAt
 
-  techStackItems TechStackItem[]
-}
-
-model TechStackItem {
-  id         Int                @id @default(autoincrement())
-  name       String             @unique
-  category   TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  categoryId Int?
-  createdAt  DateTime           @default(now()) @db.Timestamptz()
-  updatedAt  DateTime           @updatedAt
-
-  teamTechStacks TeamTechStackItem[]
+  teamTechStackItems TeamTechStackItem[]
 }
 
 model TeamTechStackItem {
-  id           Int           @id @default(autoincrement())
-  tech         TechStackItem @relation(fields: [techId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  techId       Int
-  voyageTeam   VoyageTeam    @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  id           Int                @id @default(autoincrement())
+  name         String
+  category     TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  categoryId   Int?
+  voyageTeam   VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId Int
-  createdAt    DateTime      @default(now()) @db.Timestamptz()
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime           @default(now()) @db.Timestamptz()
+  updatedAt    DateTime           @updatedAt
 
   teamTechStackItemVotes TeamTechStackItemVote[]
 
-  @@unique(fields: [voyageTeamId, techId], name: "teamIdTechId")
+  @@unique(fields: [name, voyageTeamId, categoryId], name: "teamTechUniqueKey")
 }
 
 model TeamTechStackItemVote {
