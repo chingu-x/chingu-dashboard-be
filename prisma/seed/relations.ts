@@ -28,6 +28,7 @@ const getRandomDateDuringSprint = async(sprintId) => {
     return addDays(sprint.startDate, Math.floor(Math.random() * 6))
 }
 
+// VoyageTeams, VoyageMembers, Tech Stack, sprints
 export const populateTablesWithRelations = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
     const teamTechStackItems = await prisma.teamTechStackItem.findMany({});
@@ -383,7 +384,7 @@ export const populateTablesWithRelations = async () => {
                                     status: false
                                 }
                             ]
-                        }
+                        },
                     },
                     {
                         sprintId: await getSprintId(voyageTeams[0].voyageId, 2),

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import * as process from "process";
 import { populateTablesWithRelations } from "./relations";
 import { populateTables } from "./tables";
+import {populateFormsAndResponses} from "./forms";
 
 const prisma = new PrismaClient();
 
@@ -29,6 +30,7 @@ const deleteAllTables = async () => {
         await deleteAllTables();
         await populateTables();
         await populateTablesWithRelations();
+        await populateFormsAndResponses();
         console.log("===\n🌱 Database seeding completed.\n===");
     } catch (e) {
         console.error(e);

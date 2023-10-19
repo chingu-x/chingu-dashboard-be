@@ -15,7 +15,7 @@ model HealthCheck {
   statusCode Int
   resMsg     String
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Gender {
@@ -292,19 +292,19 @@ model Form {
   id          Int      @id @default(autoincrement())
   formTypeId  Int
   formType    FormType @relation(fields: [formTypeId], references: [id], onDelete: Restrict)
-  title       String
-  description String
+  title       String   @unique
+  description String?
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @updatedAt
 
-  question      Question[]
+  questions     Question[]
   sprintReview  TeamMeeting[] @relation("SprintReview")
   sprintMeeting TeamMeeting[] @relation("SprintPlanning")
 }
 
 model FormType {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
@@ -313,7 +313,7 @@ model FormType {
 
 model InputType {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
@@ -321,27 +321,33 @@ model InputType {
 }
 
 model Question {
-  id          Int       @id @default(autoincrement())
-  formId      Int
-  form        Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
-  order       Int
-  inputTypeId Int
-  inputType   InputType @relation(fields: [inputTypeId], references: [id], onDelete: Restrict)
-  text        String
-  description String?
-  createdAt   DateTime  @default(now()) @db.Timestamptz()
-  updatedAt   DateTime  @updatedAt
+  id              Int          @id @default(autoincrement())
+  formId          Int
+  form            Form         @relation(fields: [formId], references: [id], onDelete: Cascade)
+  order           Int
+  inputTypeId     Int
+  inputType       InputType    @relation(fields: [inputTypeId], references: [id], onDelete: Restrict)
+  text            String
+  description     String?
+  answerRequired  Boolean
+  multipleAllowed Boolean?
+  optionGroupId   Int?
+  optionGroup     OptionGroup? @relation(fields: [optionGroupId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 
   questionOptions QuestionOption[]
 }
 
 model OptionGroup {
   id        Int      @id @default(autoincrement())
-  name      String
+  name      String   @unique
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
   optionChoices OptionChoice[]
+  questions     Question[]
 }
 
 model OptionChoice {
@@ -356,13 +362,13 @@ model OptionChoice {
 }
 
 model QuestionOption {
-  id             Int          @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   questionId     Int
-  question       Question     @relation(fields: [questionId], references: [id])
-  optionChoiceId Int
-  optionChoice   OptionChoice @relation(fields: [optionChoiceId], references: [id])
-  createdAt      DateTime     @default(now()) @db.Timestamptz()
-  updatedAt      DateTime     @updatedAt
+  question       Question      @relation(fields: [questionId], references: [id])
+  optionChoiceId Int?
+  optionChoice   OptionChoice? @relation(fields: [optionChoiceId], references: [id])
+  createdAt      DateTime      @default(now()) @db.Timestamptz()
+  updatedAt      DateTime      @updatedAt
 
   responses Response[]
 }
@@ -397,7 +403,7 @@ model ResponseUser {
   id         Int      @id @default(autoincrement())
   responseId Int
   response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  userId     String
+  userId     String   @db.Uuid
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
