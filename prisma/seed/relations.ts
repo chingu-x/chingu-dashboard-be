@@ -404,4 +404,5 @@ export const populateTablesWithRelations = async () => {
             }
         }
     })
+    console.log("Team features, resources, sprints, and meeting populated")
 };
