@@ -1,34 +1,50 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from './resources.service';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 
-@Controller('resources')
+@Controller('teamResources')
+@ApiTags('Team Resources')
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
 
-  @Post()
+  @ApiOperation({
+    description: "",
+  })
+  @Post(':teamMemberId')
   create(@Body() createResourceDto: CreateResourceDto) {
     return this.resourcesService.create(createResourceDto);
   }
 
-  @Get()
-  findAll() {
-    return this.resourcesService.findAll();
+  @ApiOperation({
+    description: "",
+  })
+  @Get(':teamId')
+  findAll(@Param('teamId', ParseIntPipe) teamId: number) {
+    return this.resourcesService.findAll(teamId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.resourcesService.findOne(+id);
+  @ApiOperation({
+    description: "",
+  })
+  @Patch(':teamMemberId/:resourceId')
+  update(
+    @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
+    @Param('resourceId', ParseIntPipe) resourceId: number,
+    @Body() updateResourceDto: UpdateResourceDto
+  ) {
+      return this.resourcesService.update(teamMemberId, resourceId, updateResourceDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResourceDto: UpdateResourceDto) {
-    return this.resourcesService.update(+id, updateResourceDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.resourcesService.remove(+id);
+  @ApiOperation({
+    description: "",
+  })
+  @Delete(':teamMemberId/:resourceId')
+  remove(
+    @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
+    @Param('resourceId', ParseIntPipe) resourceId: number
+  ) {
+      return this.resourcesService.remove(teamMemberId, resourceId);
   }
 }

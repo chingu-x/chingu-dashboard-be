@@ -8,19 +8,15 @@ export class ResourcesService {
     return 'This action adds a new resource';
   }
 
-  findAll() {
+  findAll(teamId) {
     return `This action returns all resources`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} resource`;
+  update(teamMemberId: number, resourceId: number, updateResourceDto: UpdateResourceDto) {
+    return ``;
   }
 
-  update(id: number, updateResourceDto: UpdateResourceDto) {
-    return `This action updates a #${id} resource`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} resource`;
+  remove(teamMemberId: number, resourceId: number) {
+    return ``;
   }
 }
