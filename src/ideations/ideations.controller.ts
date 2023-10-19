@@ -7,13 +7,13 @@ import {
     Patch,
     Delete,
 } from "@nestjs/common";
-import { IdeationService } from "./ideation.service";
+import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 
 @Controller("voyage")
-export class IdeationController {
-    constructor(private readonly ideationService: IdeationService) {}
+export class IdeationsController {
+    constructor(private readonly ideationsService: IdeationsService) {}
 
     @Post(":id/project/:tId")
     create(
@@ -21,16 +21,16 @@ export class IdeationController {
         @Param("tId") tId: string,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
-        return this.ideationService.create(createIdeationDto);
+        return this.ideationsService.create(createIdeationDto);
     }
 
     @Get(":id/project")
     findAll(@Param("id") id: string) {
-        return this.ideationService.findAll(+id);
+        return this.ideationsService.findAll(+id);
     }
     @Get(":id/projectIdeas")
     getProjectIdeas(@Param("id") id: string) {
-        return this.ideationService.getProjectIdeas(+id);
+        return this.ideationsService.getProjectIdeas(+id);
     }
 
     @Patch(":id/stack/project/:pId")
@@ -39,12 +39,12 @@ export class IdeationController {
         @Param("pId") pId: string,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
-        return this.ideationService.update(+id, +pId, updateIdeationDto);
+        return this.ideationsService.update(+id, +pId, updateIdeationDto);
     }
 
     @Delete(":id/stack/project/:pId")
     remove(@Param("id") id: string, @Param("pId") pId: string) {
-        return this.ideationService.remove(+id, +pId);
+        return this.ideationsService.remove(+id, +pId);
     }
 
     /*@Post("/team/:teamId/ideation/:Id/new")

@@ -7,7 +7,7 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 //const UserId = 10;
 
 @Injectable()
-export class IdeationService {
+export class IdeationsService {
     constructor(private prisma: PrismaService) {}
     async create(createIdeationDto: CreateIdeationDto) {
         const { title, description, vision } = createIdeationDto;

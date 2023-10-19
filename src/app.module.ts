@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { PrismaModule } from "./prisma/prisma.module";
-import { IdeationModule } from "./ideation/ideation.module";
+import { IdeationsModule } from "./ideations/ideations.module";
 import { TeamsModule } from "./teams/teams.module";
 import { TechsModule } from "./techs/techs.module";
 import { HealthCheckController } from "./HealthCheck/health-check.controller";
@@ -11,7 +11,7 @@ import { UsersModule } from "./users/users.module";
     imports: [
         UsersModule,
         PrismaModule,
-        IdeationModule,
+        IdeationsModule,
         TeamsModule,
         TechsModule,
         UsersModule,
