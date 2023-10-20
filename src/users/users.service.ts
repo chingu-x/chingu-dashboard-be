@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import {Injectable} from "@nestjs/common";
+import {PrismaService} from "../prisma/prisma.service";
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) {
+    }
 
     findAll() {
         return this.prisma.user.findMany();
@@ -60,16 +61,12 @@ export class UsersService {
                                 id: true,
                                 teamTech: {
                                     select: {
-                                        tech: {
+                                        id: true,
+                                        name: true,
+                                        category: {
                                             select: {
-                                                id: true,
                                                 name: true,
-                                                category: {
-                                                    select: {
-                                                        name: true,
-                                                        description: true,
-                                                    },
-                                                },
+                                                description: true,
                                             },
                                         },
                                     },

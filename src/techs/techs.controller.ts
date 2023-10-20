@@ -5,11 +5,13 @@ import {
     Body,
     Param,
     Delete,
-    ParseIntPipe,
+    ParseIntPipe, ValidationPipe,
 } from "@nestjs/common";
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { CreateTechVoteDto } from "./dto/create-tech-vote.dto";
+import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import {CreateTeamTechVoteDto} from "./dto/create-tech-vote.dto";
+import {DeleteTeamTechVoteDto} from "./dto/delete-tech-vote.dto";
 
 @Controller("techs")
 @ApiTags("techs / techstack")
@@ -29,17 +31,16 @@ export class TechsController {
             "Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid",
     })
     @Post("/team/:teamId/tech/:techId/new")
-    addNewTechVote(
+    addNewTeamTech(
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("techId", ParseIntPipe) techId: number,
-        @Body() createTechVoteDto: CreateTechVoteDto,
+        @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
     ) {
-        return this.techsService.addNewTechVote(
+        return this.techsService.addNewTeamTech(
             teamId,
-            techId,
-            createTechVoteDto,
+            createTeamTechDto,
         );
     }
+
 
     @ApiOperation({
         description:
@@ -49,7 +50,7 @@ export class TechsController {
     addExistingTechVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
-        @Body() createTechVoteDto: CreateTechVoteDto,
+        @Body() createTechVoteDto: CreateTeamTechVoteDto,
     ) {
         return this.techsService.addExistingTechVote(
             teamId,
@@ -65,12 +66,12 @@ export class TechsController {
     removeVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
-        @Body() createTechVoteDto: CreateTechVoteDto,
+        @Body() deleteTechVoteDto: DeleteTeamTechVoteDto,
     ) {
         return this.techsService.removeVote(
             teamId,
             teamTechId,
-            createTechVoteDto,
+            deleteTechVoteDto,
         );
     }
 }
