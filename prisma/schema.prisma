@@ -136,7 +136,7 @@ model ProjectIdeaVote {
   votedBy       VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   userId        Int?
   projectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id],onDelete: Cascade)
-  projectIdeaId Int?
+  projectIdeaId Int
   createdAt     DateTime          @default(now()) @db.Timestamptz()
   updatedAt     DateTime          @updatedAt 
 }
