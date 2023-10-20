@@ -1,6 +1,8 @@
+import { Body } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
+import { ProjectIdea } from "@prisma/client";
 
-export class Ideation {
+export class Ideation implements ProjectIdea {
     @ApiProperty()
     id: number;
 
@@ -22,6 +24,6 @@ export class Ideation {
     @ApiProperty()
     updatedAt: Date;
 
-    @ApiProperty({required: false, nullable: true})
-    projectIdeaVotes: [number] | null;
+    @ApiProperty({type: [Number], required: false, nullable: true})
+    projectIdeaVotes: number[];
 }
