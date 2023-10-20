@@ -5,13 +5,14 @@ import {
     Body,
     Param,
     Delete,
-    ParseIntPipe, ValidationPipe,
+    ParseIntPipe,
+    ValidationPipe,
 } from "@nestjs/common";
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import {CreateTeamTechVoteDto} from "./dto/create-tech-vote.dto";
-import {DeleteTeamTechVoteDto} from "./dto/delete-tech-vote.dto";
+import { CreateTeamTechVoteDto } from "./dto/create-tech-vote.dto";
+import { DeleteTeamTechVoteDto } from "./dto/delete-tech-vote.dto";
 
 @Controller("techs")
 @ApiTags("techs / techstack")
@@ -35,12 +36,8 @@ export class TechsController {
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
     ) {
-        return this.techsService.addNewTeamTech(
-            teamId,
-            createTeamTechDto,
-        );
+        return this.techsService.addNewTeamTech(teamId, createTeamTechDto);
     }
-
 
     @ApiOperation({
         description:

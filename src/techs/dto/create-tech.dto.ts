@@ -1,9 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {IsInt, IsNotEmpty, IsString, IsUUID} from "class-validator";
-
+import { IsInt, IsNotEmpty, IsString, IsUUID } from "class-validator";
 
 export class CreateTeamTechDto {
-
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty()
