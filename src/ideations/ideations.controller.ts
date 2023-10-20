@@ -6,45 +6,50 @@ import {
     Body,
     Patch,
     Delete,
+    ParseIntPipe,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { ApiTags } from "@nestjs/swagger";
 
-@Controller("voyage")
+// @Controller("ideations")
+@ApiTags("ideations")
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
-    @Post(":id/project/:tId")
+    @Post(":userId/project/:tId")
     create(
-        @Param("id") id: string,
+        @Param("userId") userId: string,
         @Param("tId") tId: string,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
         return this.ideationsService.create(createIdeationDto);
     }
 
-    @Get(":id/project")
-    findAll(@Param("id") id: string) {
-        return this.ideationsService.findAll(+id);
-    }
+    //currently thinking we do not need
+    // @Get(":id/project")
+    // findAll(@Param("id", ParseIntPipe) id: number) {
+    //     return this.ideationsService.findAll(id);
+    // }
+
     @Get(":id/projectIdeas")
-    getProjectIdeas(@Param("id") id: string) {
-        return this.ideationsService.getProjectIdeas(+id);
+    getProjectIdeas(@Param("id", ParseIntPipe) id: number) {
+        return this.ideationsService.getProjectIdeas(id);
     }
 
     @Patch(":id/stack/project/:pId")
     update(
-        @Param("id") id: string,
-        @Param("pId") pId: string,
+        @Param("id", ParseIntPipe) id: number,
+        @Param("pId", ParseIntPipe) pId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
-        return this.ideationsService.update(+id, +pId, updateIdeationDto);
+        return this.ideationsService.update(id, pId, updateIdeationDto);
     }
 
     @Delete(":id/stack/project/:pId")
-    remove(@Param("id") id: string, @Param("pId") pId: string) {
-        return this.ideationsService.remove(+id, +pId);
+    remove(@Param("id", ParseIntPipe) id: number, @Param("pId", ParseIntPipe) pId: number) {
+        return this.ideationsService.remove(id, pId);
     }
 
     /*@Post("/team/:teamId/ideation/:Id/new")
