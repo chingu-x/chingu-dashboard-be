@@ -13,42 +13,44 @@ export class ResourcesService {
     return this.prisma.teamResource.create({
       data: {
         ...createResourceDto, 
-        addedBy: userId,
+        teamMemberId: userId,
       },
     });
   }
 
-  findAll(teamId) {
-    return this.prisma.teamResource.findFirst({
+  // todo
+  async findAll(teamId) {
+    
+    return this.prisma.teamResource.findMany({
       where: { teamId: teamId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  update(teamMemberId: number, resourceId: number, updateResourceDto: UpdateResourceDto) {
-    const resourceToUpdate = this.prisma.teamResource.findOne({
-      where: { resourceId: resourceId },
+  async update(teamMemberId: number, resourceId: number, updateResourceDto: UpdateResourceDto) {
+    const resourceToUpdate = await this.prisma.teamResource.findUnique({
+      where: { id: resourceId },
     });
 
     if (resourceToUpdate.teamMemberId !== userId)
       return { error: 'You do not have permission to update this resource' }
 
-    return this.prisma.teamResources.update({
-      where: { resourceId: resourceId },
+    return this.prisma.teamResource.update({
+      where: { id: resourceId },
       data: updateResourceDto,
     });
   }
 
-  remove(teamMemberId: number, resourceId: number) {
-    const resourceToRemove = this.prisma.teamResource.findOne({
-      where: { resourceId: resourceId },
+  async remove(teamMemberId: number, resourceId: number) {
+    const resourceToRemove = await this.prisma.teamResource.findUnique({
+      where: { id: resourceId },
     });
 
     if (resourceToRemove.teamMemberId !== userId)
       return { error: 'You do not have permission to delete this resource' }
 
-    return this.prisma.teamResources.delete({
-      where: { resourceId: resourceId },
+    return this.prisma.teamResource.delete({
+      where: { id: resourceId },
     });
   }
 }
