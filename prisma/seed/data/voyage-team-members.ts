@@ -50,4 +50,50 @@ export default [
         },
         hrPerSprint: 12.4,
     },
+    {
+        member: {
+            connect: {
+                email: Users[2].email,
+            },
+        },
+        voyageTeam: {
+            connect: {
+                name: VoyageTeams[0].name,
+            },
+        },
+        voyageRole: {
+            connect: {
+                name: VoyageRoles[2].name,
+            },
+        },
+        status: {
+            connect: {
+                name: VoyageStatus[0].name,
+            },
+        },
+        hrPerSprint: 8,
+    },
+    {
+        member: {
+            connect: {
+                email: Users[3].email,
+            },
+        },
+        voyageTeam: {
+            connect: {
+                name: VoyageTeams[0].name,
+            },
+        },
+        voyageRole: {
+            connect: {
+                name: VoyageRoles[2].name,
+            },
+        },
+        status: {
+            connect: {
+                name: VoyageStatus[0].name,
+            },
+        },
+        hrPerSprint: 20.3,
+    }
 ];

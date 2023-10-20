@@ -13,6 +13,11 @@ import VoyageTeams from "./data/voyage-teams";
 import VoyageTeamMembers from "./data/voyage-team-members";
 import TechStackItems from "./data/tech-stack-items";
 import TeamTechStackItems from "./data/team-tech-stack-items";
+import FeatureCategories from "./data/feature-categories";
+
+import FormTypes from "./data/form-types"
+import InputTypes from "./data/input-types"
+import OptionGroups from "./data/option-groups"
 
 const populateTable = async (tableName: string, data) => {
     await Promise.all(
@@ -37,4 +42,8 @@ export const populateTables = async () => {
     await populateTable("voyageTeamMember", VoyageTeamMembers);
     await populateTable("techStackItem", TechStackItems);
     await populateTable("teamTechStackItem", TeamTechStackItems);
+    await populateTable("featureCategory", FeatureCategories);
+    await populateTable("formType", FormTypes);
+    await populateTable("inputType", InputTypes);
+    await populateTable("optionGroup", OptionGroups)
 };
