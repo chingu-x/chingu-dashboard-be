@@ -10,11 +10,12 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 export class IdeationsService {
     constructor(private prisma: PrismaService) {}
     async create(createIdeationDto: CreateIdeationDto) {
-        const { title, description, vision } = createIdeationDto;
+        const { userId, title, description, vision } = createIdeationDto;
 
         const createdIdeation = await this.prisma.projectIdea.create({
+            //TODO change userID input to be userid: uuid once authentication done
             data: {
-                userId: 3,
+                userId,
                 title,
                 description,
                 vision,
