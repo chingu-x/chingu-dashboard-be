@@ -31,7 +31,7 @@ export class TechsController {
         description:
             "Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid",
     })
-    @Post("/team/:teamId/tech/:techId/new")
+    @Post("/team/:teamId/tech/new")
     addNewTeamTech(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
