@@ -16,8 +16,8 @@ export default [
         description: "project management Stuff"
     },
     {
-        name: "Server-Side",
-        description: "serverless functions?"
+        name: "Cloud Provider",
+        description: "cloud stuff"
     },
     {
         name: "Hosting",
