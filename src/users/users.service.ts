@@ -38,6 +38,7 @@ export class UsersService {
                         id: true,
                         voyageTeam: {
                             select: {
+                                id: true,
                                 name: true,
                                 tier: {
                                     select: {
