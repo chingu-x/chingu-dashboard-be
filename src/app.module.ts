@@ -6,6 +6,7 @@ import { TechsModule } from "./techs/techs.module";
 import { HealthCheckController } from "./HealthCheck/health-check.controller";
 import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
+import { SprintsModule } from './sprints/sprints.module';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from "./users/users.module";
         TeamsModule,
         TechsModule,
         UsersModule,
+        SprintsModule,
     ],
     controllers: [HealthCheckController],
     providers: [HealthCheckService],
