@@ -35,6 +35,20 @@ export class IdeationsController {
         );
     };
 
+    @Post("users/:userId/teams/:teamId/ideation-vote")
+    @ApiCreatedResponse({type: Ideation})
+    createIdeationVote(
+        @Param("userId") userId: string,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body() createIdeationVoteDto: CreateIdeationVoteDto,
+    ) {
+        return this.ideationsService.createIdeationVote(
+            userId,
+            teamId,
+            createIdeationVoteDto
+        );
+    };
+
     @Get("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
     async getIdeationsByVoyageTeam(
@@ -73,20 +87,6 @@ export class IdeationsController {
         return this.ideationsService.deleteIdeation(
             userId, 
             ideationId
-        );
-    };
-
-    @Post("users/:userId/teams/:teamId/ideation-vote")
-    @ApiCreatedResponse({type: Ideation})
-    createIdeationVote(
-        @Param("userId") userId: string,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Body() createIdeationVoteDto: CreateIdeationVoteDto,
-    ) {
-        return this.ideationsService.createIdeationVote(
-            userId,
-            teamId,
-            createIdeationVoteDto
         );
     };
 
