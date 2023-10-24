@@ -25,7 +25,9 @@ export class ResourcesService {
       where: {
         url: createResourceDto.url,
         addedBy: { 
-          voyageTeamId: team.voyageTeamId 
+          voyageTeam: {
+            id: team.voyageTeamId
+          } 
         },
       },
     });
