@@ -21,29 +21,25 @@ export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
     //TODO updated userId to grab uuid/JWT once 
-    @Post("users/:userId/teams/:teamId/ideations")
+    @Post("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
     createIdeation(
-        @Param("userId") userId: string,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
         return this.ideationsService.createIdeation(
             teamId, 
-            userId, 
             createIdeationDto
         );
     };
 
-    @Post("users/:userId/teams/:teamId/ideation-vote")
+    @Post("/teams/:teamId/ideation-vote")
     @ApiCreatedResponse({type: Ideation})
     createIdeationVote(
-        @Param("userId") userId: string,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationVoteDto: CreateIdeationVoteDto,
     ) {
         return this.ideationsService.createIdeationVote(
-            userId,
             teamId,
             createIdeationVoteDto
         );
@@ -63,16 +59,14 @@ export class IdeationsController {
         })
     };
 
-    @Patch("users/:userId/ideations/:ideationId")
+    @Patch("/ideations/:ideationId")
     @ApiCreatedResponse({type: Ideation})
     updateIdeation(
-        @Param("userId") userId: string,
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
         return this.ideationsService.updateIdeation( 
-            ideationId, 
-            userId, 
+            ideationId,  
             updateIdeationDto
         );
     };

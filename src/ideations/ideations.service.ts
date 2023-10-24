@@ -8,8 +8,8 @@ import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 export class IdeationsService {
     constructor(private prisma: PrismaService) {}
 
-    async createIdeation(teamId: number, userId: string, createIdeationDto: CreateIdeationDto) {
-        const { title, description, vision } = createIdeationDto;
+    async createIdeation(teamId: number, createIdeationDto: CreateIdeationDto) {
+        const { userId, title, description, vision } = createIdeationDto;
         const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 userId: userId,
@@ -30,8 +30,8 @@ export class IdeationsService {
         return createdIdeation;
     }
 
-    async createIdeationVote(userId: string, teamId: number, CreateIdeationVoteDto: CreateIdeationVoteDto) {
-        const { projectIdeaId } = CreateIdeationVoteDto;
+    async createIdeationVote(teamId: number, CreateIdeationVoteDto: CreateIdeationVoteDto) {
+        const { userId, projectIdeaId } = CreateIdeationVoteDto;
         const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 userId: userId,
@@ -102,8 +102,8 @@ export class IdeationsService {
         return teamProjectIdeas.map((teamMember) => teamMember.projectIdeas).flat();
     }
 
-    async updateIdeation(ideationId: number,  userId: string, updateIdeationDto: UpdateIdeationDto,) {
-        const { title, description, vision } = updateIdeationDto;
+    async updateIdeation(ideationId: number, updateIdeationDto: UpdateIdeationDto,) {
+        const { userId, title, description, vision } = updateIdeationDto;
         const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId)
         const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
