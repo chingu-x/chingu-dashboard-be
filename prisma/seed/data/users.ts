@@ -7,6 +7,7 @@ export default [
         twitterId: 'jess-twitter',
         linkedinId: 'jess-linkedin',
         email: 'jessica.williamson@gmail.com',
+        avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x',
         gender: {
             connect: {
                 abbreviation: "F"
@@ -21,6 +22,7 @@ export default [
         githubId: 'larryc-github',
         discordId: 'larryc-discord',
         email: 'l.castro@outlook.com',
+        avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x',
         gender: {
             connect: {abbreviation: "M"}
         },
@@ -34,6 +36,7 @@ export default [
         githubId: 'leo-github',
         discordId: 'leo-discord',
         email: 'leo.rowe@outlook.com',
+        avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=identicon&r=x',
         gender: {
             connect: {abbreviation: "F"}
         },
@@ -47,6 +50,7 @@ export default [
         githubId: 'joso-github',
         discordId: 'joso-discord',
         email: 'JosoMadar@dayrep.com',
+        avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x',
         gender: {
             connect: {abbreviation: "M"}
         },

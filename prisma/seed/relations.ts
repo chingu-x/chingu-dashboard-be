@@ -199,6 +199,7 @@ export const populateTablesWithRelations = async () => {
         },
     });
 
+    /*
     await prisma.teamTechStackItem.update({
         where: {
             id: teamTechStackItems[0].id,
@@ -263,7 +264,7 @@ export const populateTablesWithRelations = async () => {
             },
         },
     });
-
+*/
     await prisma.voyage.update({
         where: {
             id: voyages[0].id
@@ -403,4 +404,5 @@ export const populateTablesWithRelations = async () => {
             }
         }
     })
+    console.log("Team features, resources, sprints, and meeting populated")
 };

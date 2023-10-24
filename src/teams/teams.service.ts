@@ -32,6 +32,7 @@ export class TeamsService {
             select: {
                 member: {
                     select: {
+                        id: true,
                         firstName: true,
                         lastName: true,
                         avatar: true,

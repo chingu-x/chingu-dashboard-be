@@ -38,6 +38,7 @@ export class UsersService {
                         id: true,
                         voyageTeam: {
                             select: {
+                                id: true,
                                 name: true,
                                 tier: {
                                     select: {
@@ -60,16 +61,12 @@ export class UsersService {
                                 id: true,
                                 teamTech: {
                                     select: {
-                                        tech: {
+                                        id: true,
+                                        name: true,
+                                        category: {
                                             select: {
-                                                id: true,
                                                 name: true,
-                                                category: {
-                                                    select: {
-                                                        name: true,
-                                                        description: true,
-                                                    },
-                                                },
+                                                description: true,
                                             },
                                         },
                                     },
