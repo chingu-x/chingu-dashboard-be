@@ -5,12 +5,12 @@ import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 
 @Controller('teamResources')
-@ApiTags('Team Resources')
+@ApiTags('team resources')
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
 
   @ApiOperation({
-    description: "",
+    description: "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
   })
   @Post(':teamMemberId')
   create(
@@ -21,7 +21,7 @@ export class ResourcesController {
   }
 
   @ApiOperation({
-    description: "",
+    description: "Gets all resources added by a team given a teamId (int)",
   })
   @Get(':teamId')
   findAll(@Param('teamId', ParseIntPipe) teamId: number) {
@@ -29,7 +29,7 @@ export class ResourcesController {
   }
 
   @ApiOperation({
-    description: "",
+    description: "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
   })
   @Patch(':teamMemberId/:resourceId')
   update(
@@ -41,7 +41,7 @@ export class ResourcesController {
   }
 
   @ApiOperation({
-    description: "",
+    description: "Delete a resource if teamMemberId (int) matches logged in user",
   })
   @Delete(':teamMemberId/:resourceId')
   remove(
