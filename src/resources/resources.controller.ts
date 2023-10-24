@@ -33,7 +33,6 @@ export class ResourcesController {
   })
   @Patch(':teamMemberId/:resourceId')
   updateResource(
-    @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() updateResourceDto: UpdateResourceDto
   ) {
@@ -45,7 +44,6 @@ export class ResourcesController {
   })
   @Delete(':teamMemberId/:resourceId')
   removeResource(
-    @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
     @Param('resourceId', ParseIntPipe) resourceId: number
   ) {
       return this.resourcesService.removeResource(resourceId);
