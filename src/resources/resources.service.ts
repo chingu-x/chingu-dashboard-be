@@ -43,7 +43,7 @@ export class ResourcesService {
     });
   }
 
-  async findAllResources(teamId: number): Promise<TeamResource> | null {
+  async findAllResources(teamId: number) {
     return this.prisma.teamResource.findMany({
       where: { 
         addedBy: { 
@@ -52,6 +52,19 @@ export class ResourcesService {
           },
         }, 
       },
+      include: {
+        addedBy: {
+            select: {
+                member: {
+                    select: {
+                        firstName: true,
+                        lastName: true,
+                        avatar: true,
+                    },
+                },
+            },
+        },
+    },
       orderBy: { createdAt: 'desc' },
     });
   }
