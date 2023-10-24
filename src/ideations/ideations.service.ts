@@ -223,6 +223,4 @@ export class IdeationsService {
         })
         return oneIdeationVote;
     }
-
-    
 }
