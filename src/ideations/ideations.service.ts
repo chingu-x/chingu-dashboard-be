@@ -224,7 +224,6 @@ export class IdeationsService {
                 id: ideationVoteId,
             },
         });
-        console.log("deleted Vote", deleteIdeationVote)
         return deleteIdeationVote;
     }
 }
