@@ -10,7 +10,7 @@ const userId = 6;
 export class ResourcesService {
   constructor(private prisma: PrismaService) {}
   
-  async createNewResource(createResourceDto: CreateResourceDto, teamMemberId: number): Promise<TeamResource> {  
+  async createNewResource(createResourceDto: CreateResourceDto, teamMemberId: number) {  
     // check if this team has already added this resource's URL
     const teamMember = await this.prisma.voyageTeamMember.findUnique({
       where: {
@@ -43,7 +43,7 @@ export class ResourcesService {
     });
   }
 
-  async findAllResources(teamId: number) {
+  async findAllResources(teamId: number): Promise<TeamResource> | null {
     return this.prisma.teamResource.findMany({
       where: { 
         addedBy: { 
