@@ -6,6 +6,15 @@ import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.enableCors({
+        origin: [
+            "http://localhost:3000",
+            /^https:\/\/chingu-dashboard-[A-Za-z]+-chingu-dashboard\.vercel\.app$/,
+            "https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app",
+            "https://chingu-dashboard.vercel.app",
+        ],
+        methods: ["GET", "POST", "PATCH", "DELETE"],
+    });
     app.setGlobalPrefix("api/v1");
 
     app.useGlobalPipes( new ValidationPipe())
@@ -21,6 +30,7 @@ async function bootstrap() {
 
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+    app.useGlobalPipes(new ValidationPipe());
 
     const port = parseInt(process.env.PORT);
     await app.listen(port);

@@ -1,6 +1,13 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateTechVoteDto } from "./dto/create-tech-vote.dto";
+import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import { CreateTeamTechVoteDto } from "./dto/create-tech-vote.dto";
+import { DeleteTeamTechVoteDto } from "./dto/delete-tech-vote.dto";
 
 @Injectable()
 export class TechsService {
@@ -22,71 +29,38 @@ export class TechsService {
         return voyageMember ? voyageMember.id : null;
     };
 
-    findAllByTeamId(id: number) {
-        return this.prisma.teamTechStackItem.findMany({
+    getAllTechItemsByTeamId = async (teamId: number) => {
+        const voyageTeam = await this.prisma.voyageTeam.findUnique({
             where: {
-                voyageTeamId: id,
-            },
-            select: {
-                id: true,
-                tech: {
-                    select: {
-                        id: true,
-                        category: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                        name: true,
-                    },
-                },
-                teamTechStackItemVotes: {
-                    select: {
-                        votedBy: {
-                            select: {
-                                member: {
-                                    select: {
-                                        firstName: true,
-                                        lastName: true,
-                                        avatar: true,
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
+                id: teamId,
             },
         });
-    }
 
-    getAllTechItemsByTeamId(id: number) {
+        if (!voyageTeam) {
+            throw new NotFoundException(`Team (id: ${teamId}) doesn't exist.`);
+        }
         return this.prisma.techStackCategory.findMany({
             select: {
                 id: true,
                 name: true,
                 description: true,
-                techStackItems: {
+                teamTechStackItems: {
+                    where: {
+                        voyageTeamId: teamId,
+                    },
                     select: {
                         id: true,
                         name: true,
-                        teamTechStacks: {
-                            where: {
-                                voyageTeamId: id,
-                            },
+                        teamTechStackItemVotes: {
                             select: {
-                                id: true,
-                                teamTechStackItemVotes: {
+                                votedBy: {
                                     select: {
-                                        votedBy: {
+                                        member: {
                                             select: {
-                                                member: {
-                                                    select: {
-                                                        id: true,
-                                                        firstName: true,
-                                                        lastName: true,
-                                                        avatar: true,
-                                                    },
-                                                },
+                                                id: true,
+                                                firstName: true,
+                                                lastName: true,
+                                                avatar: true,
                                             },
                                         },
                                     },
@@ -97,82 +71,115 @@ export class TechsService {
                 },
             },
         });
-    }
+    };
 
-    async addNewTechVote(teamId, techId, createTechVoteDto: CreateTechVoteDto) {
+    async addNewTeamTech(teamId: number, createTechVoteDto: CreateTeamTechDto) {
         const voyageMemberId = await this.findVoyageMemberId(
             createTechVoteDto.votedBy,
             teamId,
         );
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
-        const newTeamTechItem = await this.prisma.teamTechStackItem.create({
-            data: {
-                voyageTeamId: teamId,
-                techId: techId,
-            },
-        });
+        try {
+            const newTeamTechItem = await this.prisma.teamTechStackItem.create({
+                data: {
+                    name: createTechVoteDto.techName,
+                    categoryId: createTechVoteDto.techCategoryId,
+                    voyageTeamId: teamId,
+                },
+            });
 
-        return this.prisma.teamTechStackItemVote.create({
-            data: {
-                teamTechId: newTeamTechItem.id,
-                teamMemberId: voyageMemberId,
-            },
-        });
+            return this.prisma.teamTechStackItemVote.create({
+                data: {
+                    teamTechId: newTeamTechItem.id,
+                    teamMemberId: voyageMemberId,
+                },
+            });
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `${createTechVoteDto.techName} already exists in the available team tech stack.`,
+                );
+            }
+            throw e;
+        }
     }
 
     async addExistingTechVote(
         teamId,
         teamTechId,
-        createTechVoteDto: CreateTechVoteDto,
+        createTeamTechVoteDto: CreateTeamTechVoteDto,
     ) {
         const voyageMemberId = await this.findVoyageMemberId(
-            createTechVoteDto.votedBy,
+            createTeamTechVoteDto.votedBy,
             teamId,
         );
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
-        return this.prisma.teamTechStackItemVote.create({
-            data: {
-                teamTechId,
-                teamMemberId: voyageMemberId,
-            },
-        });
-    }
-
-    async removeVote(teamId, teamTechId, createTechVoteDto: CreateTechVoteDto) {
-        const voyageMemberId = await this.findVoyageMemberId(
-            createTechVoteDto.votedBy,
-            teamId,
-        );
-
-        const deletedVote = await this.prisma.teamTechStackItemVote.delete({
-            where: {
-                userTeamStackVote: {
+        try {
+            return await this.prisma.teamTechStackItemVote.create({
+                data: {
                     teamTechId,
                     teamMemberId: voyageMemberId,
                 },
-            },
-        });
+            });
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `User has already voted for techId:${teamTechId}`,
+                );
+            }
+            throw e;
+        }
+    }
 
-        // check if it was the last vote, if so, also delete the team tech item entry
-        const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
-            where: {
-                id: teamTechId,
-            },
-            select: {
-                teamTechStackItemVotes: true,
-            },
-        });
+    async removeVote(
+        teamId,
+        teamTechId,
+        createTechVoteDto: DeleteTeamTechVoteDto,
+    ) {
+        const voyageMemberId = await this.findVoyageMemberId(
+            createTechVoteDto.removedBy,
+            teamId,
+        );
+        if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
-        if (teamTechItem.teamTechStackItemVotes.length === 0) {
-            return this.prisma.teamTechStackItem.delete({
+        try {
+            const deletedVote = await this.prisma.teamTechStackItemVote.delete({
                 where: {
-                    id: teamTechId,
+                    userTeamStackVote: {
+                        teamTechId,
+                        teamMemberId: voyageMemberId,
+                    },
                 },
             });
-        } else {
-            return deletedVote;
+
+            // check if it was the last vote, if so, also delete the team tech item entry
+            const teamTechItem = await this.prisma.teamTechStackItem.findUnique(
+                {
+                    where: {
+                        id: teamTechId,
+                    },
+                    select: {
+                        teamTechStackItemVotes: true,
+                    },
+                },
+            );
+
+            if (teamTechItem.teamTechStackItemVotes.length === 0) {
+                return this.prisma.teamTechStackItem.delete({
+                    where: {
+                        id: teamTechId,
+                    },
+                });
+            } else {
+                return deletedVote;
+            }
+        } catch (e) {
+            if (e.code === "P2025") {
+                throw new NotFoundException(e.meta.cause);
+            }
+            throw e;
         }
     }
 }
