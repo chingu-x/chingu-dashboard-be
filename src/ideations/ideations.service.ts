@@ -2,36 +2,44 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { UpdateTeamDto } from "src/teams/dto/update-team.dto";
+import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 
 //const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
 //const UserId = 10;
 
+
+//PROJECT IDEA SERVICES
 @Injectable()
 export class IdeationsService {
     constructor(private prisma: PrismaService) {}
-    async create(createIdeationDto: CreateIdeationDto) {
-        const { userId, title, description, vision } = createIdeationDto;
 
+    async createIdeation(teamId: number, userId: string, createIdeationDto: CreateIdeationDto) {
+        const { title, description, vision } = createIdeationDto;
+        const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
+            where: {
+                userId: userId,
+                voyageTeamId: teamId,
+            },
+            select: {
+                id: true,
+            }
+        })
         const createdIdeation = await this.prisma.projectIdea.create({
-            //TODO change userID input to be userid: uuid once authentication done
             data: {
-                userId,
+                voyageTeamMemberId,
                 title,
                 description,
-                vision,
+                vision
             },
         });
         return createdIdeation;
     }
 
-    async findAll(id: number) {
-        return this.prisma.projectIdea.findMany({});
-    }
-
-    async getProjectIdeas(id: number) {
-        const query = await this.prisma.voyageTeamMember.findMany({
+    async getIdeationsByVoyageTeam(id: number) {
+        const teamProjectIdeas = await this.prisma.voyageTeamMember.findMany({
             where: {
-                voyageTeamId: id,
+                voyageTeamId: id
             },
             select: {
                 projectIdeas: {
@@ -61,6 +69,8 @@ export class IdeationsService {
                                             select: {
                                                 id: true,
                                                 avatar: true,
+                                                firstName: true,
+                                                lastName: true,
                                             },
                                         },
                                     },
@@ -71,40 +81,151 @@ export class IdeationsService {
                 },
             },
         });
-
-        return query.map((q) => Object.values(q).flat()).flat();
+        return teamProjectIdeas.map((teamMember) => teamMember.projectIdeas).flat();
     }
 
-    async update(
-        id: number,
-        pId: number,
-        updateIdeationDto: UpdateIdeationDto,
-    ) {
-        return this.prisma.projectIdea.update({
+    async getTeamMemberIdByIdeation (ideationId: number){
+        const {voyageTeamMemberId: teamMemberId} = await this.prisma.projectIdea.findFirst({
             where: {
-                id: pId,
+                id: ideationId
             },
-            data: updateIdeationDto,
-        });
+            select: {
+                voyageTeamMemberId: true,
+            }
+        })
+        return teamMemberId;
     }
 
-    async remove(id: number, pId: number) {
-        const deleteIdeation = this.prisma.projectIdea.delete({
+    async updateIdeation(ideationId: number,  userId: string,updateIdeationDto: UpdateIdeationDto,) {
+        const { title, description, vision } = updateIdeationDto;
+        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId)
+        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-                id: pId,
+                id: teamMemberId
             },
-        });
-        return deleteIdeation;
+            select: {
+                id: true,
+                userId: true
+            }
+        })
+        //only allow the user that created the idea to edit it
+        if(voyageTeamMember.userId === userId) {
+            const updatedIdeation = await this.prisma.projectIdea.update({
+                where: {
+                    id: ideationId
+                },
+                data: {
+                    title,
+                    description,
+                    vision,
+                },
+            });
+            return updatedIdeation;
+        }
     }
 
-    /*async voteForProjectIdea(userId: number, projectIdeaId: number) {
-        const createVote = await this.prisma.projectIdeaVotes.create({
-            data: {
-                userId,
+    async deleteIdeation(userId: string, ideationId: number) {
+        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId)
+        const voteCount = await this.getIdeationVoteCount(ideationId)
+        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
+            where: {
+                id: teamMemberId
+            },
+            select: {
+                id: true,
+                userId: true
+            }
+        })
+        //only allow the user that created the idea to delete it and only if it has no votes
+        if(voteCount === 0 && voyageTeamMember.userId === userId ){
+            const deleteIdeation = await this.prisma.projectIdea.delete({
+                where: {
+                    id: ideationId
+                },
+            });
+            return deleteIdeation;
+        }
+    }
 
-                projectIdeaId,
+    async createIdeationVote(userId: string, teamId: number, CreateIdeationVoteDto: CreateIdeationVoteDto) {
+        const { projectIdeaId } = CreateIdeationVoteDto;
+        const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
+            where: {
+                userId: userId,
+                voyageTeamId: teamId
+            },
+            select: {
+                id: true
+            }
+        })
+        const userHasVoted = await this.hasIdeationVote(voyageTeamMemberId, projectIdeaId)
+        //if user has not voted then a vote can be created
+        if (!userHasVoted){
+            const createVote = await this.prisma.projectIdeaVote.create({
+                data: {
+                    voyageTeamMemberId,
+                    projectIdeaId
+                }
+            });
+            return createVote;
+        }
+    }
+
+    async hasIdeationVote(teamMemberId: number, ideationId: number){
+        const checkVoteStatus = await this.prisma.projectIdeaVote.findMany({
+            where: {
+                voyageTeamMemberId: teamMemberId,
+                projectIdeaId: ideationId
+            },
+            select: {
+                id: false
+            }
+        })
+        return checkVoteStatus.length > 0;
+    }
+
+    async getIdeationVoteCount(ideationId: number){
+        const votesForIdeation = await this.prisma.projectIdeaVote.findMany({
+            where: {
+                projectIdeaId: ideationId
+            },
+            select: {
+                id: true
+            }
+        })
+        return votesForIdeation.length;
+    }
+
+    async getIdeationVote(projectIdeaId: number, voyageTeamMemberId: number){
+        const oneIdeationVote = await this.prisma.projectIdeaVote.findFirst({
+            where: {
+                projectIdeaId: projectIdeaId,
+                voyageTeamMemberId: voyageTeamMemberId
+            },
+            select: {
+                id: true
+            }
+        })
+        return oneIdeationVote;
+    }
+
+    async deleteIdeationVote( userId: string, teamId: number, ideationId: number){
+        const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
+            where: {
+                userId: userId,
+                voyageTeamId: teamId
+            },
+            select: {
+                id: true
+            }
+        })
+        const {id: ideationVoteId} = await this.getIdeationVote( ideationId, voyageTeamMemberId )
+        const deleteIdeationVote = await this.prisma.projectIdeaVote.delete({
+            where: {
+                id: ideationVoteId,
             },
         });
-        return createVote;
-    }*/
+        console.log("deleted Vote", deleteIdeationVote)
+        return deleteIdeationVote;
+    }
 }
