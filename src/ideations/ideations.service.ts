@@ -4,10 +4,6 @@ import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 
-//const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
-//const UserId = 10;
-
-
 @Injectable()
 export class IdeationsService {
     constructor(private prisma: PrismaService) {}
