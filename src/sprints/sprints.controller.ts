@@ -1,8 +1,7 @@
 import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe} from '@nestjs/common';
 import {SprintsService} from './sprints.service';
-import {CreateSprintDto} from './dto/create-sprint.dto';
-import {UpdateSprintDto} from './dto/update-sprint.dto';
-import {CreateTeamMeetingDto} from "./dto/create-team-meeting-dto";
+import {UpdateTeamMeetingDto} from './dto/update-team-meeting.dto';
+import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
 import {
     ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse,
     ApiOkResponse,
@@ -10,6 +9,8 @@ import {
     ApiParam, ApiResponse,
     ApiTags,
 } from "@nestjs/swagger";
+import {CreateAgendaDto} from "./dto/create-agenda.dto";
+import {UpdateAgendaDto} from "./dto/update-agenda.dto";
 
 @Controller('sprints')
 @ApiTags("sprints")
@@ -17,12 +18,13 @@ export class SprintsController {
     constructor(private readonly sprintsService: SprintsService) {
     }
 
+    @Post(':sprintNumber/teams/:teamId/meetings')
     @ApiOperation({
         description: "Create a sprint meeting given a sprint number and team Id"
     })
     @ApiCreatedResponse({
         status: 201,
-        description: "The meeting has been successfully created."
+        description: "The meeting has been created successfully."
     })
     @ApiBadRequestResponse({
         status: 400,
@@ -31,7 +33,6 @@ export class SprintsController {
     @ApiNotFoundResponse({
         description: "Resource not found."
     })
-    @Post(':sprintNumber/teams/:teamId/meetings/new')
     @ApiParam({
         name: 'sprintNumber',
         required: true,
@@ -44,30 +45,58 @@ export class SprintsController {
             description: 'voyage team ID'
         }
     )
-    create(
+    createTeamMeeting(
         @Param("sprintNumber", ParseIntPipe) sprintNumber: number,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createTeamMeetingDto: CreateTeamMeetingDto) {
         return this.sprintsService.createTeamMeeting(teamId, sprintNumber,createTeamMeetingDto);
     }
 
-    @Get()
-    findAll() {
-        return this.sprintsService.findAll();
+    @ApiOkResponse({
+        status: 200,
+        description: "The meeting has been updated successfully."
+    })
+    @ApiNotFoundResponse({
+        status: 404,
+        description: "Invalid Meeting ID (MeetingId does not exist)"
+    })
+    @Patch('meetings/:meetingId')
+    editTeamMeeting(
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+        @Body() updateTeamMeetingDto: UpdateTeamMeetingDto)
+    {
+        return this.sprintsService.updateTeamMeeting(meetingId, updateTeamMeetingDto);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.sprintsService.findOne(+id);
+    @ApiCreatedResponse({
+        status: 201,
+        description: "The agenda has been created successfully."
+    })
+    @ApiBadRequestResponse({
+        status: 400,
+        description: "Bad Request - Invalid Meeting ID"
+    })
+    @Post('meetings/:meetingId/agendas')
+    addMeetingAgenda(
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+        @Body() createAgendaDto: CreateAgendaDto
+    ){
+        return this.sprintsService.createMeetingAgenda(meetingId,createAgendaDto)
     }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateSprintDto: UpdateSprintDto) {
-        return this.sprintsService.update(+id, updateSprintDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.sprintsService.remove(+id);
+    @ApiOkResponse({
+        status: 200,
+        description: "The agenda has been updated successfully."
+    })
+    @ApiNotFoundResponse({
+        status: 404,
+        description: "Invalid Agenda ID (AgendaId does not exist)"
+    })
+    @Patch('agendas/:agendaId')
+    updateMeetingAgenda(
+        @Param("agendaId", ParseIntPipe) agendaId: number,
+        @Body() updateAgendaDto:UpdateAgendaDto)
+    {
+        return this.sprintsService.updateMeetingAgenda(agendaId, updateAgendaDto)
     }
 }
