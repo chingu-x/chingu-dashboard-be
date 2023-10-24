@@ -96,7 +96,7 @@ export class IdeationsService {
         return teamMemberId;
     }
 
-    async updateIdeation(ideationId: number,  userId: string,updateIdeationDto: UpdateIdeationDto,) {
+    async updateIdeation(ideationId: number,  userId: string, updateIdeationDto: UpdateIdeationDto,) {
         const { title, description, vision } = updateIdeationDto;
         const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId)
         const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
@@ -178,7 +178,7 @@ export class IdeationsService {
                 projectIdeaId: ideationId
             },
             select: {
-                id: false
+                id: true
             }
         })
         return checkVoteStatus.length > 0;

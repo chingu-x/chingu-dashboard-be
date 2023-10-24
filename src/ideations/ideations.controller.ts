@@ -49,7 +49,7 @@ export class IdeationsController {
         })
     };
 
-    @Patch("users/:userid/ideations/:ideationId")
+    @Patch("users/:userId/ideations/:ideationId")
     @ApiCreatedResponse({type: Ideation})
     updateIdeation(
         @Param("userId") userId: string,
