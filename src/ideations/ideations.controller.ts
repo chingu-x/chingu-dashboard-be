@@ -11,9 +11,9 @@ import {
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 import { ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
-import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 
 @Controller()
 @ApiTags("ideations")
@@ -47,16 +47,10 @@ export class IdeationsController {
 
     @Get("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
-    async getIdeationsByVoyageTeam(
+    getIdeationsByVoyageTeam(
         @Param("teamId", ParseIntPipe) teamId: number
     ) {
-        const projectIdeas = await this.ideationsService.getIdeationsByVoyageTeam(teamId);
-        return projectIdeas.map((projectIdea)=>{
-            return {
-                ...projectIdea, 
-                voteCount: projectIdea.projectIdeaVotes.length
-            }
-        })
+        return this.ideationsService.getIdeationsByVoyageTeam(teamId);
     };
 
     @Patch("/ideations/:ideationId")
