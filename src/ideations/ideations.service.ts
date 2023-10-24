@@ -8,7 +8,6 @@ import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 //const UserId = 10;
 
 
-//PROJECT IDEA SERVICES
 @Injectable()
 export class IdeationsService {
     constructor(private prisma: PrismaService) {}
