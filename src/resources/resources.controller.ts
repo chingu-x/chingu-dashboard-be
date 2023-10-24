@@ -13,8 +13,11 @@ export class ResourcesController {
     description: "",
   })
   @Post(':teamMemberId')
-  create(@Body() createResourceDto: CreateResourceDto) {
-    return this.resourcesService.create(createResourceDto);
+  create(
+    @Body() createResourceDto: CreateResourceDto,
+    @Param('teamMemberId', ParseIntPipe) teamMemberId: number 
+  ) {
+    return this.resourcesService.create(createResourceDto, teamMemberId);
   }
 
   @ApiOperation({
