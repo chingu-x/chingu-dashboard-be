@@ -7,7 +7,7 @@ export class Ideation implements ProjectIdea {
     id: number;
 
     @ApiProperty()
-    userId: number;
+    voyageTeamMemberId: number;
 
     @ApiProperty()
     title: string;
