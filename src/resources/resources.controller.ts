@@ -13,41 +13,41 @@ export class ResourcesController {
     description: "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
   })
   @Post(':teamMemberId')
-  create(
+  createNewResource(
     @Body() createResourceDto: CreateResourceDto,
     @Param('teamMemberId', ParseIntPipe) teamMemberId: number 
   ) {
-    return this.resourcesService.create(createResourceDto, teamMemberId);
+    return this.resourcesService.createNewResource(createResourceDto, teamMemberId);
   }
 
   @ApiOperation({
     description: "Gets all resources added by a team given a teamId (int)",
   })
   @Get(':teamId')
-  findAll(@Param('teamId', ParseIntPipe) teamId: number) {
-    return this.resourcesService.findAll(teamId);
+  findAllResources(@Param('teamId', ParseIntPipe) teamId: number) {
+    return this.resourcesService.findAllResources(teamId);
   }
 
   @ApiOperation({
     description: "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
   })
   @Patch(':teamMemberId/:resourceId')
-  update(
+  updateResource(
     @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
     @Param('resourceId', ParseIntPipe) resourceId: number,
     @Body() updateResourceDto: UpdateResourceDto
   ) {
-      return this.resourcesService.update(teamMemberId, resourceId, updateResourceDto);
+      return this.resourcesService.updateResource(resourceId, updateResourceDto);
   }
 
   @ApiOperation({
     description: "Delete a resource if teamMemberId (int) matches logged in user",
   })
   @Delete(':teamMemberId/:resourceId')
-  remove(
+  removeResource(
     @Param('teamMemberId', ParseIntPipe) teamMemberId: number, 
     @Param('resourceId', ParseIntPipe) resourceId: number
   ) {
-      return this.resourcesService.remove(teamMemberId, resourceId);
+      return this.resourcesService.removeResource(resourceId);
   }
 }

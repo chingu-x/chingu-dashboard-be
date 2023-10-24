@@ -10,9 +10,9 @@ const userId = 6;
 export class ResourcesService {
   constructor(private prisma: PrismaService) {}
   
-  async create(createResourceDto: CreateResourceDto, teamMemberId: number): Promise<TeamResource> {  
-    // check if this team has already added this resource
-    const team = await this.prisma.voyageTeamMember.findUnique({
+  async createNewResource(createResourceDto: CreateResourceDto, teamMemberId: number): Promise<TeamResource> {  
+    // check if this team has already added this resource's URL
+    const teamMember = await this.prisma.voyageTeamMember.findUnique({
       where: {
         id: teamMemberId
       },
@@ -26,7 +26,7 @@ export class ResourcesService {
         url: createResourceDto.url,
         addedBy: { 
           voyageTeam: {
-            id: team.voyageTeamId
+            id: teamMember.voyageTeamId
           } 
         },
       },
@@ -43,7 +43,7 @@ export class ResourcesService {
     });
   }
 
-  async findAll(teamId: number) {
+  async findAllResources(teamId: number) {
     return this.prisma.teamResource.findMany({
       where: { 
         addedBy: { 
@@ -56,7 +56,7 @@ export class ResourcesService {
     });
   }
 
-  async update(teamMemberId: number, resourceId: number, updateResourceDto: UpdateResourceDto) {
+  async updateResource(resourceId: number, updateResourceDto: UpdateResourceDto) {
     const resourceToUpdate = await this.prisma.teamResource.findUnique({
       where: { id: resourceId },
     });
@@ -70,7 +70,7 @@ export class ResourcesService {
     });
   }
 
-  async remove(teamMemberId: number, resourceId: number) {
+  async removeResource(resourceId: number) {
     const resourceToRemove = await this.prisma.teamResource.findUnique({
       where: { id: resourceId },
     });
