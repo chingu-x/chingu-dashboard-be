@@ -1,4 +1,3 @@
-import { Body } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { ProjectIdea } from "@prisma/client";
 

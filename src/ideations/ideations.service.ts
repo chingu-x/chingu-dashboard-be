@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { UpdateTeamDto } from "src/teams/dto/update-team.dto";
 import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 
 //const USER_ID = "bf24212d-403f-4459-aa76-d9abc701a3bf";
