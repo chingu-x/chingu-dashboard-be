@@ -37,7 +37,7 @@ export class IdeationsController {
 
     @Get("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
-    async getProjectIdeasByVoyageTeam(
+    async getIdeationsByVoyageTeam(
         @Param("teamId", ParseIntPipe) teamId: number
     ) {
         const projectIdeas = await this.ideationsService.getIdeationsByVoyageTeam(teamId);
@@ -92,7 +92,7 @@ export class IdeationsController {
 
     @Delete("users/:userId/teams/:teamId/ideations/:ideationId/ideation-vote")
     @ApiCreatedResponse({type: Ideation})
-    removeVoteFromIdeation(
+    deleteIdeationVote(
         @Param("userId") userId: string,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
