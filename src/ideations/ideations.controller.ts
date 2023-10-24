@@ -81,12 +81,12 @@ export class IdeationsController {
     createIdeationVote(
         @Param("userId") userId: string,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body() CreateIdeationVoteDto: CreateIdeationVoteDto,
+        @Body() createIdeationVoteDto: CreateIdeationVoteDto,
     ) {
         return this.ideationsService.createIdeationVote(
             userId,
             teamId,
-            CreateIdeationVoteDto
+            createIdeationVoteDto
         );
     };
 
