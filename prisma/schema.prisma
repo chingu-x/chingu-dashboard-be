@@ -38,6 +38,7 @@ model User {
   twitterId   String?
   linkedinId  String?
   email       String   @unique
+  password    String
   gender      Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   genderId    Int?
   countryCode String?
