@@ -108,7 +108,6 @@ describe("TeamsController (e2e)", () => {
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {
-                console.log(res.body);
                 expect(res.body).toEqual(memberShape);
                 expect(res.body.hrPerSprint).toEqual(randomHours);
             });
