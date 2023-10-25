@@ -25,8 +25,8 @@ export class ResourcesController {
     })
     @Post(":teamMemberId")
     createNewResource(
-        @Body() createResourceDto: CreateResourceDto,
         @Param("teamMemberId", ParseIntPipe) teamMemberId: number,
+        @Body() createResourceDto: CreateResourceDto,
     ) {
         return this.resourcesService.createNewResource(
             createResourceDto,
