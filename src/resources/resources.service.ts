@@ -102,9 +102,14 @@ export class ResourcesService {
         // check if logged in user's id matches the userId that created this resource
         await this.checkAuth(resourceId, userId);
 
-        return this.prisma.teamResource.delete({
+        try {
+          return this.prisma.teamResource.delete({
             where: { id: resourceId },
         });
+        } catch {
+          throw new BadRequestException("Resource deletion failed")
+        }
+        
     }
 
     private async checkAuth(resourceId, userId) {
