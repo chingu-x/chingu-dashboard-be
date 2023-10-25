@@ -22,7 +22,7 @@ import { Ideation } from "./entities/ideation.entity";
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
-    @Post("/teams/:teamId/ideation")
+    @Post("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
     createIdeation(
         @Param("teamId", ParseIntPipe) teamId: number,
