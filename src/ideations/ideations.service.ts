@@ -3,6 +3,8 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
+import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
+import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
 
 @Injectable()
 export class IdeationsService {
@@ -27,16 +29,13 @@ export class IdeationsService {
                 vision
             },
         });
-        const createIdeationVoteDto = {
-            userId: userId,
-            projectIdeaId: createdIdeation.id
-        }
-        await this.createIdeationVote(teamId, createIdeationVoteDto)
+        const createIdeationVoteDto = { userId: userId }
+        await this.createIdeationVote(teamId, createdIdeation.id, createIdeationVoteDto)
         return createdIdeation;
     }
 
-    async createIdeationVote(teamId: number, createIdeationVoteDto: CreateIdeationVoteDto) {
-        const { userId, projectIdeaId } = createIdeationVoteDto;
+    async createIdeationVote(teamId: number, ideationId: number, createIdeationVoteDto: CreateIdeationVoteDto) {
+        const { userId } = createIdeationVoteDto;
         const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 userId: userId,
@@ -46,13 +45,13 @@ export class IdeationsService {
                 id: true
             }
         })
-        const userHasVoted = await this.hasIdeationVote(voyageTeamMemberId, projectIdeaId)
+        const userHasVoted = await this.hasIdeationVote(voyageTeamMemberId, ideationId)
         //if user has not voted then a vote can be created
         if (!userHasVoted){
             const createVote = await this.prisma.projectIdeaVote.create({
                 data: {
                     voyageTeamMemberId,
-                    projectIdeaId
+                    projectIdeaId: ideationId
                 }
             });
             return createVote;
@@ -135,7 +134,8 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(userId: string, ideationId: number) {
+    async deleteIdeation( ideationId: number, deleteIdeationDto: DeleteIdeationDto ) {
+        const { userId } = deleteIdeationDto;
         const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId)
         const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
@@ -147,7 +147,7 @@ export class IdeationsService {
                 voyageTeamId: true
             }
         })
-        await this.deleteIdeationVote(userId, voyageTeamMember.voyageTeamId, ideationId)
+        await this.deleteIdeationVote(voyageTeamMember.voyageTeamId, ideationId, deleteIdeationDto)
         const voteCount = await this.getIdeationVoteCount(ideationId)
         //only allow the user that created the idea to delete it and only if it has no votes
         if(voteCount === 0 && voyageTeamMember.userId === userId ){
@@ -160,7 +160,8 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeationVote( userId: string, teamId: number, ideationId: number){
+    async deleteIdeationVote( teamId: number, ideationId: number, deleteIdeationVoteDto: DeleteIdeationVoteDto){
+        const { userId } = deleteIdeationVoteDto;
         const {id: voyageTeamMemberId} = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 userId: userId,
@@ -216,10 +217,10 @@ export class IdeationsService {
         return votesForIdeation.length;
     }
 
-    private async getIdeationVote(projectIdeaId: number, voyageTeamMemberId: number){
+    private async getIdeationVote(ideationId: number, voyageTeamMemberId: number){
         const oneIdeationVote = await this.prisma.projectIdeaVote.findFirst({
             where: {
-                projectIdeaId: projectIdeaId,
+                projectIdeaId: ideationId,
                 voyageTeamMemberId: voyageTeamMemberId
             },
             select: {
