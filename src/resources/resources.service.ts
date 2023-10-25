@@ -65,7 +65,6 @@ export class ResourcesService {
                                 firstName: true,
                                 lastName: true,
                                 avatar: true,
-                                id: true,
                             },
                         },
                     },
