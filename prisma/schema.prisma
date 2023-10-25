@@ -170,7 +170,7 @@ model ProjectIdea {
 
 model ProjectIdeaVote {
   id            Int               @id @default(autoincrement())
-  votedBy       VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  votedBy       VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamMemberId        Int?
   projectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id],onDelete: Cascade)
   projectIdeaId Int

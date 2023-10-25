@@ -25,4 +25,4 @@ ALTER COLUMN "projectIdeaId" SET NOT NULL;
 ALTER TABLE "ProjectIdea" ADD CONSTRAINT "ProjectIdea_voyageTeamMemberId_fkey" FOREIGN KEY ("voyageTeamMemberId") REFERENCES "VoyageTeamMember"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProjectIdeaVote" ADD CONSTRAINT "ProjectIdeaVote_voyageTeamMemberId_fkey" FOREIGN KEY ("voyageTeamMemberId") REFERENCES "VoyageTeamMember"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "ProjectIdeaVote" ADD CONSTRAINT "ProjectIdeaVote_voyageTeamMemberId_fkey" FOREIGN KEY ("voyageTeamMemberId") REFERENCES "VoyageTeamMember"("id") ON DELETE CASCADE ON UPDATE CASCADE;
