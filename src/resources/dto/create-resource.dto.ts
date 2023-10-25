@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateResourceDto {
-  @ApiProperty()
-  url: string;
+    @ApiProperty()
+    url: string;
 
-  @ApiProperty()
-  title: string;
+    @ApiProperty()
+    title: string;
 }
