@@ -20,7 +20,8 @@ export class TeamsController {
         return this.teamsService.findAll();
     }
 
-    @Get("voyage/:id")
+    // Will need to be fixed to be RESTful
+    @Get("voyages/:id")
     findTeamsByVoyageId(@Param("id", ParseIntPipe) id: number) {
         return this.teamsService.findAllByVoyageId(id);
     }
@@ -35,7 +36,7 @@ export class TeamsController {
         return this.teamsService.findTeamMembersByTeamId(id);
     }
 
-    @Patch(":teamId/member/:userId")
+    @Patch(":teamId/members/:userId")
     update(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("userId") userId: string,

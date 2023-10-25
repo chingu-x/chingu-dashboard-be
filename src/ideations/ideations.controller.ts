@@ -22,7 +22,7 @@ import { Ideation } from "./entities/ideation.entity";
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
-    @Post("/teams/:teamId/ideation")
+    @Post("/teams/:teamId/ideations")
     @ApiCreatedResponse({type: Ideation})
     createIdeation(
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -34,7 +34,7 @@ export class IdeationsController {
         );
     };
 
-    @Post("/teams/:teamId/ideations/:ideationId/ideation-vote")
+    @Post("/teams/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({type: Ideation})
     createIdeationVote(
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -80,7 +80,8 @@ export class IdeationsController {
         );
     };
 
-    @Delete("/teams/:teamId/ideations/:ideationId/ideation-vote")
+    // Should probably add ideationVoteId to the path
+    @Delete("/teams/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({type: Ideation})
     deleteIdeationVote(
         @Param("teamId", ParseIntPipe) teamId: number,
