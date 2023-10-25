@@ -12,6 +12,8 @@ import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
+import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
+import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
 import { ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
 
@@ -20,8 +22,7 @@ import { Ideation } from "./entities/ideation.entity";
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
-    //TODO updated userId to grab uuid/JWT once 
-    @Post("/teams/:teamId/ideations")
+    @Post("/teams/:teamId/ideation")
     @ApiCreatedResponse({type: Ideation})
     createIdeation(
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -33,14 +34,16 @@ export class IdeationsController {
         );
     };
 
-    @Post("/teams/:teamId/ideation-vote")
+    @Post("/teams/:teamId/ideations/:ideationId/ideation-vote")
     @ApiCreatedResponse({type: Ideation})
     createIdeationVote(
         @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("ideationId", ParseIntPipe) ideationId: number,
         @Body() createIdeationVoteDto: CreateIdeationVoteDto,
     ) {
         return this.ideationsService.createIdeationVote(
             teamId,
+            ideationId,
             createIdeationVoteDto
         );
     };
@@ -65,30 +68,29 @@ export class IdeationsController {
         );
     };
 
-    //TODO update to uuid/JWT once authentication added
-    @Delete("users/:userId/ideations/:ideationId")
+    @Delete("/ideations/:ideationId")
     @ApiCreatedResponse({type: Ideation})
     deleteIdeation(
-        @Param("userId") userId: string, 
-        @Param("ideationId", ParseIntPipe) ideationId: number
+        @Param("ideationId", ParseIntPipe) ideationId: number,
+        @Body() deleteIdeationDto: DeleteIdeationDto,
     ) {
-        return this.ideationsService.deleteIdeation(
-            userId, 
-            ideationId
+        return this.ideationsService.deleteIdeation( 
+            ideationId,
+            deleteIdeationDto
         );
     };
 
-    @Delete("users/:userId/teams/:teamId/ideations/:ideationId/ideation-vote")
+    @Delete("/teams/:teamId/ideations/:ideationId/ideation-vote")
     @ApiCreatedResponse({type: Ideation})
     deleteIdeationVote(
-        @Param("userId") userId: string,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
+        @Body() deleteIdeationVoteDto: DeleteIdeationVoteDto,
     ){
         return this.ideationsService.deleteIdeationVote(
-            userId,
             teamId,
-            ideationId
+            ideationId,
+            deleteIdeationVoteDto
         );
     };
 }
