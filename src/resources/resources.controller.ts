@@ -14,7 +14,7 @@ import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { DeleteResourceDto } from "./dto/delete-resource.dto";
 
-@Controller("teamResources")
+@Controller("team-resources")
 @ApiTags("team resources")
 export class ResourcesController {
     constructor(private readonly resourcesService: ResourcesService) {}
