@@ -87,7 +87,7 @@ export class IdeationsService {
                         projectIdeaVotes: {
                             include: {
                                 votedBy: {
-                                    include: {
+                                    select: {
                                         member: {
                                             select: {
                                                 id: true,
