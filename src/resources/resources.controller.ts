@@ -66,6 +66,9 @@ export class ResourcesController {
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() deleteResourceDto: DeleteResourceDto,
     ) {
-        return this.resourcesService.removeResource(resourceId, deleteResourceDto);
+        return this.resourcesService.removeResource(
+            resourceId,
+            deleteResourceDto,
+        );
     }
 }

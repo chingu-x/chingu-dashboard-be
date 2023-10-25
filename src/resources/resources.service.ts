@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { CreateResourceDto } from "./dto/create-resource.dto";
@@ -102,13 +103,12 @@ export class ResourcesService {
         await this.checkAuth(resourceId, userId);
 
         try {
-          return this.prisma.teamResource.delete({
-            where: { id: resourceId },
-        });
+            return this.prisma.teamResource.delete({
+                where: { id: resourceId },
+            });
         } catch {
-          throw new BadRequestException("Resource deletion failed")
+            throw new BadRequestException("Resource deletion failed");
         }
-        
     }
 
     private async checkAuth(resourceId, userId) {
@@ -126,6 +126,9 @@ export class ResourcesService {
                 },
             },
         });
+
+        if (!resourceToModify)
+            throw new NotFoundException("Resource doesn't exist");
 
         if (resourceToModify.addedBy.member.id !== userId)
             throw new UnauthorizedException();
