@@ -7,10 +7,72 @@ describe("TeamsController", () => {
     let service: TeamsService;
 
     const teamArr = [
-        {id: 1, voyageId: 1, name: "Team 1"},
-        {id: 2, voyageId: 1, name: "Team 2"},
-        {id: 3, voyageId: 2, name: "Team 3"},
+        { id: 1, voyageId: 1, name: "Team 1" }
     ];
+    const teamOne = teamArr[0];
+
+    const userOne = {
+        firstName: "John",
+        lastName: "Doe",
+        avatar: "https://i.imgur.com/1.jpg",
+        discordId: "john-discord",
+        countryCode: "US",
+        timezone: "America/New_York",
+        email: "johndoe@user.io",
+    };
+
+    const memberArr = [
+        {
+            member: userOne,
+            hrPerSprint: 12,
+            voyageRole: { name: "Developer" },
+            voyageTeamId: 1,
+            userId: "cc1b7a12-72f6-11ee-b962-0242ac120002",
+        },
+    ];
+    const memberOne = memberArr[0];
+
+    const mockTeamsService = {
+        findAll: jest.fn().mockResolvedValue(teamArr),
+        findAllByVoyageId: jest.fn().mockImplementation((id: number) => [
+            {
+                voyageId: id,
+                ...teamOne,
+            },
+        ]),
+        findOne: jest.fn().mockImplementation((id: number) => {
+            return {
+                voyageId: id,
+                ...teamOne
+            };
+        }),
+        findTeamMembersByTeamId: jest.fn().mockImplementation((id: number) => {
+            return [
+                {
+                    voyageTeamId: id,
+                    ...memberOne,
+                }
+            ];
+        }),
+        updateTeamMemberById: jest
+            .fn()
+            .mockImplementation(
+                (
+                    teamId: number,
+                    userId: string,
+                    memberData: any,
+                ) => 
+                {
+                    return {
+                        voyageTeamId: teamId,
+                        userId: userId,
+                        ...memberData,
+                        ...memberOne
+                    }
+                }
+            ),
+
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -18,93 +80,8 @@ describe("TeamsController", () => {
             providers: [
                 {
                     provide: TeamsService,
-                    useValue: {
-                        findAll: jest.fn().mockResolvedValue(teamArr),
-                        findAllByVoyageId: jest
-                            .fn()
-                            .mockImplementation((id: number) => [
-                                {
-                                    voyageId: id,
-                                    name: "Team Alpha",
-                                },
-                                {
-                                    voyageId: id,
-                                    name: "Team Omega",
-                                },
-                            ]),
-                        findOne: jest.fn().mockImplementation((id: number) => {
-                            return {
-                                voyageId: id,
-                                name: `Team ${id}`,
-                            };
-                        }),
-                        findTeamMembersByTeamId: jest
-                            .fn()
-                            .mockImplementation((id: number) => {
-                                return [
-                                    {
-                                        member: {
-                                            firstName: "John",
-                                            lastName: "Doe",
-                                            avatar: "https://i.imgur.com/1.jpg",
-                                            discordId: "123456789",
-                                            countryCode: "US",
-                                            timezone: "America/New_York",
-                                            email: "johndoe@user.io",
-                                        },
-                                        hrPerSprint: 10,
-                                        voyageRole: {
-                                            name: "Developer",
-                                        },
-                                        voyageTeamId: id,
-                                    },
-                                    {
-                                        member: {
-                                            firstName: "Jane",
-                                            lastName: "Smith",
-                                            avatar: "https://i.imgur.com/2.jpg",
-                                            discordId: "987654321",
-                                            countryCode: "US",
-                                            timezone: "America/New_York",
-                                            email: "janesmith@user.io",
-                                        },
-                                        hrPerSprint: 2,
-                                        voyageRole: {
-                                            name: "Data Scientist",
-                                        },
-                                        voyageTeamId: id,
-                                    },
-                                    {
-                                        member: {
-                                            firstName: "John",
-                                            lastName: "Smith",
-                                            avatar: "https://i.imgur.com/3.jpg",
-                                            discordId: "123498765",
-                                            countryCode: "US",
-                                            timezone: "America/New_York",
-                                            email: "johnsmith@user.io",
-                                        },
-                                        hrPerSprint: 20,
-                                        voyageRole: {
-                                            name: "UI/UX Designer",
-                                        },
-                                        voyageTeamId: id,
-                                    },
-                                ];
-                            }),
-                        updateTeamMemberById: jest.fn().mockImplementation((id: number, userId: number, memberData: any) => (
-                            {
-                                where: {
-                                    userVoyageId: {
-                                        userId: userId,
-                                        voyageTeamId: id,
-                                    },
-                                },
-                                data: {id: id,...memberData}
-                            }
-                        )),
-                    },
-                },
+                    useValue: mockTeamsService
+                },  
             ],
         }).compile();
 
@@ -118,127 +95,49 @@ describe("TeamsController", () => {
 
     it("should return an array of teams", async () => {
         const teams = await controller.findAll();
-        expect(teams).toEqual([
-            {
-                id: 1,
-                voyageId: 1,
-                name: "Team 1",
-            },
-            {
-                id: 2,
-                voyageId: 1,
-                name: "Team 2",
-            },
-            {
-                id: 3,
-                voyageId: 2,
-                name: "Team 3",
-            },
-        ]);
+
+        expect(service.findAll).toHaveBeenCalled();
+        expect(teams).toEqual(teamArr);
     });
     it("should return an array of teams by voyage id", async () => {
         const voyageId = 1;
         const teams = await controller.findTeamsByVoyageId(voyageId);
 
-        expect(teams).toEqual([
-            {
-                voyageId: voyageId,
-                name: "Team Alpha",
-            },
-            {
-                voyageId: voyageId,
-                name: "Team Omega",
-            },
-        ]);
+        expect(service.findAllByVoyageId).toHaveBeenCalledWith(voyageId);
+        expect(teams).toEqual([teamOne]);
     });
 
     it("should return a team", async () => {
-        const voyageId = 20;
+        const voyageId = 1;
         const team = await controller.findOne(voyageId);
 
-        expect(team).toEqual({
-            voyageId: voyageId,
-            name: `Team ${voyageId}`,
-        });
+        expect(service.findOne).toHaveBeenCalledWith(voyageId);
+        expect(team).toEqual(teamOne);
     });
 
     it("should return an array of team members", async () => {
         const voyageId = 1;
         const teamMembers = await controller.findTeamMembersByTeamId(voyageId);
 
-        expect(teamMembers).toEqual([
-            {
-                member: {
-                    firstName: "John",
-                    lastName: "Doe",
-                    avatar: "https://i.imgur.com/1.jpg",
-                    discordId: "123456789",
-                    countryCode: "US",
-                    timezone: "America/New_York",
-                    email: "johndoe@user.io",
-                },
-                hrPerSprint: 10,
-                voyageRole: {
-                    name: "Developer",
-                },
-                voyageTeamId: voyageId,
-            },
-            {
-                member: {
-                    firstName: "Jane",
-                    lastName: "Smith",
-                    avatar: "https://i.imgur.com/2.jpg",
-                    discordId: "987654321",
-                    countryCode: "US",
-                    timezone: "America/New_York",
-                    email: "janesmith@user.io",
-                },
-                hrPerSprint: 2,
-                voyageRole: {
-                    name: "Data Scientist",
-                },
-                voyageTeamId: voyageId,
-            },
-            {
-                member: {
-                    firstName: "John",
-                    lastName: "Smith",
-                    avatar: "https://i.imgur.com/3.jpg",
-                    discordId: "123498765",
-                    countryCode: "US",
-                    timezone: "America/New_York",
-                    email: "johnsmith@user.io",
-                },
-                hrPerSprint: 20,
-                voyageRole: {
-                    name: "UI/UX Designer",
-                },
-                voyageTeamId: voyageId,
-            },
-        ]);
+        expect(service.findTeamMembersByTeamId).toHaveBeenCalledWith(voyageId);
+        expect(teamMembers).toEqual(memberArr);
     });
     it("should update a team member", async () => {
         const teamId = 1;
-        const userId = "111";
+        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const updateTeamMemberDto = {
-            hrPerSprint: 10
+            hrPerSprint: 10,
         };
         const updatedTeamMember = await controller.update(
             teamId,
             userId,
             updateTeamMemberDto
         );
-
-        expect(updatedTeamMember).toEqual(
-            {
-                where: {
-                    userVoyageId: {
-                        userId: userId,
-                        voyageTeamId: teamId,
-                    },
-                },
-                data: {id: teamId,...updateTeamMemberDto}
-            }
+        expect(service.updateTeamMemberById).toHaveBeenCalledWith(
+            teamId,
+            userId,
+            updateTeamMemberDto
         );
+        expect(updatedTeamMember).toEqual(memberOne);
     });
 });
