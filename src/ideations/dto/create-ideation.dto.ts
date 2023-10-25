@@ -14,10 +14,12 @@ export class CreateIdeationDto {
     title: string;
 
     @IsString()
+    @IsNotEmpty()
     @ApiProperty()
     description: string;
 
     @IsString()
+    @IsNotEmpty()
     @ApiProperty()
     vision: string;
 }
