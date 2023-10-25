@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
@@ -27,6 +27,7 @@ describe("TeamsController (e2e)", () => {
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
     });
 
@@ -84,7 +85,7 @@ describe("TeamsController (e2e)", () => {
             });
     });
 
-    it("/PATCH teams/:teamId/member/:userId", async () => {
+    it("/PATCH teams/:teamId/members/:userId", async () => {
         const teamId: number = 1;
         const voyageTeam = await prisma.voyageTeam.findFirst({
             where: {
@@ -103,7 +104,7 @@ describe("TeamsController (e2e)", () => {
         };
 
         return request(app.getHttpServer())
-            .patch(`/teams/${teamId}/member/${firstTeamMember.userId}`)
+            .patch(`/teams/${teamId}/members/${firstTeamMember.userId}`)
             .send(updatedData)
             .expect(200)
             .expect("Content-Type", /json/)
