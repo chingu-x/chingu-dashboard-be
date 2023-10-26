@@ -23,6 +23,6 @@ export class Ideation implements ProjectIdea {
     @ApiProperty()
     updatedAt: Date;
 
-    @ApiProperty({type: [Number], required: false, nullable: true})
+    @ApiProperty({ type: [Number], required: false, nullable: true })
     projectIdeaVotes: number[];
 }
