@@ -23,6 +23,8 @@ async function bootstrap() {
         .setTitle("Chingu Dashboard Project")
         .setDescription("The api for chingu dashboard")
         .setVersion("1.0")
+        .addBearerAuth()
+        .addOAuth2()
         .build();
 
     const document = SwaggerModule.createDocument(app, config);

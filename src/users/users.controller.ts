@@ -1,6 +1,7 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import {Controller, Get, Param, Request, UseGuards} from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 
 @Controller("users")
 @ApiTags("users")
@@ -12,8 +13,21 @@ export class UsersController {
         return this.usersService.findAll();
     }
 
-    @Get(":userId")
-    userDetailsById(@Param("userId") userId: string) {
-        return this.usersService.userDetailsById(userId);
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get('test')
+    test(@Request() req) {
+        console.log(req.user.userId)
+        return req.user
     }
+
+    // full user detail, for dev purpose
+    @Get(":userId")
+    getUserDetailsById(@Param("userId") userId: string) {
+        return this.usersService.getUserDetailsById(userId);
+    }
+
+
+
+
 }
