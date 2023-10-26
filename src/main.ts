@@ -17,6 +17,8 @@ async function bootstrap() {
     });
     app.setGlobalPrefix("api/v1");
 
+    app.useGlobalPipes( new ValidationPipe())
+
     const config = new DocumentBuilder()
         .setTitle("Chingu Dashboard Project")
         .setDescription("The api for chingu dashboard")

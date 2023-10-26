@@ -158,8 +158,8 @@ model VoyageTeamMember {
 
 model ProjectIdea {
   id            Int               @id @default(autoincrement())
-  contributedBy VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  userId        Int?
+  contributedBy VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageTeamMemberId        Int?
   title         String
   description   String
   vision        String
@@ -171,12 +171,12 @@ model ProjectIdea {
 
 model ProjectIdeaVote {
   id            Int               @id @default(autoincrement())
-  votedBy       VoyageTeamMember? @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  userId        Int?
-  ProjectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id], onDelete: Cascade)
-  projectIdeaId Int?
+  votedBy       VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamMemberId        Int?
+  projectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id],onDelete: Cascade)
+  projectIdeaId Int
   createdAt     DateTime          @default(now()) @db.Timestamptz()
-  updatedAt     DateTime          @updatedAt
+  updatedAt     DateTime          @updatedAt 
 }
 
 model TechStackCategory {
