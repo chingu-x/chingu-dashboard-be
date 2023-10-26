@@ -108,6 +108,7 @@ export class UsersService {
         });
     }
 
+
     getUserProfile(userId: string) {
         return this.prisma.user.findUnique({
             where: {
@@ -117,6 +118,8 @@ export class UsersService {
                 id: true,
                 firstName: true,
                 lastName: true,
+                countryCode: true,
+                discordId: true,
                 // add other stuff
             }
     })

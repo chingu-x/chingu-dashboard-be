@@ -1,8 +1,8 @@
-import {Controller, Get, Post, Request, UseGuards} from '@nestjs/common';
-import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
+import {Controller, Post, Request, UseGuards} from '@nestjs/common';
+import {ApiTags} from "@nestjs/swagger";
 import {LocalAuthGuard} from "./local-auth-guard";
 import {AuthService} from "./auth.service";
-import {JwtAuthGuard} from "./jwt-auth.guard";
+
 
 
 @ApiTags("Auth")
@@ -15,13 +15,5 @@ export class AuthController {
     @Post('login')
     async login(@Request() req) {
         return this.authService.login(req.user)
-    }
-
-// TODO: move this to user and pull profile from db
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
-    @Get('profile')
-    getProfile(@Request() req) {
-        return this.authService.getProfile(req.user.userId)
     }
 }

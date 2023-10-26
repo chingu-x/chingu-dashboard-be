@@ -27,7 +27,4 @@ export class AuthService {
         }
     }
 
-    async getProfile(userId: string) {
-        return this.usersService.getUserProfile(userId)
-    }
 }

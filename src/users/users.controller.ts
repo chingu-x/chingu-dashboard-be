@@ -15,19 +15,17 @@ export class UsersController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get('test')
-    test(@Request() req) {
-        console.log(req.user.userId)
-        return req.user
+    @Get('profile')
+    getProfile(@Request() req) {
+        return this.usersService.getUserProfile(req.user.userId)
     }
 
     // full user detail, for dev purpose
+
     @Get(":userId")
     getUserDetailsById(@Param("userId") userId: string) {
         return this.usersService.getUserDetailsById(userId);
     }
-
-
 
 
 }
