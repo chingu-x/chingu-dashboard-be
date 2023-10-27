@@ -11,9 +11,10 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post("login")
     async login(@Request() req, @Res({ passthrough: true }) res) {
-        const access_token = this.authService.login(req.user);
-        res.cookie("access_token", access_token, {
+        const access_token = await this.authService.login(req.user);
+        res.cookie("access_token", access_token.access_token, {
             expires: new Date(Date.now() + 60 * 60 * 7 * 24),
+            httpOnly: true,
         });
         return access_token;
     }
