@@ -3,6 +3,7 @@ import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { PrismaClientExceptionFilter } from "./prisma-client-exception/prisma-client-exception.filter";
 import { ValidationPipe } from "@nestjs/common";
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -14,7 +15,9 @@ async function bootstrap() {
             "https://chingu-dashboard.vercel.app",
         ],
         methods: ["GET", "POST", "PATCH", "DELETE"],
+        credentials: true,
     });
+    app.use(cookieParser())
     app.setGlobalPrefix("api/v1");
 
     app.useGlobalPipes(new ValidationPipe());
