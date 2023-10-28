@@ -17,7 +17,7 @@ export class UsersController {
     @ApiBearerAuth()
     @Get("me")
     getProfile(@Request() req) {
-        return this.usersService.getUserProfile(req.user.userId);
+        return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 
     // full user detail, for dev purpose

@@ -105,7 +105,7 @@ export class UsersService {
         });
     }
 
-    getUserProfile(userId: string) {
+    getPrivateUserProfile(userId: string) {
         return this.prisma.user.findUnique({
             where: {
                 id: userId,
