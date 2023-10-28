@@ -14,7 +14,7 @@ import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { DeleteResourceDto } from "./dto/delete-resource.dto";
 
-@Controller("team-resources")
+@Controller()
 @ApiTags("team resources")
 export class ResourcesController {
     constructor(private readonly resourcesService: ResourcesService) {}
@@ -23,21 +23,21 @@ export class ResourcesController {
         description:
             "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
-    @Post(":teamMemberId")
+    @Post("/teams/:teamId/team-resources")
     createNewResource(
-        @Param("teamMemberId", ParseIntPipe) teamMemberId: number,
+        @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createResourceDto: CreateResourceDto,
     ) {
         return this.resourcesService.createNewResource(
             createResourceDto,
-            teamMemberId,
+            teamId,
         );
     }
 
     @ApiOperation({
         description: "Gets all resources added by a team given a teamId (int)",
     })
-    @Get(":teamId")
+    @Get("/teams/:teamId/team-resources")
     findAllResources(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.resourcesService.findAllResources(teamId);
     }
@@ -46,7 +46,7 @@ export class ResourcesController {
         description:
             "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
     })
-    @Patch(":teamMemberId/:resourceId")
+    @Patch("/team-resources/:resourceId")
     updateResource(
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() updateResourceDto: UpdateResourceDto,
@@ -61,7 +61,7 @@ export class ResourcesController {
         description:
             "Delete a resource if teamMemberId (int) matches logged in user",
     })
-    @Delete(":teamMemberId/:resourceId")
+    @Delete("/team-resources/:resourceId")
     removeResource(
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() deleteResourceDto: DeleteResourceDto,
