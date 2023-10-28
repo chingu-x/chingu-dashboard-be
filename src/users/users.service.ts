@@ -1,15 +1,41 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { UserEntity } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
 
-    findAll() {
-        return this.prisma.user.findMany();
+    findUserByEmail(email: string): Promise<UserEntity | undefined> {
+        return this.prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
     }
 
-    userDetailsById(userId: string) {
+    findAll() {
+        return this.prisma.user.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+                githubId: true,
+                discordId: true,
+                twitterId: true,
+                linkedinId: true,
+                email: true,
+                gender: true,
+                countryCode: true,
+                timezone: true,
+                comment: true,
+            },
+        });
+    }
+
+    // full user detail, for dev purpose
+    getUserDetailsById(userId: string) {
         return this.prisma.user.findUnique({
             where: {
                 id: userId,
@@ -75,6 +101,22 @@ export class UsersService {
                         },
                     },
                 },
+            },
+        });
+    }
+
+    getPrivateUserProfile(userId: string) {
+        return this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                countryCode: true,
+                discordId: true,
+                // add other stuff
             },
         });
     }
