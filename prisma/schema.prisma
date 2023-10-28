@@ -2,12 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext]
 }
 
 model HealthCheck {
@@ -157,26 +159,26 @@ model VoyageTeamMember {
 }
 
 model ProjectIdea {
-  id            Int               @id @default(autoincrement())
-  contributedBy VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  voyageTeamMemberId        Int?
-  title         String
-  description   String
-  vision        String
-  createdAt     DateTime          @default(now()) @db.Timestamptz()
-  updatedAt     DateTime          @updatedAt
+  id                 Int               @id @default(autoincrement())
+  contributedBy      VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageTeamMemberId Int?
+  title              String
+  description        String
+  vision             String
+  createdAt          DateTime          @default(now()) @db.Timestamptz()
+  updatedAt          DateTime          @updatedAt
 
   projectIdeaVotes ProjectIdeaVote[]
 }
 
 model ProjectIdeaVote {
-  id            Int               @id @default(autoincrement())
-  votedBy       VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamMemberId        Int?
-  projectIdea   ProjectIdea?      @relation(fields: [projectIdeaId], references: [id],onDelete: Cascade)
-  projectIdeaId Int
-  createdAt     DateTime          @default(now()) @db.Timestamptz()
-  updatedAt     DateTime          @updatedAt 
+  id                 Int               @id @default(autoincrement())
+  votedBy            VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamMemberId Int?
+  projectIdea        ProjectIdea?      @relation(fields: [projectIdeaId], references: [id], onDelete: Cascade)
+  projectIdeaId      Int
+  createdAt          DateTime          @default(now()) @db.Timestamptz()
+  updatedAt          DateTime          @updatedAt
 }
 
 model TechStackCategory {
@@ -191,7 +193,7 @@ model TechStackCategory {
 
 model TeamTechStackItem {
   id           Int                @id @default(autoincrement())
-  name         String
+  name         String             @db.Citext
   category     TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   categoryId   Int?
   voyageTeam   VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
