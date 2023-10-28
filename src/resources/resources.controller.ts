@@ -23,7 +23,7 @@ export class ResourcesController {
         description:
             "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
-    @Post("/teams/:teamId/team-resources")
+    @Post("/teams/:teamId/resources")
     createNewResource(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createResourceDto: CreateResourceDto,
@@ -37,7 +37,7 @@ export class ResourcesController {
     @ApiOperation({
         description: "Gets all resources added by a team given a teamId (int)",
     })
-    @Get("/teams/:teamId/team-resources")
+    @Get("/teams/:teamId/resources")
     findAllResources(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.resourcesService.findAllResources(teamId);
     }
@@ -46,7 +46,7 @@ export class ResourcesController {
         description:
             "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
     })
-    @Patch("/team-resources/:resourceId")
+    @Patch("/teams/:teamId/resources/:resourceId")
     updateResource(
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() updateResourceDto: UpdateResourceDto,
@@ -61,7 +61,7 @@ export class ResourcesController {
         description:
             "Delete a resource if teamMemberId (int) matches logged in user",
     })
-    @Delete("/team-resources/:resourceId")
+    @Delete("/teams/:teamId/resources/:resourceId")
     removeResource(
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() deleteResourceDto: DeleteResourceDto,
