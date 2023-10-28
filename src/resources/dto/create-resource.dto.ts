@@ -11,4 +11,9 @@ export class CreateResourceDto {
     @IsNotEmpty()
     @ApiProperty()
     title: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty()
+    userId: string;
 }

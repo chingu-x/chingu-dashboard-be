@@ -15,24 +15,27 @@ export class ResourcesService {
 
     async createNewResource(
         createResourceDto: CreateResourceDto,
-        teamMemberId: number,
+        teamId: number,
     ) {
+        const { url, title, userId } = createResourceDto;
+
         // check if this team has already added this resource's URL
-        const teamMember = await this.prisma.voyageTeamMember.findUnique({
+        const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-                id: teamMemberId,
+              userId: userId,
+              voyageTeamId: teamId,
             },
             select: {
-                voyageTeamId: true,
+                id: true,
             },
         });
-
+      
         const existingResource = await this.prisma.teamResource.findFirst({
             where: {
-                url: createResourceDto.url,
+                url: url,
                 addedBy: {
                     voyageTeam: {
-                        id: teamMember.voyageTeamId,
+                        id: teamMember.id,
                     },
                 },
             },
@@ -43,8 +46,9 @@ export class ResourcesService {
 
         return this.prisma.teamResource.create({
             data: {
-                ...createResourceDto,
-                teamMemberId,
+                url,
+                title,
+                teamMemberId: teamMember.id,
             },
         });
     }
