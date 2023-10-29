@@ -13,7 +13,7 @@ findAll() {
                     return this.usersService.findAll();
 }
 
-    @UseGuards(JwtAuthGuard)
+                        @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("me")
     getProfile(@Request() req) {
