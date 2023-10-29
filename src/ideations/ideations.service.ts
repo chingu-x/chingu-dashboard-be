@@ -172,7 +172,6 @@ export class IdeationsService {
     ) {
         const { userId, title, description, vision } = updateIdeationDto;
         const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        console.log("teamMemberId", teamMemberId);
         const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 id: teamMemberId,
@@ -183,7 +182,6 @@ export class IdeationsService {
                 userId: true,
             },
         });
-        console.log("voyageTeamMember", voyageTeamMember);
         if (!voyageTeamMember)
             throw new BadRequestException(
                 `Invalid teamMemberId (id: ${teamMemberId}) or userId (id: ${userId}).`,
@@ -194,7 +192,6 @@ export class IdeationsService {
                 id: ideationId,
             },
         });
-        console.log("ideationExistsCheck", ideationExistsCheck);
         if (!ideationExistsCheck) {
             throw new NotFoundException(
                 `Ideation (id: ${ideationId}) does not exist.`,
