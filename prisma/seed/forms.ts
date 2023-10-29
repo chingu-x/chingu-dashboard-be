@@ -1,8 +1,11 @@
 import {PrismaClient} from "@prisma/client";
+import {connect} from "rxjs";
 
 const prisma = new PrismaClient();
 
 export const populateFormsAndResponses = async () => {
+
+    // test option choices for Voyage Application form
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
@@ -49,6 +52,7 @@ export const populateFormsAndResponses = async () => {
     const users = await prisma.user.findMany({})
     const optionChoices = await prisma.optionChoice.findMany({})
 
+    // Sprint - Retrospective and review form
     await prisma.form.create({
         data: {
             formType: {
@@ -75,7 +79,7 @@ export const populateFormsAndResponses = async () => {
                                     create: {
                                         responseMeetings: {
                                             create: {
-                                                meeting : {
+                                                meeting: {
                                                     connect: {
                                                         id: meetings[0].id
                                                     }
@@ -104,7 +108,7 @@ export const populateFormsAndResponses = async () => {
                                     create: {
                                         responseMeetings: {
                                             create: {
-                                                meeting : {
+                                                meeting: {
                                                     connect: {
                                                         id: meetings[0].id
                                                     }
@@ -133,7 +137,7 @@ export const populateFormsAndResponses = async () => {
                                     create: {
                                         responseMeetings: {
                                             create: {
-                                                meeting : {
+                                                meeting: {
                                                     connect: {
                                                         id: meetings[0].id
                                                     }
@@ -150,6 +154,8 @@ export const populateFormsAndResponses = async () => {
             }
         }
     })
+
+    // Sprint - Sprint Planning form
     await prisma.form.create({
         data: {
             formType: {
@@ -176,7 +182,7 @@ export const populateFormsAndResponses = async () => {
                                     create: {
                                         responseMeetings: {
                                             create: {
-                                                meeting : {
+                                                meeting: {
                                                     connect: {
                                                         id: meetings[0].id
                                                     }
@@ -205,7 +211,7 @@ export const populateFormsAndResponses = async () => {
                                     create: {
                                         responseMeetings: {
                                             create: {
-                                                meeting : {
+                                                meeting: {
                                                     connect: {
                                                         id: meetings[0].id
                                                     }
@@ -222,6 +228,8 @@ export const populateFormsAndResponses = async () => {
             }
         },
     })
+
+    // Voyage Application form
     await prisma.form.create({
         data: {
             formType: {
@@ -246,7 +254,7 @@ export const populateFormsAndResponses = async () => {
                                 create: {
                                     responseUser: {
                                         create: {
-                                            user : {
+                                            user: {
                                                 connect: {
                                                     id: users[0].id
                                                 }
@@ -271,6 +279,61 @@ export const populateFormsAndResponses = async () => {
             }
         },
     })
+
+    // Sprint - checkin form
+    const checkinForm = await prisma.form.create({
+        data: {
+            formType: {
+                connect: {
+                    name: 'voyage member'
+                }
+            },
+            title: "Sprint Check-in",
+            description: "The weekly Chingu Check-in is how we support you and your team. It is also how we identify teams and individuals who need help. So, please make sure you submit this every week."
+        }
+    })
+
+    await prisma.question.create({
+            data: {
+                form: {
+                    connect: {
+                        id: checkinForm.id
+                    }
+                },
+                order: 1,
+                inputType: {
+                    connect: {
+                        name: 'text'
+                    }
+                },
+                text: "How did you communicate with your team this past week?",
+                answerRequired: true,
+                optionGroup: {
+                    create: {
+                        name: "checkin-form-communicate-how",
+                        optionChoices: {
+                            createMany: {
+                                data: [
+                                    {
+                                        text: "I didn't communicate with my team"
+                                    },
+                                    {
+                                        text: "Only in Team Channel"
+                                    },
+                                    {
+                                        text: "Only in Team Meeting(s)"
+                                    },
+                                    {
+                                        text: "Team Channel + Team Meeting(s)"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    )
 
     console.log('Forms, Questions and Responses populated.')
 }

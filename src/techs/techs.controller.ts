@@ -22,7 +22,7 @@ export class TechsController {
     @ApiOperation({
         description: "Gets all selected tech for a team given a teamId (int)",
     })
-    @Get("/team/:teamId")
+    @Get("/teams/:teamId")
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.techsService.getAllTechItemsByTeamId(teamId);
     }
@@ -31,7 +31,7 @@ export class TechsController {
         description:
             "Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid",
     })
-    @Post("/team/:teamId/tech/:techId/new")
+    @Post("/teams/:teamId/techs")
     addNewTeamTech(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
@@ -43,7 +43,7 @@ export class TechsController {
         description:
             'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
-    @Post("/team/:teamId/tech/:teamTechId")
+    @Post("/teams/:teamId/techs/:teamTechId")
     addExistingTechVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
@@ -59,7 +59,7 @@ export class TechsController {
     @ApiOperation({
         description: "Edit/Remove own vote",
     })
-    @Delete("/team/:teamId/tech/:teamTechId")
+    @Delete("/teams/:teamId/techs/:teamTechId")
     removeVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
