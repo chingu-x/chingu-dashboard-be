@@ -6,7 +6,7 @@ import {
     Body,
     Patch,
     Delete,
-    ParseIntPipe
+    ParseIntPipe,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
@@ -23,19 +23,16 @@ export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
     @Post("/teams/:teamId/ideations")
-    @ApiCreatedResponse({type: Ideation})
+    @ApiCreatedResponse({ type: Ideation })
     createIdeation(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
-        return this.ideationsService.createIdeation(
-            teamId, 
-            createIdeationDto
-        );
-    };
+        return this.ideationsService.createIdeation(teamId, createIdeationDto);
+    }
 
     @Post("/teams/:teamId/ideations/:ideationId/ideation-votes")
-    @ApiCreatedResponse({type: Ideation})
+    @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
@@ -44,54 +41,52 @@ export class IdeationsController {
         return this.ideationsService.createIdeationVote(
             teamId,
             ideationId,
-            createIdeationVoteDto
+            createIdeationVoteDto,
         );
-    };
+    }
 
     @Get("/teams/:teamId/ideations")
-    @ApiCreatedResponse({type: Ideation})
-    getIdeationsByVoyageTeam(
-        @Param("teamId", ParseIntPipe) teamId: number
-    ) {
+    @ApiCreatedResponse({ type: Ideation })
+    getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
-    };
+    }
 
     @Patch("/ideations/:ideationId")
-    @ApiCreatedResponse({type: Ideation})
+    @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
-        return this.ideationsService.updateIdeation( 
-            ideationId,  
-            updateIdeationDto
+        return this.ideationsService.updateIdeation(
+            ideationId,
+            updateIdeationDto,
         );
-    };
+    }
 
     @Delete("/ideations/:ideationId")
-    @ApiCreatedResponse({type: Ideation})
+    @ApiCreatedResponse({ type: Ideation })
     deleteIdeation(
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Body() deleteIdeationDto: DeleteIdeationDto,
     ) {
-        return this.ideationsService.deleteIdeation( 
+        return this.ideationsService.deleteIdeation(
             ideationId,
-            deleteIdeationDto
+            deleteIdeationDto,
         );
-    };
+    }
 
     // Should probably add ideationVoteId to the path
     @Delete("/teams/:teamId/ideations/:ideationId/ideation-votes")
-    @ApiCreatedResponse({type: Ideation})
+    @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Body() deleteIdeationVoteDto: DeleteIdeationVoteDto,
-    ){
+    ) {
         return this.ideationsService.deleteIdeationVote(
             teamId,
             ideationId,
-            deleteIdeationVoteDto
+            deleteIdeationVoteDto,
         );
-    };
+    }
 }
