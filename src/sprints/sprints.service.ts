@@ -4,6 +4,7 @@ import {PrismaService} from "../prisma/prisma.service";
 import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
 import {CreateAgendaDto} from "./dto/create-agenda.dto";
 import {UpdateAgendaDto} from "./dto/update-agenda.dto";
+import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
 
 @Injectable()
 export class SprintsService {
@@ -141,5 +142,13 @@ export class SprintsService {
                 )
             }
         }
+    }
+
+    async addMeetingFormResponse(
+        meetingId: number,
+        formId: number,
+        {response}: CreateMeetingFormResponseDto
+    ){
+        console.log(meetingId, formId, response)
     }
 }

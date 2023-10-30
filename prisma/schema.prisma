@@ -266,8 +266,8 @@ model TeamMeeting {
   createdAt            DateTime   @default(now()) @db.Timestamptz()
   updatedAt            DateTime   @updatedAt
 
-  agendas         Agenda[]
-  responseMeeting ResponseMeeting[]
+  agendas          Agenda[]
+  responseMeetings ResponseMeeting[]
 }
 
 model Agenda {
@@ -290,9 +290,9 @@ model Form {
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @updatedAt
 
-  questions     Question[]
-  sprintReview  TeamMeeting[] @relation("SprintReview")
-  sprintMeeting TeamMeeting[] @relation("SprintPlanning")
+  questions       Question[]
+  sprintReviews   TeamMeeting[] @relation("SprintReview")
+  sprintPlannings TeamMeeting[] @relation("SprintPlanning")
 }
 
 model FormType {
@@ -362,10 +362,10 @@ model Response {
   responseBoolean Boolean?
   responseText    String?
 
-  responseMeetings         ResponseMeeting[]
-  responseVoyageTeam       ResponseVoyageTeam[]
-  responseUser             ResponseUser[]
-  responseVoyageTeamMember ResponseVoyageTeamMember[]
+  responseMeetings          ResponseMeeting[]
+  responseVoyageTeams       ResponseVoyageTeam[]
+  responseUsers             ResponseUser[]
+  responseVoyageTeamMembers ResponseVoyageTeamMember[]
 }
 
 model ResponseMeeting {

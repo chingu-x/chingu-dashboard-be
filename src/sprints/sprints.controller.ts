@@ -11,6 +11,7 @@ import {
 } from "@nestjs/swagger";
 import {CreateAgendaDto} from "./dto/create-agenda.dto";
 import {UpdateAgendaDto} from "./dto/update-agenda.dto";
+import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
 
 @Controller('sprints')
 @ApiTags("sprints")
@@ -100,8 +101,12 @@ export class SprintsController {
         return this.sprintsService.updateMeetingAgenda(agendaId, updateAgendaDto)
     }
 
-    @Post('meetings/:meetingId/forms')
-    addMeetingFormResponse(){
-
+    @Post('meetings/:meetingId/forms/:formId')
+    addMeetingFormResponse(
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+        @Param("formId", ParseIntPipe) formId: number,
+        @Body() createMeetingFormResponse: CreateMeetingFormResponseDto)
+    {
+        return this.sprintsService.addMeetingFormResponse(meetingId, formId, createMeetingFormResponse)
     }
 }
