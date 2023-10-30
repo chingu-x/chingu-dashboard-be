@@ -4,6 +4,7 @@ import { populateTablesWithRelations } from "./relations";
 import { populateTables } from "./tables";
 import {populateFormsAndResponses} from "./forms";
 import {populateVoyageTeams} from "./voyageTeams";
+import {populateUsers} from "./users";
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,7 @@ const deleteAllTables = async () => {
     try {
         await deleteAllTables();
         await populateTables();
+        await populateUsers();
         await populateVoyageTeams();
         await populateTablesWithRelations();
         await populateFormsAndResponses();

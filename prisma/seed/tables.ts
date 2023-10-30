@@ -7,7 +7,6 @@ import VoyageRoles from "./data/voyage-roles";
 import VoyageStatus from "./data/voyage-status";
 import TechStackCategories from "./data/tech-stack-categories";
 
-import Users from "./data/users";
 import Voyages from "./data/voyages";
 import FeatureCategories from "./data/feature-categories";
 
@@ -32,7 +31,6 @@ export const populateTables = async () => {
     await populateTable("voyageRole", VoyageRoles);
     await populateTable("voyageStatus", VoyageStatus);
     await populateTable("techStackCategory", TechStackCategories);
-    await populateTable("user", Users);
     await populateTable("voyage", Voyages);
     await populateTable("featureCategory", FeatureCategories);
     await populateTable("formType", FormTypes);
