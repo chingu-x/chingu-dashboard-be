@@ -60,7 +60,7 @@ export const populateCheckinForm = async () => {
                         answerRequired: true,
                         optionGroup: {
                             create: {
-                                name: "checkin-form-communicate-how",
+                                name: "checkin-form-contribution",
                                 optionChoices: {
                                     createMany: {
                                         data: [

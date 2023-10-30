@@ -326,11 +326,10 @@ model Question {
   multipleAllowed Boolean?
   optionGroupId   Int?
   optionGroup     OptionGroup? @relation(fields: [optionGroupId], references: [id])
+  createdAt       DateTime     @default(now()) @db.Timestamptz()
+  updatedAt       DateTime     @updatedAt
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  questionOptions QuestionOption[]
+  responses Response[]
 }
 
 model OptionGroup {
@@ -350,29 +349,18 @@ model OptionChoice {
   text          String
   createdAt     DateTime    @default(now()) @db.Timestamptz()
   updatedAt     DateTime    @updatedAt
-
-  questionOptions QuestionOption[]
-}
-
-model QuestionOption {
-  id             Int           @id @default(autoincrement())
-  questionId     Int
-  question       Question      @relation(fields: [questionId], references: [id])
-  optionChoiceId Int?
-  optionChoice   OptionChoice? @relation(fields: [optionChoiceId], references: [id])
-  createdAt      DateTime      @default(now()) @db.Timestamptz()
-  updatedAt      DateTime      @updatedAt
-
-  responses Response[]
+  Response      Response[]
 }
 
 model Response {
-  id               Int            @id @default(autoincrement())
-  questionOptionId Int
-  questionOption   QuestionOption @relation(fields: [questionOptionId], references: [id])
-  responseNumeric  Int?
-  responseBoolean  Boolean?
-  responseText     String?
+  id              Int           @id @default(autoincrement())
+  questionId      Int
+  question        Question      @relation(fields: [questionId], references: [id])
+  optionChoiceId  Int?
+  optionChoice    OptionChoice? @relation(fields: [optionChoiceId], references: [id])
+  responseNumeric Int?
+  responseBoolean Boolean?
+  responseText    String?
 
   responseMeetings         ResponseMeeting[]
   responseVoyageTeam       ResponseVoyageTeam[]
