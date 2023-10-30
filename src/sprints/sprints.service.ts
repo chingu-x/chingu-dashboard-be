@@ -1,15 +1,19 @@
-import {BadRequestException, ConflictException, Injectable, NotFoundException} from '@nestjs/common';
-import {UpdateTeamMeetingDto} from './dto/update-team-meeting.dto';
-import {PrismaService} from "../prisma/prisma.service";
-import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
-import {CreateAgendaDto} from "./dto/create-agenda.dto";
-import {UpdateAgendaDto} from "./dto/update-agenda.dto";
-import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
+import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
+import { CreateAgendaDto } from "./dto/create-agenda.dto";
+import { UpdateAgendaDto } from "./dto/update-agenda.dto";
+import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 
 @Injectable()
 export class SprintsService {
-    constructor(private prisma: PrismaService) {
-    }
+    constructor(private prisma: PrismaService) {}
 
     findSprintIdBySprintNumber = async (
         teamId: number,
@@ -17,7 +21,7 @@ export class SprintsService {
     ): Promise<number> | null => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
-                id: teamId
+                id: teamId,
             },
             include: {
                 voyage: {
@@ -25,36 +29,45 @@ export class SprintsService {
                         sprints: {
                             select: {
                                 id: true,
-                                number: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
-        return sprintsByTeamId?.voyage?.sprints?.filter(s => s.number === sprintNumber)[0].id
-    }
+                                number: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return sprintsByTeamId?.voyage?.sprints?.filter(
+            (s) => s.number === sprintNumber,
+        )[0].id;
+    };
 
     async createTeamMeeting(
         teamId: number,
         sprintNumber: number,
-        {title, meetingLink, dateTime, notes}: CreateTeamMeetingDto
+        { title, meetingLink, dateTime, notes }: CreateTeamMeetingDto,
     ) {
-        const sprintId = await this.findSprintIdBySprintNumber(teamId, sprintNumber)
+        const sprintId = await this.findSprintIdBySprintNumber(
+            teamId,
+            sprintNumber,
+        );
         if (!sprintId) {
-            throw new NotFoundException(`Sprint Id not found for team ${teamId} for sprint number ${sprintNumber}.`)
+            throw new NotFoundException(
+                `Sprint Id not found for team ${teamId} for sprint number ${sprintNumber}.`,
+            );
         }
 
         // check if the sprint already has a meeting.
         // This is temporary just remove this block when the app supports multiple meeting per sprint
         const isMeetingExist = await this.prisma.teamMeeting.findFirst({
             where: {
-                sprintId: sprintId
-            }
-        })
+                sprintId: sprintId,
+            },
+        });
 
         if (isMeetingExist)
-            throw new ConflictException(`A meeting already exist for this sprint.`)
+            throw new ConflictException(
+                `A meeting already exist for this sprint.`,
+            );
         // - End of temporary block
 
         return this.prisma.teamMeeting.create({
@@ -64,41 +77,38 @@ export class SprintsService {
                 title,
                 meetingLink,
                 dateTime,
-                notes
-            }
-        })
+                notes,
+            },
+        });
     }
 
     async updateTeamMeeting(
         meetingId: number,
-        {title, meetingLink, dateTime, notes}: UpdateTeamMeetingDto
+        { title, meetingLink, dateTime, notes }: UpdateTeamMeetingDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.teamMeeting.update({
                 where: {
-                    id: meetingId
+                    id: meetingId,
                 },
                 data: {
                     title,
                     meetingLink,
                     dateTime,
                     notes,
-                }
-            })
-            return updatedMeeting
+                },
+            });
+            return updatedMeeting;
         } catch (e) {
-            if (e.code === 'P2025') {
-                throw new NotFoundException(
-                    `Invalid meetingId: ${meetingId}`
-                )
+            if (e.code === "P2025") {
+                throw new NotFoundException(`Invalid meetingId: ${meetingId}`);
             }
         }
-
     }
 
     async createMeetingAgenda(
         meetingId: number,
-        {title, description, status}: CreateAgendaDto
+        { title, description, status }: CreateAgendaDto,
     ) {
         try {
             const newAgenda = await this.prisma.agenda.create({
@@ -106,40 +116,38 @@ export class SprintsService {
                     teamMeetingId: meetingId,
                     title,
                     description,
-                    status
-                }
-            })
-            return newAgenda
+                    status,
+                },
+            });
+            return newAgenda;
         } catch (e) {
-            if (e.code === 'P2003') {
+            if (e.code === "P2003") {
                 throw new BadRequestException(
-                    `Invalid meetingId: ${meetingId}`
-                )
+                    `Invalid meetingId: ${meetingId}`,
+                );
             }
         }
     }
 
     async updateMeetingAgenda(
         agendaId: number,
-        {title, description, status}: UpdateAgendaDto
+        { title, description, status }: UpdateAgendaDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.agenda.update({
                 where: {
-                    id: agendaId
+                    id: agendaId,
                 },
                 data: {
                     title,
                     description,
-                    status
-                }
-            })
-            return updatedMeeting
+                    status,
+                },
+            });
+            return updatedMeeting;
         } catch (e) {
-            if (e.code === 'P2025') {
-                throw new NotFoundException(
-                    `Invalid meetingId: ${agendaId}`
-                )
+            if (e.code === "P2025") {
+                throw new NotFoundException(`Invalid meetingId: ${agendaId}`);
             }
         }
     }
@@ -147,8 +155,8 @@ export class SprintsService {
     async addMeetingFormResponse(
         meetingId: number,
         formId: number,
-        {response}: CreateMeetingFormResponseDto
-    ){
-        console.log(meetingId, formId, response)
+        { response }: CreateMeetingFormResponseDto,
+    ) {
+        console.log(meetingId, formId, response);
     }
 }
