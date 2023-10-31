@@ -8,7 +8,7 @@ import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
 import { SprintsModule } from "./sprints/sprints.module";
 import { AuthModule } from "./auth/auth.module";
-import { FormsModule } from './forms/forms.module';
+import { FormsModule } from "./forms/forms.module";
 
 @Module({
     imports: [
