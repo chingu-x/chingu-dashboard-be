@@ -1,5 +1,6 @@
 import {PrismaClient} from "@prisma/client";
 import {populateCheckinForm} from "./forms/checkinform";
+import {getRandomDateDuringSprint, getSprintId} from "./utils";
 
 const prisma = new PrismaClient();
 
@@ -47,11 +48,6 @@ export const populateFormsAndResponses = async () => {
         }
     })
 
-    // find a meeting Id, just use the first one in this case
-    const meetings = await prisma.teamMeeting.findMany({})
-    const users = await prisma.user.findMany({})
-    const optionChoices = await prisma.optionChoice.findMany({})
-
     // Sprint - Retrospective and review form
     await prisma.form.create({
         data: {
@@ -73,20 +69,6 @@ export const populateFormsAndResponses = async () => {
                         text: 'What went right?',
                         description: 'Share your thoughts on what went right',
                         answerRequired: false,
-                        responses: {
-                            create: {
-                                responseMeetings: {
-                                    create: {
-                                        meeting: {
-                                            connect: {
-                                                id: meetings[0].id
-                                            }
-                                        }
-                                    }
-                                },
-                                responseText: "Everything went well."
-                            }
-                        },
                     },
                     {
                         order: 2,
@@ -97,21 +79,7 @@ export const populateFormsAndResponses = async () => {
                         },
                         text: 'What could be improved?',
                         description: 'Share your thoughts on what could be improved for the next sprint',
-                        answerRequired: false,
-                        responses: {
-                            create: {
-                                responseMeetings: {
-                                    create: {
-                                        meeting: {
-                                            connect: {
-                                                id: meetings[0].id
-                                            }
-                                        }
-                                    }
-                                },
-                                responseText: "Communications. Maybe we can do a daily standup in our discord channel"
-                            }
-                        },
+                        answerRequired: false
                     },
                     {
                         order: 3,
@@ -123,21 +91,6 @@ export const populateFormsAndResponses = async () => {
                         text: 'Changes to be made for the next sprint?',
                         description: 'Share your thoughts on what could be changed for the next sprint',
                         answerRequired: false,
-                        responses: {
-                            create: {
-                                responseMeetings: {
-                                    create: {
-                                        meeting: {
-                                            connect: {
-                                                id: meetings[0].id
-                                            }
-                                        }
-                                    }
-                                },
-                                responseText: "Not sure."
-                            }
-                        },
-
                     }
                 ]
             }
@@ -165,21 +118,6 @@ export const populateFormsAndResponses = async () => {
                         text: 'Sprint Goal',
                         description: 'What is the primary goal of the next sprint?',
                         answerRequired: false,
-                        responses: {
-                            create: {
-                                responseMeetings: {
-                                    create: {
-                                        meeting: {
-                                            connect: {
-                                                id: meetings[0].id
-                                            }
-                                        }
-                                    }
-                                },
-                                responseText: "Complete all the Must have features"
-                            }
-                        },
-
                     },
                     {
                         order: 2,
@@ -191,21 +129,6 @@ export const populateFormsAndResponses = async () => {
                         text: 'Timeline/Tasks',
                         description: 'What are some of the goals we want to achieve',
                         answerRequired: false,
-                        responses: {
-                            create: {
-                                responseMeetings: {
-                                    create: {
-                                        meeting: {
-                                            connect: {
-                                                id: meetings[0].id
-                                            }
-                                        }
-                                    }
-                                },
-                                responseText: "Deploy the app."
-                            }
-                        },
-
                     }
                 ]
             }
