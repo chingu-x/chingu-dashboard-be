@@ -1,62 +1,88 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Request, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { FeaturesService } from './features.service';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { UpdateFeatureDto } from './dto/update-feature.dto';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Feature } from './entities/feature.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('teams')
 @ApiTags("features")
 export class FeaturesController {
   constructor(private readonly featuresService: FeaturesService) {}
 
-  //need to figure out jwt token auth
-  @Post("/features/features")
+  //can only create if loggedIn
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post("/features")
   @ApiCreatedResponse({ type: Feature })
   createFeature(
     @Body() createFeatureDto: CreateFeatureDto,
   ) {
     return this.featuresService.createFeature(createFeatureDto);
-  }
+  };
+
+  @Get('/features/feature-categories')
+  findFeatureCategory(){
+    return this. featuresService.findFeatureCategories();
+  };
 
   @Get('/features/:featureId')
   findOneFeature(
     @Param('featureId', ParseIntPipe) featureId: number
     ) {
     return this.featuresService.findOneFeature(featureId);
-  }
+  };
 
-    //need to check route is correct
-  @Get('/:teamId/voyage-team-members/features/feature-categories/:featurecategoryId/features')
-  findAllFeaturesByCategory(
-    @Param('teamId', ParseIntPipe) teamId: number,
-    @Param('featurecategoryId', ParseIntPipe) featurecategoryId: number
-  ) {
-    return this.featuresService.findAllFeaturesByCategory(teamId, featurecategoryId);
-  }
-
-  //need to check route is correct
-  @Get('/:teamId/voyage-team-members/features/feature-categories/features')
+  @Get('/:teamId/features')
   findAllFeatures(
     @Param('teamId', ParseIntPipe) teamId: number,
     ) {
     return this.featuresService.findAllFeatures(teamId);
-  }
+  };
 
-    //need to figure out jwt token auth
+  //Can only update if loggedIn userId mataches addedBy userId
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch('/features/:featureId')
-  updateFeature(
+  async updateFeature(
+    @Request() req,
     @Param('featureId', ParseIntPipe) featureId: number, 
     @Body() updateFeatureDto: UpdateFeatureDto,
     ) {
-    return this.featuresService.updateFeature(featureId, updateFeatureDto);
-  }
+    const feature = await this.featuresService.findOneFeature(featureId);
 
-    //need to figure out jwt token auth
+    if(!feature){
+      throw new NotFoundException(`featureId (id: ${featureId}) does not exist.`);
+    }
+
+    if(feature.addedBy.member.id === req.user.userId){
+      const updatedFeature = await this.featuresService.updateFeature(featureId, updateFeatureDto);
+      return updatedFeature;
+    } else {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    };
+  };
+
+  //Can only delete if loggedIn userId mataches addedBy userId
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete('/features/:featureId')
-  deleteFeature(
+  async deleteFeature(
+    @Request() req,
     @Param('featureId', ParseIntPipe) featureId: number,
   ) {
-    return this.featuresService.deleteFeature(featureId);
-  }
-}
+    const feature = await this.featuresService.findOneFeature(featureId);
+
+    if(!feature){
+      throw new NotFoundException(`featureId (id: ${featureId}) does not exist.`);
+    };
+
+    if(feature.addedBy.member.id === req.user.userId){
+      const deletedFeature = await this.featuresService.deleteFeature(featureId);
+      return deletedFeature;
+    } else {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    };
+  };
+};
