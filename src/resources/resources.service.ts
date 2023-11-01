@@ -22,14 +22,14 @@ export class ResourcesService {
         // check if this team has already added this resource's URL
         const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-              userId: userId,
-              voyageTeamId: teamId,
+                userId: userId,
+                voyageTeamId: teamId,
             },
             select: {
                 id: true,
             },
         });
-      
+
         const existingResource = await this.prisma.teamResource.findFirst({
             where: {
                 url: url,
