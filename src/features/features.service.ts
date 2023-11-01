@@ -9,143 +9,143 @@ import { UpdateFeatureDto } from "./dto/update-feature.dto";
 
 @Injectable()
 export class FeaturesService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-    async createFeature(createFeatureDto: CreateFeatureDto) {
-        const { teamMemberId, featureCategoryId, description } =
+  async createFeature(createFeatureDto: CreateFeatureDto) {
+    const { teamMemberId, featureCategoryId, description } =
             createFeatureDto;
-        try {
-            const newFeature = await this.prisma.projectFeature.create({
-                data: {
-                    teamMemberId,
-                    featureCategoryId,
-                    description,
+    try {
+      const newFeature = await this.prisma.projectFeature.create({
+        data: {
+          teamMemberId,
+          featureCategoryId,
+          description,
                 },
-            });
-            return newFeature;
-        } catch (e) {
-            throw e;
-        }
+      });
+      return newFeature;
+    } catch (e) {
+      throw e;
     }
+  }
 
-    async findFeatureCategories() {
-        try {
-            const featureCategories =
+  async findFeatureCategories() {
+    try {
+      const featureCategories =
                 await this.prisma.featureCategory.findMany();
-            return featureCategories;
-        } catch (e) {
-            throw e;
-        }
+      return featureCategories;
+    } catch (e) {
+      throw e;
     }
+  }
 
-    async findOneFeature(featureId: number) {
-        try {
-            const projectFeature = await this.prisma.projectFeature.findFirst({
-                where: {
-                    id: featureId,
-                },
-                select: {
-                    id: true,
-                    description: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    teamMemberId: true,
-                    category: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                    addedBy: {
-                        select: {
-                            member: {
-                                select: {
-                                    id: true,
-                                    avatar: true,
-                                    firstName: true,
-                                    lastName: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-
-            if (!projectFeature) {
-                throw new NotFoundException(
-                    `FeatureId (id: ${featureId}) does not exist.`,
-                );
+  async findOneFeature(featureId: number) {
+    try {
+      const projectFeature = await this.prisma.projectFeature.findFirst({
+        where: {
+          id: featureId,
+        },
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          teamMemberId: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
             }
-
-            return projectFeature;
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async findAllFeatures(teamId: number) {
-        try {
-            const allTeamFeatures = await this.prisma.projectFeature.findMany({
-                where: {
-                    addedBy: {
-                        voyageTeamId: teamId,
-                    },
-                },
+          },
+          addedBy: {
+            select: {
+              member: {
                 select: {
-                    id: true,
-                    description: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    teamMemberId: true,
-                    category: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                    addedBy: {
-                        select: {
-                            member: {
-                                select: {
-                                    id: true,
-                                    avatar: true,
-                                    firstName: true,
-                                    lastName: true,
-                                },
+                  id: true,
+                  avatar: true,
+                  firstName: true,
+                  lastName: true,
+                },
                             },
                         },
                     },
                 },
-            });
+      });
 
-            if (!allTeamFeatures) {
-                throw new NotFoundException(
+      if (!projectFeature) {
+        throw new NotFoundException(
+          `FeatureId (id: ${featureId}) does not exist.`,
+        );
+      }
+
+      return projectFeature;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async findAllFeatures(teamId: number) {
+    try {
+      const allTeamFeatures = await this.prisma.projectFeature.findMany({
+        where: {
+          addedBy: {
+            voyageTeamId: teamId,
+                    },
+        },
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          teamMemberId: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+            }
+          },
+          addedBy: {
+            select: {
+              member: {
+                select: {
+                  id: true,
+                  avatar: true,
+                  firstName: true,
+                  lastName: true,
+                },
+                            },
+                        },
+                    },
+          },
+      });
+
+      if (!allTeamFeatures) {
+        throw new NotFoundException(
                     `TeamId (id: ${teamId}) does not exist.`,
                 );
-            }
+      }
 
-            return allTeamFeatures;
-        } catch (e) {
-            throw e;
-        }
+      return allTeamFeatures;
+    } catch (e) {
+      throw e;
     }
+  }
 
-    async updateFeature(featureId: number, updateFeatureDto: UpdateFeatureDto) {
-        const { teamMemberId, featureCategoryId, description } =
+  async updateFeature(featureId: number, updateFeatureDto: UpdateFeatureDto) {
+    const { teamMemberId, featureCategoryId, description } =
             updateFeatureDto;
 
-        try {
-            const updatedFeature = await this.prisma.projectFeature.update({
-                where: {
-                    id: featureId,
-                    teamMemberId: teamMemberId,
-                },
-                data: {
-                    teamMemberId,
-                    featureCategoryId,
-                    description,
-                },
-            });
+    try {
+      const updatedFeature = await this.prisma.projectFeature.update({
+        where: {
+          id: featureId,
+          teamMemberId: teamMemberId,
+        },
+        data: {
+          teamMemberId,
+          featureCategoryId,
+          description,
+        },
+      });
 
             if (!updatedFeature) {
                 throw new BadRequestException(
@@ -153,27 +153,27 @@ export class FeaturesService {
                 );
             }
 
-            return updatedFeature;
-        } catch (e) {
-            throw e;
-        }
-    }
+      return updatedFeature;
+    } catch (e) {
+      throw e;
+    }    
+  }
 
-    async deleteFeature(featureId: number) {
-        try {
-            const deletedFeature = await this.prisma.projectFeature.delete({
-                where: {
-                    id: featureId,
-                },
-            });
+  async deleteFeature(featureId: number) {
+    try {
+      const deletedFeature = await this.prisma.projectFeature.delete({
+        where: {
+          id: featureId,
+        },
+      });
 
-            if (!deletedFeature) {
-                throw new NotFoundException(
+      if (!deletedFeature) {
+        throw new NotFoundException(
                     `FeatureId (id: ${featureId}) does not exist.`,
                 );
-            }
-        } catch (e) {
-            throw e;
-        }
+      }
+    } catch (e) {
+      throw e;
     }
+  }
 }
