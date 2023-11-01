@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { ProjectFeature } from "@prisma/client";
 
-export class Feature implements ProjectFeature{
+export class Feature implements ProjectFeature {
     @ApiProperty()
     id: number;
 

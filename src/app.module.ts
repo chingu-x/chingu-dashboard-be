@@ -7,7 +7,7 @@ import { HealthCheckController } from "./HealthCheck/health-check.controller";
 import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
-import { FeaturesModule } from './features/features.module';
+import { FeaturesModule } from "./features/features.module";
 
 @Module({
     imports: [
