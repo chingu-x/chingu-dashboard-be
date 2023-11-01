@@ -32,7 +32,7 @@ export class FeaturesController {
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
         @Request() req,
-        @Body() createFeatureDto: CreateFeatureDto
+        @Body() createFeatureDto: CreateFeatureDto,
     ) {
         return this.featuresService.createFeature(req, createFeatureDto);
     }
