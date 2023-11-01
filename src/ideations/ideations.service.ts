@@ -67,7 +67,27 @@ export class IdeationsService {
                     projectIdeaId: ideationId,
                 },
             });
-            return createVote;
+
+            const votedBy = await this.prisma.voyageTeamMember.findFirst({
+                where: {
+                    id: createVote.voyageTeamMemberId,
+                },
+                select: {
+                    member: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            avatar: true,
+                        },
+                    },
+                },
+            });
+
+            return {
+                ...createVote,
+                votedBy,
+            };
         }
     }
 
