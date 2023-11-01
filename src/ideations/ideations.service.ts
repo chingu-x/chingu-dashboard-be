@@ -76,8 +76,6 @@ export class IdeationsService {
                     member: {
                         select: {
                             id: true,
-                            firstName: true,
-                            lastName: true,
                             avatar: true,
                         },
                     },
