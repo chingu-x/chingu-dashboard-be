@@ -30,8 +30,11 @@ export class FeaturesController {
     @ApiBearerAuth()
     @Post("/features")
     @ApiCreatedResponse({ type: Feature })
-    createFeature(@Body() createFeatureDto: CreateFeatureDto) {
-        return this.featuresService.createFeature(createFeatureDto);
+    async createFeature(
+        @Request() req,
+        @Body() createFeatureDto: CreateFeatureDto
+    ) {
+        return this.featuresService.createFeature(req, createFeatureDto);
     }
 
     @Get("/features/feature-categories")
