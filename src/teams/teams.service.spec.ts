@@ -4,6 +4,7 @@ import { PrismaService } from "../prisma/prisma.service";
 
 describe("TeamsService", () => {
     let service: TeamsService;
+    let prisma: PrismaService;
 
     const teamArr = [
         { id: 1, voyageId: 1, name: "Team 1" },

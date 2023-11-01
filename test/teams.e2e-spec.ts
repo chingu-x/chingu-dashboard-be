@@ -58,7 +58,7 @@ describe("TeamsController (e2e)", () => {
         });
 
         return request(app.getHttpServer())
-            .get(`/teams/voyage/${voyageId}`)
+            .get(`/teams/voyages/${voyageId}`)
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {
