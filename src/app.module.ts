@@ -6,6 +6,7 @@ import { TechsModule } from "./techs/techs.module";
 import { HealthCheckController } from "./HealthCheck/health-check.controller";
 import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
+import { ResourcesModule } from "./resources/resources.module";
 import { AuthModule } from "./auth/auth.module";
 
 @Module({
@@ -16,6 +17,7 @@ import { AuthModule } from "./auth/auth.module";
         TeamsModule,
         TechsModule,
         UsersModule,
+        ResourcesModule,
         AuthModule,
     ],
     controllers: [HealthCheckController],
