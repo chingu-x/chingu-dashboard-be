@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { UpdateFeatureDto } from './dto/update-feature.dto';
@@ -9,106 +9,156 @@ export class FeaturesService {
 
   async createFeature( createFeatureDto: CreateFeatureDto) {
     const { teamMemberId, featureCategoryId, description } = createFeatureDto;
-    const newFeature = await this.prisma.projectFeature.create({
-      data: {
-        teamMemberId,
-        featureCategoryId,
-        description
-      }
-    })
-    return newFeature;
-  }
+    try {
+      const newFeature = await this.prisma.projectFeature.create({
+        data: {
+          teamMemberId,
+          featureCategoryId,
+          description
+        }
+      });
+      return newFeature;
+    } catch (e) {
+      throw e;
+    }
+  };
+
+  async findFeatureCategories(){
+    try{
+      const featureCategories = await this.prisma.featureCategory.findMany();
+      return featureCategories;
+    } catch (e){
+      throw e;
+    }
+  };
 
   async findOneFeature(featureId: number) {
-    const projectFeature = await this.prisma.projectFeature.findUnique({
-      where: { 
-        id: featureId 
-      },
-      select: {
-        id: true,
-        teamMemberId: true,
-        featureCategoryId: true,
-        description: true,
-        createdAt: true,
-        updatedAt: true,
-        addedBy: {
-          select: {
-            member: {
-              select:{
-                id: true,
-                avatar: true,
-                firstName: true,
-                lastName: true,
+    try{
+      const projectFeature = await this.prisma.projectFeature.findFirst({
+        where: {
+          id: featureId,
+        },
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          teamMemberId: true,
+          category:{
+            select:{
+              id: true,
+              name: true,
+            }
+          },
+          addedBy:{
+            select: {
+              member: {
+                select:{
+                  id: true,
+                  avatar: true,
+                  firstName: true,
+                  lastName: true,
+                }
               }
             }
           }
         }
-      }
-    })
-    return projectFeature;
-  }
-  
-  async findAllFeaturesByCategory(teamId: number, featureCategoryId: number) {
-    const projectFeaturesByCategory = await this.prisma.voyageTeamMember.findMany({
+      })
 
-    })
-    return projectFeaturesByCategory;
-  }
+      if(!projectFeature){
+        throw new NotFoundException(`FeatureId (id: ${featureId}) does not exist.`);
+      }
+
+      return projectFeature;
+    } catch (e){
+      throw e;
+    }
+  };
 
   async findAllFeatures(teamId: number) {
-    const allTeamFeatures = await this.prisma.voyageTeamMember.findMany({
-      where: { 
-        voyageTeamId: teamId 
-      },
-      select: {
-        id: true,
-            projectFeatures: {
-              select:{
-                id: true,
-                teamMemberId: true,
-                featureCategoryId: true,
-                description: true,
-                createdAt: true,
-                updatedAt: true,
-                addedBy: {
-                  select: {
-                    member: {
-                      select:{
-                        id: true,
-                        avatar: true,
-                        firstName: true,
-                        lastName: true,
-                      }
-                    }
-                  }
+    try{
+      const allTeamFeatures = await this.prisma.projectFeature.findMany({
+        where:{
+          addedBy: {
+            voyageTeamId: teamId
+          }
+        },
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          updatedAt: true,
+          teamMemberId: true,
+          category:{
+            select:{
+              id: true,
+              name: true,
+            }
+          },
+          addedBy:{
+            select: {
+              member: {
+                select:{
+                  id: true,
+                  avatar: true,
+                  firstName: true,
+                  lastName: true,
                 }
               }
             }
+          }
         }
-    })
-    return allTeamFeatures;
-  }
+      });
+
+      if(!allTeamFeatures){
+        throw new NotFoundException(`TeamId (id: ${teamId}) does not exist.`);
+      }
+
+      return allTeamFeatures;
+    } catch (e) {
+      throw e;
+    }
+  };
 
   async updateFeature(featureId: number, updateFeatureDto: UpdateFeatureDto) {
     const { teamMemberId, featureCategoryId, description } = updateFeatureDto;
-    const updatedFeature =  await this.prisma.projectFeature.update({
-      where: {
-        id: featureId,
-      },
-      data: {
-        teamMemberId,
-        featureCategoryId,
-        description,
+
+    try{
+      const updatedFeature =  await this.prisma.projectFeature.update({
+        where: {
+          id: featureId,
+          teamMemberId: teamMemberId,
+        },
+        data: {
+          teamMemberId,
+          featureCategoryId,
+          description,
+        }
+      })
+
+      if(!updatedFeature){
+        throw new BadRequestException(`Req.body or featureId (id: ${featureId}) is invalid. Body: ${updateFeatureDto}.`);
       }
-    })
-    return updatedFeature;
-  }
+
+      return updatedFeature;
+    } catch (e) {
+      throw e;
+    }    
+  };
 
   async deleteFeature(featureId: number) {
-    await this.prisma.projectFeature.delete({
-      where:{
-        id: featureId,
+    try{
+      const deletedFeature = await this.prisma.projectFeature.delete({
+        where:{
+          id: featureId,
+        }
+      })
+
+      if(!deletedFeature){
+        throw new NotFoundException(`FeatureId (id: ${featureId}) does not exist.`);
       }
-    })
+    } catch (e) {
+      throw e;
+    }
   };
-}
+};
