@@ -6,9 +6,7 @@ describe("TeamsController", () => {
     let controller: TeamsController;
     let service: TeamsService;
 
-    const teamArr = [
-        { id: 1, voyageId: 1, name: "Team 1" }
-    ];
+    const teamArr = [{ id: 1, voyageId: 1, name: "Team 1" }];
     const teamOne = teamArr[0];
 
     const userOne = {
@@ -43,7 +41,7 @@ describe("TeamsController", () => {
         findOne: jest.fn().mockImplementation((id: number) => {
             return {
                 voyageId: id,
-                ...teamOne
+                ...teamOne,
             };
         }),
         findTeamMembersByTeamId: jest.fn().mockImplementation((id: number) => {
@@ -51,27 +49,21 @@ describe("TeamsController", () => {
                 {
                     voyageTeamId: id,
                     ...memberOne,
-                }
+                },
             ];
         }),
         updateTeamMemberById: jest
             .fn()
             .mockImplementation(
-                (
-                    teamId: number,
-                    userId: string,
-                    memberData: any,
-                ) => 
-                {
+                (teamId: number, userId: string, memberData: any) => {
                     return {
                         voyageTeamId: teamId,
                         userId: userId,
                         ...memberData,
-                        ...memberOne
-                    }
-                }
+                        ...memberOne,
+                    };
+                },
             ),
-
     };
 
     beforeEach(async () => {
@@ -80,8 +72,8 @@ describe("TeamsController", () => {
             providers: [
                 {
                     provide: TeamsService,
-                    useValue: mockTeamsService
-                },  
+                    useValue: mockTeamsService,
+                },
             ],
         }).compile();
 
@@ -131,12 +123,12 @@ describe("TeamsController", () => {
         const updatedTeamMember = await controller.update(
             teamId,
             userId,
-            updateTeamMemberDto
+            updateTeamMemberDto,
         );
         expect(service.updateTeamMemberById).toHaveBeenCalledWith(
             teamId,
             userId,
-            updateTeamMemberDto
+            updateTeamMemberDto,
         );
         expect(updatedTeamMember).toEqual(memberOne);
     });

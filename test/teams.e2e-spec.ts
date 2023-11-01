@@ -14,7 +14,7 @@ describe("TeamsController (e2e)", () => {
         repoUrl: expect.any(String),
         endDate: expect.any(String),
         createdAt: expect.any(String),
-        updatedAt: expect.any(String)
+        updatedAt: expect.any(String),
     });
     const memberShape = expect.objectContaining({
         hrPerSprint: expect.any(Number),
@@ -38,7 +38,7 @@ describe("TeamsController (e2e)", () => {
 
     it("/GET teams", async () => {
         const teamCount: number = await prisma.voyageTeam.count();
-        
+
         return request(app.getHttpServer())
             .get("/teams")
             .expect(200)
@@ -96,9 +96,9 @@ describe("TeamsController (e2e)", () => {
             },
         });
         const firstTeamMember = voyageTeam.voyageTeamMembers.find(
-            (member: {id: number}) => member.id === 1,
-        )
-        const randomHours: Number = Math.floor(Math.random() * 31);
+            (member: { id: number }) => member.id === 1,
+        );
+        const randomHours: number = Math.floor(Math.random() * 31);
         const updatedData = {
             hrPerSprint: randomHours,
         };
