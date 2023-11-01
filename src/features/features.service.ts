@@ -11,9 +11,35 @@ import { UpdateFeatureDto } from "./dto/update-feature.dto";
 export class FeaturesService {
   constructor(private prisma: PrismaService) {}
 
-  async createFeature(createFeatureDto: CreateFeatureDto) {
+  async createFeature(req, createFeatureDto: CreateFeatureDto) {
     const { teamMemberId, featureCategoryId, description } =
             createFeatureDto;
+
+    const validteamMemberId = await this.prisma.voyageTeamMember.findFirst({
+      where:{
+          id: teamMemberId,
+          userId: req.user.userId,
+      },
+      });
+  
+      if (!validteamMemberId) {
+      throw new NotFoundException(
+          `FeatureId (id: ${teamMemberId}) does not exist.`,
+      );
+      }
+
+    const validCategory = await this.prisma.featureCategory.findFirst({
+      where:{
+        id: featureCategoryId,
+      }
+    });
+    
+    if (!validCategory) {
+      throw new NotFoundException(
+        `FeatureId (id: ${featureCategoryId}) does not exist.`,
+      );
+    }
+
     try {
       const newFeature = await this.prisma.projectFeature.create({
         data: {
@@ -176,4 +202,5 @@ export class FeaturesService {
       throw e;
     }
   }
+
 }
