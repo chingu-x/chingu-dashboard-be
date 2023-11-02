@@ -20,19 +20,19 @@ export class ResourcesService {
         const { url, title, userId } = createResourceDto;
 
         // make sure teamId exists
-        await this.checkTeamExists(teamId)
+        await this.checkTeamExists(teamId);
 
         // check if this team has already added this resource's URL
         const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-              userId: userId,
-              voyageTeamId: teamId,
+                userId: userId,
+                voyageTeamId: teamId,
             },
             select: {
                 id: true,
             },
         });
-      
+
         const existingResource = await this.prisma.teamResource.findFirst({
             where: {
                 url: url,
@@ -58,7 +58,7 @@ export class ResourcesService {
 
     async findAllResources(teamId: number) {
         // make sure teamId exists
-        await this.checkTeamExists(teamId)
+        await this.checkTeamExists(teamId);
 
         return this.prisma.teamResource.findMany({
             where: {
@@ -138,7 +138,9 @@ export class ResourcesService {
         });
 
         if (!resourceToModify)
-            throw new NotFoundException(`Resource (id: ${resourceId}) doesn't exist`);
+            throw new NotFoundException(
+                `Resource (id: ${resourceId}) doesn't exist`,
+            );
 
         if (resourceToModify.addedBy.member.id !== userId)
             throw new UnauthorizedException();
