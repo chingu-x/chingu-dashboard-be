@@ -1,6 +1,5 @@
 import {
     BadRequestException,
-    ConflictException,
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
@@ -12,20 +11,23 @@ import { UpdateFeatureDto } from "./dto/update-feature.dto";
 export class FeaturesService {
     constructor(private prisma: PrismaService) {}
 
-    async createFeature(req, createFeatureDto: CreateFeatureDto) {
-        const { teamMemberId, featureCategoryId, description } =
+    async createFeature(req, teamId: number, createFeatureDto: CreateFeatureDto) {
+        const { featureCategoryId, description } =
             createFeatureDto;
 
-        const validteamMemberId = await this.prisma.voyageTeamMember.findFirst({
+        const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-                id: teamMemberId,
+                voyageTeamId: teamId,
                 userId: req.user.userId,
             },
+            select: {
+                id: true,
+            }
         });
 
-        if (!validteamMemberId) {
-            throw new ConflictException(
-                `TeamMemberId (id: ${teamMemberId}) and userId do not match or could be invalid.`,
+        if (!teamMember) {
+            throw new NotFoundException(
+                `TeamId (id: ${teamId}) and/or loggedIn userId (id: ${req.user.userId}) is invalid.`,
             );
         }
 
@@ -44,7 +46,7 @@ export class FeaturesService {
         try {
             const newFeature = await this.prisma.projectFeature.create({
                 data: {
-                    teamMemberId,
+                    teamMemberId: teamMember.id,
                     featureCategoryId,
                     description,
                 },

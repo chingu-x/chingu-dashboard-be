@@ -28,13 +28,14 @@ export class FeaturesController {
     //can only create if loggedIn
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/features")
+    @Post("/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
         @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createFeatureDto: CreateFeatureDto,
     ) {
-        return this.featuresService.createFeature(req, createFeatureDto);
+        return this.featuresService.createFeature(req, teamId, createFeatureDto);
     }
 
     @Get("/features/feature-categories")

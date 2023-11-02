@@ -4,10 +4,6 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class CreateFeatureDto {
     @IsNotEmpty()
     @ApiProperty()
-    teamMemberId: number;
-
-    @IsNotEmpty()
-    @ApiProperty()
     featureCategoryId: number;
 
     @IsString()
