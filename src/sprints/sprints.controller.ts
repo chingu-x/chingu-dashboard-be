@@ -21,6 +21,7 @@ import {
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
+import {FormInputValidationPipe} from "../pipes/form-input-validation";
 
 @Controller("sprints")
 @ApiTags("sprints")
@@ -126,7 +127,7 @@ export class SprintsController {
     addMeetingFormResponse(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
-        @Body() createMeetingFormResponse: CreateMeetingFormResponseDto,
+        @Body(new FormInputValidationPipe()) createMeetingFormResponse: CreateMeetingFormResponseDto,
     ) {
         return this.sprintsService.addMeetingFormResponse(
             meetingId,

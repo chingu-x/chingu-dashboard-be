@@ -162,7 +162,6 @@ export class SprintsService {
         const responsesArray = [];
         for (const index in responses) {
             if (index !== "constructor") {
-                console.log(index);
                 responsesArray.push({
                     questionId: responses[index].questionId,
                     ...(responses[index].text
@@ -181,13 +180,16 @@ export class SprintsService {
             }
         }
 
-        console.log(responsesArray);
-
-        /*
-        return this.prisma.response.createMany({
-            data: responses
+        return this.prisma.formResponseMeeting.create({
+            data: {
+                formId,
+                meetingId,
+                responses: {
+                    createMany: {
+                        data: responsesArray
+                    }
+                }
+            }
         })
-
-         */
     }
 }
