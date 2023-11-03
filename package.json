@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "husky:format": "lint-staged || (git reset --soft HEAD~1 && exit 1)",
     "start": "dotenv -e ./.env.dev nest start",
     "start:dev": "nest start --tsc --watch",
     "start:debug": "nest start --debug --watch",
@@ -45,6 +46,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
+    "lint-staged": "^15.0.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -101,5 +103,15 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed/index.ts"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ],
+    "test/**/*.ts": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
