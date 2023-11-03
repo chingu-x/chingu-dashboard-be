@@ -42,7 +42,7 @@ update(
         @Param("userId") userId: string,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
-        return this.teamsService.updateTeamMemberById(
+return this.teamsService.updateTeamMemberById(
             teamId,
             userId,
             updateTeamMemberDto,
