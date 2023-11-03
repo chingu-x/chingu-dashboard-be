@@ -358,10 +358,10 @@ model Response {
   question              Question             @relation(fields: [questionId], references: [id])
   optionChoiceId        Int?
   optionChoice          OptionChoice?        @relation(fields: [optionChoiceId], references: [id])
-  responseNumeric       Int?
-  responseBoolean       Boolean?
-  responseText          String?
-  formResponseMeetingId Int
+  numeric               Int?
+  boolean               Boolean?
+  text                  String?
+  formResponseMeetingId Int?
   formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
 
   // responseMeetings          ResponseMeeting[]
@@ -388,7 +388,6 @@ model FormResponseMeeting {
   sprintReviews   TeamMeeting[] @relation("SprintReview")
   sprintPlannings TeamMeeting[] @relation("SprintPlanning")
 }
-
 
 //
 //  Draft of more Extension of Response Table for future use

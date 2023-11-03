@@ -19,7 +19,7 @@ const formSelect = {
                 select: {
                     id: true,
                     name: true,
-                }
+                },
             },
             text: true,
             description: true,
@@ -30,14 +30,14 @@ const formSelect = {
                     optionChoices: {
                         select: {
                             id: true,
-                            text: true
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+                            text: true,
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
 
 @Injectable()
 export class FormsService {
@@ -45,7 +45,7 @@ export class FormsService {
 
     getAllForms() {
         return this.prisma.form.findMany({
-            select: formSelect
+            select: formSelect,
         });
     }
 
@@ -54,7 +54,7 @@ export class FormsService {
             where: {
                 id: formId,
             },
-            select: formSelect
+            select: formSelect,
         });
         if (!form)
             throw new NotFoundException(

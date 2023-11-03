@@ -11,6 +11,7 @@ import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 
+
 @Injectable()
 export class SprintsService {
     constructor(private prisma: PrismaService) {}
@@ -155,8 +156,31 @@ export class SprintsService {
     async addMeetingFormResponse(
         meetingId: number,
         formId: number,
-        { response }: CreateMeetingFormResponseDto,
+        responses: CreateMeetingFormResponseDto,
     ) {
-        console.log(meetingId, formId, response);
+        // console.log(meetingId, formId, responses);
+
+        const responsesArray = []
+        for (const index in responses) {
+            if (index !== 'constructor') {
+                console.log(index)
+                responsesArray.push({
+                    questionId: responses[index].questionId,
+                    ...responses[index].text? {'text': responses[index].text}:{},
+                    ...responses[index].numeric? {'numeric': responses[index].numeric}:{},
+                    ...responses[index].boolean? {'numeric': responses[index].boolean}:{},
+                    ...responses[index].optionChoice? {'numeric': responses[index].optionChoice}:{}
+                })
+            }
+        }
+
+        console.log(responsesArray)
+
+        /*
+        return this.prisma.response.createMany({
+            data: responses
+        })
+
+         */
     }
 }
