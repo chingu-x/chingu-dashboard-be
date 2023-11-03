@@ -33,11 +33,11 @@ export class TeamsController {
 
     @Get(":id/members")
     findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
-return this.teamsService.findTeamMembersByTeamId(id);
+        return this.teamsService.findTeamMembersByTeamId(id);
     }
 
     @Patch(":teamId/members/:userId")
-    update(
+                                    update(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("userId") userId: string,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
