@@ -104,9 +104,11 @@ export class ResourcesService {
     }
 
     async removeResource(
+        req,
         resourceId: number,
         deleteResourceDto: DeleteResourceDto,
     ) {
+        console.log(req.user)
         const { userId } = deleteResourceDto;
 
         // check if logged in user's id matches the userId that created this resource

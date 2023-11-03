@@ -7,12 +7,15 @@ import {
     Param,
     Delete,
     ParseIntPipe,
+    UseGuards,
+    Request
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { DeleteResourceDto } from "./dto/delete-resource.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller()
 @ApiTags("team resources")
@@ -61,8 +64,11 @@ export class ResourcesController {
         description:
             "Delete a resource if teamMemberId (int) matches logged in user",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Delete("/teams/:teamId/resources/:resourceId")
     removeResource(
+        @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() deleteResourceDto: DeleteResourceDto,
     ) {
