@@ -11,9 +11,12 @@ import { UpdateFeatureDto } from "./dto/update-feature.dto";
 export class FeaturesService {
     constructor(private prisma: PrismaService) {}
 
-    async createFeature(req, teamId: number, createFeatureDto: CreateFeatureDto) {
-        const { featureCategoryId, description } =
-            createFeatureDto;
+    async createFeature(
+        req,
+        teamId: number,
+        createFeatureDto: CreateFeatureDto,
+    ) {
+        const { featureCategoryId, description } = createFeatureDto;
 
         const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
@@ -22,7 +25,7 @@ export class FeaturesService {
             },
             select: {
                 id: true,
-            }
+            },
         });
 
         if (!teamMember) {

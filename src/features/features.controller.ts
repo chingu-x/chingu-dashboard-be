@@ -35,7 +35,11 @@ export class FeaturesController {
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createFeatureDto: CreateFeatureDto,
     ) {
-        return this.featuresService.createFeature(req, teamId, createFeatureDto);
+        return this.featuresService.createFeature(
+            req,
+            teamId,
+            createFeatureDto,
+        );
     }
 
     @Get("/features/feature-categories")
