@@ -40,7 +40,7 @@ export class TeamsController {
                             update(
 @Param("teamId", ParseIntPipe) teamId: number,
         @Param("userId") userId: string,
-        @Body() updateTeamMemberDto: UpdateTeamMemberDto,
+                @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
         return this.teamsService.updateTeamMemberById(
             teamId,
