@@ -387,6 +387,8 @@ model FormResponseMeeting {
   responses       Response[]
   sprintReviews   TeamMeeting[] @relation("SprintReview")
   sprintPlannings TeamMeeting[] @relation("SprintPlanning")
+
+  @@unique(fields: [formId, meetingId], name: "meetingFormId")
 }
 
 //

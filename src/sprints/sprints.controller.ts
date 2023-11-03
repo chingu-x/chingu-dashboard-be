@@ -5,6 +5,7 @@ import {
     Patch,
     Param,
     ParseIntPipe,
+    Get,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -21,7 +22,7 @@ import {
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
-import {FormInputValidationPipe} from "../pipes/form-input-validation";
+import { FormInputValidationPipe } from "../pipes/form-input-validation";
 
 @Controller("sprints")
 @ApiTags("sprints")
@@ -127,12 +128,33 @@ export class SprintsController {
     addMeetingFormResponse(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
-        @Body(new FormInputValidationPipe()) createMeetingFormResponse: CreateMeetingFormResponseDto,
+        @Body(new FormInputValidationPipe())
+        createMeetingFormResponse: CreateMeetingFormResponseDto,
     ) {
+        // TODO:
+        //  1. add checks for 1 record per meeting
+        //  2. check team and formId exist
+        //  3. add more decorators
+        //  4. custom 409 error
+
         return this.sprintsService.addMeetingFormResponse(
             meetingId,
             formId,
             createMeetingFormResponse,
+        );
+    }
+
+    @Get("meetings/:meetingId/forms/:formId")
+    getMeetingFormQuestionsWithResponses(
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+        @Param("formId", ParseIntPipe) formId: number,
+    ) {
+        // TODO:
+        //  1. check team and formId exist
+        //  2. add more decorators
+        return this.sprintsService.getMeetingFormQuestionsWithResponses(
+            meetingId,
+            formId,
         );
     }
 }

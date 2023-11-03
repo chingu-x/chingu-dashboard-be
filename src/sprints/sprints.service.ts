@@ -186,10 +186,79 @@ export class SprintsService {
                 meetingId,
                 responses: {
                     createMany: {
-                        data: responsesArray
-                    }
-                }
-            }
-        })
+                        data: responsesArray,
+                    },
+                },
+            },
+        });
+    }
+
+    async getMeetingFormQuestionsWithResponses(
+        meetingId: number,
+        formId: number,
+    ) {
+        const formResponseMeeting =
+            await this.prisma.formResponseMeeting.findUnique({
+                where: {
+                    meetingFormId: {
+                        meetingId,
+                        formId,
+                    },
+                },
+            });
+
+        return this.prisma.form.findUnique({
+            where: {
+                id: formId,
+            },
+            select: {
+                id: true,
+                formType: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+                title: true,
+                description: true,
+                questions: {
+                    select: {
+                        id: true,
+                        order: true,
+                        inputType: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                        text: true,
+                        description: true,
+                        answerRequired: true,
+                        multipleAllowed: true,
+                        optionGroup: {
+                            select: {
+                                optionChoices: {
+                                    select: {
+                                        id: true,
+                                        text: true,
+                                    },
+                                },
+                            },
+                        },
+                        responses: {
+                            where: {
+                                formResponseMeetingId: formResponseMeeting.id,
+                            },
+                            select: {
+                                optionChoice: true,
+                                numeric: true,
+                                boolean: true,
+                                text: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
     }
 }
