@@ -43,8 +43,8 @@ export class TeamsController {
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
                 return this.teamsService.updateTeamMemberById(
-            teamId,
-            userId,
+    teamId,
+                userId,
             updateTeamMemberDto,
         );
     }
