@@ -7,8 +7,11 @@ import { HealthCheckController } from "./HealthCheck/health-check.controller";
 import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
 import { SprintsModule } from "./sprints/sprints.module";
-import { AuthModule } from "./auth/auth.module";
 import { FormsModule } from "./forms/forms.module";
+import { ResourcesModule } from "./resources/resources.module";
+import { AuthModule } from "./auth/auth.module";
+import { FeaturesModule } from "./features/features.module";
+
 
 @Module({
     imports: [
@@ -19,8 +22,10 @@ import { FormsModule } from "./forms/forms.module";
         TechsModule,
         UsersModule,
         SprintsModule,
-        AuthModule,
         FormsModule,
+        ResourcesModule,
+        AuthModule,
+        FeaturesModule,
     ],
     controllers: [HealthCheckController],
     providers: [HealthCheckService],

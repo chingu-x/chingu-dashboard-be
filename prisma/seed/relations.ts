@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // VoyageTeams, VoyageMembers, Tech Stack, sprints
 export const populateTablesWithRelations = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
-
+    const voyages = await prisma.voyage.findMany({});
     const voyageTeams = await prisma.voyageTeam.findMany({})
 
     await prisma.voyageTeamMember.update({
@@ -246,7 +246,5 @@ export const populateTablesWithRelations = async () => {
         },
     });
 
-
-
-    console.log("Project Ideas, resources populated")
+console.log("Project Ideas, resources populated")
 };
