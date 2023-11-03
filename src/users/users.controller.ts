@@ -8,12 +8,12 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-                        @Get()
-findAll() {
-                    return this.usersService.findAll();
-}
+    @Get()
+    findAll() {
+        return this.usersService.findAll();
+    }
 
-                        @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("me")
     getProfile(@Request() req) {
