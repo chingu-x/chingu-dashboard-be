@@ -21,18 +21,18 @@ export class TeamsController {
     }
 
     // Will need to be fixed to be RESTful
-                                        @Get("voyages/:id")
-findTeamsByVoyageId(@Param("id", ParseIntPipe) id: number) {
-                                            return this.teamsService.findAllByVoyageId(id);
-}
+    @Get("voyages/:id")
+    findTeamsByVoyageId(@Param("id", ParseIntPipe) id: number) {
+        return this.teamsService.findAllByVoyageId(id);
+    }
 
     @Get(":id")
-                                                            findOne(@Param("id", ParseIntPipe) id: number) {
-return this.teamsService.findOne(id);
-                                                }
+                    findOne(@Param("id", ParseIntPipe) id: number) {
+        return this.teamsService.findOne(id);
+    }
 
     @Get(":id/members")
-                findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
+    findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
         return this.teamsService.findTeamMembersByTeamId(id);
     }
 
