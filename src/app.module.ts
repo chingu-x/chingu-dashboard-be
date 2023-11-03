@@ -12,7 +12,6 @@ import { ResourcesModule } from "./resources/resources.module";
 import { AuthModule } from "./auth/auth.module";
 import { FeaturesModule } from "./features/features.module";
 
-
 @Module({
     imports: [
         UsersModule,
