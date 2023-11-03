@@ -8,6 +8,7 @@ import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
 import { ResourcesModule } from "./resources/resources.module";
 import { AuthModule } from "./auth/auth.module";
+import { FeaturesModule } from "./features/features.module";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { AuthModule } from "./auth/auth.module";
         UsersModule,
         ResourcesModule,
         AuthModule,
+        FeaturesModule,
     ],
     controllers: [HealthCheckController],
     providers: [HealthCheckService],
