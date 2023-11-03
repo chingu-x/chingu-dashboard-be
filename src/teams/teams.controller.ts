@@ -27,12 +27,12 @@ export class TeamsController {
     }
 
     @Get(":id")
-                    findOne(@Param("id", ParseIntPipe) id: number) {
+    findOne(@Param("id", ParseIntPipe) id: number) {
         return this.teamsService.findOne(id);
     }
 
     @Get(":id/members")
-    findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
+                        findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
         return this.teamsService.findTeamMembersByTeamId(id);
     }
 
