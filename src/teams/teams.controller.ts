@@ -38,7 +38,7 @@ export class TeamsController {
 
     @Patch(":teamId/members/:userId")
     update(
-                @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("userId") userId: string,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
