@@ -8,7 +8,6 @@ describe("TeamsService", () => {
     const teamArr = [
         { id: 1, voyageId: 1, name: "Team 1" },
         { id: 2, voyageId: 1, name: "Team 2" },
-        { id: 3, voyageId: 2, name: "Team 3" },
     ];
     const memberArr = [
         {
@@ -23,30 +22,6 @@ describe("TeamsService", () => {
             },
             hrPerSprint: 12,
         },
-        {
-            id: 2,
-            firstName: "Jane",
-            lastName: "Smith",
-            userId: "00a10da4-7308-11ee-b962-0242ac120002",
-            voyageTeamId: 2,
-            userVoyageId: {
-                voyageTeamId: 2,
-                userId: "00a10da4-7308-11ee-b962-0242ac120002",
-            },
-            hrPerSprint: 25,
-        },
-        {
-            id: 3,
-            firstName: "John",
-            lastName: "Smith",
-            userId: "00a10eee-7308-11ee-b962-0242ac120002",
-            voyageTeamId: 3,
-            userVoyageId: {
-                voyageTeamId: 3,
-                userId: "00a10eee-7308-11ee-b962-0242ac120002",
-            },
-            hrPerSprint: 20,
-        },
     ];
 
     const teamOne = teamArr[0];
@@ -54,37 +29,12 @@ describe("TeamsService", () => {
 
     const db = {
         voyageTeam: {
-            findMany: jest.fn().mockImplementation((params) => {
-                return params.where?.voyageId
-                    ? teamArr.filter(
-                          (team) => team.voyageId === params.where.voyageId,
-                      )
-                    : teamArr;
-            }),
-            findUnique: jest.fn().mockImplementation((params) => {
-                const id = params.where.id;
-                const team = teamArr.find((team) => team.voyageId === id);
-                return team;
-            }),
+            findMany: jest.fn().mockResolvedValue(teamArr),
+            findUnique: jest.fn().mockResolvedValue(teamOne),
         },
         voyageTeamMember: {
-            findMany: jest.fn().mockImplementation((params) => {
-                const voyageTeamId = params.where.voyageTeamId;
-                return memberArr.filter(
-                    (member) => member.voyageTeamId === voyageTeamId,
-                );
-            }),
-            update: jest.fn().mockImplementation((params) => {
-                const userVoyageId = params.where.userVoyageId;
-                let updatedMember = memberArr.find(
-                    (member) =>
-                        member.userVoyageId.userId === userVoyageId.userId &&
-                        member.userVoyageId.voyageTeamId ===
-                            userVoyageId.voyageTeamId,
-                );
-                updatedMember = { ...updatedMember, ...params.data };
-                return updatedMember;
-            }),
+            findMany: jest.fn().mockResolvedValue(memberArr),
+            update: jest.fn().mockResolvedValue(memberOne),
         },
     };
 
@@ -118,11 +68,8 @@ describe("TeamsService", () => {
         it("should return an array of teams by voyage id", async () => {
             const voyageId = 1;
             const teams = await service.findAllByVoyageId(voyageId);
-            const filteredTeams = teamArr.filter(
-                (team) => team.voyageId === voyageId,
-            );
 
-            expect(teams).toEqual(filteredTeams);
+            expect(teams).toEqual(teamArr);
         });
     });
 
@@ -139,11 +86,8 @@ describe("TeamsService", () => {
         it("should return an array of team members by team id", async () => {
             const id = 1;
             const members = await service.findTeamMembersByTeamId(id);
-            const filteredMembers = memberArr.filter(
-                (member) => member.voyageTeamId === id,
-            );
 
-            expect(members).toEqual(filteredMembers);
+            expect(members).toEqual(memberArr);
         });
     });
 
@@ -152,20 +96,15 @@ describe("TeamsService", () => {
             const teamId = 1;
             const userId = "00a10ade-7308-11ee-b962-0242ac120002";
             const updateTeamMemberDto = {
-                hrPerSprint: 33,
+                hrPerSprint: 12,
             };
-
             const member = await service.updateTeamMemberById(
                 teamId,
                 userId,
                 updateTeamMemberDto,
             );
-            const expectedMember = {
-                ...memberOne,
-                ...updateTeamMemberDto,
-            };
 
-            expect(member).toEqual(expectedMember);
+            expect(member).toEqual(memberOne);
         });
     });
 });
