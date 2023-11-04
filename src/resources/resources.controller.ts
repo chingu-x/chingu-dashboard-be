@@ -26,12 +26,16 @@ export class ResourcesController {
         description:
             "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post("/teams/:teamId/resources")
     createNewResource(
+        @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createResourceDto: CreateResourceDto,
     ) {
         return this.resourcesService.createNewResource(
+            req,
             createResourceDto,
             teamId,
         );
@@ -40,6 +44,8 @@ export class ResourcesController {
     @ApiOperation({
         description: "Gets all resources added by a team given a teamId (int)",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get("/teams/:teamId/resources")
     findAllResources(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.resourcesService.findAllResources(teamId);
@@ -49,12 +55,16 @@ export class ResourcesController {
         description:
             "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Patch("/teams/:teamId/resources/:resourceId")
     updateResource(
+        @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() updateResourceDto: UpdateResourceDto,
     ) {
         return this.resourcesService.updateResource(
+            req,
             resourceId,
             updateResourceDto,
         );
@@ -70,11 +80,10 @@ export class ResourcesController {
     removeResource(
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
-        @Body() deleteResourceDto: DeleteResourceDto,
     ) {
         return this.resourcesService.removeResource(
+            req,
             resourceId,
-            deleteResourceDto,
         );
     }
 }

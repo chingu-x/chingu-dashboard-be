@@ -7,17 +7,17 @@ import {
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { PrismaService } from "src/prisma/prisma.service";
-import { DeleteResourceDto } from "./dto/delete-resource.dto";
 
 @Injectable()
 export class ResourcesService {
     constructor(private prisma: PrismaService) {}
 
     async createNewResource(
+        req,
         createResourceDto: CreateResourceDto,
         teamId: number,
     ) {
-        const { url, title, userId } = createResourceDto;
+        const { url, title } = createResourceDto;
 
         // make sure teamId exists
         await this.checkTeamExists(teamId);
@@ -25,7 +25,7 @@ export class ResourcesService {
         // check if this team has already added this resource's URL
         const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
-                userId: userId,
+                userId: req.user.userId,
                 voyageTeamId: teamId,
             },
             select: {
@@ -86,13 +86,14 @@ export class ResourcesService {
     }
 
     async updateResource(
+        req,
         resourceId: number,
         updateResourceDto: UpdateResourceDto,
     ) {
-        const { url, title, userId } = updateResourceDto;
+        const { url, title } = updateResourceDto;
 
         // check if logged in user's id matches the userId that created this resource
-        await this.checkAuthAndHandleErrors(resourceId, userId);
+        await this.checkAuthAndHandleErrors(resourceId, req.user.userId);
 
         return this.prisma.teamResource.update({
             where: { id: resourceId },
@@ -106,13 +107,9 @@ export class ResourcesService {
     async removeResource(
         req,
         resourceId: number,
-        deleteResourceDto: DeleteResourceDto,
     ) {
-        console.log(req.user)
-        const { userId } = deleteResourceDto;
-
         // check if logged in user's id matches the userId that created this resource
-        await this.checkAuthAndHandleErrors(resourceId, userId);
+        await this.checkAuthAndHandleErrors(resourceId, req.user.userId);
 
         try {
             return this.prisma.teamResource.delete({

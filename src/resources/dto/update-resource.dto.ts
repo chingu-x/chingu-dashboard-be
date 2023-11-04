@@ -14,9 +14,4 @@ export class UpdateResourceDto extends PartialType(CreateResourceDto) {
     @IsNotEmpty()
     @ApiProperty()
     title: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
-    userId: string;
 }
