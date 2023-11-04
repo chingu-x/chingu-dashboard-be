@@ -14,7 +14,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { DeleteResourceDto } from "./dto/delete-resource.dto";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller()
@@ -47,8 +46,11 @@ export class ResourcesController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("/teams/:teamId/resources")
-    findAllResources(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.resourcesService.findAllResources(teamId);
+    findAllResources(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.resourcesService.findAllResources(req, teamId);
     }
 
     @ApiOperation({
