@@ -10,10 +10,15 @@ import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
+import {FormsService} from "../forms/forms.service";
+import {UpdateMeetingFormResponseDto} from "./dto/update-meeting-form-response.dto";
 
 @Injectable()
 export class SprintsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private formServices: FormsService
+    ) {}
 
     findSprintIdBySprintNumber = async (
         teamId: number,
@@ -197,6 +202,15 @@ export class SprintsService {
         meetingId: number,
         formId: number,
     ) {
+        const meeting = await this.prisma.teamMeeting.findUnique({
+            where: {
+                id: meetingId
+            }
+        })
+
+        if (!meeting)
+            throw new NotFoundException(`Meeting with Id ${meetingId} does not exist.`)
+
         const formResponseMeeting =
             await this.prisma.formResponseMeeting.findUnique({
                 where: {
@@ -206,6 +220,10 @@ export class SprintsService {
                     },
                 },
             });
+
+        // this will also check if formId exist in getFormById
+        if (!formResponseMeeting)
+            return this.formServices.getFormById(formId)
 
         return this.prisma.form.findUnique({
             where: {
@@ -261,4 +279,10 @@ export class SprintsService {
             },
         });
     }
+
+    async updateMeetingFormQuestions(
+        meetingId: number,
+        formId: number,
+        responses: UpdateMeetingFormResponseDto,
+    ) {}
 }

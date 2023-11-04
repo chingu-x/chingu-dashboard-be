@@ -370,13 +370,6 @@ model Response {
   responseVoyageTeamMembers ResponseVoyageTeamMember[]
 }
 
-// model ResponseMeeting {
-//  id         Int         @id @default(autoincrement())
-//  responseId Int
-//  response   Response    @relation(fields: [responseId], references: [id])
-//  meeting    TeamMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-//}
-
 model FormResponseMeeting {
   id        Int         @id @default(autoincrement())
   formId    Int
@@ -393,6 +386,7 @@ model FormResponseMeeting {
 
 //
 //  Draft of more Extension of Response Table for future use
+//  These need to be updated to like FormResponseMeeting
 //
 
 model ResponseUser {
