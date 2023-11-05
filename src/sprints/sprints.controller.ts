@@ -157,4 +157,23 @@ export class SprintsController {
             formId,
         );
     }
+
+    @Patch("meetings/:meetingId/forms/:formId")
+    updateMeetingFormResponse(
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+        @Param("formId", ParseIntPipe) formId: number,
+        @Body(new FormInputValidationPipe())
+        createMeetingFormResponse: CreateMeetingFormResponseDto,
+    ) {
+        // TODO:
+        //  1. check team and formId exist
+        //  2. add more decorators
+        //  3. custom 409 error
+
+        return this.sprintsService.updateMeetingFormResponse(
+            meetingId,
+            formId,
+            createMeetingFormResponse,
+        );
+    }
 }

@@ -11,6 +11,7 @@ import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 import { FormsService } from "../forms/forms.service";
+import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 
 @Injectable()
 export class SprintsService {
@@ -18,6 +19,32 @@ export class SprintsService {
         private prisma: PrismaService,
         private formServices: FormsService,
     ) {}
+
+    private responseDtoToArray = (
+        responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
+    ) => {
+        const responsesArray = [];
+        for (const index in responses) {
+            if (index !== "constructor") {
+                responsesArray.push({
+                    questionId: responses[index].questionId,
+                    ...(responses[index].text
+                        ? { text: responses[index].text }
+                        : {}),
+                    ...(responses[index].numeric
+                        ? { numeric: responses[index].numeric }
+                        : {}),
+                    ...(responses[index].boolean
+                        ? { numeric: responses[index].boolean }
+                        : {}),
+                    ...(responses[index].optionChoice
+                        ? { numeric: responses[index].optionChoice }
+                        : {}),
+                });
+            }
+        }
+        return responsesArray;
+    };
 
     findSprintIdBySprintNumber = async (
         teamId: number,
@@ -161,28 +188,7 @@ export class SprintsService {
         formId: number,
         responses: CreateMeetingFormResponseDto,
     ) {
-        // console.log(meetingId, formId, responses);
-
-        const responsesArray = [];
-        for (const index in responses) {
-            if (index !== "constructor") {
-                responsesArray.push({
-                    questionId: responses[index].questionId,
-                    ...(responses[index].text
-                        ? { text: responses[index].text }
-                        : {}),
-                    ...(responses[index].numeric
-                        ? { numeric: responses[index].numeric }
-                        : {}),
-                    ...(responses[index].boolean
-                        ? { numeric: responses[index].boolean }
-                        : {}),
-                    ...(responses[index].optionChoice
-                        ? { numeric: responses[index].optionChoice }
-                        : {}),
-                });
-            }
-        }
+        const responsesArray = this.responseDtoToArray(responses);
 
         return this.prisma.formResponseMeeting.create({
             data: {
@@ -280,12 +286,49 @@ export class SprintsService {
         });
     }
 
-    /*
-    async updateMeetingFormQuestions(
+    async updateMeetingFormResponse(
         meetingId: number,
         formId: number,
         responses: UpdateMeetingFormResponseDto,
-    ) {}
+    ) {
+        // at this stage, it is unclear what id the frontend is able to send,
+        // if they are able to send the fromResponseMeeting ID, then we won't need this step
+        const formResponseMeeting =
+            await this.prisma.formResponseMeeting.findUnique({
+                where: {
+                    meetingFormId: {
+                        meetingId,
+                        formId,
+                    },
+                },
+                select: {
+                    id: true,
+                },
+            });
 
-     */
+        if (!formResponseMeeting) {
+            // Note: might redirect to create or we might have to
+            // also create "Responses" with empty responses when the forms are added
+            throw new NotFoundException(
+                `form response does not exist for meeting Id ${meetingId} and form Id ${formId}`,
+            );
+        }
+
+        const responsesArray = this.responseDtoToArray(responses);
+
+        return this.prisma.$transaction(
+            responsesArray.map((response) => {
+                const { questionId, ...data } = response;
+                return this.prisma.response.update({
+                    where: {
+                        questionResponseMeeting: {
+                            formResponseMeetingId: formResponseMeeting.id,
+                            questionId: response.questionId,
+                        },
+                    },
+                    data,
+                });
+            }),
+        );
+    }
 }

@@ -368,6 +368,8 @@ model Response {
   responseVoyageTeams       ResponseVoyageTeam[]
   responseUsers             ResponseUser[]
   responseVoyageTeamMembers ResponseVoyageTeamMember[]
+
+  @@unique(fields: [questionId, formResponseMeetingId], name: "questionResponseMeeting")
 }
 
 model FormResponseMeeting {
