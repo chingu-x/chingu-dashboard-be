@@ -8,7 +8,7 @@ import {
     Delete,
     ParseIntPipe,
     UseGuards,
-    Request
+    Request,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
@@ -83,9 +83,6 @@ export class ResourcesController {
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
     ) {
-        return this.resourcesService.removeResource(
-            req,
-            resourceId,
-        );
+        return this.resourcesService.removeResource(req, resourceId);
     }
 }

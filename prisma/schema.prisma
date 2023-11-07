@@ -364,7 +364,6 @@ model Response {
   formResponseMeetingId Int?
   formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
 
-  // responseMeetings          ResponseMeeting[]
   responseVoyageTeams       ResponseVoyageTeam[]
   responseUsers             ResponseUser[]
   responseVoyageTeamMembers ResponseVoyageTeamMember[]
