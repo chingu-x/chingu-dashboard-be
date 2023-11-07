@@ -20,7 +20,7 @@ export class TechsController {
     constructor(private readonly techsService: TechsService) {}
 
     @ApiOperation({
-        description: "Gets all selected tech for a team given a teamId (int)",
+        summary: "Gets all selected tech for a team given a teamId (int)",
     })
     @Get("/teams/:teamId")
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
@@ -28,7 +28,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        description:
+        summary:
             "Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid",
     })
     @Post("/teams/:teamId/techs")
@@ -40,7 +40,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        description:
+        summary:
             'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
     @Post("/teams/:teamId/techs/:teamTechId")
@@ -57,7 +57,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        description: "Edit/Remove own vote",
+        summary: "Removes logged in users vote.",
     })
     @Delete("/teams/:teamId/techs/:teamTechId")
     removeVote(

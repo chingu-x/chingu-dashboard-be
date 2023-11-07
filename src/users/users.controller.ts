@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Request, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller("users")
@@ -8,11 +8,17 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
+    @ApiOperation({
+        summary: "Gets all users.",
+    })
     @Get()
     findAll() {
         return this.usersService.findAll();
     }
 
+    @ApiOperation({
+        summary: "Gets a unique user on login.",
+    })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get("me")
@@ -20,6 +26,9 @@ export class UsersController {
         return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 
+    @ApiOperation({
+        summary: "Gets a user with full details.",
+    })
     // full user detail, for dev purpose
     @Get(":userId")
     getUserDetailsById(@Param("userId") userId: string) {
