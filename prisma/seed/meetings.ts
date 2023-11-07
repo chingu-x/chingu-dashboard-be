@@ -40,7 +40,17 @@ export const populateMeetings = async () => {
         }
     })
 
-    const meeting1SprintPlanning = await prisma.formResponseMeeting.create({
+    //find question Ids from sprint planning form
+    const sprintPlanningForm = await prisma.form.findUnique({
+        where: {
+           title: "Sprint Planning"
+        },
+        select: {
+            questions: true
+        }
+    })
+
+    await prisma.formResponseMeeting.create({
         data: {
             form: {
                 connect: {
@@ -51,24 +61,27 @@ export const populateMeetings = async () => {
                 connect: {
                     id: meeting1.id
                 }
-            }
-        }
-    })
-
-    await prisma.teamMeeting.update({
-        where: {
-            id: meeting1.id
-        },
-        data: {
-            sprintPlanningResponse: {
-                connect: {
-                    id: meeting1SprintPlanning.id
+            },
+            responses: {
+                createMany: {
+                    data: [
+                        {
+                            questionId: sprintPlanningForm.questions[0].id,
+                            text: "There are a lot of goals we want to achieve"
+                        },
+                        {
+                            questionId: sprintPlanningForm.questions[1].id,
+                            text: "Deploy the app"
+                        }
+                    ]
                 }
             }
         }
     })
 
-    const meeting1SprintReview = await prisma.formResponseMeeting.create({
+
+    // this meeting has a Retrospective & Review form connected but it's empty (no response)
+    await prisma.formResponseMeeting.create({
         data: {
             form: {
                 connect: {
@@ -83,20 +96,8 @@ export const populateMeetings = async () => {
         }
     })
 
-    await prisma.teamMeeting.update({
-        where: {
-            id: meeting1.id
-        },
-        data: {
-            sprintReviewResponse: {
-                connect: {
-                    id: meeting1SprintReview.id
-                }
-            }
-        }
-    })
-
     // create meeting 2, 3 with just basic information
+    // These two meetings have no forms created/connected
     // meeting 2
     await prisma.teamMeeting.create({
         data: {

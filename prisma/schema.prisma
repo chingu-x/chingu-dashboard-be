@@ -250,21 +250,17 @@ model ProjectFeature {
 }
 
 model TeamMeeting {
-  id                       Int                  @id @default(autoincrement())
-  sprintId                 Int
-  sprint                   Sprint               @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  voyageTeamId             Int
-  voyageTeam               VoyageTeam           @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
-  title                    String
-  dateTime                 DateTime?
-  meetingLink              String?
-  notes                    String?
-  sprintReviewResponseId   Int?
-  sprintReviewResponse     FormResponseMeeting? @relation("SprintReview", fields: [sprintReviewResponseId], references: [id], onDelete: SetNull)
-  sprintPlanningResponseId Int?
-  sprintPlanningResponse   FormResponseMeeting? @relation("SprintPlanning", fields: [sprintPlanningResponseId], references: [id], onDelete: SetNull)
-  createdAt                DateTime             @default(now()) @db.Timestamptz()
-  updatedAt                DateTime             @updatedAt
+  id           Int        @id @default(autoincrement())
+  sprintId     Int
+  sprint       Sprint     @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  voyageTeamId Int
+  voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
+  title        String
+  dateTime     DateTime?
+  meetingLink  String?
+  notes        String?
+  createdAt    DateTime   @default(now()) @db.Timestamptz()
+  updatedAt    DateTime   @updatedAt
 
   agendas             Agenda[]
   // responseMeetings    ResponseMeeting[]
@@ -378,9 +374,7 @@ model FormResponseMeeting {
   meetingId Int
   meeting   TeamMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
-  responses       Response[]
-  sprintReviews   TeamMeeting[] @relation("SprintReview")
-  sprintPlannings TeamMeeting[] @relation("SprintPlanning")
+  responses Response[]
 
   @@unique(fields: [formId, meetingId], name: "meetingFormId")
 }

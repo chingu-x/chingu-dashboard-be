@@ -29,6 +29,16 @@ import { FormInputValidationPipe } from "../pipes/form-input-validation";
 export class SprintsController {
     constructor(private readonly sprintsService: SprintsService) {}
 
+    // TODO: this route and most routes here will only be available to team member
+    // To be added with authorization
+    // TODO: add decorators for this route
+    @Get("meetings/:meetingId")
+    getMeetingById(
+        @Param("meetingId", ParseIntPipe) meetingId: number
+    ){
+        return this.sprintsService.getMeetingById(meetingId)
+    }
+
     @Post(":sprintNumber/teams/:teamId/meetings")
     @ApiOperation({
         description:
