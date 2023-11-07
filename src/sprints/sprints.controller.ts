@@ -33,10 +33,8 @@ export class SprintsController {
     // To be added with authorization
     // TODO: add decorators for this route
     @Get("meetings/:meetingId")
-    getMeetingById(
-        @Param("meetingId", ParseIntPipe) meetingId: number
-    ){
-        return this.sprintsService.getMeetingById(meetingId)
+    getMeetingById(@Param("meetingId", ParseIntPipe) meetingId: number) {
+        return this.sprintsService.getMeetingById(meetingId);
     }
 
     @Post(":sprintNumber/teams/:teamId/meetings")

@@ -4,23 +4,22 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import {UpdateTeamMeetingDto} from "./dto/update-team-meeting.dto";
-import {PrismaService} from "../prisma/prisma.service";
-import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
-import {CreateAgendaDto} from "./dto/create-agenda.dto";
-import {UpdateAgendaDto} from "./dto/update-agenda.dto";
-import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
-import {FormsService} from "../forms/forms.service";
-import {UpdateMeetingFormResponseDto} from "./dto/update-meeting-form-response.dto";
-import {PrismaClientExceptionFilter} from "../prisma-client-exception/prisma-client-exception.filter";
+import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
+import { CreateAgendaDto } from "./dto/create-agenda.dto";
+import { UpdateAgendaDto } from "./dto/update-agenda.dto";
+import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
+import { FormsService } from "../forms/forms.service";
+import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
+
 
 @Injectable()
 export class SprintsService {
     constructor(
         private prisma: PrismaService,
         private formServices: FormsService,
-    ) {
-    }
+    ) {}
 
     private responseDtoToArray = (
         responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
@@ -31,23 +30,22 @@ export class SprintsService {
                 responsesArray.push({
                     questionId: responses[index].questionId,
                     ...(responses[index].text
-                        ? {text: responses[index].text}
-                        : {text: null}),
+                        ? { text: responses[index].text }
+                        : { text: null }),
                     ...(responses[index].numeric
-                        ? {numeric: responses[index].numeric}
-                        : {numeric: null}),
+                        ? { numeric: responses[index].numeric }
+                        : { numeric: null }),
                     ...(responses[index].boolean
-                        ? {boolean: responses[index].boolean}
-                        : {boolean: null}),
+                        ? { boolean: responses[index].boolean }
+                        : { boolean: null }),
                     ...(responses[index].optionChoiceId
-                        ? {optionChoiceId: responses[index].optionChoiceId}
-                        : {optionChoiceId: null}),
+                        ? { optionChoiceId: responses[index].optionChoiceId }
+                        : { optionChoiceId: null }),
                 });
             }
         }
         return responsesArray;
     };
-
 
     findSprintIdBySprintNumber = async (
         teamId: number,
@@ -75,13 +73,10 @@ export class SprintsService {
         )[0].id;
     };
 
-
-    async getMeetingById (
-        meetingId: number
-    ){
+    async getMeetingById(meetingId: number) {
         return this.prisma.teamMeeting.findUnique({
             where: {
-                id: meetingId
+                id: meetingId,
             },
             select: {
                 id: true,
@@ -89,8 +84,8 @@ export class SprintsService {
                     select: {
                         id: true,
                         startDate: true,
-                        endDate: true
-                    }
+                        endDate: true,
+                    },
                 },
                 title: true,
                 dateTime: true,
@@ -101,8 +96,8 @@ export class SprintsService {
                         id: true,
                         title: true,
                         description: true,
-                        status: true
-                    }
+                        status: true,
+                    },
                 },
                 formResponseMeeting: {
                     select: {
@@ -111,7 +106,7 @@ export class SprintsService {
                             select: {
                                 id: true,
                                 title: true,
-                            }
+                            },
                         },
                         responses: {
                             select: {
@@ -120,29 +115,29 @@ export class SprintsService {
                                         id: true,
                                         text: true,
                                         description: true,
-                                        answerRequired: true
-                                    }
+                                        answerRequired: true,
+                                    },
                                 },
                                 text: true,
                                 numeric: true,
                                 boolean: true,
                                 optionChoice: {
                                     select: {
-                                        text: true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        })
+                                        text: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
     }
 
     async createTeamMeeting(
         teamId: number,
         sprintNumber: number,
-        {title, meetingLink, dateTime, notes}: CreateTeamMeetingDto,
+        { title, meetingLink, dateTime, notes }: CreateTeamMeetingDto,
     ) {
         const sprintId = await this.findSprintIdBySprintNumber(
             teamId,
@@ -182,7 +177,7 @@ export class SprintsService {
 
     async updateTeamMeeting(
         meetingId: number,
-        {title, meetingLink, dateTime, notes}: UpdateTeamMeetingDto,
+        { title, meetingLink, dateTime, notes }: UpdateTeamMeetingDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.teamMeeting.update({
@@ -206,7 +201,7 @@ export class SprintsService {
 
     async createMeetingAgenda(
         meetingId: number,
-        {title, description, status}: CreateAgendaDto,
+        { title, description, status }: CreateAgendaDto,
     ) {
         try {
             const newAgenda = await this.prisma.agenda.create({
@@ -229,7 +224,7 @@ export class SprintsService {
 
     async updateMeetingAgenda(
         agendaId: number,
-        {title, description, status}: UpdateAgendaDto,
+        { title, description, status }: UpdateAgendaDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.agenda.update({
@@ -385,7 +380,7 @@ export class SprintsService {
 
         return this.prisma.$transaction(
             responsesArray.map((response) => {
-                const {questionId, ...data} = response;
+                const { questionId, ...data } = response;
                 return this.prisma.response.update({
                     where: {
                         questionResponseMeeting: {
