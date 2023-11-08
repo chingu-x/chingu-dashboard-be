@@ -20,6 +20,7 @@
     "docker:test:e2e": "chmod +x ./bin/docker_test.sh && ./bin/docker_test.sh -e",
     "docker:test:all": "chmod +x ./bin/docker_test.sh && ./bin/docker_test.sh",
     "migrate": "dotenv -e ./.env.dev --  npx prisma migrate dev",
+    "postinstall": "husky install",
     "studio": "dotenv -e ./.env.dev -- prisma studio",
     "seed": "dotenv -e ./.env.dev prisma db seed",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
