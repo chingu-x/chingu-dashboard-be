@@ -17,7 +17,7 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a unique user on login.",
+        summary: "Gets a logged in users detail via userId:uuid in jwt token.",
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -27,7 +27,7 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a user with full details.",
+        summary: "Gets a user with full details given a userId (int).",
     })
     // full user detail, for dev purpose
     @Get(":userId")
