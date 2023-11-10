@@ -14,7 +14,7 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
 import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
-import { ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
 
 @Controller()
@@ -22,6 +22,10 @@ import { Ideation } from "./entities/ideation.entity";
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
+    @ApiOperation({
+        summary:
+            "Adds a new ideation to the team, add the creator as first voter.",
+    })
     @Post("/teams/:teamId/ideations")
     @ApiCreatedResponse({ type: Ideation })
     createIdeation(
@@ -31,6 +35,10 @@ export class IdeationsController {
         return this.ideationsService.createIdeation(teamId, createIdeationDto);
     }
 
+    @ApiOperation({
+        summary:
+            "Adds an ideation vote given a ideationId (int) and teamId (int).",
+    })
     @Post("/teams/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
@@ -45,12 +53,19 @@ export class IdeationsController {
         );
     }
 
+    @ApiOperation({
+        summary: "Gets all ideations for a team given a teamId (int).",
+    })
     @Get("/teams/:teamId/ideations")
     @ApiCreatedResponse({ type: Ideation })
     getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
     }
 
+    @ApiOperation({
+        summary:
+            "Updates an ideation given a ideationId (int) and the that user that created it is logged in.",
+    })
     @Patch("/ideations/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
@@ -63,6 +78,10 @@ export class IdeationsController {
         );
     }
 
+    @ApiOperation({
+        summary:
+            "Deletes an ideation given a ideationId (int) and that the user that created it is logged in.",
+    })
     @Delete("/ideations/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeation(
@@ -76,6 +95,10 @@ export class IdeationsController {
     }
 
     // Should probably add ideationVoteId to the path
+    @ApiOperation({
+        summary:
+            "Deletes an ideation vote given a ideationId (int) and teamId (int).",
+    })
     @Delete("/teams/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
