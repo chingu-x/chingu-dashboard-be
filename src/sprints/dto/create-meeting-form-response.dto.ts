@@ -11,7 +11,7 @@ export class ResponseDto {
         description: "choiceId, if it's a multiple choice questions",
     })
     @IsOptional()
-    choiceId?: number;
+    optionChoiceId?: number;
 
     @ApiProperty({
         description: "for questions with a text response",

@@ -10,7 +10,7 @@ export class FormInputValidationPipe implements PipeTransform {
                     !value[index].text &&
                     !value[index].numeric &&
                     !value[index].boolean &&
-                    !value[index].optionChoice
+                    !value[index].optionChoiceId
                 )
                     throw new BadRequestException(
                         `All response fields are empty for question ID ${value[index].questionId}`,

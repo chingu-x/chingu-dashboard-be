@@ -47,6 +47,32 @@ export class SprintsService {
         return responsesArray;
     };
 
+    // this checks if the form with the given formId is of formType = "meeting"
+    private isMeetingForm = async (formId) => {
+        const form = await this.prisma.form.findUnique({
+            where: {
+                id: formId,
+            },
+            select: {
+                formType: {
+                    select: {
+                        name: true,
+                    },
+                }
+            },
+        });
+        if (!form)
+            throw new BadRequestException(
+                `Form (id: ${formId}) does not exist.`,
+            );
+        if (form?.formType?.name !== "meeting") {
+            throw new BadRequestException(
+                `Form (id: ${formId}) is not a meeting form.`,
+            );
+        }
+        return (!!form)
+    }
+
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
@@ -70,7 +96,7 @@ export class SprintsService {
         });
         return sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
-        )[0].id;
+        )[0]?.id;
     };
 
     async getMeetingById(meetingId: number) {
@@ -134,8 +160,10 @@ export class SprintsService {
         });
 
         if (!teamMeeting)
-            return new NotFoundException(`Meeting with id ${meetingId} not found`)
-        return teamMeeting
+            return new NotFoundException(
+                `Meeting with id ${meetingId} not found`,
+            );
+        return teamMeeting;
     }
 
     async createTeamMeeting(
@@ -249,67 +277,52 @@ export class SprintsService {
         }
     }
 
-    async deleteMeetingAgenda(
-        agendaId: number
-    ) {
+    async deleteMeetingAgenda(agendaId: number) {
         try {
             return await this.prisma.agenda.delete({
                 where: {
-                    id: agendaId
-                }
-            })
+                    id: agendaId,
+                },
+            });
         } catch (e) {
             if (e.code === "P2025") {
-                throw new NotFoundException(`${e.meta.cause} agendaId: ${agendaId}`);
+                throw new NotFoundException(
+                    `${e.meta.cause} agendaId: ${agendaId}`,
+                );
             }
         }
     }
 
-    async addMeetingFormResponse(
-        meetingId: number,
-        formId: number,
-    ) {
-
-        // check if form is of the correct type (meeting)
-        const form = await this.prisma.form.findUnique({
-            where: {
-                id: formId
-            },
-            select: {
-                formType: {
-                    select: {
-                        name: true
+    async addMeetingFormResponse(meetingId: number, formId: number) {
+        if (await this.isMeetingForm(formId)) {
+            try {
+                return await this.prisma.formResponseMeeting.create({
+                    data: {
+                        formId,
+                        meetingId,
+                    },
+                });
+            } catch (e) {
+                console.log(e);
+                if (e.code === "P2002") {
+                    throw new ConflictException(
+                        `FormId and MeetingId combination should be unique. Each meeting can only have at most 1 of each sprint review and sprint planning form.`,
+                    );
+                }
+                if (e.code === "P2003") {
+                    if (e.meta["field_name"].includes("formId")) {
+                        throw new BadRequestException(
+                            `FormId: ${formId} does not exist.`,
+                        );
+                    }
+                    if (e.meta["field_name"].includes("meetingId")) {
+                        throw new BadRequestException(
+                            `MeetingId: ${meetingId} does not exist.`,
+                        );
                     }
                 }
             }
-        })
-        if (!form)
-            throw new BadRequestException(`Form (id: ${formId}) does not exist.`)
-        if (form?.formType?.name !== "meeting") {
-            throw new BadRequestException(`Form (id: ${formId}) is not a meeting form.`)
         }
-        try {
-            return await this.prisma.formResponseMeeting.create({
-                data: {
-                    formId,
-                    meetingId,
-                },
-            });
-        } catch (e) {
-            console.log(e)
-            if (e.code === "P2002") {
-                throw new ConflictException(`FormId and MeetingId combination should be unique. Each meeting can only have at most 1 of each sprint review and sprint planning form.`);
-            }
-            if (e.code === 'P2003') {
-                if (e.meta['field_name'].includes('formId')) {
-                    throw new BadRequestException(`FormId: ${formId} does not exist.`)
-                }
-                if (e.meta['field_name'].includes('meetingId')) {
-                    throw new BadRequestException(`MeetingId: ${meetingId} does not exist.`)
-                }
-            }
-        }
-
     }
 
     async getMeetingFormQuestionsWithResponses(
@@ -338,7 +351,8 @@ export class SprintsService {
             });
 
         // this will also check if formId exist in getFormById
-        if (!formResponseMeeting) return this.formServices.getFormById(formId);
+        if (!formResponseMeeting && await this.isMeetingForm(formId))
+            return this.formServices.getFormById(formId);
 
         return this.prisma.form.findUnique({
             where: {
@@ -400,6 +414,7 @@ export class SprintsService {
         formId: number,
         responses: UpdateMeetingFormResponseDto,
     ) {
+
         // at this stage, it is unclear what id the frontend is able to send,
         // if they are able to send the fromResponseMeeting ID, then we won't need this step
         const formResponseMeeting =
@@ -416,8 +431,6 @@ export class SprintsService {
             });
 
         if (!formResponseMeeting) {
-            // Note: might redirect to create or we might have to
-            // also create "Responses" with empty responses when the forms are added
             throw new NotFoundException(
                 `form response does not exist for meeting Id ${meetingId} and form Id ${formId}`,
             );
@@ -425,17 +438,40 @@ export class SprintsService {
 
         const responsesArray = this.responseDtoToArray(responses);
 
+        // Checks that questions submitted for update match the form questions
+        const form = await this.prisma.form.findUnique({
+            where: {id: formId},
+            select: {
+                questions: {
+                    select: {
+                        id: true
+                    }
+                }
+            }
+        })
+
+        const questionIds = form.questions.flatMap(question => question.id)
+
+        responsesArray.forEach(response => {
+            if (questionIds.indexOf(response.questionId) === -1)
+                throw new BadRequestException(`Question Id ${response.questionId} is not in form ${formId}`)
+        })
+
         return this.prisma.$transaction(
             responsesArray.map((response) => {
                 const {questionId, ...data} = response;
-                return this.prisma.response.update({
+                return this.prisma.response.upsert({
                     where: {
                         questionResponseMeeting: {
                             formResponseMeetingId: formResponseMeeting.id,
                             questionId: response.questionId,
                         },
                     },
-                    data,
+                    update: data,
+                    create: {
+                        formResponseMeetingId: formResponseMeeting.id,
+                        ...response
+                    }
                 });
             }),
         );
