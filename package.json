@@ -1,8 +1,8 @@
 {
   "name": "chingu-dashboard-be",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "API server for Chingu",
+  "author": "Chingu Dashboard",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
