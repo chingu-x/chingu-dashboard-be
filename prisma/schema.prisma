@@ -50,7 +50,7 @@ model User {
   updatedAt   DateTime @updatedAt
 
   voyageTeamMembers VoyageTeamMember[]
-  responseUser      ResponseUser[]
+  responseUser      FormResponseUser[]
 }
 
 model Voyage {
@@ -121,7 +121,7 @@ model VoyageTeam {
   voyageTeamMembers  VoyageTeamMember[]
   teamTechStackItems TeamTechStackItem[]
   teamMeetings       TeamMeeting[]
-  responseVoyageTeam ResponseVoyageTeam[]
+  responseVoyageTeam FormResponseVoyageTeam[]
 }
 
 model VoyageRole {
@@ -153,7 +153,7 @@ model VoyageTeamMember {
   projectIdeaVotes         ProjectIdeaVote[]
   teamResources            TeamResource[]
   projectFeatures          ProjectFeature[]
-  responseVoyageTeamMember ResponseVoyageTeamMember[]
+  responseVoyageTeamMember FormResponseVoyageTeamMember[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -263,7 +263,6 @@ model TeamMeeting {
   updatedAt    DateTime   @updatedAt
 
   agendas             Agenda[]
-  // responseMeetings    ResponseMeeting[]
   formResponseMeeting FormResponseMeeting[]
 }
 
@@ -360,9 +359,9 @@ model Response {
   formResponseMeetingId Int?
   formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
 
-  responseVoyageTeams       ResponseVoyageTeam[]
-  responseUsers             ResponseUser[]
-  responseVoyageTeamMembers ResponseVoyageTeamMember[]
+  responseVoyageTeams       FormResponseVoyageTeam[]
+  responseUsers             FormResponseUser[]
+  responseVoyageTeamMembers FormResponseVoyageTeamMember[]
 
   @@unique(fields: [questionId, formResponseMeetingId], name: "questionResponseMeeting")
 }
@@ -384,7 +383,7 @@ model FormResponseMeeting {
 //  These need to be updated to like FormResponseMeeting
 //
 
-model ResponseUser {
+model FormResponseUser {
   id         Int      @id @default(autoincrement())
   responseId Int
   response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
@@ -392,7 +391,7 @@ model ResponseUser {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model ResponseVoyageTeam {
+model FormResponseVoyageTeam {
   id           Int        @id @default(autoincrement())
   responseId   Int
   response     Response   @relation(fields: [responseId], references: [id], onDelete: Cascade)
@@ -400,7 +399,7 @@ model ResponseVoyageTeam {
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
 }
 
-model ResponseVoyageTeamMember {
+model FormResponseVoyageTeamMember {
   id                 Int              @id @default(autoincrement())
   responseId         Int
   response           Response         @relation(fields: [responseId], references: [id], onDelete: Cascade)

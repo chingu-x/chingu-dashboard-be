@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
-const formSelect = {
+export const formSelect = {
     id: true,
     formType: {
         select: {
