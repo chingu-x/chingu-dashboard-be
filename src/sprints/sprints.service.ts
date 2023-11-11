@@ -4,22 +4,21 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import {UpdateTeamMeetingDto} from "./dto/update-team-meeting.dto";
-import {PrismaService} from "../prisma/prisma.service";
-import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
-import {CreateAgendaDto} from "./dto/create-agenda.dto";
-import {UpdateAgendaDto} from "./dto/update-agenda.dto";
-import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
-import {FormsService} from "../forms/forms.service";
-import {UpdateMeetingFormResponseDto} from "./dto/update-meeting-form-response.dto";
+import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
+import { CreateAgendaDto } from "./dto/create-agenda.dto";
+import { UpdateAgendaDto } from "./dto/update-agenda.dto";
+import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
+import { FormsService } from "../forms/forms.service";
+import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 
 @Injectable()
 export class SprintsService {
     constructor(
         private prisma: PrismaService,
         private formServices: FormsService,
-    ) {
-    }
+    ) {}
 
     private responseDtoToArray = (
         responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
@@ -30,17 +29,17 @@ export class SprintsService {
                 responsesArray.push({
                     questionId: responses[index].questionId,
                     ...(responses[index].text
-                        ? {text: responses[index].text}
-                        : {text: null}),
+                        ? { text: responses[index].text }
+                        : { text: null }),
                     ...(responses[index].numeric
-                        ? {numeric: responses[index].numeric}
-                        : {numeric: null}),
+                        ? { numeric: responses[index].numeric }
+                        : { numeric: null }),
                     ...(responses[index].boolean
-                        ? {boolean: responses[index].boolean}
-                        : {boolean: null}),
+                        ? { boolean: responses[index].boolean }
+                        : { boolean: null }),
                     ...(responses[index].optionChoiceId
-                        ? {optionChoiceId: responses[index].optionChoiceId}
-                        : {optionChoiceId: null}),
+                        ? { optionChoiceId: responses[index].optionChoiceId }
+                        : { optionChoiceId: null }),
                 });
             }
         }
@@ -58,7 +57,7 @@ export class SprintsService {
                     select: {
                         name: true,
                     },
-                }
+                },
             },
         });
         if (!form)
@@ -70,8 +69,8 @@ export class SprintsService {
                 `Form (id: ${formId}) is not a meeting form.`,
             );
         }
-        return (!!form)
-    }
+        return !!form;
+    };
 
     findSprintIdBySprintNumber = async (
         teamId: number,
@@ -160,7 +159,7 @@ export class SprintsService {
         });
 
         if (!teamMeeting)
-            return new NotFoundException(
+            throw new NotFoundException(
                 `Meeting with id ${meetingId} not found`,
             );
         return teamMeeting;
@@ -169,7 +168,7 @@ export class SprintsService {
     async createTeamMeeting(
         teamId: number,
         sprintNumber: number,
-        {title, meetingLink, dateTime, notes}: CreateTeamMeetingDto,
+        { title, meetingLink, dateTime, notes }: CreateTeamMeetingDto,
     ) {
         const sprintId = await this.findSprintIdBySprintNumber(
             teamId,
@@ -177,7 +176,7 @@ export class SprintsService {
         );
         if (!sprintId) {
             throw new NotFoundException(
-                `Sprint Id not found for team ${teamId} for sprint number ${sprintNumber}.`,
+                `Sprint number ${sprintNumber} or team Id ${teamId} does not exist.`,
             );
         }
 
@@ -209,7 +208,7 @@ export class SprintsService {
 
     async updateTeamMeeting(
         meetingId: number,
-        {title, meetingLink, dateTime, notes}: UpdateTeamMeetingDto,
+        { title, meetingLink, dateTime, notes }: UpdateTeamMeetingDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.teamMeeting.update({
@@ -233,7 +232,7 @@ export class SprintsService {
 
     async createMeetingAgenda(
         meetingId: number,
-        {title, description, status}: CreateAgendaDto,
+        { title, description, status }: CreateAgendaDto,
     ) {
         try {
             const newAgenda = await this.prisma.agenda.create({
@@ -256,7 +255,7 @@ export class SprintsService {
 
     async updateMeetingAgenda(
         agendaId: number,
-        {title, description, status}: UpdateAgendaDto,
+        { title, description, status }: UpdateAgendaDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.agenda.update({
@@ -351,7 +350,7 @@ export class SprintsService {
             });
 
         // this will also check if formId exist in getFormById
-        if (!formResponseMeeting && await this.isMeetingForm(formId))
+        if (!formResponseMeeting && (await this.isMeetingForm(formId)))
             return this.formServices.getFormById(formId);
 
         return this.prisma.form.findUnique({
@@ -414,7 +413,6 @@ export class SprintsService {
         formId: number,
         responses: UpdateMeetingFormResponseDto,
     ) {
-
         // at this stage, it is unclear what id the frontend is able to send,
         // if they are able to send the fromResponseMeeting ID, then we won't need this step
         const formResponseMeeting =
@@ -440,26 +438,28 @@ export class SprintsService {
 
         // Checks that questions submitted for update match the form questions
         const form = await this.prisma.form.findUnique({
-            where: {id: formId},
+            where: { id: formId },
             select: {
                 questions: {
                     select: {
-                        id: true
-                    }
-                }
-            }
-        })
+                        id: true,
+                    },
+                },
+            },
+        });
 
-        const questionIds = form.questions.flatMap(question => question.id)
+        const questionIds = form.questions.flatMap((question) => question.id);
 
-        responsesArray.forEach(response => {
+        responsesArray.forEach((response) => {
             if (questionIds.indexOf(response.questionId) === -1)
-                throw new BadRequestException(`Question Id ${response.questionId} is not in form ${formId}`)
-        })
+                throw new BadRequestException(
+                    `Question Id ${response.questionId} is not in form ${formId}`,
+                );
+        });
 
         return this.prisma.$transaction(
             responsesArray.map((response) => {
-                const {questionId, ...data} = response;
+                const { questionId, ...data } = response;
                 return this.prisma.response.upsert({
                     where: {
                         questionResponseMeeting: {
@@ -470,8 +470,8 @@ export class SprintsService {
                     update: data,
                     create: {
                         formResponseMeetingId: formResponseMeeting.id,
-                        ...response
-                    }
+                        ...response,
+                    },
                 });
             }),
         );

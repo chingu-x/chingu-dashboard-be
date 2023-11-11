@@ -8,9 +8,9 @@ import {
     Get,
     Delete,
 } from "@nestjs/common";
-import {SprintsService} from "./sprints.service";
-import {UpdateTeamMeetingDto} from "./dto/update-team-meeting.dto";
-import {CreateTeamMeetingDto} from "./dto/create-team-meeting.dto";
+import { SprintsService } from "./sprints.service";
+import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
+import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import {
     ApiBadRequestResponse,
     ApiConflictResponse,
@@ -21,16 +21,15 @@ import {
     ApiParam,
     ApiTags,
 } from "@nestjs/swagger";
-import {CreateAgendaDto} from "./dto/create-agenda.dto";
-import {UpdateAgendaDto} from "./dto/update-agenda.dto";
-import {CreateMeetingFormResponseDto} from "./dto/create-meeting-form-response.dto";
-import {FormInputValidationPipe} from "../pipes/form-input-validation";
+import { CreateAgendaDto } from "./dto/create-agenda.dto";
+import { UpdateAgendaDto } from "./dto/update-agenda.dto";
+import { FormInputValidationPipe } from "../pipes/form-input-validation";
+import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 
 @Controller("sprints")
 @ApiTags("sprints")
 export class SprintsController {
-    constructor(private readonly sprintsService: SprintsService) {
-    }
+    constructor(private readonly sprintsService: SprintsService) {}
 
     // TODO: this route and most routes here will only be available to team member
     // To be added with authorization
@@ -42,15 +41,18 @@ export class SprintsController {
             "returns meeting details such as title, meeting time, meeting link, notes, agenda, meeting forms. Everything needed to populate the meeting page.",
     })
     @ApiOkResponse({
+        status: 200,
         description: "Successfully get the meeting data",
     })
     @ApiNotFoundResponse({
+        status: 404,
         description: "Meeting with the supplied Id not found",
     })
     @ApiParam({
         name: "meetingId",
         required: true,
         description: "voyage team Meeting ID (TeamMeeting/id)",
+        example: 1,
     })
     getMeetingById(@Param("meetingId", ParseIntPipe) meetingId: number) {
         return this.sprintsService.getMeetingById(meetingId);
@@ -71,7 +73,7 @@ export class SprintsController {
     })
     @ApiNotFoundResponse({
         status: 404,
-        description: "Resource not found.",
+        description: "Resource (sprint Id or team Id) not found.",
     })
     // temporary till we decided to let user create more than one meeting per sprint
     // currently there's a design issue where teams can only create 1 meeting per sprint.
@@ -83,11 +85,13 @@ export class SprintsController {
         name: "sprintNumber",
         required: true,
         description: "sprint number of the voyage, e.g. 1, 2, 3, 4, 5, 6",
+        example: 1,
     })
     @ApiParam({
         name: "teamId",
         required: true,
         description: "voyage team ID",
+        example: 1,
     })
     createTeamMeeting(
         @Param("sprintNumber", ParseIntPipe) sprintNumber: number,
@@ -114,7 +118,13 @@ export class SprintsController {
         status: 404,
         description: "Invalid Meeting ID (MeetingId does not exist)",
     })
-    editTeamMeeting(
+    @ApiParam({
+        name: "meetingId",
+        required: true,
+        description: "voyage team meeting ID",
+        example: 1,
+    })
+    updateTeamMeeting(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Body() updateTeamMeetingDto: UpdateTeamMeetingDto,
     ) {
@@ -136,6 +146,12 @@ export class SprintsController {
     @ApiBadRequestResponse({
         status: 400,
         description: "Bad Request - Invalid Meeting ID",
+    })
+    @ApiParam({
+        name: "meetingId",
+        required: true,
+        description: "voyage team meeting ID",
+        example: 1,
     })
     addMeetingAgenda(
         @Param("meetingId", ParseIntPipe) meetingId: number,
@@ -160,6 +176,12 @@ export class SprintsController {
         status: 404,
         description: "Invalid Agenda ID (AgendaId does not exist)",
     })
+    @ApiParam({
+        name: "agendaId",
+        required: true,
+        description: "agenda ID",
+        example: 1,
+    })
     updateMeetingAgenda(
         @Param("agendaId", ParseIntPipe) agendaId: number,
         @Body() updateAgendaDto: UpdateAgendaDto,
@@ -183,6 +205,12 @@ export class SprintsController {
         status: 404,
         description: "Invalid Agenda ID (AgendaId does not exist)",
     })
+    @ApiParam({
+        name: "agendaId",
+        required: true,
+        description: "agenda ID",
+        example: 1,
+    })
     deleteMeetingAgenda(@Param("agendaId", ParseIntPipe) agendaId: number) {
         return this.sprintsService.deleteMeetingAgenda(agendaId);
     }
@@ -204,11 +232,23 @@ export class SprintsController {
     })
     @ApiBadRequestResponse({
         status: 400,
-        description: "Invalid formId or meetingId"
+        description: "Invalid formId or meetingId",
     })
     @ApiConflictResponse({
         status: 409,
         description: `FormId and MeetingId combination should be unique. There's already an existing form of the given formId for this meeting Id`,
+    })
+    @ApiParam({
+        name: "meetingId",
+        required: true,
+        description: "team meeting ID",
+        example: 1,
+    })
+    @ApiParam({
+        name: "formId",
+        required: true,
+        description: "form ID",
+        example: 1,
     })
     addMeetingFormResponse(
         @Param("meetingId", ParseIntPipe) meetingId: number,
@@ -222,14 +262,34 @@ export class SprintsController {
         summary: "Gets a form given meeting ID and formId",
         description: "returns the form, including questions and responses",
     })
+    @ApiOkResponse({
+        status: 200,
+        description: "Successfully get the meeting form with responses",
+    })
+    @ApiBadRequestResponse({
+        status: 400,
+        description: "Invalid formId",
+    })
+    @ApiNotFoundResponse({
+        status: 404,
+        description: "invalid meetingId",
+    })
+    @ApiParam({
+        name: "meetingId",
+        required: true,
+        description: "team meeting ID",
+        example: 1,
+    })
+    @ApiParam({
+        name: "formId",
+        required: true,
+        description: "form ID",
+        example: 1,
+    })
     getMeetingFormQuestionsWithResponses(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
     ) {
-        // TODO:
-        //  1. check team and formId exist - done
-        //  2. add more decorators
-        //  3. check if it's a meeting form - done
         return this.sprintsService.getMeetingFormQuestionsWithResponses(
             meetingId,
             formId,
@@ -243,18 +303,16 @@ export class SprintsController {
             "Returns the updated form, including questions and responses <br>" +
             "A sample body <br>" +
             "<code>" +
-            JSON.stringify(
-                [
-                    {
-                        "questionId": 4,
-                        "text": "All"
-                    },
-                    {
-                        "questionId": 5,
-                        "text": "Deploy app"
-                    }
-                ]
-            ) +
+            JSON.stringify([
+                {
+                    questionId: 4,
+                    text: "All",
+                },
+                {
+                    questionId: 5,
+                    text: "Deploy app",
+                },
+            ]) +
             "</code><br>" +
             "choiceId, text, boolean, number are all optional, " +
             "depends on the question type, but at least one of them must be present",
@@ -265,18 +323,31 @@ export class SprintsController {
     })
     @ApiBadRequestResponse({
         status: 400,
-        description: "invalid meeting id, form id, question id(s) not found in form with a given formId"
+        description:
+            "invalid meeting id, form id, question id(s) not found in form with a given formId",
+    })
+    @ApiParam({
+        name: "meetingId",
+        required: true,
+        description: "team meeting ID",
+        example: 1,
+    })
+    @ApiParam({
+        name: "formId",
+        required: true,
+        description: "form ID",
+        example: 1,
     })
     updateMeetingFormResponse(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
         @Body(new FormInputValidationPipe())
-            createMeetingFormResponse: CreateMeetingFormResponseDto,
+        updateMeetingFormResponse: UpdateMeetingFormResponseDto,
     ) {
         return this.sprintsService.updateMeetingFormResponse(
             meetingId,
             formId,
-            createMeetingFormResponse,
+            updateMeetingFormResponse,
         );
     }
 }
