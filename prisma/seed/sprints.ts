@@ -1,12 +1,12 @@
-import {PrismaClient} from "@prisma/client";
-import {addDays} from "./utils";
+import { PrismaClient } from "@prisma/client";
+import { addDays } from "./utils";
 const prisma = new PrismaClient();
 
 export const populateSprints = async () => {
     const voyages = await prisma.voyage.findMany({});
     await prisma.voyage.update({
         where: {
-            id: voyages[0].id
+            id: voyages[0].id,
         },
         data: {
             sprints: {
@@ -41,14 +41,14 @@ export const populateSprints = async () => {
                         startDate: addDays(voyages[0].startDate, 35),
                         endDate: addDays(voyages[0].startDate, 41),
                     },
-                ]
-            }
-        }
-    })
+                ],
+            },
+        },
+    });
 
     await prisma.voyage.update({
         where: {
-            id: voyages[1].id
+            id: voyages[1].id,
         },
         data: {
             sprints: {
@@ -83,8 +83,8 @@ export const populateSprints = async () => {
                         startDate: addDays(voyages[1].startDate, 35),
                         endDate: addDays(voyages[1].startDate, 41),
                     },
-                ]
-            }
-        }
-    })
-}
+                ],
+            },
+        },
+    });
+};

@@ -98,6 +98,55 @@ export class SprintsService {
         )[0]?.id;
     };
 
+    async getVoyagesAndSprints() {
+        return this.prisma.voyage.findMany({
+            select: {
+                id: true,
+                number: true,
+                startDate: true,
+                endDate: true,
+                sprints: {
+                    select: {
+                        id: true,
+                        number: true,
+                        startDate: true,
+                        endDate: true,
+                    },
+                },
+            },
+        });
+    }
+
+    async getSprintDatesByTeamId(teamId: number) {
+        const teamSprintDates = await this.prisma.voyageTeam.findUnique({
+            where: {
+                id: teamId,
+            },
+            select: {
+                id: true,
+                name: true,
+                voyage: {
+                    select: {
+                        id: true,
+                        number: true,
+                        sprints: {
+                            select: {
+                                id: true,
+                                number: true,
+                                startDate: true,
+                                endDate: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        if (!teamSprintDates) {
+            throw new NotFoundException(`Invalid teamId: ${teamId}`);
+        }
+        return teamSprintDates;
+    }
+
     async getMeetingById(meetingId: number) {
         const teamMeeting = await this.prisma.teamMeeting.findUnique({
             where: {

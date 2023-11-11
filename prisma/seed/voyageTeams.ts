@@ -1,23 +1,22 @@
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-
 export const populateVoyageTeams = async () => {
-    const users = await prisma.user.findMany({})
-    const voyageRoles = await prisma.voyageRole.findMany({})
+    const users = await prisma.user.findMany({});
+    const voyageRoles = await prisma.voyageRole.findMany({});
     await prisma.voyageTeam.create({
         data: {
             voyage: {
                 connect: {
-                    number: "47"
-                }
+                    number: "47",
+                },
             },
             name: "v47-tier2-team-4",
             status: {
                 connect: {
-                    name: "Active"
-                }
+                    name: "Active",
+                },
             },
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
@@ -26,7 +25,7 @@ export const populateVoyageTeams = async () => {
             deployedUrlBE:
                 "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
             tier: {
-                connect: {name: "Tier 1"},
+                connect: { name: "Tier 1" },
             },
             endDate: new Date("2024-11-09"),
             voyageTeamMembers: {
@@ -34,14 +33,13 @@ export const populateVoyageTeams = async () => {
                     {
                         member: {
                             connect: {
-                                email: users[0].email
-                            }
+                                email: users[0].email,
+                            },
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[0].name
-                            }
-
+                                name: voyageRoles[0].name,
+                            },
                         },
                         status: {
                             connect: {
@@ -53,14 +51,13 @@ export const populateVoyageTeams = async () => {
                     {
                         member: {
                             connect: {
-                                email: users[1].email
-                            }
+                                email: users[1].email,
+                            },
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[2].name
-                            }
-
+                                name: voyageRoles[2].name,
+                            },
                         },
                         status: {
                             connect: {
@@ -72,14 +69,13 @@ export const populateVoyageTeams = async () => {
                     {
                         member: {
                             connect: {
-                                email: users[2].email
-                            }
+                                email: users[2].email,
+                            },
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[2].name
-                            }
-
+                                name: voyageRoles[2].name,
+                            },
                         },
                         status: {
                             connect: {
@@ -91,14 +87,13 @@ export const populateVoyageTeams = async () => {
                     {
                         member: {
                             connect: {
-                                email: users[3].email
-                            }
+                                email: users[3].email,
+                            },
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[4].name
-                            }
-
+                                name: voyageRoles[4].name,
+                            },
                         },
                         status: {
                             connect: {
@@ -106,16 +101,16 @@ export const populateVoyageTeams = async () => {
                             },
                         },
                         hrPerSprint: 15,
-                    }
-                ]
+                    },
+                ],
             },
-        }
-    })
+        },
+    });
 
     await prisma.voyageTeam.create({
         data: {
             voyage: {
-                connect: {number: "47"},
+                connect: { number: "47" },
             },
             name: "v47-tier3-team-45",
             status: {
@@ -126,237 +121,245 @@ export const populateVoyageTeams = async () => {
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             tier: {
-                connect: {name: "Tier 2"},
+                connect: { name: "Tier 2" },
             },
             endDate: new Date("2024-11-09"),
-        }
-    })
+        },
+    });
 
-    const voyageTeamMembers = await prisma.voyageTeamMember.findMany({})
+    const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 
     // nested createMany is not supported, so creating one by one
     // https://github.com/prisma/prisma/issues/5455
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Javascript",
                         category: {
                             connect: {
-                                name: "Frontend"
-                            }
+                                name: "Frontend",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[0].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[0].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "React",
                         category: {
                             connect: {
-                                name: "Frontend"
-                            }
+                                name: "Frontend",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[2].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[2].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Tailwind",
                         category: {
                             connect: {
-                                name: "CSS Library"
-                            }
+                                name: "CSS Library",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[2].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[2].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Node",
                         category: {
                             connect: {
-                                name: "Backend"
-                            }
+                                name: "Backend",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[1].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[1].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Jira",
                         category: {
                             connect: {
-                                name: "Project Management"
-                            }
+                                name: "Project Management",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[0].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[0].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Azure",
                         category: {
                             connect: {
-                                name: "Cloud Provider"
-                            }
+                                name: "Cloud Provider",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[3].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[3].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Netlify",
                         category: {
                             connect: {
-                                name: "Hosting"
-                            }
+                                name: "Hosting",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[2].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
+                                        id: voyageTeamMembers[2].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
 
     await prisma.voyageTeam.update({
         where: {
-            name: "v47-tier2-team-4"
-        }, data: {
+            name: "v47-tier2-team-4",
+        },
+        data: {
             teamTechStackItems: {
                 create: [
                     {
                         name: "Java",
                         category: {
                             connect: {
-                                name: "Backend"
-                            }
+                                name: "Backend",
+                            },
                         },
                         teamTechStackItemVotes: {
                             create: {
                                 votedBy: {
                                     connect: {
-                                        id: voyageTeamMembers[3].id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    })
-}
+                                        id: voyageTeamMembers[3].id,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        },
+    });
+};

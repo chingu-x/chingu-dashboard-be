@@ -1,60 +1,59 @@
-import {PrismaClient} from "@prisma/client";
-import {populateCheckinForm} from "./forms/checkinform";
-import {getRandomDateDuringSprint, getSprintId} from "./utils";
+import { PrismaClient } from "@prisma/client";
+import { populateCheckinForm } from "./forms/checkinform";
+import { getRandomDateDuringSprint, getSprintId } from "./utils";
 
 const prisma = new PrismaClient();
 
 export const populateFormsAndResponses = async () => {
-
     // test option choices for Voyage Application form
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
                 connect: {
-                    name: 'voyage roles'
-                }
+                    name: "voyage roles",
+                },
             },
-            text: 'Developer'
-        }
-    })
+            text: "Developer",
+        },
+    });
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
                 connect: {
-                    name: 'voyage roles'
-                }
+                    name: "voyage roles",
+                },
             },
-            text: 'Product Owner'
-        }
-    })
+            text: "Product Owner",
+        },
+    });
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
                 connect: {
-                    name: 'voyage roles'
-                }
+                    name: "voyage roles",
+                },
             },
-            text: 'Designer'
-        }
-    })
+            text: "Designer",
+        },
+    });
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
                 connect: {
-                    name: 'voyage roles'
-                }
+                    name: "voyage roles",
+                },
             },
-            text: 'Voyage Guide'
-        }
-    })
+            text: "Voyage Guide",
+        },
+    });
 
     // Sprint - Retrospective and review form
     await prisma.form.create({
         data: {
             formType: {
                 connect: {
-                    name: 'meeting'
-                }
+                    name: "meeting",
+                },
             },
             title: "Retrospective & Review",
             questions: {
@@ -63,47 +62,49 @@ export const populateFormsAndResponses = async () => {
                         order: 1,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
-                        text: 'What went right?',
-                        description: 'Share your thoughts on what went right',
+                        text: "What went right?",
+                        description: "Share your thoughts on what went right",
                         answerRequired: false,
                     },
                     {
                         order: 2,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
-                        text: 'What could be improved?',
-                        description: 'Share your thoughts on what could be improved for the next sprint',
-                        answerRequired: false
+                        text: "What could be improved?",
+                        description:
+                            "Share your thoughts on what could be improved for the next sprint",
+                        answerRequired: false,
                     },
                     {
                         order: 3,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
-                        text: 'Changes to be made for the next sprint?',
-                        description: 'Share your thoughts on what could be changed for the next sprint',
+                        text: "Changes to be made for the next sprint?",
+                        description:
+                            "Share your thoughts on what could be changed for the next sprint",
                         answerRequired: false,
-                    }
-                ]
-            }
-        }
-    })
+                    },
+                ],
+            },
+        },
+    });
 
     // Sprint - Sprint Planning form
     await prisma.form.create({
         data: {
             formType: {
                 connect: {
-                    name: 'meeting'
-                }
+                    name: "meeting",
+                },
             },
             title: "Sprint Planning",
             questions: {
@@ -112,28 +113,30 @@ export const populateFormsAndResponses = async () => {
                         order: 1,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
-                        text: 'Sprint Goal',
-                        description: 'What is the primary goal of the next sprint?',
+                        text: "Sprint Goal",
+                        description:
+                            "What is the primary goal of the next sprint?",
                         answerRequired: false,
                     },
                     {
                         order: 2,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
-                        text: 'Timeline/Tasks',
-                        description: 'What are some of the goals we want to achieve',
+                        text: "Timeline/Tasks",
+                        description:
+                            "What are some of the goals we want to achieve",
                         answerRequired: false,
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         },
-    })
+    });
 
     // Voyage Application form
     /* needs to be fixed after removing QuestionOption table
@@ -190,7 +193,7 @@ export const populateFormsAndResponses = async () => {
      */
 
     // Sprints checkin form
-    await populateCheckinForm()
+    await populateCheckinForm();
 
-    console.log('Forms, Questions and Responses populated.')
-}
+    console.log("Forms, Questions and Responses populated.");
+};

@@ -31,9 +31,44 @@ import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response
 export class SprintsController {
     constructor(private readonly sprintsService: SprintsService) {}
 
+    // dev and admin purpose
+    @Get()
+    @ApiOperation({
+        summary: "gets all the voyages and sprints details in the database",
+    })
+    @ApiOkResponse({
+        status: 200,
+        description: "successfully gets all voyage and sprints data",
+    })
+    getVoyagesAndSprints() {
+        return this.sprintsService.getVoyagesAndSprints();
+    }
+
+    @Get("teams/:teamId")
+    @ApiOperation({
+        summary: "gets all the voyages and sprints given a teamId",
+        description: "returns all the sprint dates of a particular team",
+    })
+    @ApiOkResponse({
+        status: 200,
+        description: "successfully gets all voyage and sprints data of a team",
+    })
+    @ApiNotFoundResponse({
+        status: 404,
+        description: "Invalid team Id. Record not found.",
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "Voyage team Id",
+        required: true,
+        example: 1,
+    })
+    getSprintDatesByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
+        return this.sprintsService.getSprintDatesByTeamId(teamId);
+    }
+
     // TODO: this route and most routes here will only be available to team member
     // To be added with authorization
-    // TODO: add decorators for this route
     @Get("meetings/:meetingId")
     @ApiOperation({
         summary: "gets meeting detail given meeting ID",
@@ -42,7 +77,7 @@ export class SprintsController {
     })
     @ApiOkResponse({
         status: 200,
-        description: "Successfully get the meeting data",
+        description: "Successfully gets the meeting data",
     })
     @ApiNotFoundResponse({
         status: 404,
