@@ -7,7 +7,7 @@ import {
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
@@ -17,6 +17,9 @@ import { LoginDto } from "./dto/login.dto";
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @ApiOperation({
+        summary: "When a user logs in, creates jwt token.",
+    })
     @UseGuards(LocalAuthGuard)
     @Post("login")
     async login(
@@ -38,6 +41,9 @@ export class AuthController {
         }
     }
 
+    @ApiOperation({
+        summary: "When a user logs out, jwt token is cleared.",
+    })
     @Post("logout")
     async logout(@Res({ passthrough: true }) res) {
         res.clearCookie("access_token");

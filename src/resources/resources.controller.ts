@@ -22,7 +22,7 @@ export class ResourcesController {
     constructor(private readonly resourcesService: ResourcesService) {}
 
     @ApiOperation({
-        description:
+        summary:
             "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
     @UseGuards(JwtAuthGuard)
@@ -41,7 +41,7 @@ export class ResourcesController {
     }
 
     @ApiOperation({
-        description: "Gets all resources added by a team given a teamId (int)",
+        summary: "Gets all resources added by a team given a teamId (int)",
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -54,7 +54,7 @@ export class ResourcesController {
     }
 
     @ApiOperation({
-        description:
+        summary:
             "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
     })
     @UseGuards(JwtAuthGuard)
@@ -73,7 +73,7 @@ export class ResourcesController {
     }
 
     @ApiOperation({
-        description:
+        summary:
             "Delete a resource if teamMemberId (int) matches logged in user",
     })
     @UseGuards(JwtAuthGuard)

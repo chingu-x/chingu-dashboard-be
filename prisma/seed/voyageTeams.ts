@@ -46,7 +46,7 @@ export const populateVoyageTeams = async () => {
                                 name: "Active",
                             },
                         },
-                        hrPerSprint: 10.5,
+                        hrPerSprint: 10,
                     },
                     {
                         member: {
@@ -64,7 +64,7 @@ export const populateVoyageTeams = async () => {
                                 name: "Active",
                             },
                         },
-                        hrPerSprint: 12.4,
+                        hrPerSprint: 12,
                     },
                     {
                         member: {
@@ -82,7 +82,7 @@ export const populateVoyageTeams = async () => {
                                 name: "Active",
                             },
                         },
-                        hrPerSprint: 20.3,
+                        hrPerSprint: 20,
                     },
                     {
                         member: {
