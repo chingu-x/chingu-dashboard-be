@@ -50,7 +50,6 @@ describe("IdeationsService", () => {
         },
     ];
     const memberOne = memberArr[0];
-    const memberTwo = memberArr[1];
 
     const db = {
         projectIdea: {
@@ -165,7 +164,10 @@ describe("IdeationsService", () => {
             vision: "Ideation 1 vision",
         };
 
-        const result = await service.updateIdeation(ideationId, updateIdeationDto);
+        const result = await service.updateIdeation(
+            ideationId,
+            updateIdeationDto,
+        );
         expect(result).toEqual(ideationOne);
     });
 
@@ -177,7 +179,11 @@ describe("IdeationsService", () => {
             userId: userId,
         };
 
-        const result = await service.deleteIdeationVote(teamId, ideationId, deleteIdeationVoteDto);
+        const result = await service.deleteIdeationVote(
+            teamId,
+            ideationId,
+            deleteIdeationVoteDto,
+        );
         expect(result).toEqual(ideationVoteOne);
     });
 
@@ -188,7 +194,10 @@ describe("IdeationsService", () => {
             userId: userId,
         };
 
-        const result = await service.deleteIdeation(ideationId, deleteIdeationDto);
+        const result = await service.deleteIdeation(
+            ideationId,
+            deleteIdeationDto,
+        );
         expect(result).toEqual(ideationOne);
     });
 });

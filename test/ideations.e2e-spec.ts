@@ -38,13 +38,6 @@ describe("IdeationsController (e2e)", () => {
     // Existing user in the dev database
     const userId: string = "28bf426b-aa9f-451e-a4c7-77588bb640b1";
 
-    const newUser = {
-        firstName: "John",
-        lastName: "Doe",
-        email: "johndoe@user.io",
-        password: "changeme",
-    };
-
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
@@ -222,20 +215,22 @@ describe("IdeationsController (e2e)", () => {
             userId: userId,
         };
 
-        return request(app.getHttpServer())
-            .delete(`/ideations/${ideationId}`)
-            .send(deleteIdeationDto)
-            .expect((res) => {
-                expect(res.body).toEqual({
-                    ...ideationShape,
-                    voyageTeamMemberId: expect.any(Number),
-                    updatedAt: expect.any(String),
-                });
-            })
-            // Prevents Not Found error for afterEach
-            .then(() => {
-                newIdeation = null;
-            });
+        return (
+            request(app.getHttpServer())
+                .delete(`/ideations/${ideationId}`)
+                .send(deleteIdeationDto)
+                .expect((res) => {
+                    expect(res.body).toEqual({
+                        ...ideationShape,
+                        voyageTeamMemberId: expect.any(Number),
+                        updatedAt: expect.any(String),
+                    });
+                })
+                // Prevents Not Found error for afterEach
+                .then(() => {
+                    newIdeation = null;
+                })
+        );
     });
 
     it("/DELETE teams/:teamId/ideations/:ideationId/ideation-votes", async () => {

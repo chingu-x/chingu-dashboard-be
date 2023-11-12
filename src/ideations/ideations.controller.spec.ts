@@ -1,4 +1,4 @@
-import { CreateIdeationVoteDto } from './dto/create-ideation-vote.dto';
+import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 import { Test, TestingModule } from "@nestjs/testing";
 import { IdeationsController } from "./ideations.controller";
 import { IdeationsService } from "./ideations.service";
@@ -10,25 +10,22 @@ describe("IdeationsController", () => {
     let service: IdeationsService;
 
     const ideationArr = [
-        {id: 1, title: "Ideation 1", description: "Ideation 1 description", vision: "Ideation 1 vision"},
+        {
+            id: 1,
+            title: "Ideation 1",
+            description: "Ideation 1 description",
+            vision: "Ideation 1 vision",
+        },
     ];
     const ideationOne = ideationArr[0];
 
-    const ideationVoteArr = [
-        {id: 1, projectIdeaId: 1},
-    ];
+    const ideationVoteArr = [{ id: 1, projectIdeaId: 1 }];
     const ideationVoteOne = ideationVoteArr[0];
 
     const mockIdeationsService = {
-        createIdeation: jest
-            .fn()
-            .mockResolvedValue(ideationOne),
-        createIdeationVote: jest
-            .fn()
-            .mockResolvedValue(ideationVoteOne),
-        getIdeationsByVoyageTeam: jest
-            .fn()
-            .mockResolvedValue(ideationArr),
+        createIdeation: jest.fn().mockResolvedValue(ideationOne),
+        createIdeationVote: jest.fn().mockResolvedValue(ideationVoteOne),
+        getIdeationsByVoyageTeam: jest.fn().mockResolvedValue(ideationArr),
         updateIdeation: jest
             .fn()
             .mockImplementation(
@@ -37,14 +34,10 @@ describe("IdeationsController", () => {
                         id: ideationId,
                         ...updateIdeationDto,
                     };
-                }
+                },
             ),
-        deleteIdeation: jest
-            .fn()
-            .mockResolvedValue(true),
-        deleteIdeationVote: jest
-            .fn()
-            .mockResolvedValue(true),
+        deleteIdeation: jest.fn().mockResolvedValue(true),
+        deleteIdeationVote: jest.fn().mockResolvedValue(true),
     };
 
     beforeEach(async () => {
@@ -57,7 +50,7 @@ describe("IdeationsController", () => {
                 },
             ],
         }).compile();
-        
+
         controller = module.get<IdeationsController>(IdeationsController);
         service = module.get<IdeationsService>(IdeationsService);
     });
@@ -75,7 +68,10 @@ describe("IdeationsController", () => {
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
-        const ideation = await controller.createIdeation(teamId, createIdeationDto);
+        const ideation = await controller.createIdeation(
+            teamId,
+            createIdeationDto,
+        );
 
         expect(service.createIdeation).toHaveBeenCalled();
         expect(ideation).toBe(ideationOne);
@@ -88,7 +84,11 @@ describe("IdeationsController", () => {
         const createIdeationVoteDto: CreateIdeationVoteDto = {
             userId: userId,
         };
-        const ideationVote = await controller.createIdeationVote(teamId, ideationId, createIdeationVoteDto);
+        const ideationVote = await controller.createIdeationVote(
+            teamId,
+            ideationId,
+            createIdeationVoteDto,
+        );
 
         expect(service.createIdeationVote).toHaveBeenCalled();
         expect(ideationVote).toBe(ideationVoteOne);
@@ -111,7 +111,10 @@ describe("IdeationsController", () => {
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
-        const ideation = await controller.updateIdeation(ideationId, updateIdeationDto);
+        const ideation = await controller.updateIdeation(
+            ideationId,
+            updateIdeationDto,
+        );
 
         expect(service.updateIdeation).toHaveBeenCalled();
         expect(ideation).toEqual({
@@ -126,7 +129,10 @@ describe("IdeationsController", () => {
         const deleteIdeationDto = {
             userId: userId,
         };
-        const ideation = await controller.deleteIdeation(ideationId, deleteIdeationDto);
+        const ideation = await controller.deleteIdeation(
+            ideationId,
+            deleteIdeationDto,
+        );
 
         expect(service.deleteIdeation).toHaveBeenCalled();
         expect(ideation).toBe(true);
@@ -139,7 +145,11 @@ describe("IdeationsController", () => {
         const deleteIdeationVoteDto = {
             userId: userId,
         };
-        const ideationVote = await controller.deleteIdeationVote(teamId, ideationId, deleteIdeationVoteDto);
+        const ideationVote = await controller.deleteIdeationVote(
+            teamId,
+            ideationId,
+            deleteIdeationVoteDto,
+        );
 
         expect(service.deleteIdeationVote).toHaveBeenCalled();
         expect(ideationVote).toBe(true);
