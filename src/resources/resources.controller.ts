@@ -8,13 +8,13 @@ import {
     Delete,
     ParseIntPipe,
     UseGuards,
-    Request
+    Request,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller()
 @ApiTags("team resources")
@@ -83,9 +83,6 @@ export class ResourcesController {
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
     ) {
-        return this.resourcesService.removeResource(
-            req,
-            resourceId,
-        );
+        return this.resourcesService.removeResource(req, resourceId);
     }
 }
