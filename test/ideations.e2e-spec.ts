@@ -7,6 +7,7 @@ import {
     ProjectIdea,
     ProjectIdeaVote,
     User,
+    Voyage,
     VoyageTeam,
     VoyageTeamMember,
 } from "@prisma/client";
@@ -44,18 +45,40 @@ describe("IdeationsController (e2e)", () => {
     let newIdeation: ProjectIdea;
     let newIdeationVote: ProjectIdeaVote;
     let newUser: User;
+    let newVoyage: Voyage;
     let newVoyageTeam: VoyageTeam;
     let newVoyageTeamMember: VoyageTeamMember;
 
-    beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
+    async function truncate() {
+        await prisma.$executeRawUnsafe(
+            `TRUNCATE TABLE "ProjectIdeaVote" CASCADE;`,
+        );
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "ProjectIdeaVote_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "ProjectIdea" CASCADE;`);
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "ProjectIdea_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(
+            `TRUNCATE TABLE "VoyageTeamMember" CASCADE;`,
+        );
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "VoyageTeamMember_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "VoyageTeam" CASCADE;`);
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "VoyageTeam_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Voyage" CASCADE;`);
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "Voyage_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "User" CASCADE;`);
+    }
 
-        app = moduleFixture.createNestApplication();
-        prisma = moduleFixture.get<PrismaService>(PrismaService);
-        app.useGlobalPipes(new ValidationPipe());
-        await app.init();
+    async function reseed() {
+        await truncate();
 
         newUser = await prisma.user.create({
             data: {
@@ -69,29 +92,23 @@ describe("IdeationsController (e2e)", () => {
                 timezone: "America/Los_Angeles",
                 comment: "Member seems to be inactive",
                 countryCode: "US",
-                gender: {
-                    connect: {
-                        abbreviation: "M",
-                    },
-                },
+            },
+        });
+        newVoyage = await prisma.voyage.create({
+            data: {
+                number: "47",
+                startDate: new Date("2024-10-28"),
+                endDate: new Date("2024-11-09"),
             },
         });
         newVoyageTeam = await prisma.voyageTeam.create({
             data: {
                 voyage: {
-                    connect: { number: "47" },
+                    connect: { number: newVoyage.number },
                 },
-                name: "v47-tier3-team-test",
-                status: {
-                    connect: {
-                        name: "Active",
-                    },
-                },
+                name: "v47-team-test",
                 repoUrl:
                     "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
-                tier: {
-                    connect: { name: "Tier 2" },
-                },
                 endDate: new Date("2024-11-09"),
             },
         });
@@ -107,38 +124,9 @@ describe("IdeationsController (e2e)", () => {
                         id: newVoyageTeam.id,
                     },
                 },
-                status: {
-                    connect: {
-                        name: "Active",
-                    },
-                },
                 hrPerSprint: 10.5,
             },
         });
-    });
-
-    afterAll(async () => {
-        await prisma.voyageTeamMember.delete({
-            where: {
-                id: newVoyageTeamMember.id,
-            },
-        });
-        await prisma.voyageTeam.delete({
-            where: {
-                id: newVoyageTeam.id,
-            },
-        });
-        await prisma.user.delete({
-            where: {
-                id: newUser.id,
-            },
-        });
-
-        await prisma.$disconnect();
-        await app.close();
-    });
-
-    beforeEach(async () => {
         newIdeation = await prisma.projectIdea.create({
             data: {
                 title: "Ideation 1",
@@ -167,21 +155,28 @@ describe("IdeationsController (e2e)", () => {
                 },
             },
         });
+    }
+
+    beforeAll(async () => {
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+            imports: [AppModule],
+        }).compile();
+
+        app = moduleFixture.createNestApplication();
+        prisma = moduleFixture.get<PrismaService>(PrismaService);
+        app.useGlobalPipes(new ValidationPipe());
+        await app.init();
     });
 
-    afterEach(async () => {
-        if (newIdeation) {
-            await prisma.projectIdeaVote.deleteMany({
-                where: {
-                    projectIdeaId: newIdeation.id,
-                },
-            });
-            await prisma.projectIdea.delete({
-                where: {
-                    id: newIdeation.id,
-                },
-            });
-        }
+    afterAll(async () => {
+        await truncate();
+
+        await prisma.$disconnect();
+        await app.close();
+    });
+
+    beforeEach(async () => {
+        await reseed();
     });
 
     it("/POST teams/:teamId/ideations", async () => {
@@ -210,8 +205,6 @@ describe("IdeationsController (e2e)", () => {
                     updatedAt: expect.any(String),
                     voyageTeamMemberId: expect.any(Number),
                 });
-                // Clean up the new ideation
-                newIdeation.id = res.body.id;
             });
     });
 
@@ -297,22 +290,16 @@ describe("IdeationsController (e2e)", () => {
             userId: newUser.id,
         };
 
-        return (
-            request(app.getHttpServer())
-                .delete(`/ideations/${ideationId}`)
-                .send(deleteIdeationDto)
-                .expect((res) => {
-                    expect(res.body).toEqual({
-                        ...ideationShape,
-                        voyageTeamMemberId: expect.any(Number),
-                        updatedAt: expect.any(String),
-                    });
-                })
-                // Prevents Not Found error for afterEach
-                .then(() => {
-                    newIdeation = null;
-                })
-        );
+        return request(app.getHttpServer())
+            .delete(`/ideations/${ideationId}`)
+            .send(deleteIdeationDto)
+            .expect((res) => {
+                expect(res.body).toEqual({
+                    ...ideationShape,
+                    voyageTeamMemberId: expect.any(Number),
+                    updatedAt: expect.any(String),
+                });
+            });
     });
 
     it("/DELETE teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
