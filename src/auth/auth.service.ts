@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
+        private prisma: PrismaService,
     ) {}
 
     async validateUser(email: string, password: string): Promise<any> {
@@ -28,5 +30,18 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload),
         };
+    }
+
+    async validateLoggedInUser(teamId: number, req){
+        const teamMember = await this.prisma.voyageTeamMember.findFirst({
+            where: {
+                voyageTeamId: teamId,
+                userId: req.user.userId,
+            },
+            select: {
+                id: true,
+            }, 
+        });
+        return teamMember;
     }
 }
