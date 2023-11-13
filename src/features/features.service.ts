@@ -1,15 +1,17 @@
 import {
     BadRequestException,
+    Inject,
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
+import { GlobalService } from "src/global/global.service";
 
 @Injectable()
 export class FeaturesService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private readonly globalService: GlobalService) {}
 
     async createFeature(
         req,
@@ -18,21 +20,7 @@ export class FeaturesService {
     ) {
         const { featureCategoryId, description } = createFeatureDto;
 
-        const teamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                voyageTeamId: teamId,
-                userId: req.user.userId,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (!teamMember) {
-            throw new NotFoundException(
-                `TeamId (id: ${teamId}) and/or loggedIn userId (id: ${req.user.userId}) is invalid.`,
-            );
-        }
+        const teamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, req.user.userId)
 
         const validCategory = await this.prisma.featureCategory.findFirst({
             where: {
