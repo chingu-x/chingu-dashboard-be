@@ -23,7 +23,7 @@ const deleteAllTables = async () => {
 
     try {
         await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE ${tables} CASCADE RESTART IDENTITY CASCADE;`,
+            `TRUNCATE TABLE ${tables} RESTART IDENTITY CASCADE;`,
         );
     } catch (error) {
         console.log({ error });
