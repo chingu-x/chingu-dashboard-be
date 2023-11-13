@@ -51,30 +51,23 @@ describe("IdeationsController (e2e)", () => {
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "ProjectIdeaVote" CASCADE;`,
+            `TRUNCATE TABLE "ProjectIdeaVote" RESTART IDENTITY CASCADE;`,
         );
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "ProjectIdeaVote_id_seq" RESTART WITH 1;`,
-        );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "ProjectIdea" CASCADE;`);
-        await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "ProjectIdea_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "ProjectIdea" RESTART IDENTITY CASCADE;`,
         );
         await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "VoyageTeamMember" CASCADE;`,
+            `TRUNCATE TABLE "VoyageTeamMember" RESTART IDENTITY CASCADE;`,
         );
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "VoyageTeamMember_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "VoyageTeam" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "VoyageTeam" CASCADE;`);
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "VoyageTeam_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "Voyage" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Voyage" CASCADE;`);
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "Voyage_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "User" CASCADE;`);
     }
 
     async function reseed() {
