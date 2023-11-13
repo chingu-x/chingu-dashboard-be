@@ -28,20 +28,17 @@ describe("TeamsController (e2e)", () => {
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "VoyageTeamMember" CASCADE;`,
+            `TRUNCATE TABLE "public"."VoyageTeamMember" RESTART IDENTITY CASCADE;`,
         );
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "VoyageTeamMember_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "public"."VoyageTeam" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "VoyageTeam" CASCADE;`);
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "VoyageTeam_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "public"."Voyage" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Voyage" CASCADE;`);
         await prisma.$executeRawUnsafe(
-            `ALTER SEQUENCE "Voyage_id_seq" RESTART WITH 1;`,
+            `TRUNCATE TABLE "public"."User" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "User" CASCADE;`);
     }
 
     async function reseed() {
