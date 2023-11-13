@@ -32,38 +32,10 @@ describe("TeamsController", () => {
 
     const mockTeamsService = {
         findAll: jest.fn().mockResolvedValue(teamArr),
-        findAllByVoyageId: jest.fn().mockImplementation((id: number) => [
-            {
-                voyageId: id,
-                ...teamOne,
-            },
-        ]),
-        findOne: jest.fn().mockImplementation((id: number) => {
-            return {
-                voyageId: id,
-                ...teamOne,
-            };
-        }),
-        findTeamMembersByTeamId: jest.fn().mockImplementation((id: number) => {
-            return [
-                {
-                    voyageTeamId: id,
-                    ...memberOne,
-                },
-            ];
-        }),
-        updateTeamMemberById: jest
-            .fn()
-            .mockImplementation(
-                (teamId: number, userId: string, memberData: any) => {
-                    return {
-                        voyageTeamId: teamId,
-                        userId: userId,
-                        ...memberData,
-                        ...memberOne,
-                    };
-                },
-            ),
+        findAllByVoyageId: jest.fn().mockResolvedValue(teamArr),
+        findOne: jest.fn().mockResolvedValue(teamOne),
+        findTeamMembersByTeamId: jest.fn().mockResolvedValue(memberArr),
+        updateTeamMemberById: jest.fn().mockResolvedValue(memberOne),
     };
 
     beforeEach(async () => {
@@ -125,6 +97,7 @@ describe("TeamsController", () => {
             userId,
             updateTeamMemberDto,
         );
+
         expect(service.updateTeamMemberById).toHaveBeenCalledWith(
             teamId,
             userId,
