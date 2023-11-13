@@ -3,6 +3,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
+import { User, Voyage, VoyageTeam, VoyageTeamMember } from "@prisma/client";
 
 describe("TeamsController (e2e)", () => {
     let app: INestApplication;
@@ -20,6 +21,99 @@ describe("TeamsController (e2e)", () => {
         hrPerSprint: expect.any(Number),
     });
 
+    let newUser: User;
+    let newVoyage: Voyage;
+    let newVoyageTeam: VoyageTeam;
+    let newVoyageTeamMember: VoyageTeamMember;
+
+    async function truncate() {
+        await prisma.$executeRawUnsafe(
+            `TRUNCATE TABLE "VoyageTeamMember" CASCADE;`,
+        );
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "VoyageTeamMember_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "VoyageTeam" CASCADE;`);
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "VoyageTeam_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "Voyage" CASCADE;`);
+        await prisma.$executeRawUnsafe(
+            `ALTER SEQUENCE "Voyage_id_seq" RESTART WITH 1;`,
+        );
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "User" CASCADE;`);
+    }
+
+    async function reseed() {
+        await truncate();
+
+        newUser = await prisma.user.create({
+            data: {
+                firstName: "Test",
+                lastName: "User",
+                githubId: "testuser-github",
+                discordId: "testuser-discord",
+                email: "testuser@outlook.com",
+                password: "password",
+                avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
+                timezone: "America/Los_Angeles",
+                comment: "Member seems to be inactive",
+                countryCode: "US",
+                gender: {
+                    connect: {
+                        abbreviation: "M",
+                    },
+                },
+            },
+        });
+        newVoyage = await prisma.voyage.create({
+            data: {
+                number: "47",
+                startDate: new Date("2024-10-28"),
+                endDate: new Date("2024-11-09"),
+            },
+        });
+        newVoyageTeam = await prisma.voyageTeam.create({
+            data: {
+                voyage: {
+                    connect: { number: "47" },
+                },
+                name: "v47-tier3-team-test",
+                status: {
+                    connect: {
+                        name: "Active",
+                    },
+                },
+                repoUrl:
+                    "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+                tier: {
+                    connect: { name: "Tier 2" },
+                },
+                endDate: new Date("2024-11-09"),
+            },
+        });
+        newVoyageTeamMember = await prisma.voyageTeamMember.create({
+            data: {
+                member: {
+                    connect: {
+                        id: newUser.id,
+                    },
+                },
+                voyageTeam: {
+                    connect: {
+                        id: newVoyageTeam.id,
+                    },
+                },
+                status: {
+                    connect: {
+                        name: "Active",
+                    },
+                },
+                hrPerSprint: 10.5,
+            },
+        });
+    }
+
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
@@ -31,7 +125,13 @@ describe("TeamsController (e2e)", () => {
         await app.init();
     });
 
+    beforeEach(async () => {
+        await reseed();
+    });
+
     afterAll(async () => {
+        await truncate();
+
         await prisma.$disconnect();
         await app.close();
     });
@@ -50,7 +150,7 @@ describe("TeamsController (e2e)", () => {
     });
 
     it("/GET teams/voyage/:id", async () => {
-        const voyageId: number = 2;
+        const voyageId: number = newVoyage.id;
         const teamCount: number = await prisma.voyageTeam.count({
             where: {
                 voyageId: voyageId,
@@ -68,7 +168,7 @@ describe("TeamsController (e2e)", () => {
     });
 
     it("/GET teams/:id/members", async () => {
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const memberCount: number = await prisma.voyageTeamMember.count({
             where: {
                 voyageTeamId: teamId,
@@ -86,7 +186,7 @@ describe("TeamsController (e2e)", () => {
     });
 
     it("/PATCH teams/:teamId/members/:userId", async () => {
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const voyageTeam = await prisma.voyageTeam.findFirst({
             where: {
                 id: teamId,
@@ -96,7 +196,7 @@ describe("TeamsController (e2e)", () => {
             },
         });
         const firstTeamMember = voyageTeam.voyageTeamMembers.find(
-            (member: { id: number }) => member.id === 1,
+            (member: { id: number }) => member.id === newVoyageTeamMember.id,
         );
         const randomHours: number = Math.floor(Math.random() * 31);
         const updatedData = {
