@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { ProjectIdea, ProjectIdeaVote } from "@prisma/client";
+import { ProjectIdea, ProjectIdeaVote, User, VoyageTeam, VoyageTeamMember } from "@prisma/client";
 import { CreateIdeationVoteDto } from "src/ideations/dto/create-ideation-vote.dto";
 import { DeleteIdeationDto } from "src/ideations/dto/delete-ideation.dto";
 import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
@@ -35,8 +35,11 @@ describe("IdeationsController (e2e)", () => {
         createdAt: expect.any(String),
     };
 
-    // Existing user in the dev database
-    const userId: string = "28bf426b-aa9f-451e-a4c7-77588bb640b1";
+    let newIdeation: ProjectIdea;
+    let newIdeationVote: ProjectIdeaVote;
+    let newUser: User;
+    let newVoyageTeam: VoyageTeam;
+    let newVoyageTeamMember: VoyageTeamMember;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -47,15 +50,88 @@ describe("IdeationsController (e2e)", () => {
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
         await app.init();
+
+        newUser = await prisma.user.create({
+            data: {
+                firstName: 'Test',
+                lastName: 'User',
+                githubId: 'testuser-github',
+                discordId: 'testuser-discord',
+                email: 'testuser@outlook.com',
+                password: "password",
+                avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x',
+                timezone: 'America/Los_Angeles',
+                comment: "Member seems to be inactive",
+                countryCode: 'US',
+                gender: {
+                    connect: {
+                        abbreviation: 'M'
+                    }
+                }
+            },
+        });
+        newVoyageTeam = await prisma.voyageTeam.create({
+            data: {
+                voyage: {
+                    connect: {number: "47"},
+                },
+                name: "v47-tier3-team-test",
+                status: {
+                    connect: {
+                        name: "Active",
+                    },
+                },
+                repoUrl:
+                    "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+                tier: {
+                    connect: {name: "Tier 2"},
+                },
+                endDate: new Date("2024-11-09"),
+            }
+        })
+        newVoyageTeamMember = await prisma.voyageTeamMember.create({
+            data: {
+                member: {
+                    connect: {
+                        id: newUser.id,
+                    },
+                },
+                voyageTeam: {
+                    connect: {
+                        id: newVoyageTeam.id,
+                    },
+                },
+                status: {
+                    connect: {
+                        name: "Active",
+                    },
+                },
+                hrPerSprint: 10.5,
+            },
+        });
     });
 
     afterAll(async () => {
+        await prisma.voyageTeamMember.delete({
+            where: {
+                id: newVoyageTeamMember.id,
+            },
+        });
+        await prisma.voyageTeam.delete({
+            where: {
+                id: newVoyageTeam.id,
+            },
+        });
+        await prisma.user.delete({
+            where: {
+                id: newUser.id,
+            },
+        });
+
         await prisma.$disconnect();
         await app.close();
     });
 
-    let newIdeation: ProjectIdea;
-    let newIdeationVote: ProjectIdeaVote;
     beforeEach(async () => {
         newIdeation = await prisma.projectIdea.create({
             data: {
@@ -64,8 +140,8 @@ describe("IdeationsController (e2e)", () => {
                 vision: "Ideation 1 vision",
                 contributedBy: {
                     connect: {
-                        id: 1,
-                        userId: userId,
+                        id: newVoyageTeamMember.id,
+                        userId: newUser.id,
                     },
                 },
             },
@@ -74,8 +150,8 @@ describe("IdeationsController (e2e)", () => {
             data: {
                 votedBy: {
                     connect: {
-                        id: 1,
-                        userId: userId,
+                        id: newVoyageTeamMember.id,
+                        userId: newUser.id,
                     },
                 },
                 projectIdea: {
@@ -109,9 +185,9 @@ describe("IdeationsController (e2e)", () => {
             },
         });
 
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const createIdeationDto: CreateIdeationDto = {
-            userId: userId,
+            userId: newUser.id,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
@@ -140,10 +216,10 @@ describe("IdeationsController (e2e)", () => {
             },
         });
 
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
         const createIdeationVoteDto: CreateIdeationVoteDto = {
-            userId: userId,
+            userId: newUser.id,
         };
 
         return request(app.getHttpServer())
@@ -157,7 +233,7 @@ describe("IdeationsController (e2e)", () => {
     });
 
     it("/GET teams/:teamId/ideations", async () => {
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const ideationCount: number = await prisma.projectIdea.count({
             where: {
                 contributedBy: {
@@ -189,7 +265,7 @@ describe("IdeationsController (e2e)", () => {
     it("/PATCH ideations/:ideationId", async () => {
         const ideationId: number = newIdeation.id;
         const updateIdeationDto: UpdateIdeationDto = {
-            userId: userId,
+            userId: newUser.id,
             title: "Ideation 2",
             description: "Ideation 2 description",
             vision: "Ideation 2 vision",
@@ -212,7 +288,7 @@ describe("IdeationsController (e2e)", () => {
     it("/DELETE ideations/:ideationId", async () => {
         const ideationId: number = newIdeation.id;
         const deleteIdeationDto: DeleteIdeationDto = {
-            userId: userId,
+            userId: newUser.id,
         };
 
         return (
@@ -234,10 +310,10 @@ describe("IdeationsController (e2e)", () => {
     });
 
     it("/DELETE teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
-        const teamId: number = 1;
+        const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
         const deleteIdeationVoteDto: DeleteIdeationVoteDto = {
-            userId: userId,
+            userId: newUser.id,
         };
 
         return request(app.getHttpServer())
