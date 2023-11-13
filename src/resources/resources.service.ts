@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { DeleteResourceDto } from "./dto/delete-resource.dto";
 
 @Injectable()
