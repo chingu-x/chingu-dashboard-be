@@ -59,11 +59,6 @@ describe("TeamsController (e2e)", () => {
                 timezone: "America/Los_Angeles",
                 comment: "Member seems to be inactive",
                 countryCode: "US",
-                gender: {
-                    connect: {
-                        abbreviation: "M",
-                    },
-                },
             },
         });
         newVoyage = await prisma.voyage.create({
@@ -76,19 +71,11 @@ describe("TeamsController (e2e)", () => {
         newVoyageTeam = await prisma.voyageTeam.create({
             data: {
                 voyage: {
-                    connect: { number: "47" },
+                    connect: { number: newVoyage.number },
                 },
-                name: "v47-tier3-team-test",
-                status: {
-                    connect: {
-                        name: "Active",
-                    },
-                },
+                name: "v47-team-test",
                 repoUrl:
                     "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
-                tier: {
-                    connect: { name: "Tier 2" },
-                },
                 endDate: new Date("2024-11-09"),
             },
         });
@@ -102,11 +89,6 @@ describe("TeamsController (e2e)", () => {
                 voyageTeam: {
                     connect: {
                         id: newVoyageTeam.id,
-                    },
-                },
-                status: {
-                    connect: {
-                        name: "Active",
                     },
                 },
                 hrPerSprint: 10.5,
