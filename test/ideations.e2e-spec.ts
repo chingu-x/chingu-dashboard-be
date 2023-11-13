@@ -3,7 +3,13 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { ProjectIdea, ProjectIdeaVote, User, VoyageTeam, VoyageTeamMember } from "@prisma/client";
+import {
+    ProjectIdea,
+    ProjectIdeaVote,
+    User,
+    VoyageTeam,
+    VoyageTeamMember,
+} from "@prisma/client";
 import { CreateIdeationVoteDto } from "src/ideations/dto/create-ideation-vote.dto";
 import { DeleteIdeationDto } from "src/ideations/dto/delete-ideation.dto";
 import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
@@ -53,27 +59,27 @@ describe("IdeationsController (e2e)", () => {
 
         newUser = await prisma.user.create({
             data: {
-                firstName: 'Test',
-                lastName: 'User',
-                githubId: 'testuser-github',
-                discordId: 'testuser-discord',
-                email: 'testuser@outlook.com',
+                firstName: "Test",
+                lastName: "User",
+                githubId: "testuser-github",
+                discordId: "testuser-discord",
+                email: "testuser@outlook.com",
                 password: "password",
-                avatar: 'https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x',
-                timezone: 'America/Los_Angeles',
+                avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
+                timezone: "America/Los_Angeles",
                 comment: "Member seems to be inactive",
-                countryCode: 'US',
+                countryCode: "US",
                 gender: {
                     connect: {
-                        abbreviation: 'M'
-                    }
-                }
+                        abbreviation: "M",
+                    },
+                },
             },
         });
         newVoyageTeam = await prisma.voyageTeam.create({
             data: {
                 voyage: {
-                    connect: {number: "47"},
+                    connect: { number: "47" },
                 },
                 name: "v47-tier3-team-test",
                 status: {
@@ -84,11 +90,11 @@ describe("IdeationsController (e2e)", () => {
                 repoUrl:
                     "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
                 tier: {
-                    connect: {name: "Tier 2"},
+                    connect: { name: "Tier 2" },
                 },
                 endDate: new Date("2024-11-09"),
-            }
-        })
+            },
+        });
         newVoyageTeamMember = await prisma.voyageTeamMember.create({
             data: {
                 member: {
