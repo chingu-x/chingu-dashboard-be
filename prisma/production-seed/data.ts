@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 //this file is for adding static values to the production branch. Run the below command on initial set up.
-//yarn ts-node prisma/production-see.ts
+//yarn ts-node prisma/production-seed.ts
 
 const prisma = new PrismaClient();
 

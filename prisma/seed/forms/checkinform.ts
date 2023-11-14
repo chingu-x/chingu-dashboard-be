@@ -50,7 +50,7 @@ export const populateCheckinForm = async () => {
                         },
                     },
                     {
-                        order: 1,
+                        order: 2,
                         inputType: {
                             connect: {
                                 name: "text",
