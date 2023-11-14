@@ -11,7 +11,7 @@ import {
 import { TeamsService } from "./teams.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller("teams")
 @ApiTags("teams")

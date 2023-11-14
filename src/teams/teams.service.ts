@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "src/global/global.service";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class TeamsService {

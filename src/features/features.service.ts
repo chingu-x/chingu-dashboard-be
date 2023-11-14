@@ -6,7 +6,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
-import { GlobalService } from "src/global/global.service";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class FeaturesService {

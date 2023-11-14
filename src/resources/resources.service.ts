@@ -6,8 +6,8 @@ import {
 } from "@nestjs/common";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { PrismaService } from "src/prisma/prisma.service";
-import { GlobalService } from "src/global/global.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class ResourcesService {

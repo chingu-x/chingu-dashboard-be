@@ -7,7 +7,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { GlobalService } from "src/global/global.service";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class IdeationsService {

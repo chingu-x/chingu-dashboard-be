@@ -13,7 +13,7 @@ import {
 import { TechsService } from "./techs.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller("techs")
 @ApiTags("techs / techstack")
