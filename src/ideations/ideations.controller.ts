@@ -7,17 +7,17 @@ import {
     Patch,
     Delete,
     ParseIntPipe,
+    Request,
+    UseGuards,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
-import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
-import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
-import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
-@Controller()
+@Controller("teams")
 @ApiTags("ideations")
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
@@ -26,37 +26,42 @@ export class IdeationsController {
         summary:
             "Adds a new ideation to the team, add the creator as first voter.",
     })
-    @Post("/teams/:teamId/ideations")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Post("/:teamId/ideations")
     @ApiCreatedResponse({ type: Ideation })
     createIdeation(
+        @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
-        return this.ideationsService.createIdeation(teamId, createIdeationDto);
+        return this.ideationsService.createIdeation(req, teamId, createIdeationDto);
     }
 
     @ApiOperation({
         summary:
             "Adds an ideation vote given a ideationId (int) and teamId (int).",
     })
-    @Post("/teams/:teamId/ideations/:ideationId/ideation-votes")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Post("/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
+        @Request() req, 
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
-        @Body() createIdeationVoteDto: CreateIdeationVoteDto,
     ) {
         return this.ideationsService.createIdeationVote(
+            req,
             teamId,
             ideationId,
-            createIdeationVoteDto,
         );
     }
 
     @ApiOperation({
         summary: "Gets all ideations for a team given a teamId (int).",
     })
-    @Get("/teams/:teamId/ideations")
+    @Get("/:teamId/ideations")
     @ApiCreatedResponse({ type: Ideation })
     getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
@@ -66,14 +71,20 @@ export class IdeationsController {
         summary:
             "Updates an ideation given a ideationId (int) and the that user that created it is logged in.",
     })
-    @Patch("/ideations/:ideationId")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Patch("/:teamId/ideations/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
+        @Request() req, 
         @Param("ideationId", ParseIntPipe) ideationId: number,
+        @Param("teamId", ParseIntPipe) teamId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
     ) {
         return this.ideationsService.updateIdeation(
+            req,
             ideationId,
+            teamId,
             updateIdeationDto,
         );
     }
@@ -82,34 +93,39 @@ export class IdeationsController {
         summary:
             "Deletes an ideation given a ideationId (int) and that the user that created it is logged in.",
     })
-    @Delete("/ideations/:ideationId")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Delete("/:teamId/ideations/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeation(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
-        @Body() deleteIdeationDto: DeleteIdeationDto,
     ) {
         return this.ideationsService.deleteIdeation(
+            req,
+            teamId,
             ideationId,
-            deleteIdeationDto,
         );
     }
 
-    // Should probably add ideationVoteId to the path
     @ApiOperation({
         summary:
             "Deletes an ideation vote given a ideationId (int) and teamId (int).",
     })
-    @Delete("/teams/:teamId/ideations/:ideationId/ideation-votes")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Delete("/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
+        @Request() req, 
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
-        @Body() deleteIdeationVoteDto: DeleteIdeationVoteDto,
     ) {
         return this.ideationsService.deleteIdeationVote(
+            req,
             teamId,
             ideationId,
-            deleteIdeationVoteDto,
         );
     }
 }
