@@ -6,22 +6,20 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { CreateTeamTechVoteDto } from "./dto/create-tech-vote.dto";
-import { DeleteTeamTechVoteDto } from "./dto/delete-tech-vote.dto";
 
 @Injectable()
 export class TechsService {
     constructor(private prisma: PrismaService) {}
 
-    // Note: userId will eventually come from the auth header
     findVoyageMemberId = async (
-        userId: string,
+        req,
         teamId: number,
     ): Promise<number> | null => {
+        const uuid = req.user.userId;
         const voyageMember = await this.prisma.voyageTeamMember.findUnique({
             where: {
                 userVoyageId: {
-                    userId: userId,
+                    userId: uuid,
                     voyageTeamId: teamId,
                 },
             },
@@ -73,11 +71,12 @@ export class TechsService {
         });
     };
 
-    async addNewTeamTech(teamId: number, createTechVoteDto: CreateTeamTechDto) {
-        const voyageMemberId = await this.findVoyageMemberId(
-            createTechVoteDto.votedBy,
-            teamId,
-        );
+    async addNewTeamTech(
+        req,
+        teamId: number,
+        createTechVoteDto: CreateTeamTechDto,
+    ) {
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
@@ -105,15 +104,8 @@ export class TechsService {
         }
     }
 
-    async addExistingTechVote(
-        teamId,
-        teamTechId,
-        createTeamTechVoteDto: CreateTeamTechVoteDto,
-    ) {
-        const voyageMemberId = await this.findVoyageMemberId(
-            createTeamTechVoteDto.votedBy,
-            teamId,
-        );
+    async addExistingTechVote(req, teamId, teamTechId) {
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
@@ -133,15 +125,8 @@ export class TechsService {
         }
     }
 
-    async removeVote(
-        teamId,
-        teamTechId,
-        createTechVoteDto: DeleteTeamTechVoteDto,
-    ) {
-        const voyageMemberId = await this.findVoyageMemberId(
-            createTechVoteDto.removedBy,
-            teamId,
-        );
+    async removeVote(req, teamId, teamTechId) {
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
