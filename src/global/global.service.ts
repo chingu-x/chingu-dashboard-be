@@ -11,6 +11,11 @@ export class GlobalService {
             where: {
                 voyageTeamId: teamId,
                 userId: uuid,
+            },
+            select: {
+                id: true,
+                userId: true,
+                voyageTeamId: true,
             }
         });
 
