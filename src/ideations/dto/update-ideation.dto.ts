@@ -5,11 +5,6 @@ import { CreateIdeationDto } from "./create-ideation.dto";
 
 export class UpdateIdeationDto extends PartialType(CreateIdeationDto) {
     @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
-    userId: string;
-
-    @IsString()
     @ApiProperty()
     title: string;
 
