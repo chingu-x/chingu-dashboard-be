@@ -148,30 +148,20 @@ export class IdeationsService {
     async updateIdeation(
         req,
         ideationId: number,
+        teamId: number,
         updateIdeationDto: UpdateIdeationDto,
     ) {
         const uuid = req.user.userId;
         const { title, description, vision } = updateIdeationDto;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                id: teamMemberId,
-                userId: uuid,
-            },
-            select: {
-                id: true,
-                userId: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException(
-                `Invalid teamMemberId (id: ${teamMemberId}) or userId (id: ${uuid}).`,
-            );
+        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid)
 
         const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
                 id: ideationId,
             },
+            select: {
+                voyageTeamMemberId: true,
+            }
         });
         if (!ideationExistsCheck) {
             throw new NotFoundException(
@@ -181,7 +171,7 @@ export class IdeationsService {
 
         try {
             //only allow the user that created the idea to edit it
-            if (voyageTeamMember.userId === uuid) {
+            if (voyageTeamMember.id === ideationExistsCheck.voyageTeamMemberId) {
                 const updatedIdeation = await this.prisma.projectIdea.update({
                     where: {
                         id: ideationId,
@@ -195,7 +185,7 @@ export class IdeationsService {
                 return updatedIdeation;
             } else {
                 throw new ConflictException(
-                    `voyageTeamMember.userId: ${voyageTeamMember.userId} on ideation does not match userId: ${userId} input.`,
+                    `voyageTeamMember.userId: ${voyageTeamMember.userId} on ideation does not match userId: ${uuid} input.`,
                 );
             }
         } catch (e) {
@@ -210,21 +200,7 @@ export class IdeationsService {
     ) {
         const uuid = req.user.userId;
         let voteCount;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                id: teamMemberId,
-            },
-            select: {
-                id: true,
-                userId: true,
-                voyageTeamId: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new NotFoundException(
-                `TeamMemberId (id: ${teamMemberId}) does not exist`,
-            );
+        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, req.user.userId)
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
             throw new ConflictException(
@@ -232,9 +208,11 @@ export class IdeationsService {
             );
         }
 
+
         try {
             await this.deleteIdeationVote(
-                voyageTeamMember.voyageTeamId,
+                req,
+                teamId,
                 ideationId,
             );
             voteCount = await this.getIdeationVoteCount(ideationId);
@@ -253,22 +231,12 @@ export class IdeationsService {
     }
 
     async deleteIdeationVote(
+        req, 
         teamId: number,
         ideationId: number,
-        deleteIdeationVoteDto: DeleteIdeationVoteDto,
     ) {
-        const { userId } = deleteIdeationVoteDto;
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                userId: userId,
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException("Invalid User or Team Id");
+        const uuid = req.user.userId;
+        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid)
         const ideationVote = await this.getIdeationVote(
             ideationId,
             voyageTeamMember.id,
