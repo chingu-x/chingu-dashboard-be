@@ -13,7 +13,12 @@ import {
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiOperation,
+    ApiTags,
+} from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
@@ -35,7 +40,11 @@ export class IdeationsController {
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
-        return this.ideationsService.createIdeation(req, teamId, createIdeationDto);
+        return this.ideationsService.createIdeation(
+            req,
+            teamId,
+            createIdeationDto,
+        );
     }
 
     @ApiOperation({
@@ -47,7 +56,7 @@ export class IdeationsController {
     @Post("/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
-        @Request() req, 
+        @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
@@ -76,7 +85,7 @@ export class IdeationsController {
     @Patch("/:teamId/ideations/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
-        @Request() req, 
+        @Request() req,
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
@@ -102,11 +111,7 @@ export class IdeationsController {
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
-        return this.ideationsService.deleteIdeation(
-            req,
-            teamId,
-            ideationId,
-        );
+        return this.ideationsService.deleteIdeation(req, teamId, ideationId);
     }
 
     @ApiOperation({
@@ -118,7 +123,7 @@ export class IdeationsController {
     @Delete("/:teamId/ideations/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
-        @Request() req, 
+        @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {

@@ -11,12 +11,23 @@ import { GlobalService } from "src/global/global.service";
 
 @Injectable()
 export class IdeationsService {
-    constructor(private prisma: PrismaService, private readonly globalService: GlobalService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
-    async createIdeation(req, teamId: number, createIdeationDto: CreateIdeationDto) {
+    async createIdeation(
+        req,
+        teamId: number,
+        createIdeationDto: CreateIdeationDto,
+    ) {
         const uuid = req.user.userId;
         const { title, description, vision } = createIdeationDto;
-        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid);
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         try {
             const createdIdeation = await this.prisma.projectIdea.create({
                 data: {
@@ -27,24 +38,20 @@ export class IdeationsService {
                 },
             });
 
-            await this.createIdeationVote(
-                req,
-                teamId,
-                createdIdeation.id,
-            );
+            await this.createIdeationVote(req, teamId, createdIdeation.id);
             return createdIdeation;
         } catch (e) {
             throw e;
         }
     }
 
-    async createIdeationVote(
-        req,
-        teamId: number,
-        ideationId: number,
-    ) {
+    async createIdeationVote(req, teamId: number, ideationId: number) {
         const uuid = req.user.userId;
-        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid);
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
                 id: ideationId,
@@ -153,7 +160,11 @@ export class IdeationsService {
     ) {
         const uuid = req.user.userId;
         const { title, description, vision } = updateIdeationDto;
-        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid)
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
 
         const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
@@ -161,7 +172,7 @@ export class IdeationsService {
             },
             select: {
                 voyageTeamMemberId: true,
-            }
+            },
         });
         if (!ideationExistsCheck) {
             throw new NotFoundException(
@@ -171,7 +182,9 @@ export class IdeationsService {
 
         try {
             //only allow the user that created the idea to edit it
-            if (voyageTeamMember.id === ideationExistsCheck.voyageTeamMemberId) {
+            if (
+                voyageTeamMember.id === ideationExistsCheck.voyageTeamMemberId
+            ) {
                 const updatedIdeation = await this.prisma.projectIdea.update({
                     where: {
                         id: ideationId,
@@ -193,14 +206,14 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(
-        req,
-        teamId,
-        ideationId: number,
-    ) {
+    async deleteIdeation(req, teamId, ideationId: number) {
         const uuid = req.user.userId;
         let voteCount;
-        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, req.user.userId)
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                req.user.userId,
+            );
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
             throw new ConflictException(
@@ -208,13 +221,8 @@ export class IdeationsService {
             );
         }
 
-
         try {
-            await this.deleteIdeationVote(
-                req,
-                teamId,
-                ideationId,
-            );
+            await this.deleteIdeationVote(req, teamId, ideationId);
             voteCount = await this.getIdeationVoteCount(ideationId);
             //only allow the user that created the idea to delete it and only if it has no votes
             if (voteCount === 0 && voyageTeamMember.userId === uuid) {
@@ -230,13 +238,13 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeationVote(
-        req, 
-        teamId: number,
-        ideationId: number,
-    ) {
+    async deleteIdeationVote(req, teamId: number, ideationId: number) {
         const uuid = req.user.userId;
-        const voyageTeamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, uuid)
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         const ideationVote = await this.getIdeationVote(
             ideationId,
             voyageTeamMember.id,

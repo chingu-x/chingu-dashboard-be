@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class GlobalService {
     constructor(private prisma: PrismaService) {}
 
-    //verifies user is logged in by using uuid from cookie and teamId to pull a teamMember. 
-    public async validateLoggedInAndTeamMember(teamId: number, uuid: any){
+    //verifies user is logged in by using uuid from cookie and teamId to pull a teamMember.
+    public async validateLoggedInAndTeamMember(teamId: number, uuid: any) {
         const teamMember = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 voyageTeamId: teamId,
@@ -16,7 +16,7 @@ export class GlobalService {
                 id: true,
                 userId: true,
                 voyageTeamId: true,
-            }
+            },
         });
 
         if (!teamMember) {
@@ -26,6 +26,4 @@ export class GlobalService {
         }
         return teamMember;
     }
-
-
 }

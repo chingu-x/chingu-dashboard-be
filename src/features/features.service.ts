@@ -1,6 +1,5 @@
 import {
     BadRequestException,
-    Inject,
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
@@ -11,7 +10,10 @@ import { GlobalService } from "src/global/global.service";
 
 @Injectable()
 export class FeaturesService {
-    constructor(private prisma: PrismaService, private readonly globalService: GlobalService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
     async createFeature(
         req,
@@ -20,7 +22,11 @@ export class FeaturesService {
     ) {
         const { featureCategoryId, description } = createFeatureDto;
 
-        const teamMember = await this.globalService.validateLoggedInAndTeamMember(teamId, req.user.userId)
+        const teamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                req.user.userId,
+            );
 
         const validCategory = await this.prisma.featureCategory.findFirst({
             where: {

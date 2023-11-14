@@ -9,7 +9,7 @@ import { UsersModule } from "./users/users.module";
 import { ResourcesModule } from "./resources/resources.module";
 import { AuthModule } from "./auth/auth.module";
 import { FeaturesModule } from "./features/features.module";
-import { GlobalModule } from './global/global.module';
+import { GlobalModule } from "./global/global.module";
 
 @Module({
     imports: [
