@@ -5,10 +5,13 @@ import {
     Patch,
     Param,
     ParseIntPipe,
+    Request,
+    UseGuards,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -52,15 +55,17 @@ export class TeamsController {
         summary:
             "Updates team member hours per a sprint given a teamId (int) and userId (int).",
     })
-    @Patch(":teamId/members/:userId")
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Patch(":teamId/members")
     update(
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("userId") userId: string,
+        @Request() req,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
         return this.teamsService.updateTeamMemberById(
             teamId,
-            userId,
+            req,
             updateTeamMemberDto,
         );
     }

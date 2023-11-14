@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "src/global/global.service";
 
 @Injectable()
 export class TeamsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
     findAll() {
         return this.prisma.voyageTeam.findMany({});
@@ -53,16 +57,19 @@ export class TeamsService {
     }
 
     // Update voyage team member by id
-    // when auth is ready, we will need to make sure the token id matches with the userid
-    updateTeamMemberById(
+    async updateTeamMemberById(
         teamId,
-        userId,
+        req,
         updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
+        const uuid = req.user.userId;
+
+        await this.globalService.validateLoggedInAndTeamMember(teamId, uuid);
+
         return this.prisma.voyageTeamMember.update({
             where: {
                 userVoyageId: {
-                    userId: userId,
+                    userId: uuid,
                     voyageTeamId: teamId,
                 },
             },
