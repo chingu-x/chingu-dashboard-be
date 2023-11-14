@@ -1,12 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { getRandomDateDuringSprint, getSprintId } from "./utils";
 const prisma = new PrismaClient();
 
 // VoyageTeams, VoyageMembers, Tech Stack, sprints
 export const populateTablesWithRelations = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
-    const voyages = await prisma.voyage.findMany({});
-    const voyageTeams = await prisma.voyageTeam.findMany({});
 
     await prisma.voyageTeamMember.update({
         where: {

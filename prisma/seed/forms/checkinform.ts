@@ -1,27 +1,27 @@
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export const populateCheckinForm = async () => {
-
-// Sprint - checkin form
+    // Sprint - checkin form
     await prisma.form.create({
         data: {
             formType: {
                 connect: {
-                    name: 'voyage member'
-                }
+                    name: "voyage member",
+                },
             },
             title: "Sprint Check-in",
-            description: "The weekly Chingu Check-in is how we support you and your team. It is also how we identify teams and individuals who need help. So, please make sure you submit this every week.",
+            description:
+                "The weekly Chingu Check-in is how we support you and your team. It is also how we identify teams and individuals who need help. So, please make sure you submit this every week.",
             questions: {
                 create: [
                     {
                         order: 1,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
                         text: "How did you communicate with your team this past week?",
                         answerRequired: true,
@@ -32,29 +32,29 @@ export const populateCheckinForm = async () => {
                                     createMany: {
                                         data: [
                                             {
-                                                text: "I didn't communicate with my team"
+                                                text: "I didn't communicate with my team",
                                             },
                                             {
-                                                text: "Only in Team Channel"
+                                                text: "Only in Team Channel",
                                             },
                                             {
-                                                text: "Only in Team Meeting(s)"
+                                                text: "Only in Team Meeting(s)",
                                             },
                                             {
-                                                text: "Team Channel + Team Meeting(s)"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
+                                                text: "Team Channel + Team Meeting(s)",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
                     },
                     {
                         order: 1,
                         inputType: {
                             connect: {
-                                name: 'text'
-                            }
+                                name: "text",
+                            },
                         },
                         text: "Did you contribute to the project for your team this past week?",
                         answerRequired: true,
@@ -65,25 +65,25 @@ export const populateCheckinForm = async () => {
                                     createMany: {
                                         data: [
                                             {
-                                                text: "Yes, worked on my own"
+                                                text: "Yes, worked on my own",
                                             },
                                             {
-                                                text: "Yes, worked with another teammate"
+                                                text: "Yes, worked with another teammate",
                                             },
                                             {
-                                                text: "Yes, worked on my own + with another teammate"
+                                                text: "Yes, worked on my own + with another teammate",
                                             },
                                             {
-                                                text: "No, I didn't work on the project this past week"
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
+                                                text: "No, I didn't work on the project this past week",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
                     },
-                ]
-            }
-        }
-    })
-}
+                ],
+            },
+        },
+    });
+};

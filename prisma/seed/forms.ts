@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { populateCheckinForm } from "./forms/checkinform";
-import { getRandomDateDuringSprint, getSprintId } from "./utils";
 
 const prisma = new PrismaClient();
 

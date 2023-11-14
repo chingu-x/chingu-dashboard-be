@@ -1,26 +1,26 @@
 export default [
     {
         name: "Frontend",
-        description: "Frontend Stuff"
+        description: "Frontend Stuff",
     },
     {
         name: "CSS Library",
-        description: "CSS Library"
+        description: "CSS Library",
     },
     {
         name: "Backend",
-        description: "Backend Stuff"
+        description: "Backend Stuff",
     },
     {
         name: "Project Management",
-        description: "project management Stuff"
+        description: "project management Stuff",
     },
     {
         name: "Cloud Provider",
-        description: "cloud stuff"
+        description: "cloud stuff",
     },
     {
         name: "Hosting",
-        description: "Hosting stuff"
-    }
-]
+        description: "Hosting stuff",
+    },
+];
