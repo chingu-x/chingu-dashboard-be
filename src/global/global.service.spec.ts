@@ -5,7 +5,7 @@ describe("GlobalService", () => {
     let service: GlobalService;
 
     beforeEach(async () => {
-                    const module: TestingModule = await Test.createTestingModule({
+        const module: TestingModule = await Test.createTestingModule({
             providers: [GlobalService],
         }).compile();
 
