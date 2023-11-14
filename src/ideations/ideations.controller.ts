@@ -20,7 +20,7 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { Ideation } from "./entities/ideation.entity";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard"
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller("teams")
 @ApiTags("ideations")
