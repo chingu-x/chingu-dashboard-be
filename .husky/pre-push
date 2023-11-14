@@ -2,6 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 . "$(dirname "$0")/common.sh"
 
-yarn format:check
-yarn lint:check
+yarn format
+yarn lint
 
