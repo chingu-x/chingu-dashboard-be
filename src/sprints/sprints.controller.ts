@@ -255,10 +255,10 @@ export class SprintsController {
         summary:
             "Adds sprint reviews or sprint planning section to the meeting",
         description:
-            "This creats a record which stores all the responses for this particular forms" +
-            'This should only work if the form type is "meeting"' +
-            'sprint review - form name: "Retrospective & Review", <br> ' +
-            'sprint planning - form name: "sprint Planning <br>' +
+            "This creates a record which stores all the responses for this particular forms <br>" +
+            'This should only work if the form type is "meeting"<br>' +
+            '<ul><li>sprint review - form name: "Retrospective & Review", </li> ' +
+            '<li>sprint planning - form name: "sprint Planning" </li></ul>' +
             "Note: form names are unique in the form table",
     })
     @ApiOkResponse({
