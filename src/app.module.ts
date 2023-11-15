@@ -16,7 +16,6 @@ import { GlobalModule } from "./global/global.module";
         UsersModule,
         PrismaModule,
         TeamsModule,
-        UsersModule,
         AuthModule,
         GlobalModule,
     ],
