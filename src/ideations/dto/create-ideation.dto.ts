@@ -5,11 +5,6 @@ export class CreateIdeationDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    userId: string;
-
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
     title: string;
 
     @IsString()
