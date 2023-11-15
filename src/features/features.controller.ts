@@ -25,7 +25,7 @@ import {
 import { Feature } from "./entities/feature.entity";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
-@Controller("teams")
+@Controller()
 @ApiTags("features")
 export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
@@ -37,7 +37,7 @@ export class FeaturesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/:teamId/features")
+    @Post()
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
         @Request() req,
@@ -54,7 +54,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all feature category options.",
     })
-    @Get("/features/feature-categories")
+    @Get("/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
     }
@@ -62,7 +62,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets one feature given a featureId (int).",
     })
-    @Get("/features/:featureId")
+    @Get("/:featureId")
     findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
         return this.featuresService.findOneFeature(featureId);
     }
@@ -70,7 +70,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all features for a team given a teamId (int).",
     })
-    @Get("/:teamId/features")
+    @Get()
     findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.featuresService.findAllFeatures(teamId);
     }
@@ -82,7 +82,7 @@ export class FeaturesController {
     //Can only update if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch("/features/:featureId")
+    @Patch("/:featureId")
     async updateFeature(
         @Request() req,
         @Param("featureId", ParseIntPipe) featureId: number,
@@ -114,7 +114,7 @@ export class FeaturesController {
     //Can only delete if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/features/:featureId")
+    @Delete("/:featureId")
     async deleteFeature(
         @Request() req,
         @Param("featureId", ParseIntPipe) featureId: number,
