@@ -7,27 +7,27 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
-import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
-import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class IdeationsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
-    async createIdeation(teamId: number, createIdeationDto: CreateIdeationDto) {
-        const { userId, title, description, vision } = createIdeationDto;
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                userId: userId,
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException("Invalid UserId or TeamId");
+    async createIdeation(
+        req,
+        teamId: number,
+        createIdeationDto: CreateIdeationDto,
+    ) {
+        const uuid = req.user.userId;
+        const { title, description, vision } = createIdeationDto;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         try {
             const createdIdeation = await this.prisma.projectIdea.create({
                 data: {
@@ -37,35 +37,21 @@ export class IdeationsService {
                     vision,
                 },
             });
-            const createIdeationVoteDto = { userId: userId };
-            await this.createIdeationVote(
-                teamId,
-                createdIdeation.id,
-                createIdeationVoteDto,
-            );
+
+            await this.createIdeationVote(req, teamId, createdIdeation.id);
             return createdIdeation;
         } catch (e) {
             throw e;
         }
     }
 
-    async createIdeationVote(
-        teamId: number,
-        ideationId: number,
-        createIdeationVoteDto: CreateIdeationVoteDto,
-    ) {
-        const { userId } = createIdeationVoteDto;
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                userId: userId,
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException("Invalid UserId or TeamId");
+    async createIdeationVote(req, teamId: number, ideationId: number) {
+        const uuid = req.user.userId;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
                 id: ideationId,
@@ -167,29 +153,25 @@ export class IdeationsService {
     }
 
     async updateIdeation(
+        req,
         ideationId: number,
+        teamId: number,
         updateIdeationDto: UpdateIdeationDto,
     ) {
-        const { userId, title, description, vision } = updateIdeationDto;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                id: teamMemberId,
-                userId: userId,
-            },
-            select: {
-                id: true,
-                userId: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException(
-                `Invalid teamMemberId (id: ${teamMemberId}) or userId (id: ${userId}).`,
+        const uuid = req.user.userId;
+        const { title, description, vision } = updateIdeationDto;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
             );
 
         const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
                 id: ideationId,
+            },
+            select: {
+                voyageTeamMemberId: true,
             },
         });
         if (!ideationExistsCheck) {
@@ -200,7 +182,9 @@ export class IdeationsService {
 
         try {
             //only allow the user that created the idea to edit it
-            if (voyageTeamMember.userId === userId) {
+            if (
+                voyageTeamMember.id === ideationExistsCheck.voyageTeamMemberId
+            ) {
                 const updatedIdeation = await this.prisma.projectIdea.update({
                     where: {
                         id: ideationId,
@@ -214,7 +198,7 @@ export class IdeationsService {
                 return updatedIdeation;
             } else {
                 throw new ConflictException(
-                    `voyageTeamMember.userId: ${voyageTeamMember.userId} on ideation does not match userId: ${userId} input.`,
+                    `voyageTeamMember.userId: ${voyageTeamMember.userId} on ideation does not match userId: ${uuid} input.`,
                 );
             }
         } catch (e) {
@@ -222,26 +206,13 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(
-        ideationId: number,
-        deleteIdeationDto: DeleteIdeationDto,
-    ) {
-        const { userId } = deleteIdeationDto;
+    async deleteIdeation(req, teamId, ideationId: number) {
+        const uuid = req.user.userId;
         let voteCount;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                id: teamMemberId,
-            },
-            select: {
-                id: true,
-                userId: true,
-                voyageTeamId: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new NotFoundException(
-                `TeamMemberId (id: ${teamMemberId}) does not exist`,
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                req.user.userId,
             );
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
@@ -250,14 +221,10 @@ export class IdeationsService {
             );
         }
         try {
-            await this.deleteIdeationVote(
-                voyageTeamMember.voyageTeamId,
-                ideationId,
-                deleteIdeationDto,
-            );
+            await this.deleteIdeationVote(req, teamId, ideationId);
             voteCount = await this.getIdeationVoteCount(ideationId);
             //only allow the user that created the idea to delete it and only if it has no votes
-            if (voteCount === 0 && voyageTeamMember.userId === userId) {
+            if (voteCount === 0 && voyageTeamMember.userId === uuid) {
                 const deleteIdeation = await this.prisma.projectIdea.delete({
                     where: {
                         id: ideationId,
@@ -270,23 +237,13 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeationVote(
-        teamId: number,
-        ideationId: number,
-        deleteIdeationVoteDto: DeleteIdeationVoteDto,
-    ) {
-        const { userId } = deleteIdeationVoteDto;
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                userId: userId,
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        if (!voyageTeamMember)
-            throw new BadRequestException("Invalid User or Team Id");
+    async deleteIdeationVote(req, teamId: number, ideationId: number) {
+        const uuid = req.user.userId;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
         const ideationVote = await this.getIdeationVote(
             ideationId,
             voyageTeamMember.id,
@@ -311,7 +268,7 @@ export class IdeationsService {
     }
 
     private async getTeamMemberIdByIdeation(ideationId: number) {
-        const voyageTeamMember = await this.prisma.projectIdea.findFirst({
+        const voyageTeamMemberId = await this.prisma.projectIdea.findFirst({
             where: {
                 id: ideationId,
             },
@@ -319,11 +276,11 @@ export class IdeationsService {
                 voyageTeamMemberId: true,
             },
         });
-        if (!voyageTeamMember)
+        if (!voyageTeamMemberId)
             throw new NotFoundException(
                 `Ideation (id: ${ideationId}) does not exist`,
             );
-        return voyageTeamMember.voyageTeamMemberId;
+        return voyageTeamMemberId;
     }
 
     private async hasIdeationVote(teamMemberId: number, ideationId: number) {

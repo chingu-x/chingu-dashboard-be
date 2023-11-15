@@ -16,7 +16,12 @@ import {
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiOperation,
+    ApiTags,
+} from "@nestjs/swagger";
 import { Feature } from "./entities/feature.entity";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
@@ -26,6 +31,10 @@ export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
 
     //can only create if loggedIn
+    @ApiOperation({
+        summary:
+            "Adds a new feature for a team given a teamId (int) and that the user is logged in.",
+    })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Post("/:teamId/features")
@@ -42,21 +51,34 @@ export class FeaturesController {
         );
     }
 
+    @ApiOperation({
+        summary: "Gets all feature category options.",
+    })
     @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
     }
 
+    @ApiOperation({
+        summary: "Gets one feature given a featureId (int).",
+    })
     @Get("/features/:featureId")
     findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
         return this.featuresService.findOneFeature(featureId);
     }
 
+    @ApiOperation({
+        summary: "Gets all features for a team given a teamId (int).",
+    })
     @Get("/:teamId/features")
     findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.featuresService.findAllFeatures(teamId);
     }
 
+    @ApiOperation({
+        summary:
+            "Updates a feature given a featureId (int) and that the user who created it is logged in.",
+    })
     //Can only update if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -85,6 +107,10 @@ export class FeaturesController {
         }
     }
 
+    @ApiOperation({
+        summary:
+            "Deletes a feature given the featureId (int) and user who created it is logged in.",
+    })
     //Can only delete if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

@@ -7,10 +7,14 @@ import {
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class ResourcesService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
     async createNewResource(
         req,
@@ -23,11 +27,10 @@ export class ResourcesService {
         // make sure teamId exists
         await this.checkTeamExists(teamId);
 
-        // check if this team has already added this resource's URL
-        const { id: teamMemberId } = await this.findTeamMember(userId, teamId);
-        if (!teamMemberId)
-            throw new NotFoundException(
-                `Team member ${userId} could not be found in this team.`,
+        const teamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                userId,
             );
 
         const existingResource = await this.prisma.teamResource.findFirst({
@@ -35,7 +38,7 @@ export class ResourcesService {
                 url: url,
                 addedBy: {
                     voyageTeam: {
-                        id: teamMemberId,
+                        id: teamMember.id,
                     },
                 },
             },
@@ -48,7 +51,7 @@ export class ResourcesService {
             data: {
                 url,
                 title,
-                teamMemberId: teamMemberId,
+                teamMemberId: teamMember.id,
             },
         });
     }
@@ -58,11 +61,10 @@ export class ResourcesService {
         await this.checkTeamExists(teamId);
 
         // make sure user is a member of this team
-        const { id: teamMemberId } = await this.findTeamMember(
-            req.user.userId,
+        await this.globalService.validateLoggedInAndTeamMember(
             teamId,
+            req.user.userId,
         );
-        if (!teamMemberId) throw new UnauthorizedException();
 
         return this.prisma.teamResource.findMany({
             where: {
@@ -125,7 +127,7 @@ export class ResourcesService {
         }
     }
 
-    private async checkAuthAndHandleErrors(resourceId, userId) {
+    private async checkAuthAndHandleErrors(resourceId, uuid) {
         const resourceToModify = await this.prisma.teamResource.findUnique({
             where: { id: resourceId },
             include: {
@@ -146,7 +148,7 @@ export class ResourcesService {
                 `Resource (id: ${resourceId}) doesn't exist`,
             );
 
-        if (resourceToModify.addedBy.member.id !== userId)
+        if (resourceToModify.addedBy.member.id !== uuid)
             throw new UnauthorizedException();
     }
 
@@ -163,10 +165,10 @@ export class ResourcesService {
     }
 
     // also used to limit GET route to team members
-    private async findTeamMember(userId, teamId) {
+    private async findTeamMember(uuid, teamId) {
         const teamMember = this.prisma.voyageTeamMember.findFirst({
             where: {
-                userId,
+                userId: uuid,
                 voyageTeamId: teamId,
             },
             select: {
