@@ -15,13 +15,9 @@ import { GlobalModule } from "./global/global.module";
     imports: [
         UsersModule,
         PrismaModule,
-        IdeationsModule,
         TeamsModule,
-        TechsModule,
         UsersModule,
-        ResourcesModule,
         AuthModule,
-        FeaturesModule,
         GlobalModule,
     ],
     controllers: [HealthCheckController],
