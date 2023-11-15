@@ -27,7 +27,7 @@ export class ResourcesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/teams/:teamId/resources")
+    @Post()
     createNewResource(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -45,7 +45,7 @@ export class ResourcesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get("/teams/:teamId/resources")
+    @Get()
     findAllResources(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -59,7 +59,7 @@ export class ResourcesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch("/teams/:teamId/resources/:resourceId")
+    @Patch("/:resourceId")
     updateResource(
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
@@ -78,7 +78,7 @@ export class ResourcesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/teams/:teamId/resources/:resourceId")
+    @Delete("/:resourceId")
     removeResource(
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
