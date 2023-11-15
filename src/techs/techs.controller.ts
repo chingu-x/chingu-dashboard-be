@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
-@Controller("techs")
+@Controller()
 @ApiTags("techs / techstack")
 export class TechsController {
     constructor(private readonly techsService: TechsService) {}
@@ -23,7 +23,7 @@ export class TechsController {
     @ApiOperation({
         summary: "Gets all selected tech for a team given a teamId (int)",
     })
-    @Get("/teams/:teamId")
+    @Get()
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.techsService.getAllTechItemsByTeamId(teamId);
     }
@@ -34,7 +34,7 @@ export class TechsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/teams/:teamId/techs")
+    @Post()
     addNewTeamTech(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -49,7 +49,7 @@ export class TechsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/teams/:teamId/techs/:teamTechId")
+    @Post("/:teamTechId")
     addExistingTechVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -63,7 +63,7 @@ export class TechsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/teams/:teamId/techs/:teamTechId")
+    @Delete("/:teamTechId")
     removeVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
