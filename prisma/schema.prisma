@@ -50,7 +50,7 @@ model User {
   updatedAt   DateTime @updatedAt
 
   voyageTeamMembers VoyageTeamMember[]
-  responseUser      ResponseUser[]
+  responseUser      FormResponseUser[]
 }
 
 model Voyage {
@@ -121,7 +121,7 @@ model VoyageTeam {
   voyageTeamMembers  VoyageTeamMember[]
   teamTechStackItems TeamTechStackItem[]
   teamMeetings       TeamMeeting[]
-  responseVoyageTeam ResponseVoyageTeam[]
+  responseVoyageTeam FormResponseVoyageTeam[]
 }
 
 model VoyageRole {
@@ -153,7 +153,7 @@ model VoyageTeamMember {
   projectIdeaVotes         ProjectIdeaVote[]
   teamResources            TeamResource[]
   projectFeatures          ProjectFeature[]
-  responseVoyageTeamMember ResponseVoyageTeamMember[]
+  responseVoyageTeamMember FormResponseVoyageTeamMember[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -250,24 +250,20 @@ model ProjectFeature {
 }
 
 model TeamMeeting {
-  id                   Int        @id @default(autoincrement())
-  sprintId             Int
-  sprint               Sprint     @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  voyageTeamId         Int
-  voyageTeam           VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
-  title                String
-  dateTime             DateTime?
-  meetingLink          String?
-  notes                String?
-  sprintReviewFormId   Int?
-  sprintReview         Form?      @relation("SprintReview", fields: [sprintReviewFormId], references: [id], onDelete: SetNull)
-  sprintPlanningFormId Int?
-  sprintPlanning       Form?      @relation("SprintPlanning", fields: [sprintPlanningFormId], references: [id], onDelete: SetNull)
-  createdAt            DateTime   @default(now()) @db.Timestamptz()
-  updatedAt            DateTime   @updatedAt
+  id           Int        @id @default(autoincrement())
+  sprintId     Int
+  sprint       Sprint     @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  voyageTeamId Int
+  voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
+  title        String
+  dateTime     DateTime?
+  meetingLink  String?
+  notes        String?
+  createdAt    DateTime   @default(now()) @db.Timestamptz()
+  updatedAt    DateTime   @updatedAt
 
-  agendas         Agenda[]
-  responseMeeting ResponseMeeting[]
+  agendas             Agenda[]
+  formResponseMeeting FormResponseMeeting[]
 }
 
 model Agenda {
@@ -290,9 +286,8 @@ model Form {
   createdAt   DateTime @default(now()) @db.Timestamptz()
   updatedAt   DateTime @updatedAt
 
-  questions     Question[]
-  sprintReview  TeamMeeting[] @relation("SprintReview")
-  sprintMeeting TeamMeeting[] @relation("SprintPlanning")
+  questions            Question[]
+  formResponseMeetings FormResponseMeeting[]
 }
 
 model FormType {
@@ -326,11 +321,10 @@ model Question {
   multipleAllowed Boolean?
   optionGroupId   Int?
   optionGroup     OptionGroup? @relation(fields: [optionGroupId], references: [id])
+  createdAt       DateTime     @default(now()) @db.Timestamptz()
+  updatedAt       DateTime     @updatedAt
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  questionOptions QuestionOption[]
+  responses Response[]
 }
 
 model OptionGroup {
@@ -350,49 +344,46 @@ model OptionChoice {
   text          String
   createdAt     DateTime    @default(now()) @db.Timestamptz()
   updatedAt     DateTime    @updatedAt
-
-  questionOptions QuestionOption[]
-}
-
-model QuestionOption {
-  id             Int           @id @default(autoincrement())
-  questionId     Int
-  question       Question      @relation(fields: [questionId], references: [id])
-  optionChoiceId Int?
-  optionChoice   OptionChoice? @relation(fields: [optionChoiceId], references: [id])
-  createdAt      DateTime      @default(now()) @db.Timestamptz()
-  updatedAt      DateTime      @updatedAt
-
-  responses Response[]
+  Response      Response[]
 }
 
 model Response {
-  id               Int            @id @default(autoincrement())
-  questionOptionId Int
-  questionOption   QuestionOption @relation(fields: [questionOptionId], references: [id])
-  responseNumeric  Int?
-  responseBoolean  Boolean?
-  responseText     String?
+  id                    Int                  @id @default(autoincrement())
+  questionId            Int
+  question              Question             @relation(fields: [questionId], references: [id])
+  optionChoiceId        Int?
+  optionChoice          OptionChoice?        @relation(fields: [optionChoiceId], references: [id])
+  numeric               Int?
+  boolean               Boolean?
+  text                  String?
+  formResponseMeetingId Int?
+  formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
 
-  responseMeetings         ResponseMeeting[]
-  responseVoyageTeam       ResponseVoyageTeam[]
-  responseUser             ResponseUser[]
-  responseVoyageTeamMember ResponseVoyageTeamMember[]
+  responseVoyageTeams       FormResponseVoyageTeam[]
+  responseUsers             FormResponseUser[]
+  responseVoyageTeamMembers FormResponseVoyageTeamMember[]
+
+  @@unique(fields: [questionId, formResponseMeetingId], name: "questionResponseMeeting")
 }
 
-model ResponseMeeting {
-  id         Int         @id @default(autoincrement())
-  responseId Int
-  response   Response    @relation(fields: [responseId], references: [id])
-  meetingId  Int
-  meeting    TeamMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+model FormResponseMeeting {
+  id        Int         @id @default(autoincrement())
+  formId    Int
+  form      Form        @relation(fields: [formId], references: [id])
+  meetingId Int
+  meeting   TeamMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  responses Response[]
+
+  @@unique(fields: [formId, meetingId], name: "meetingFormId")
 }
 
 //
 //  Draft of more Extension of Response Table for future use
+//  These need to be updated to like FormResponseMeeting
 //
 
-model ResponseUser {
+model FormResponseUser {
   id         Int      @id @default(autoincrement())
   responseId Int
   response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
@@ -400,7 +391,7 @@ model ResponseUser {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model ResponseVoyageTeam {
+model FormResponseVoyageTeam {
   id           Int        @id @default(autoincrement())
   responseId   Int
   response     Response   @relation(fields: [responseId], references: [id], onDelete: Cascade)
@@ -408,7 +399,7 @@ model ResponseVoyageTeam {
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
 }
 
-model ResponseVoyageTeamMember {
+model FormResponseVoyageTeamMember {
   id                 Int              @id @default(autoincrement())
   responseId         Int
   response           Response         @relation(fields: [responseId], references: [id], onDelete: Cascade)
