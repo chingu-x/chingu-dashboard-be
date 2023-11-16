@@ -37,7 +37,7 @@ export class FeaturesController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post()
+    @Post("/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
         @Request() req,
@@ -54,7 +54,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all feature category options.",
     })
-    @Get("/feature-categories")
+    @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
     }
@@ -62,7 +62,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets one feature given a featureId (int).",
     })
-    @Get("/:featureId")
+    @Get("/features/:featureId")
     findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
         return this.featuresService.findOneFeature(featureId);
     }
@@ -70,7 +70,7 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all features for a team given a teamId (int).",
     })
-    @Get()
+    @Get("/:teamId/features")
     findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.featuresService.findAllFeatures(teamId);
     }
@@ -82,7 +82,7 @@ export class FeaturesController {
     //Can only update if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch("/:featureId")
+    @Patch("/features/:featureId")
     async updateFeature(
         @Request() req,
         @Param("featureId", ParseIntPipe) featureId: number,
@@ -114,7 +114,7 @@ export class FeaturesController {
     //Can only delete if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/:featureId")
+    @Delete("/features/:featureId")
     async deleteFeature(
         @Request() req,
         @Param("featureId", ParseIntPipe) featureId: number,
