@@ -9,20 +9,22 @@ import { IdeationsModule } from "src/ideations/ideations.module";
 
 @Module({
     imports: [
-        RouterModule.register([{
-          path: 'teams',
-          children: [
-            { path: ':teamId/resources', module: ResourcesModule },
-            { path: ':teamId/techs', module: TechsModule },
-            { path: '/', module: FeaturesModule },
-            { path: ':teamId/ideations', module: IdeationsModule },
-          ],
-        }]),
+        RouterModule.register([
+            {
+                path: "teams",
+                children: [
+                    { path: ":teamId/resources", module: ResourcesModule },
+                    { path: ":teamId/techs", module: TechsModule },
+                    { path: "/", module: FeaturesModule },
+                    { path: ":teamId/ideations", module: IdeationsModule },
+                ],
+            },
+        ]),
         ResourcesModule,
-        TechsModule,  
+        TechsModule,
         FeaturesModule,
         IdeationsModule,
-      ],
+    ],
     controllers: [TeamsController],
     providers: [TeamsService],
 })
