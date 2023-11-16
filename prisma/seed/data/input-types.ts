@@ -1,14 +1,14 @@
 export default [
     {
-        name: 'text'
+        name: "text",
     },
     {
-        name: 'radio'
+        name: "radio",
     },
     {
-        name: 'checkbox'
+        name: "checkbox",
     },
     {
-        name: 'number'
-    }
-]
+        name: "number",
+    },
+];

@@ -6,6 +6,8 @@ import { TechsModule } from "./techs/techs.module";
 import { HealthCheckController } from "./HealthCheck/health-check.controller";
 import { HealthCheckService } from "./HealthCheck/health-check.service";
 import { UsersModule } from "./users/users.module";
+import { SprintsModule } from "./sprints/sprints.module";
+import { FormsModule } from "./forms/forms.module";
 import { ResourcesModule } from "./resources/resources.module";
 import { AuthModule } from "./auth/auth.module";
 import { FeaturesModule } from "./features/features.module";
@@ -19,6 +21,8 @@ import { GlobalModule } from "./global/global.module";
         TeamsModule,
         TechsModule,
         UsersModule,
+        SprintsModule,
+        FormsModule,
         ResourcesModule,
         AuthModule,
         FeaturesModule,
