@@ -30,7 +30,7 @@ export class AuthController {
         try {
             const access_token = await this.authService.login(req.user);
             res.cookie("access_token", access_token.access_token, {
-                expires: new Date(Date.now() + 60 * 60 * 7 * 24),
+                maxAge: 1000 * 60 * 60 * 24 * 7,
                 httpOnly: true,
                 secure: true,
             });

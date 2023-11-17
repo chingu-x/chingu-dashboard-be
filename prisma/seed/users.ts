@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";
+import * as process from "process";
 
 const prisma = new PrismaClient();
-const roundsOfHashing = 10;
+const roundsOfHashing = process.env.BCRYPT_HASHING_ROUNDS;
 
 const hashPassword = async (password: string) => {
     return await bcrypt.hash(password, roundsOfHashing);

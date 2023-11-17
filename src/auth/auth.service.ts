@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { PrismaService } from "../prisma/prisma.service";
+import * as crypto from "crypto";
+import * as process from "process";
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
+        private prisma: PrismaService,
     ) {}
 
     async validateUser(email: string, password: string): Promise<any> {
@@ -28,5 +32,30 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload),
         };
+    }
+
+    // Note: this will not respond with success/fail status due to privacy reason
+    async resetPassword(email: string) {
+        const user = await this.usersService.findUserByEmail(email);
+
+        if (!user) {
+            // no user found with the email
+            throw new NotFoundException("no user found.");
+        }
+        let token = await this.prisma.resetToken.findUnique({
+            where: {
+                userId: user.id,
+            },
+        });
+        if (token) {
+            //delete
+        } else {
+            const resetToken = crypto.randomBytes(32).toString("hex");
+            const hash = await bcrypt.hash(
+                resetToken,
+                Number(process.env.BCRYPT_HASHING_ROUNDS),
+            );
+            // await this.prisma.resetToken.create({});
+        }
     }
 }
