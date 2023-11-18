@@ -8,12 +8,32 @@ import { SprintsModule } from "./sprints/sprints.module";
 import { FormsModule } from "./forms/forms.module";
 import { AuthModule } from "./auth/auth.module";
 import { GlobalModule } from "./global/global.module";
+import { RouterModule } from "@nestjs/core";
+import { ResourcesModule } from "./resources/resources.module";
+import { TechsModule } from "./techs/techs.module";
+import { FeaturesModule } from "./features/features.module";
+import { IdeationsModule } from "./ideations/ideations.module";
 
 @Module({
     imports: [
+        RouterModule.register([
+            {
+                path: "voyage",
+                children: [
+                    { path: ":teamId/resources", module: ResourcesModule },
+                    { path: ":teamId/techs", module: TechsModule },
+                    { path: "/", module: FeaturesModule },
+                    { path: ":teamId/ideations", module: IdeationsModule },
+                ],
+            },
+        ]),
         UsersModule,
         PrismaModule,
         TeamsModule,
+        ResourcesModule,
+        TechsModule,
+        FeaturesModule,
+        IdeationsModule,
         SprintsModule,
         FormsModule,
         AuthModule,
