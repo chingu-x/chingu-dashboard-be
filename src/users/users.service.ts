@@ -1,10 +1,26 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserEntity } from "./entities/user.entity";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { hashPassword } from "../utils/auth";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
+
+    async createUser(createUserDto: CreateUserDto) {
+        const newUser = await this.prisma.user.create({
+            data: {
+                email: createUserDto.email,
+                password: await hashPassword(createUserDto.password),
+            },
+        });
+        // conflict error if user already exist
+        // todo: check if it's activated, if so send user the email saying account already exist
+        if (newUser) {
+            // send activation email
+        }
+    }
 
     findUserByEmail(email: string): Promise<UserEntity | undefined> {
         return this.prisma.user.findUnique({
@@ -30,6 +46,7 @@ export class UsersService {
                 countryCode: true,
                 timezone: true,
                 comment: true,
+                hasActivated: true,
             },
         });
     }

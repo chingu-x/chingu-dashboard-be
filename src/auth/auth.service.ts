@@ -34,6 +34,8 @@ export class AuthService {
         };
     }
 
+    async signup() {}
+
     // Note: this will not respond with success/fail status due to privacy reason
     async resetPassword(email: string) {
         const user = await this.usersService.findUserByEmail(email);
