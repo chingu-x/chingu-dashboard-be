@@ -18,7 +18,7 @@ import { IdeationsModule } from "./ideations/ideations.module";
     imports: [
         RouterModule.register([
             {
-                path: "voyage",
+                path: "voyages",
                 children: [
                     { path: ":teamId/resources", module: ResourcesModule },
                     { path: ":teamId/techs", module: TechsModule },
