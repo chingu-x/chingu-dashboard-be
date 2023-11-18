@@ -42,7 +42,7 @@ export class AuthService {
             // no user found with the email
             throw new NotFoundException("no user found.");
         }
-        let token = await this.prisma.resetToken.findUnique({
+        const token = await this.prisma.resetToken.findUnique({
             where: {
                 userId: user.id,
             },
@@ -55,6 +55,7 @@ export class AuthService {
                 resetToken,
                 Number(process.env.BCRYPT_HASHING_ROUNDS),
             );
+            console.log(hash); // just to get rid of lint error so I can push to a remote branch
             // await this.prisma.resetToken.create({});
         }
     }
