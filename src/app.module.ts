@@ -24,6 +24,7 @@ import { IdeationsModule } from "./ideations/ideations.module";
                     { path: ":teamId/techs", module: TechsModule },
                     { path: "/", module: FeaturesModule },
                     { path: ":teamId/ideations", module: IdeationsModule },
+                    { path: "sprints", module: SprintsModule },
                 ],
             },
         ]),
