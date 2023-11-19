@@ -27,7 +27,7 @@ import { FormInputValidationPipe } from "../pipes/form-input-validation";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 
 @Controller("sprints")
-@ApiTags("sprints")
+@ApiTags("Voyage - Sprints")
 export class SprintsController {
     constructor(private readonly sprintsService: SprintsService) {}
 
