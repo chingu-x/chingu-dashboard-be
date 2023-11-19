@@ -16,7 +16,7 @@ import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller()
-@ApiTags("techs / techstack")
+@ApiTags("Voyage - Techs")
 export class TechsController {
     constructor(private readonly techsService: TechsService) {}
 

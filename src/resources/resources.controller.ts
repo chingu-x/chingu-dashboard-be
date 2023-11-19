@@ -17,7 +17,7 @@ import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller()
-@ApiTags("team resources")
+@ApiTags("Voyage - Resources")
 export class ResourcesController {
     constructor(private readonly resourcesService: ResourcesService) {}
 

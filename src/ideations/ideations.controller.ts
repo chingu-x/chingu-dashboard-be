@@ -23,7 +23,7 @@ import { Ideation } from "./entities/ideation.entity";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @Controller()
-@ApiTags("ideations")
+@ApiTags("Voyage - Ideations")
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 

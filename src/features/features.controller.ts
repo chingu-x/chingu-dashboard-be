@@ -26,7 +26,7 @@ import { Feature } from "./entities/feature.entity";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Controller()
-@ApiTags("features")
+@ApiTags("Voyage - Features")
 export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
 
