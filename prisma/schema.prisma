@@ -365,18 +365,21 @@ model OptionChoice {
 }
 
 model Response {
-  id                    Int                  @id @default(autoincrement())
-  questionId            Int
-  question              Question             @relation(fields: [questionId], references: [id])
-  optionChoiceId        Int?
-  optionChoice          OptionChoice?        @relation(fields: [optionChoiceId], references: [id])
-  numeric               Int?
-  boolean               Boolean?
-  text                  String?
-  formResponseMeetingId Int?
-  formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
-  createdAt             DateTime             @default(now()) @db.Timestamptz()
-  updatedAt             DateTime             @updatedAt
+  id                        Int                      @id @default(autoincrement())
+  questionId                Int
+  question                  Question                 @relation(fields: [questionId], references: [id])
+  optionChoiceId            Int?
+  optionChoice              OptionChoice?            @relation(fields: [optionChoiceId], references: [id])
+  numeric                   Int?
+  boolean                   Boolean?
+  text                      String?
+  formResponseMeetingId     Int?
+  formResponseMeeting       FormResponseMeeting?     @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
+  formResponseSoloProjectId Int?
+  formResponseSoloProject   FormResponseSoloProject? @relation(fields: [formResponseSoloProjectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 
   responseVoyageTeams       FormResponseVoyageTeam[]
   responseUsers             FormResponseUser[]
@@ -442,7 +445,7 @@ model UserChecklistStatus {
   userId          String        @db.Uuid()
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   checklistItemId Int
-  checlistItem    ChecklistItem @relation(fields: [checklistItemId], references: [id], onDelete: Cascade)
+  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id], onDelete: Cascade)
   createdAt       DateTime      @default(now()) @db.Timestamptz()
   updatedAt       DateTime      @updatedAt
 
@@ -454,8 +457,9 @@ model SoloProjectStatus {
   id     Int    @id @default(autoincrement())
   status String @unique
 
-  createdAt    DateTime      @default(now()) @db.Timestamptz()
-  updatedAt    DateTime      @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
   soloProjects SoloProject[]
 }
 
@@ -470,16 +474,19 @@ model SoloProject {
   statusId          Int?
   status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
 
-  createdAt               DateTime                  @default(now()) @db.Timestamptz()
-  updatedAt               DateTime                  @updatedAt
-  soloProjectFormResponse SoloProjectFormResponse[]
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  formResponseSoloProjects FormResponseSoloProject[]
 }
 
-model SoloProjectFormResponse {
+model FormResponseSoloProject {
   id            Int         @id @default(autoincrement())
   soloProjectId Int
   soloProject   SoloProject @relation(fields: [soloProjectId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
+
+  responses Response[]
 }

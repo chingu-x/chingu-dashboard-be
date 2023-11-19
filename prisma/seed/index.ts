@@ -1,12 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import * as process from "process";
-import { populateTablesWithRelations } from "./relations";
+import { populateTeamResourcesAndProjectIdeas } from "./resources-project-ideas";
 import { populateTables } from "./tables";
 import { populateFormsAndResponses } from "./forms";
 import { populateVoyageTeams } from "./voyageTeams";
 import { populateUsers } from "./users";
 import { populateSprints } from "./sprints";
 import { populateMeetings } from "./meetings";
+import { populateSoloProjects } from "./solo-project";
 
 const prisma = new PrismaClient();
 
@@ -36,9 +37,10 @@ const deleteAllTables = async () => {
         await deleteAllTables();
         await populateTables();
         await populateUsers();
+        await populateSoloProjects();
         await populateSprints();
         await populateVoyageTeams();
-        await populateTablesWithRelations(); //can probably rename this to team resources and project idea
+        await populateTeamResourcesAndProjectIdeas();
         await populateFormsAndResponses();
         await populateMeetings();
         console.log("===\n🌱 Database seeding completed.\n===");
