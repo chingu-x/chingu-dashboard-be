@@ -22,8 +22,8 @@ import {
 import { Ideation } from "./entities/ideation.entity";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
-@Controller("teams")
-@ApiTags("ideations")
+@Controller()
+@ApiTags("Voyage - Ideations")
 export class IdeationsController {
     constructor(private readonly ideationsService: IdeationsService) {}
 
@@ -33,7 +33,7 @@ export class IdeationsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/:teamId/ideations")
+    @Post()
     @ApiCreatedResponse({ type: Ideation })
     createIdeation(
         @Request() req,
@@ -53,7 +53,7 @@ export class IdeationsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Post("/:teamId/ideations/:ideationId/ideation-votes")
+    @Post("/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
         @Request() req,
@@ -70,7 +70,7 @@ export class IdeationsController {
     @ApiOperation({
         summary: "Gets all ideations for a team given a teamId (int).",
     })
-    @Get("/:teamId/ideations")
+    @Get()
     @ApiCreatedResponse({ type: Ideation })
     getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
@@ -82,7 +82,7 @@ export class IdeationsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Patch("/:teamId/ideations/:ideationId")
+    @Patch("/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
         @Request() req,
@@ -104,7 +104,7 @@ export class IdeationsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/:teamId/ideations/:ideationId")
+    @Delete("/:ideationId")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeation(
         @Request() req,
@@ -120,7 +120,7 @@ export class IdeationsController {
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Delete("/:teamId/ideations/:ideationId/ideation-votes")
+    @Delete("/:ideationId/ideation-votes")
     @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
         @Request() req,
