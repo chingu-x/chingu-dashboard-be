@@ -1,14 +1,14 @@
 export default [
     {
-        name: 'team'
+        name: "team",
     },
     {
-        name: 'voyage member'
+        name: "voyage member",
     },
     {
-        name: 'user'
+        name: "user",
     },
     {
-        name: 'meeting'
-    }
-]
+        name: "meeting",
+    },
+];
