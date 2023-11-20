@@ -52,10 +52,10 @@ model User {
   updatedAt   DateTime @updatedAt
 
   voyageTeamMembers     VoyageTeamMember[]
-  responseUser          FormResponseUser[] // this one is probably not needed or has to be rename to something else
   userChecklistStatuses UserChecklistStatus[]
   soloProjects          SoloProject[]
   soloProjectEvaluators SoloProject[]         @relation(name: "evaluators")
+  voyageApplications    VoyageApplication[]
 }
 
 // === Voyage - Schedule, sprint dates and Teams ===
@@ -138,7 +138,6 @@ model VoyageTeam {
   voyageTeamMembers  VoyageTeamMember[]
   teamTechStackItems TeamTechStackItem[]
   teamMeetings       TeamMeeting[]
-  responseVoyageTeam FormResponseVoyageTeam[]
 }
 
 model VoyageTeamMember {
@@ -155,12 +154,11 @@ model VoyageTeamMember {
   createdAt    DateTime      @default(now()) @db.Timestamptz()
   updatedAt    DateTime      @updatedAt
 
-  teamTechStackItemVotes   TeamTechStackItemVote[]
-  projectIdeas             ProjectIdea[]
-  projectIdeaVotes         ProjectIdeaVote[]
-  teamResources            TeamResource[]
-  projectFeatures          ProjectFeature[]
-  responseVoyageTeamMember FormResponseVoyageTeamMember[]
+  teamTechStackItemVotes TeamTechStackItemVote[]
+  projectIdeas           ProjectIdea[]
+  projectIdeaVotes       ProjectIdeaVote[]
+  teamResources          TeamResource[]
+  projectFeatures        ProjectFeature[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -304,6 +302,7 @@ model Form {
 
   questions            Question[]
   formResponseMeetings FormResponseMeeting[]
+  SoloProject          SoloProject[]
 }
 
 model FormType {
@@ -365,27 +364,27 @@ model OptionChoice {
 }
 
 model Response {
-  id                        Int                      @id @default(autoincrement())
-  questionId                Int
-  question                  Question                 @relation(fields: [questionId], references: [id])
-  optionChoiceId            Int?
-  optionChoice              OptionChoice?            @relation(fields: [optionChoiceId], references: [id])
-  numeric                   Int?
-  boolean                   Boolean?
-  text                      String?
-  formResponseMeetingId     Int?
-  formResponseMeeting       FormResponseMeeting?     @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
-  formResponseSoloProjectId Int?
-  formResponseSoloProject   FormResponseSoloProject? @relation(fields: [formResponseSoloProjectId], references: [id], onDelete: Cascade)
+  id                    Int                  @id @default(autoincrement())
+  questionId            Int
+  question              Question             @relation(fields: [questionId], references: [id])
+  optionChoiceId        Int?
+  optionChoice          OptionChoice?        @relation(fields: [optionChoiceId], references: [id])
+  numeric               Int?
+  boolean               Boolean?
+  text                  String?
+  formResponseMeetingId Int?
+  formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
+  soloProjectId         Int?
+  soloProject           SoloProject?         @relation(fields: [soloProjectId], references: [id], onDelete: Cascade)
+  voyageApplicationId   Int?
+  voyageApplication     VoyageApplication?   @relation(fields: [voyageApplicationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responseVoyageTeams       FormResponseVoyageTeam[]
-  responseUsers             FormResponseUser[]
-  responseVoyageTeamMembers FormResponseVoyageTeamMember[]
-
   @@unique(fields: [questionId, formResponseMeetingId], name: "questionResponseMeeting")
+  @@unique(fields: [questionId, soloProjectId], name: "questionSoloProject")
+  @@unique(fields: [questionId, voyageApplicationId], name: "questionVoyageApplication")
 }
 
 model FormResponseMeeting {
@@ -400,35 +399,6 @@ model FormResponseMeeting {
   responses Response[]
 
   @@unique(fields: [formId, meetingId], name: "meetingFormId")
-}
-
-//
-//  Draft of more Extension of Response Table for future use
-//  These need to be updated to like FormResponseMeeting
-//
-
-model FormResponseUser {
-  id         Int      @id @default(autoincrement())
-  responseId Int
-  response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  userId     String   @db.Uuid
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model FormResponseVoyageTeam {
-  id           Int        @id @default(autoincrement())
-  responseId   Int
-  response     Response   @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  voyageTeamId Int
-  voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
-}
-
-model FormResponseVoyageTeamMember {
-  id                 Int              @id @default(autoincrement())
-  responseId         Int
-  response           Response         @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  voyageTeamMemberId Int
-  voyageTeamMember   VoyageTeamMember @relation(fields: [voyageTeamMemberId], references: [id], onDelete: Cascade)
 }
 
 // === Onboarding checklist ===
@@ -473,20 +443,23 @@ model SoloProject {
   adminComments     String?
   statusId          Int?
   status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  formResponseSoloProjects FormResponseSoloProject[]
-}
-
-model FormResponseSoloProject {
-  id            Int         @id @default(autoincrement())
-  soloProjectId Int
-  soloProject   SoloProject @relation(fields: [soloProjectId], references: [id], onDelete: Cascade)
+  formId            Int?
+  form              Form?              @relation(fields: [formId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
   responses Response[]
+}
+
+// === Voyage Application ===
+
+model VoyageApplication {
+  id     Int    @id @default(autoincrement())
+  userId String @db.Uuid()
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime   @default(now()) @db.Timestamptz()
+  updatedAt DateTime   @updatedAt
+  Response  Response[]
 }

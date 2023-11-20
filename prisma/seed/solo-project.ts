@@ -18,6 +18,19 @@ export const populateSoloProjects = async () => {
 
     const users = await prisma.user.findMany({});
 
+    const soloProjectForm = await prisma.form.findUnique({
+        where: {
+            title: "Solo Project Submission Form",
+        },
+        select: {
+            id: true,
+            questions: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    });
     // solo project entries
     await prisma.soloProject.create({
         data: {
@@ -32,6 +45,19 @@ export const populateSoloProjects = async () => {
                     },
                 })
             ).id,
+            formId: soloProjectForm.id,
+            responses: {
+                create: [
+                    {
+                        questionId: soloProjectForm.questions[0].id,
+                        text: "www.github.com/repo",
+                    },
+                    {
+                        questionId: soloProjectForm.questions[1].id,
+                        text: "www.vercel.com",
+                    },
+                ],
+            },
         },
     });
 };

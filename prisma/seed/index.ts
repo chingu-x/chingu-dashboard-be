@@ -37,12 +37,12 @@ const deleteAllTables = async () => {
         await deleteAllTables();
         await populateTables();
         await populateUsers();
-        await populateSoloProjects();
         await populateSprints();
         await populateVoyageTeams();
         await populateTeamResourcesAndProjectIdeas();
         await populateFormsAndResponses();
         await populateMeetings();
+        await populateSoloProjects();
         console.log("===\n🌱 Database seeding completed.\n===");
     } catch (e) {
         console.error(e);
