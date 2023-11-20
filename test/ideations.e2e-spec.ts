@@ -52,7 +52,7 @@ describe("IdeationsController (e2e)", () => {
     let newVoyage: Voyage;
     let newVoyageTeam: VoyageTeam;
     let newVoyageTeamMember: VoyageTeamMember;
-    let newUserAcessToken: string;
+    let newUserAccessToken: string;
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
@@ -161,7 +161,7 @@ describe("IdeationsController (e2e)", () => {
             })
             .expect(201)
             .then((res) => {
-                newUserAcessToken = res.body.access_token;
+                newUserAccessToken = res.body.access_token;
             });
     }
 
@@ -203,7 +203,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .post(`/voyages/${teamId}/ideations`)
-            .set("Authorization", `Bearer ${newUserAcessToken}`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .send(createIdeationDto)
             .expect(201)
             .expect("Content-Type", /json/)
@@ -228,7 +228,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .post(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
-            .set("Authorization", `Bearer ${newUserAcessToken}`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(201)
             .expect("Content-Type", /json/)
             .expect((res) => {
@@ -277,7 +277,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .patch(`/voyages/${teamId}/ideations/${ideationId}`)
-            .set("Authorization", `Bearer ${newUserAcessToken}`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .send(updateIdeationDto)
             .expect(200)
             .expect("Content-Type", /json/)
@@ -296,7 +296,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .delete(`/voyages/${teamId}/ideations/${ideationId}`)
-            .set("Authorization", `Bearer ${newUserAcessToken}`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect((res) => {
                 expect(res.body).toEqual({
                     ...ideationShape,
@@ -312,7 +312,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .delete(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
-            .set("Authorization", `Bearer ${newUserAcessToken}`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {
