@@ -8,6 +8,7 @@ import { populateUsers } from "./users";
 import { populateSprints } from "./sprints";
 import { populateMeetings } from "./meetings";
 import { populateSoloProjects } from "./solo-project";
+import { populateVoyageApplications } from "./voyage-app";
 
 const prisma = new PrismaClient();
 
@@ -43,6 +44,7 @@ const deleteAllTables = async () => {
         await populateFormsAndResponses();
         await populateMeetings();
         await populateSoloProjects();
+        await populateVoyageApplications();
         console.log("===\n🌱 Database seeding completed.\n===");
     } catch (e) {
         console.error(e);

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { populateCheckinForm } from "./forms/checkinform";
-import { populateSoloProjectForm } from "./forms/solo-project";
+import { populateCheckinForm } from "./checkinform";
+import { populateSoloProjectForm } from "./solo-project";
+import { populateVoyageApplicationForm } from "./voyage-app";
 
 const prisma = new PrismaClient();
 
@@ -141,6 +142,7 @@ export const populateFormsAndResponses = async () => {
     // Sprints checkin form
     await populateCheckinForm();
     await populateSoloProjectForm();
+    await populateVoyageApplicationForm();
 
     console.log("Forms, Questions and Responses populated.");
 };

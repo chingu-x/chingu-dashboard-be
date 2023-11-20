@@ -31,6 +31,26 @@ export const populateSoloProjects = async () => {
             },
         },
     });
+
+    const responseGroup = await prisma.responseGroup.create({
+        data: {
+            responses: {
+                createMany: {
+                    data: [
+                        {
+                            questionId: soloProjectForm.questions[0].id,
+                            text: "www.github.com/repo",
+                        },
+                        {
+                            questionId: soloProjectForm.questions[1].id,
+                            text: "www.vercel.com",
+                        },
+                    ],
+                },
+            },
+        },
+    });
+
     // solo project entries
     await prisma.soloProject.create({
         data: {
@@ -46,18 +66,9 @@ export const populateSoloProjects = async () => {
                 })
             ).id,
             formId: soloProjectForm.id,
-            responses: {
-                create: [
-                    {
-                        questionId: soloProjectForm.questions[0].id,
-                        text: "www.github.com/repo",
-                    },
-                    {
-                        questionId: soloProjectForm.questions[1].id,
-                        text: "www.vercel.com",
-                    },
-                ],
-            },
+            responseGroupId: responseGroup.id,
         },
     });
+
+    console.log("Solo projects populated.");
 };
