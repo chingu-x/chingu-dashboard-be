@@ -38,13 +38,13 @@ export class TeamsController {
 
     @Patch(":teamId/members/:userId")
     update(
-                        @Param("teamId", ParseIntPipe) teamId: number,
-@Param("userId") userId: string,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("userId") userId: string,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
-                return this.teamsService.updateTeamMemberById(
-    teamId,
-                userId,
+        return this.teamsService.updateTeamMemberById(
+            teamId,
+            userId,
             updateTeamMemberDto,
         );
     }
