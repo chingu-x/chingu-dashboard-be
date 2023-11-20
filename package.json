@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "husky:format": "lint-staged || (git reset --soft HEAD~1 && exit 1)",
+    "husky:format": "lint-staged",
     "start": "dotenv -e ./.env.dev nest start",
     "start:dev": "nest start --tsc --watch",
     "start:debug": "nest start --debug --watch",
@@ -106,12 +106,13 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ],
     "test/**/*.ts": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
+    ],
+    "prisma/*seed/**/*.ts": [
+      "prettier --write"
     ]
   }
 }
