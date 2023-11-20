@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { IdeationsService } from "./ideations.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "../global/global.service";
 
 describe("IdeationsService", () => {
     let service: IdeationsService;
@@ -107,6 +108,7 @@ describe("IdeationsService", () => {
                     provide: PrismaService,
                     useValue: db,
                 },
+                GlobalService,
             ],
         }).compile();
 
@@ -120,14 +122,23 @@ describe("IdeationsService", () => {
     it("should create an ideation", async () => {
         const userId = "00a10ade-7308-11ee-b962-0242ac120002";
         const teamId = 1;
+        const req = {
+            user: {
+                userId: userId,
+            },
+        };
         const createIdeationDto = {
-            userId: userId,
+            req,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
 
-        const result = await service.createIdeation(teamId, createIdeationDto);
+        const result = await service.createIdeation(
+            req,
+            teamId,
+            createIdeationDto,
+        );
         expect(result).toEqual(ideationOne);
     });
 
@@ -135,14 +146,16 @@ describe("IdeationsService", () => {
         const userId = "00a10ade-7308-11ee-a962-0242ac120002";
         const teamId = 1;
         const ideationId = 1;
-        const createIdeationVoteDto = {
-            userId: userId,
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
 
         const result = await service.createIdeationVote(
+            req,
             teamId,
             ideationId,
-            createIdeationVoteDto,
         );
         expect(result).toEqual(ideationVoteOne);
     });
@@ -157,15 +170,23 @@ describe("IdeationsService", () => {
     it("should update an ideation", async () => {
         const userId = "00a10ade-7308-11ee-b962-0242ac120002";
         const ideationId = 1;
+        const teamId = 1;
+        const req = {
+            user: {
+                userId: userId,
+            },
+        };
         const updateIdeationDto = {
-            userId: userId,
+            req,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
 
         const result = await service.updateIdeation(
+            req,
             ideationId,
+            teamId,
             updateIdeationDto,
         );
         expect(result).toEqual(ideationOne);
@@ -175,14 +196,16 @@ describe("IdeationsService", () => {
         const userId = "00a10ade-7308-11ee-a962-0242ac120002";
         const teamId = 1;
         const ideationId = 1;
-        const deleteIdeationVoteDto = {
-            userId: userId,
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
 
         const result = await service.deleteIdeationVote(
+            req,
             teamId,
             ideationId,
-            deleteIdeationVoteDto,
         );
         expect(result).toEqual(ideationVoteOne);
     });
@@ -190,14 +213,14 @@ describe("IdeationsService", () => {
     it("should delete an ideation", async () => {
         const userId = "00a10ade-7308-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const deleteIdeationDto = {
-            userId: userId,
+        const teamId = 1;
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
-
-        const result = await service.deleteIdeation(
-            ideationId,
-            deleteIdeationDto,
-        );
+        console.log(req);
+        const result = await service.deleteIdeation(req, teamId, ideationId);
         expect(result).toEqual(ideationOne);
     });
 });

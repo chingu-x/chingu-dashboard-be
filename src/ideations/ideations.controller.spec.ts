@@ -1,4 +1,3 @@
-import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
 import { Test, TestingModule } from "@nestjs/testing";
 import { IdeationsController } from "./ideations.controller";
 import { IdeationsService } from "./ideations.service";
@@ -26,16 +25,7 @@ describe("IdeationsController", () => {
         createIdeation: jest.fn().mockResolvedValue(ideationOne),
         createIdeationVote: jest.fn().mockResolvedValue(ideationVoteOne),
         getIdeationsByVoyageTeam: jest.fn().mockResolvedValue(ideationArr),
-        updateIdeation: jest
-            .fn()
-            .mockImplementation(
-                (ideationId: number, updateIdeationDto: UpdateIdeationDto) => {
-                    return {
-                        id: ideationId,
-                        ...updateIdeationDto,
-                    };
-                },
-            ),
+        updateIdeation: jest.fn().mockResolvedValue(ideationOne),
         deleteIdeation: jest.fn().mockResolvedValue(true),
         deleteIdeationVote: jest.fn().mockResolvedValue(true),
     };
@@ -63,16 +53,21 @@ describe("IdeationsController", () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const teamId = 1;
         const createIdeationDto: CreateIdeationDto = {
-            userId: userId,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
+        const req = {
+            user: {
+                userId: userId,
+            },
+        };
         const ideation = await controller.createIdeation(
+            req,
             teamId,
             createIdeationDto,
         );
-
+        console.log(ideation);
         expect(service.createIdeation).toHaveBeenCalled();
         expect(ideation).toBe(ideationOne);
     });
@@ -81,13 +76,15 @@ describe("IdeationsController", () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const teamId = 1;
         const ideationId = 1;
-        const createIdeationVoteDto: CreateIdeationVoteDto = {
-            userId: userId,
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
         const ideationVote = await controller.createIdeationVote(
+            req,
             teamId,
             ideationId,
-            createIdeationVoteDto,
         );
 
         expect(service.createIdeationVote).toHaveBeenCalled();
@@ -105,33 +102,41 @@ describe("IdeationsController", () => {
     it("should update an ideation", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const ideationId = 1;
+        const teamId = 1;
+        const req = {
+            user: {
+                userId: userId,
+            },
+        };
         const updateIdeationDto: UpdateIdeationDto = {
-            userId: userId,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
         const ideation = await controller.updateIdeation(
+            req,
             ideationId,
+            teamId,
             updateIdeationDto,
         );
-
+        console.log(ideation);
         expect(service.updateIdeation).toHaveBeenCalled();
-        expect(ideation).toEqual({
-            id: ideationId,
-            ...updateIdeationDto,
-        });
+        expect(ideation).toEqual(ideationOne);
     });
 
     it("should delete an ideation", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const deleteIdeationDto = {
-            userId: userId,
+        const teamId = 1;
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
         const ideation = await controller.deleteIdeation(
+            req,
+            teamId,
             ideationId,
-            deleteIdeationDto,
         );
 
         expect(service.deleteIdeation).toHaveBeenCalled();
@@ -142,13 +147,15 @@ describe("IdeationsController", () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const teamId = 1;
         const ideationId = 1;
-        const deleteIdeationVoteDto = {
-            userId: userId,
+        const req = {
+            user: {
+                userId: userId,
+            },
         };
         const ideationVote = await controller.deleteIdeationVote(
+            req,
             teamId,
             ideationId,
-            deleteIdeationVoteDto,
         );
 
         expect(service.deleteIdeationVote).toHaveBeenCalled();
