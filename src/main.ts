@@ -31,11 +31,20 @@ async function bootstrap() {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup("docs", app, document);
+    SwaggerModule.setup("docs", app, document, {
+        swaggerOptions: {
+            tagsSorter: "alpha",
+            operationSorter: "alpha",
+        },
+    });
 
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+        new ValidationPipe({
+            transform: true,
+        }),
+    );
 
     const port = parseInt(process.env.PORT);
     await app.listen(port);

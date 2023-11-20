@@ -1,104 +1,118 @@
-import { Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { CreateIdeationVoteDto } from "./dto/create-ideation-vote.dto";
-import { DeleteIdeationVoteDto } from "./dto/delete-ideation-vote.dto";
-import { DeleteIdeationDto } from "./dto/delete-ideation.dto";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class IdeationsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly globalService: GlobalService,
+    ) {}
 
-    async createIdeation(teamId: number, createIdeationDto: CreateIdeationDto) {
-        const { userId, title, description, vision } = createIdeationDto;
-        const { id: voyageTeamMemberId } =
-            await this.prisma.voyageTeamMember.findFirst({
-                where: {
-                    userId: userId,
-                    voyageTeamId: teamId,
-                },
-                select: {
-                    id: true,
+    async createIdeation(
+        req,
+        teamId: number,
+        createIdeationDto: CreateIdeationDto,
+    ) {
+        const uuid = req.user.userId;
+        const { title, description, vision } = createIdeationDto;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
+        try {
+            const createdIdeation = await this.prisma.projectIdea.create({
+                data: {
+                    voyageTeamMemberId: voyageTeamMember.id,
+                    title,
+                    description,
+                    vision,
                 },
             });
-        const createdIdeation = await this.prisma.projectIdea.create({
-            data: {
-                voyageTeamMemberId,
-                title,
-                description,
-                vision,
-            },
-        });
-        const createIdeationVoteDto = { userId: userId };
-        await this.createIdeationVote(
-            teamId,
-            createdIdeation.id,
-            createIdeationVoteDto,
-        );
-        return createdIdeation;
+
+            await this.createIdeationVote(req, teamId, createdIdeation.id);
+            return createdIdeation;
+        } catch (e) {
+            throw e;
+        }
     }
 
-    async createIdeationVote(
-        teamId: number,
-        ideationId: number,
-        createIdeationVoteDto: CreateIdeationVoteDto,
-    ) {
-        const { userId } = createIdeationVoteDto;
-        const { id: voyageTeamMemberId } =
-            await this.prisma.voyageTeamMember.findFirst({
-                where: {
-                    userId: userId,
-                    voyageTeamId: teamId,
-                },
-                select: {
-                    id: true,
-                },
-            });
-        const userHasVoted = await this.hasIdeationVote(
-            voyageTeamMemberId,
-            ideationId,
-        );
-        //if user has not voted then a vote can be created
-        if (!userHasVoted) {
-            const createVote = await this.prisma.projectIdeaVote.create({
-                data: {
-                    voyageTeamMemberId,
-                    projectIdeaId: ideationId,
-                },
-            });
-            return createVote;
+    async createIdeationVote(req, teamId: number, ideationId: number) {
+        const uuid = req.user.userId;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
+        const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
+            where: {
+                id: ideationId,
+            },
+        });
+        if (!ideationExistsCheck) {
+            throw new NotFoundException(
+                `Ideation (id: ${ideationId}) does not exist.`,
+            );
+        }
+
+        try {
+            const userHasVoted = await this.hasIdeationVote(
+                voyageTeamMember.id,
+                ideationId,
+            );
+            //if user has not voted then a vote can be created
+            if (!userHasVoted) {
+                const createVote = await this.prisma.projectIdeaVote.create({
+                    data: {
+                        voyageTeamMemberId: voyageTeamMember.id,
+                        projectIdeaId: ideationId,
+                    },
+                });
+                return createVote;
+            } else {
+                throw new ConflictException(
+                    `User has already voted for ${ideationId}`,
+                );
+            }
+        } catch (e) {
+            throw e;
         }
     }
 
     async getIdeationsByVoyageTeam(id: number) {
-        const teamProjectIdeas = await this.prisma.voyageTeamMember.findMany({
+        const teamMemberCheck = await this.prisma.voyageTeamMember.findFirst({
             where: {
                 voyageTeamId: id,
             },
-            select: {
-                projectIdeas: {
+        });
+        if (!teamMemberCheck)
+            throw new NotFoundException(
+                `voyageTeamId (id: ${id}) does not exist.`,
+            );
+
+        try {
+            const teamProjectIdeas =
+                await this.prisma.voyageTeamMember.findMany({
+                    where: {
+                        voyageTeamId: id,
+                    },
                     select: {
-                        id: true,
-                        title: true,
-                        description: true,
-                        vision: true,
-                        createdAt: true,
-                        contributedBy: {
+                        projectIdeas: {
                             select: {
-                                member: {
-                                    select: {
-                                        id: true,
-                                        avatar: true,
-                                        firstName: true,
-                                        lastName: true,
-                                    },
-                                },
-                            },
-                        },
-                        projectIdeaVotes: {
-                            include: {
-                                votedBy: {
+                                id: true,
+                                title: true,
+                                description: true,
+                                vision: true,
+                                createdAt: true,
+                                contributedBy: {
                                     select: {
                                         member: {
                                             select: {
@@ -110,120 +124,164 @@ export class IdeationsService {
                                         },
                                     },
                                 },
+                                projectIdeaVotes: {
+                                    include: {
+                                        votedBy: {
+                                            select: {
+                                                member: {
+                                                    select: {
+                                                        id: true,
+                                                        avatar: true,
+                                                        firstName: true,
+                                                        lastName: true,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },
-                },
-            },
-        });
-        return teamProjectIdeas
-            .map((teamMember) => teamMember.projectIdeas)
-            .flat();
+                });
+            return teamProjectIdeas
+                .map((teamMember) => teamMember.projectIdeas)
+                .flat();
+        } catch (e) {
+            throw e;
+        }
     }
 
     async updateIdeation(
+        req,
         ideationId: number,
+        teamId: number,
         updateIdeationDto: UpdateIdeationDto,
     ) {
-        const { userId, title, description, vision } = updateIdeationDto;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
+        const uuid = req.user.userId;
+        const { title, description, vision } = updateIdeationDto;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
+
+        const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
             where: {
-                id: teamMemberId,
+                id: ideationId,
             },
             select: {
-                id: true,
-                userId: true,
+                voyageTeamMemberId: true,
             },
         });
-        //only allow the user that created the idea to edit it
-        if (voyageTeamMember.userId === userId) {
-            const updatedIdeation = await this.prisma.projectIdea.update({
-                where: {
-                    id: ideationId,
-                },
-                data: {
-                    title,
-                    description,
-                    vision,
-                },
-            });
-            return updatedIdeation;
+        if (!ideationExistsCheck) {
+            throw new NotFoundException(
+                `Ideation (id: ${ideationId}) does not exist.`,
+            );
+        }
+
+        try {
+            //only allow the user that created the idea to edit it
+            if (
+                voyageTeamMember.id === ideationExistsCheck.voyageTeamMemberId
+            ) {
+                const updatedIdeation = await this.prisma.projectIdea.update({
+                    where: {
+                        id: ideationId,
+                    },
+                    data: {
+                        title,
+                        description,
+                        vision,
+                    },
+                });
+                return updatedIdeation;
+            } else {
+                throw new ConflictException(
+                    `voyageTeamMember.userId: ${voyageTeamMember.userId} on ideation does not match userId: ${uuid} input.`,
+                );
+            }
+        } catch (e) {
+            throw e;
         }
     }
 
-    async deleteIdeation(
-        ideationId: number,
-        deleteIdeationDto: DeleteIdeationDto,
-    ) {
-        const { userId } = deleteIdeationDto;
-        const teamMemberId = await this.getTeamMemberIdByIdeation(ideationId);
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: {
-                id: teamMemberId,
-            },
-            select: {
-                id: true,
-                userId: true,
-                voyageTeamId: true,
-            },
-        });
-        await this.deleteIdeationVote(
-            voyageTeamMember.voyageTeamId,
-            ideationId,
-            deleteIdeationDto,
-        );
-        const voteCount = await this.getIdeationVoteCount(ideationId);
-        //only allow the user that created the idea to delete it and only if it has no votes
-        if (voteCount === 0 && voyageTeamMember.userId === userId) {
-            const deleteIdeation = await this.prisma.projectIdea.delete({
-                where: {
-                    id: ideationId,
-                },
-            });
-            return deleteIdeation;
+    async deleteIdeation(req, teamId, ideationId: number) {
+        const uuid = req.user.userId;
+        let voteCount;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                req.user.userId,
+            );
+        const checkVotes = await this.getIdeationVoteCount(ideationId);
+        if (checkVotes > 1) {
+            throw new ConflictException(
+                `Ideation cannot be deleted when others have voted for it.`,
+            );
+        }
+
+        try {
+            await this.deleteIdeationVote(req, teamId, ideationId);
+            voteCount = await this.getIdeationVoteCount(ideationId);
+            //only allow the user that created the idea to delete it and only if it has no votes
+            if (voteCount === 0 && voyageTeamMember.userId === uuid) {
+                const deleteIdeation = await this.prisma.projectIdea.delete({
+                    where: {
+                        id: ideationId,
+                    },
+                });
+                return deleteIdeation;
+            }
+        } catch (e) {
+            throw e;
         }
     }
 
-    async deleteIdeationVote(
-        teamId: number,
-        ideationId: number,
-        deleteIdeationVoteDto: DeleteIdeationVoteDto,
-    ) {
-        const { userId } = deleteIdeationVoteDto;
-        const { id: voyageTeamMemberId } =
-            await this.prisma.voyageTeamMember.findFirst({
-                where: {
-                    userId: userId,
-                    voyageTeamId: teamId,
-                },
-                select: {
-                    id: true,
-                },
-            });
-        const { id: ideationVoteId } = await this.getIdeationVote(
+    async deleteIdeationVote(req, teamId: number, ideationId: number) {
+        const uuid = req.user.userId;
+        const voyageTeamMember =
+            await this.globalService.validateLoggedInAndTeamMember(
+                teamId,
+                uuid,
+            );
+        const ideationVote = await this.getIdeationVote(
             ideationId,
-            voyageTeamMemberId,
+            voyageTeamMember.id,
         );
-        const deleteIdeationVote = await this.prisma.projectIdeaVote.delete({
-            where: {
-                id: ideationVoteId,
-            },
-        });
-        return deleteIdeationVote;
+        try {
+            const deleteIdeationVote = await this.prisma.projectIdeaVote.delete(
+                {
+                    where: {
+                        id: ideationVote.id,
+                    },
+                },
+            );
+            return deleteIdeationVote;
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new NotFoundException(
+                    `IdeationVote (id: ${ideationVote.id}) does not exist.`,
+                );
+            }
+            throw e;
+        }
     }
 
     private async getTeamMemberIdByIdeation(ideationId: number) {
-        const { voyageTeamMemberId: teamMemberId } =
-            await this.prisma.projectIdea.findFirst({
-                where: {
-                    id: ideationId,
-                },
-                select: {
-                    voyageTeamMemberId: true,
-                },
-            });
-        return teamMemberId;
+        const voyageTeamMemberId = await this.prisma.projectIdea.findFirst({
+            where: {
+                id: ideationId,
+            },
+            select: {
+                voyageTeamMemberId: true,
+            },
+        });
+        if (!voyageTeamMemberId)
+            throw new NotFoundException(
+                `Ideation (id: ${ideationId}) does not exist`,
+            );
+        return voyageTeamMemberId;
     }
 
     private async hasIdeationVote(teamMemberId: number, ideationId: number) {
@@ -236,6 +294,10 @@ export class IdeationsService {
                 id: true,
             },
         });
+        if (!checkVoteStatus)
+            throw new BadRequestException(
+                "Invalid Ideation Id or Team Memeber Id",
+            );
         return checkVoteStatus.length > 0;
     }
 
@@ -248,6 +310,10 @@ export class IdeationsService {
                 id: true,
             },
         });
+        if (!votesForIdeation)
+            throw new NotFoundException(
+                `Ideation (id: ${ideationId}) does not exist`,
+            );
         return votesForIdeation.length;
     }
 
@@ -264,6 +330,10 @@ export class IdeationsService {
                 id: true,
             },
         });
+        if (!oneIdeationVote)
+            throw new BadRequestException(
+                "Invalid Ideation Id or Team Member Id",
+            );
         return oneIdeationVote;
     }
 }
