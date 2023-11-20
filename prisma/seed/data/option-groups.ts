@@ -1,8 +1,8 @@
 export default [
     {
-        name: 'voyage roles'
+        name: "voyage roles",
     },
     {
-        name: 'agree-disagree'
-    }
-]
+        name: "agree-disagree",
+    },
+];

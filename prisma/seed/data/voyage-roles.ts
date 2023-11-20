@@ -1,22 +1,22 @@
 export default [
     {
-        name:'Developer',
-        description: 'self explanatory'
+        name: "Developer",
+        description: "self explanatory",
     },
     {
-        name:'Product Owner',
-        description: 'Product Owner description'
+        name: "Product Owner",
+        description: "Product Owner description",
     },
     {
-        name:'UI/UX Designer',
-        description: 'User interface / User experience'
+        name: "UI/UX Designer",
+        description: "User interface / User experience",
     },
     {
-        name:'Data Scientist',
-        description: 'Working with data'
+        name: "Data Scientist",
+        description: "Working with data",
     },
     {
-        name:'Voyage Guide',
-        description: 'helps the team, not an active participant'
+        name: "Voyage Guide",
+        description: "helps the team, not an active participant",
     },
-]
+];
