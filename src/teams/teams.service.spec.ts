@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TeamsService } from "./teams.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "../global/global.service";
 
 describe("TeamsService", () => {
     let service: TeamsService;
@@ -33,6 +34,7 @@ describe("TeamsService", () => {
             findUnique: jest.fn().mockResolvedValue(teamOne),
         },
         voyageTeamMember: {
+            findFirst: jest.fn().mockResolvedValue(memberOne),
             findMany: jest.fn().mockResolvedValue(memberArr),
             update: jest.fn().mockResolvedValue(memberOne),
         },
@@ -46,6 +48,7 @@ describe("TeamsService", () => {
                     provide: PrismaService,
                     useValue: db,
                 },
+                GlobalService,
             ],
         }).compile();
 
@@ -98,9 +101,14 @@ describe("TeamsService", () => {
             const updateTeamMemberDto = {
                 hrPerSprint: 12,
             };
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            };
             const member = await service.updateTeamMemberById(
                 teamId,
-                userId,
+                req,
                 updateTeamMemberDto,
             );
 

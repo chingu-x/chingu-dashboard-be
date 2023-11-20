@@ -3,7 +3,14 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { User, Voyage, VoyageTeam, VoyageTeamMember } from "@prisma/client";
+import { User, Voyage, VoyageTeam } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+
+const roundsOfHashing = 10;
+
+const hashPassword = async (password: string) => {
+    return await bcrypt.hash(password, roundsOfHashing);
+};
 
 describe("TeamsController (e2e)", () => {
     let app: INestApplication;
@@ -24,7 +31,7 @@ describe("TeamsController (e2e)", () => {
     let newUser: User;
     let newVoyage: Voyage;
     let newVoyageTeam: VoyageTeam;
-    let newVoyageTeamMember: VoyageTeamMember;
+    let newUserAccessToken: string;
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
@@ -51,7 +58,7 @@ describe("TeamsController (e2e)", () => {
                 githubId: "testuser-github",
                 discordId: "testuser-discord",
                 email: "testuser@outlook.com",
-                password: "password",
+                password: await hashPassword("password"),
                 avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
                 timezone: "America/Los_Angeles",
                 comment: "Member seems to be inactive",
@@ -76,7 +83,7 @@ describe("TeamsController (e2e)", () => {
                 endDate: new Date("2024-11-09"),
             },
         });
-        newVoyageTeamMember = await prisma.voyageTeamMember.create({
+        await prisma.voyageTeamMember.create({
             data: {
                 member: {
                     connect: {
@@ -91,6 +98,16 @@ describe("TeamsController (e2e)", () => {
                 hrPerSprint: 10.5,
             },
         });
+        await request(app.getHttpServer())
+            .post("/auth/login")
+            .send({
+                email: newUser.email,
+                password: "password",
+            })
+            .expect(201)
+            .then((res) => {
+                newUserAccessToken = res.body.access_token;
+            });
     }
 
     beforeAll(async () => {
@@ -128,7 +145,7 @@ describe("TeamsController (e2e)", () => {
             });
     });
 
-    it("/GET teams/voyage/:id", async () => {
+    it("/GET teams/voyages/:id", async () => {
         const voyageId: number = newVoyage.id;
         const teamCount: number = await prisma.voyageTeam.count({
             where: {
@@ -164,26 +181,16 @@ describe("TeamsController (e2e)", () => {
             });
     });
 
-    it("/PATCH teams/:teamId/members/:userId", async () => {
+    it("/PATCH teams/:teamId/members", async () => {
         const teamId: number = newVoyageTeam.id;
-        const voyageTeam = await prisma.voyageTeam.findFirst({
-            where: {
-                id: teamId,
-            },
-            select: {
-                voyageTeamMembers: true,
-            },
-        });
-        const firstTeamMember = voyageTeam.voyageTeamMembers.find(
-            (member: { id: number }) => member.id === newVoyageTeamMember.id,
-        );
         const randomHours: number = Math.floor(Math.random() * 31);
         const updatedData = {
             hrPerSprint: randomHours,
         };
 
         return request(app.getHttpServer())
-            .patch(`/teams/${teamId}/members/${firstTeamMember.userId}`)
+            .patch(`/teams/${teamId}/members`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .send(updatedData)
             .expect(200)
             .expect("Content-Type", /json/)
