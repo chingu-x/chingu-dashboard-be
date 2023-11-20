@@ -11,11 +11,15 @@ import {
     VoyageTeam,
     VoyageTeamMember,
 } from "@prisma/client";
-import { CreateIdeationVoteDto } from "src/ideations/dto/create-ideation-vote.dto";
-import { DeleteIdeationDto } from "src/ideations/dto/delete-ideation.dto";
 import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
 import { CreateIdeationDto } from "src/ideations/dto/create-ideation.dto";
-import { DeleteIdeationVoteDto } from "src/ideations/dto/delete-ideation-vote.dto";
+import * as bcrypt from "bcrypt";
+
+const roundsOfHashing = 10;
+
+const hashPassword = async (password: string) => {
+    return await bcrypt.hash(password, roundsOfHashing);
+};
 
 describe("IdeationsController (e2e)", () => {
     let app: INestApplication;
@@ -48,6 +52,7 @@ describe("IdeationsController (e2e)", () => {
     let newVoyage: Voyage;
     let newVoyageTeam: VoyageTeam;
     let newVoyageTeamMember: VoyageTeamMember;
+    let newUserAcessToken: string;
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
@@ -80,7 +85,7 @@ describe("IdeationsController (e2e)", () => {
                 githubId: "testuser-github",
                 discordId: "testuser-discord",
                 email: "testuser@outlook.com",
-                password: "password",
+                password: await hashPassword("password"),
                 avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
                 timezone: "America/Los_Angeles",
                 comment: "Member seems to be inactive",
@@ -148,6 +153,16 @@ describe("IdeationsController (e2e)", () => {
                 },
             },
         });
+        await request(app.getHttpServer())
+            .post("/auth/login")
+            .send({
+                email: newUser.email,
+                password: "password",
+            })
+            .expect(201)
+            .then((res) => {
+                newUserAcessToken = res.body.access_token;
+            });
     }
 
     beforeAll(async () => {
@@ -172,7 +187,7 @@ describe("IdeationsController (e2e)", () => {
         await reseed();
     });
 
-    it("/POST teams/:teamId/ideations", async () => {
+    it("/POST voyages/:teamId/ideations", async () => {
         await prisma.projectIdea.delete({
             where: {
                 id: newIdeation.id,
@@ -181,14 +196,14 @@ describe("IdeationsController (e2e)", () => {
 
         const teamId: number = newVoyageTeam.id;
         const createIdeationDto: CreateIdeationDto = {
-            userId: newUser.id,
             title: "Ideation 1",
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
         };
 
         return request(app.getHttpServer())
-            .post(`/teams/${teamId}/ideations`)
+            .post(`/voyages/${teamId}/ideations`)
+            .set("Authorization", `Bearer ${newUserAcessToken}`)
             .send(createIdeationDto)
             .expect(201)
             .expect("Content-Type", /json/)
@@ -201,7 +216,7 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/POST teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
+    it("/POST voyages/:teamId/ideations/:ideationId/ideation-votes", async () => {
         await prisma.projectIdeaVote.delete({
             where: {
                 id: newIdeationVote.id,
@@ -210,13 +225,10 @@ describe("IdeationsController (e2e)", () => {
 
         const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
-        const createIdeationVoteDto: CreateIdeationVoteDto = {
-            userId: newUser.id,
-        };
 
         return request(app.getHttpServer())
-            .post(`/teams/${teamId}/ideations/${ideationId}/ideation-votes`)
-            .send(createIdeationVoteDto)
+            .post(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
+            .set("Authorization", `Bearer ${newUserAcessToken}`)
             .expect(201)
             .expect("Content-Type", /json/)
             .expect((res) => {
@@ -224,7 +236,7 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/GET teams/:teamId/ideations", async () => {
+    it("/GET voyages/:teamId/ideations", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationCount: number = await prisma.projectIdea.count({
             where: {
@@ -235,7 +247,7 @@ describe("IdeationsController (e2e)", () => {
         });
 
         return request(app.getHttpServer())
-            .get(`/teams/${teamId}/ideations`)
+            .get(`/voyages/${teamId}/ideations`)
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {
@@ -254,17 +266,18 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/PATCH ideations/:ideationId", async () => {
+    it("/PATCH :teamId/ideations/:ideationId", async () => {
+        const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
         const updateIdeationDto: UpdateIdeationDto = {
-            userId: newUser.id,
             title: "Ideation 2",
             description: "Ideation 2 description",
             vision: "Ideation 2 vision",
         };
 
         return request(app.getHttpServer())
-            .patch(`/ideations/${ideationId}`)
+            .patch(`/voyages/${teamId}/ideations/${ideationId}`)
+            .set("Authorization", `Bearer ${newUserAcessToken}`)
             .send(updateIdeationDto)
             .expect(200)
             .expect("Content-Type", /json/)
@@ -277,15 +290,13 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/DELETE ideations/:ideationId", async () => {
+    it("/DELETE :teamId/ideations/:ideationId", async () => {
+        const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
-        const deleteIdeationDto: DeleteIdeationDto = {
-            userId: newUser.id,
-        };
 
         return request(app.getHttpServer())
-            .delete(`/ideations/${ideationId}`)
-            .send(deleteIdeationDto)
+            .delete(`/voyages/${teamId}/ideations/${ideationId}`)
+            .set("Authorization", `Bearer ${newUserAcessToken}`)
             .expect((res) => {
                 expect(res.body).toEqual({
                     ...ideationShape,
@@ -295,16 +306,13 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/DELETE teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
+    it("/DELETE voyages/:teamId/ideations/:ideationId/ideation-votes", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
-        const deleteIdeationVoteDto: DeleteIdeationVoteDto = {
-            userId: newUser.id,
-        };
 
         return request(app.getHttpServer())
-            .delete(`/teams/${teamId}/ideations/${ideationId}/ideation-votes`)
-            .send(deleteIdeationVoteDto)
+            .delete(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
+            .set("Authorization", `Bearer ${newUserAcessToken}`)
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {
