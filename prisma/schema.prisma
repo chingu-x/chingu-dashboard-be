@@ -395,23 +395,20 @@ model OptionChoice {
 }
 
 model Response {
-  id                    Int                  @id @default(autoincrement())
-  questionId            Int
-  question              Question             @relation(fields: [questionId], references: [id])
-  optionChoiceId        Int?
-  optionChoice          OptionChoice?        @relation(fields: [optionChoiceId], references: [id])
-  numeric               Int?
-  boolean               Boolean?
-  text                  String?
-  formResponseMeetingId Int?
-  formResponseMeeting   FormResponseMeeting? @relation(fields: [formResponseMeetingId], references: [id], onDelete: Cascade)
-  responseGroupId       Int?
-  responseGroup         ResponseGroup?       @relation(fields: [responseGroupId], references: [id], onDelete: Cascade)
+  id              Int            @id @default(autoincrement())
+  questionId      Int
+  question        Question       @relation(fields: [questionId], references: [id])
+  optionChoiceId  Int?
+  optionChoice    OptionChoice?  @relation(fields: [optionChoiceId], references: [id])
+  numeric         Int?
+  boolean         Boolean?
+  text            String?
+  responseGroupId Int?
+  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  @@unique(fields: [questionId, formResponseMeetingId], name: "questionResponseMeeting")
   @@unique(fields: [questionId, responseGroupId], name: "questionResponseGroup")
 }
 
@@ -421,9 +418,10 @@ model ResponseGroup {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responses          Response[]
-  soloProjects       SoloProject[]
-  voyageApplications VoyageApplication[]
+  responses           Response[]
+  soloProject         SoloProject?
+  voyageApplication   VoyageApplication?
+  formResponseMeeting FormResponseMeeting?
 }
 
 model FormResponseMeeting {
@@ -436,7 +434,8 @@ model FormResponseMeeting {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responses Response[]
+  responseGroupId Int?           @unique
+  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   @@unique(fields: [formId, meetingId], name: "meetingFormId")
 }
@@ -488,7 +487,7 @@ model SoloProject {
   status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
   formId            Int?
   form              Form?              @relation(fields: [formId], references: [id], onDelete: SetNull)
-  responseGroupId   Int?
+  responseGroupId   Int?               @unique
   responseGroup     ResponseGroup?     @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
@@ -505,7 +504,7 @@ model VoyageApplication {
   voyage          Voyage         @relation(fields: [voyageId], references: [id], onDelete: Restrict)
   formId          Int?
   form            Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
-  responseGroupId Int?
+  responseGroupId Int?           @unique
   responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now()) @db.Timestamptz()

@@ -68,18 +68,24 @@ export const populateMeetings = async () => {
                     id: meeting1.id,
                 },
             },
-            responses: {
-                createMany: {
-                    data: [
-                        {
-                            questionId: sprintPlanningForm.questions[0].id,
-                            text: "There are a lot of goals we want to achieve",
+            responseGroup: {
+                create: {
+                    responses: {
+                        createMany: {
+                            data: [
+                                {
+                                    questionId:
+                                        sprintPlanningForm.questions[0].id,
+                                    text: "There are a lot of goals we want to achieve",
+                                },
+                                {
+                                    questionId:
+                                        sprintPlanningForm.questions[1].id,
+                                    text: "Deploy the app",
+                                },
+                            ],
                         },
-                        {
-                            questionId: sprintPlanningForm.questions[1].id,
-                            text: "Deploy the app",
-                        },
-                    ],
+                    },
                 },
             },
         },

@@ -232,8 +232,8 @@ export class SprintsController {
         summary: "Deletes an agenda item given agenda ID",
         description: "returns deleted agenda item detail.",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiCreatedResponse({
+        status: 201,
         description: "The agenda item has been successfully deleted",
     })
     @ApiNotFoundResponse({
