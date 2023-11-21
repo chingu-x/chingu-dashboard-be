@@ -1,4 +1,3 @@
-import { GlobalService } from "../global/global.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersService } from "./users.service";
 import { PrismaService } from "../prisma/prisma.service";
