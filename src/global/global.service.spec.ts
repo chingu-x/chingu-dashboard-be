@@ -8,11 +8,11 @@ describe("GlobalService", () => {
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
-                GlobalService,
                 {
                     provide: PrismaService,
                     useValue: {},
                 },
+                GlobalService,
             ],
         }).compile();
 

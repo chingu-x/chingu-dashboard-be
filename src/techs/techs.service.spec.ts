@@ -1,6 +1,7 @@
 import { PrismaService } from "../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TechsService } from "./techs.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
 
 describe("TechsService", () => {

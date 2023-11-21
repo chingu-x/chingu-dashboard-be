@@ -220,7 +220,6 @@ export class IdeationsService {
                 `Ideation cannot be deleted when others have voted for it.`,
             );
         }
-
         try {
             await this.deleteIdeationVote(req, teamId, ideationId);
             voteCount = await this.getIdeationVoteCount(ideationId);

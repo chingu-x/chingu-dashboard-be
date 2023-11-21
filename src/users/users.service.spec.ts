@@ -2,6 +2,7 @@ import { GlobalService } from "../global/global.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersService } from "./users.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { GlobalService } from "../global/global.service";
 
 describe("UsersService", () => {
     let service: UsersService;
