@@ -104,6 +104,9 @@ export const populateMeetings = async () => {
                     id: meeting1.id,
                 },
             },
+            responseGroup: {
+                create: {},
+            },
         },
     });
 
