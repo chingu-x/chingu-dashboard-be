@@ -442,8 +442,9 @@ model FormResponseMeeting {
 
 // === Onboarding checklist ===
 model ChecklistItem {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -457,6 +458,7 @@ model UserChecklistStatus {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   checklistItemId Int
   checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id], onDelete: Cascade)
+  status          Boolean       @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
