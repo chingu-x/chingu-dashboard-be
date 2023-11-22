@@ -23,10 +23,10 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { Feature } from "./entities/feature.entity";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
-@Controller("teams")
-@ApiTags("features")
+@Controller()
+@ApiTags("Voyage - Features")
 export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
 
