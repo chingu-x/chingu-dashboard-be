@@ -37,7 +37,7 @@ const deleteAllTables = async () => {
 (async function () {
     try {
         await deleteAllTables();
-        await populateTables();
+        await populateTables(); // tables with no relations
         await populateUsers();
         await populateSprints();
         await populateVoyageTeams();
