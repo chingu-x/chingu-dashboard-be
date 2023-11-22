@@ -20,6 +20,7 @@
     "docker:test:e2e": "chmod +x ./bin/docker_test.sh && ./bin/docker_test.sh -e",
     "docker:test:all": "chmod +x ./bin/docker_test.sh && ./bin/docker_test.sh",
     "migrate": "dotenv -e ./.env.dev --  npx prisma migrate dev",
+    "postinstall": "husky install",
     "studio": "dotenv -e ./.env.dev -- prisma studio",
     "seed": "dotenv -e ./.env.dev prisma db seed",
     "lint": "eslint \"{prisma/*seed,src,test}/**/*.ts\" --fix",
@@ -44,6 +45,7 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.3.1",
+    "lint-staged": "^15.1.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -100,5 +102,16 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed/index.ts"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "prettier --write"
+    ],
+    "test/**/*.ts": [
+      "prettier --write"
+    ],
+    "prisma/*seed/**/*.ts": [
+      "prettier --write"
+    ]
   }
 }
