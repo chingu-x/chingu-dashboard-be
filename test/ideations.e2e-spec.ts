@@ -98,7 +98,7 @@ describe("IdeationsController (e2e)", () => {
                 startDate: new Date("2024-10-28"),
                 endDate: new Date("2024-11-09"),
                 soloProjectDeadline: new Date("2023-12-31"),
-                certificateIssued: new Date("2024-02-25"),
+                certificateIssueDate: new Date("2024-02-25"),
             },
         });
         newVoyageTeam = await prisma.voyageTeam.create({

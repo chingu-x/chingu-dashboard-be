@@ -64,13 +64,13 @@ model User {
 // === Voyage - Schedule, sprint dates and Teams ===
 
 model Voyage {
-  id                  Int       @id @default(autoincrement())
-  number              String    @unique
-  startDate           DateTime  @db.Timestamptz()
-  endDate             DateTime  @db.Timestamptz()
-  soloProjectDeadline DateTime  @db.Timestamptz()
-  certificateIssued   DateTime  @db.Timestamptz()
-  showcasePublished   DateTime? @db.Timestamptz()
+  id                   Int       @id @default(autoincrement())
+  number               String    @unique
+  startDate            DateTime  @db.Timestamptz()
+  endDate              DateTime  @db.Timestamptz()
+  soloProjectDeadline  DateTime  @db.Timestamptz()
+  certificateIssueDate DateTime  @db.Timestamptz()
+  showcasePublisheDate DateTime? @db.Timestamptz()
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -313,7 +313,88 @@ model Agenda {
   updatedAt DateTime @updatedAt
 }
 
+// === Onboarding checklist ===
+model ChecklistItem {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  userChecklistStatuses UserChecklistStatus[]
+}
+
+model UserChecklistStatus {
+  id              Int           @id @default(autoincrement())
+  userId          String        @db.Uuid()
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checklistItemId Int
+  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id], onDelete: Cascade)
+  status          Boolean       @default(false)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  @@unique(fields: [userId, checklistItemId], name: "userChecklistItem")
+}
+
+// === Solo Projects ===
+model SoloProjectStatus {
+  id     Int    @id @default(autoincrement())
+  status String @unique
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  soloProjects SoloProject[]
+}
+
+model SoloProject {
+  id                Int                @id @default(autoincrement())
+  userId            String             @db.Uuid()
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluatorUserId   String?            @db.Uuid()
+  evaluator         User?              @relation(fields: [evaluatorUserId], references: [id], name: "evaluators", onDelete: SetNull)
+  evaluatorFeedback String?
+  adminComments     String?
+  statusId          Int?
+  status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  formId            Int?
+  form              Form?              @relation(fields: [formId], references: [id], onDelete: SetNull)
+  responseGroupId   Int?               @unique
+  responseGroup     ResponseGroup?     @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}
+
+// === Voyage Application ===
+model VoyageApplication {
+  id              Int            @id @default(autoincrement())
+  userId          String         @db.Uuid()
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voyageId        Int
+  voyage          Voyage         @relation(fields: [voyageId], references: [id], onDelete: Restrict)
+  formId          Int?
+  form            Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
+  responseGroupId Int?           @unique
+  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}
+
 // === Forms / Question & Responses ===
+model FormType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  forms Form[]
+}
 
 model Form {
   id          Int      @id @default(autoincrement())
@@ -329,26 +410,6 @@ model Form {
   formResponseMeetings FormResponseMeeting[]
   soloProjects         SoloProject[]
   voyageApplications   VoyageApplication[]
-}
-
-model FormType {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  forms Form[]
-}
-
-model InputType {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  questions Question[]
 }
 
 model Question {
@@ -369,6 +430,16 @@ model Question {
   updatedAt DateTime @updatedAt
 
   responses Response[]
+}
+
+model InputType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  questions Question[]
 }
 
 model OptionGroup {
@@ -438,77 +509,4 @@ model FormResponseMeeting {
   responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   @@unique(fields: [formId, meetingId], name: "meetingFormId")
-}
-
-// === Onboarding checklist ===
-model ChecklistItem {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
-  description String?
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  userChecklistStatuses UserChecklistStatus[]
-}
-
-model UserChecklistStatus {
-  id              Int           @id @default(autoincrement())
-  userId          String        @db.Uuid()
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  checklistItemId Int
-  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id], onDelete: Cascade)
-  status          Boolean       @default(false)
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  @@unique(fields: [userId, checklistItemId], name: "userChecklistItem")
-}
-
-// === Solo Projects ===
-model SoloProjectStatus {
-  id     Int    @id @default(autoincrement())
-  status String @unique
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  soloProjects SoloProject[]
-}
-
-model SoloProject {
-  id                Int                @id @default(autoincrement())
-  userId            String             @db.Uuid()
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  evaluatorUserId   String?            @db.Uuid()
-  evaluator         User?              @relation(fields: [evaluatorUserId], references: [id], name: "evaluators", onDelete: SetNull)
-  evaluatorFeedback String?
-  adminComments     String?
-  statusId          Int?
-  status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
-  formId            Int?
-  form              Form?              @relation(fields: [formId], references: [id], onDelete: SetNull)
-  responseGroupId   Int?               @unique
-  responseGroup     ResponseGroup?     @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-}
-
-// === Voyage Application ===
-
-model VoyageApplication {
-  id              Int            @id @default(autoincrement())
-  userId          String         @db.Uuid()
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  voyageId        Int
-  voyage          Voyage         @relation(fields: [voyageId], references: [id], onDelete: Restrict)
-  formId          Int?
-  form            Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
-  responseGroupId Int?           @unique
-  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
 }
