@@ -4,7 +4,7 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { GlobalService } from "../global/global.service";
@@ -220,7 +220,6 @@ export class IdeationsService {
                 `Ideation cannot be deleted when others have voted for it.`,
             );
         }
-
         try {
             await this.deleteIdeationVote(req, teamId, ideationId);
             voteCount = await this.getIdeationVoteCount(ideationId);
