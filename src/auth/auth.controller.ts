@@ -11,11 +11,43 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
+import { SignupDto } from "./dto/signup.dto";
+import { ResendEmailDto } from "./dto/resend-email.dto";
+import { VerifyEmailDto } from "./dto/verify-email.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
     constructor(private authService: AuthService) {}
+
+    @ApiOperation({
+        summary: "Signup, and send a verification email",
+        description:
+            "Please use a 'real' email if you want to receive a verification email.",
+    })
+    @Post("signup")
+    async signup(@Body() signupDto: SignupDto) {
+        return this.authService.signup(signupDto);
+    }
+
+    @ApiOperation({
+        summary: "Resend the verification email",
+        description:
+            "Please use a 'real' email if you want to receive a verification email.",
+    })
+    @Post("resend-email")
+    async resendVerificationEmail(@Body() resendEmailDto: ResendEmailDto) {
+        return this.authService.resendEmail(resendEmailDto);
+    }
+
+    @ApiOperation({
+        summary: "Verifies the users email",
+        description: "Using a token sent to their email when sign up",
+    })
+    @Post("verify-email")
+    async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
+        return this.authService.verifyEmail(verifyEmailDto);
+    }
 
     @ApiOperation({
         summary: "When a user logs in, creates jwt token.",

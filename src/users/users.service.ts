@@ -34,6 +34,8 @@ export class UsersService {
         return this.prisma.user.findMany({
             select: {
                 id: true,
+                email: true,
+                emailVerified: true,
                 firstName: true,
                 lastName: true,
                 avatar: true,
@@ -41,12 +43,10 @@ export class UsersService {
                 discordId: true,
                 twitterId: true,
                 linkedinId: true,
-                email: true,
                 gender: true,
                 countryCode: true,
                 timezone: true,
                 comment: true,
-                hasActivated: true,
             },
         });
     }

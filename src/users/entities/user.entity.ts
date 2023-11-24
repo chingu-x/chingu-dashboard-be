@@ -7,6 +7,12 @@ export class UserEntity implements User {
     id: string;
 
     @ApiProperty()
+    email: string;
+
+    @ApiProperty()
+    emailVerified: boolean;
+
+    @ApiProperty()
     firstName;
 
     @ApiProperty()
@@ -26,9 +32,6 @@ export class UserEntity implements User {
 
     @ApiProperty()
     linkedinId;
-
-    @ApiProperty()
-    email: string;
 
     @ApiProperty()
     @Exclude()

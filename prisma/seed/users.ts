@@ -8,7 +8,7 @@ export const populateUsers = async () => {
         data: {
             email: "jessica.williamson@gmail.com",
             password: await hashPassword("password"),
-            hasActivated: true,
+            emailVerified: true,
             firstName: "Jessica",
             lastName: "Williamson",
             githubId: "jess-github",
@@ -30,7 +30,7 @@ export const populateUsers = async () => {
         data: {
             email: "l.castro@outlook.com",
             password: await hashPassword("password"),
-            hasActivated: true,
+            emailVerified: true,
             firstName: "Larry",
             lastName: "Castro",
             githubId: "larryc-github",
@@ -51,7 +51,7 @@ export const populateUsers = async () => {
         data: {
             email: "leo.rowe@outlook.com",
             password: await hashPassword("password"),
-            hasActivated: true,
+            emailVerified: true,
             firstName: "Leonarda",
             lastName: "Rowe",
             githubId: "leo-github",
@@ -72,7 +72,7 @@ export const populateUsers = async () => {
         data: {
             email: "JosoMadar@dayrep.com",
             password: await hashPassword("password"),
-            hasActivated: true,
+            emailVerified: true,
             firstName: "Joso",
             lastName: "Mađar",
             githubId: "joso-github",
