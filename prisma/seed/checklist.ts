@@ -13,7 +13,7 @@ export const populateChecklists = async () => {
                 description: "Choose your Tier",
             },
             {
-                name: "soloProjectGuidlines",
+                name: "soloProjectGuidelines",
                 description: "Review the Solo Project Guidelines",
             },
             {
