@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    env_file:
+      - .env.test
+    ports:
+      - "5433:5433"
+    environment:
+      PGPORT: 5433
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    command: ['yarn', 'test']

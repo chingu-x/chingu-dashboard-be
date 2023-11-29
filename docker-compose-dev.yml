@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    env_file:
+      - .env.dev
+    restart: always
+    ports:
+      - "5433:5433"
+    environment:
+      PGPORT: 5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    env_file:
+      - .env.dev
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "4000:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  api:
+    build: .
+    restart: always
+    env_file:
+      - .env.dev
+    ports:
+      - "8000:8000"
+      - "5555:5555"
+    depends_on:
+      - postgres
+    volumes:
+      - /usr/src/app/node_modules
+      - .:/usr/src/app
+    command: ['yarn', 'start:dev']
+volumes:
+  pgdata:
+  pgadmin-data:
