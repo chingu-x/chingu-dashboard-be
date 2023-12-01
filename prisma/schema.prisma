@@ -163,7 +163,7 @@ model VoyageTeamMember {
   voyageRoleId Int?
   status       VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   statusId     Int?
-  hrPerSprint  Float
+  hrPerSprint  Int
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt

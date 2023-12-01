@@ -8,7 +8,13 @@ import {
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+    ApiBadRequestResponse,
+    ApiOkResponse,
+    ApiOperation,
+    ApiTags,
+    ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
@@ -21,18 +27,18 @@ export class AuthController {
     @ApiOperation({
         summary: "When a user logs in, creates jwt token.",
     })
-    @ApiResponse({
+    @ApiOkResponse({
         status: 200,
         description:
             "User successfully authenticated, jwt token is saved in cookies",
     })
-    @ApiResponse({
+    @ApiBadRequestResponse({
         status: 400,
         description:
             "Account does not exist. A more generic error message " +
             "so users can't tell if the account exist or not due to privacy reason",
     })
-    @ApiResponse({
+    @ApiUnauthorizedResponse({
         status: 401,
         description: "Login fails. Usually wrong password",
     })
@@ -59,7 +65,7 @@ export class AuthController {
     @ApiOperation({
         summary: "When a user logs out, jwt token is cleared.",
     })
-    @ApiResponse({
+    @ApiOkResponse({
         status: 200,
         description:
             "User successfully logs out, jwt token in cookies is removed.",

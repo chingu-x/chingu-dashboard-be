@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
@@ -14,7 +14,12 @@ export class TeamsService {
         return this.prisma.voyageTeam.findMany({});
     }
 
-    findAllByVoyageId(id: number) {
+    async findTeamsByVoyageId(id: number) {
+        const voyage = await this.prisma.voyage.findUnique({
+            where: { id },
+        });
+        if (!voyage)
+            throw new NotFoundException(`Voyage with id ${id} does not exist.`);
         return this.prisma.voyageTeam.findMany({
             where: {
                 voyageId: id,
@@ -22,10 +27,15 @@ export class TeamsService {
         });
     }
 
-    findOne(id: number) {
-        return this.prisma.voyageTeam.findUnique({
+    async findTeamById(id: number) {
+        const voyageTeam = await this.prisma.voyageTeam.findUnique({
             where: { id },
         });
+        if (!voyageTeam)
+            throw new NotFoundException(
+                `Voyage team (teamId: ${id}) does not exist.`,
+            );
+        return voyageTeam;
     }
 
     findTeamMembersByTeamId(id: number) {
@@ -34,16 +44,21 @@ export class TeamsService {
                 voyageTeamId: id,
             },
             select: {
+                id: true,
                 member: {
                     select: {
                         id: true,
                         firstName: true,
                         lastName: true,
                         avatar: true,
+                        githubId: true,
                         discordId: true,
+                        twitterId: true,
+                        linkedinId: true,
+                        email: true,
                         countryCode: true,
                         timezone: true,
-                        email: true,
+                        comment: true,
                     },
                 },
                 hrPerSprint: true,
