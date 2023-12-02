@@ -8,16 +8,15 @@ import {
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import {
-    ApiBadRequestResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiTags,
-    ApiUnauthorizedResponse,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
+import {
+    BadRequestErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
+import { LoginResponse, LogoutResponse } from "./auth.response";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -27,20 +26,23 @@ export class AuthController {
     @ApiOperation({
         summary: "When a user logs in, creates jwt token.",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description:
             "User successfully authenticated, jwt token is saved in cookies",
+        type: LoginResponse,
     })
-    @ApiBadRequestResponse({
-        status: 400,
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
         description:
             "Account does not exist. A more generic error message " +
             "so users can't tell if the account exist or not due to privacy reason",
+        type: BadRequestErrorResponse,
     })
-    @ApiUnauthorizedResponse({
-        status: 401,
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
         description: "Login fails. Usually wrong password",
+        type: UnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
     @Post("login")
@@ -56,7 +58,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: true,
             });
-            res.status(HttpStatus.OK).send("Login Success");
+            res.status(HttpStatus.OK).send({ message: "Login Success" });
         } catch (e) {
             throw new UnauthorizedException("Login Error");
         }
@@ -65,14 +67,16 @@ export class AuthController {
     @ApiOperation({
         summary: "When a user logs out, jwt token is cleared.",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description:
             "User successfully logs out, jwt token in cookies is removed.",
+        type: LogoutResponse,
     })
     @Post("logout")
     async logout(@Res({ passthrough: true }) res) {
-        res.clearCookie("access_token");
-        return {};
+        res.status(HttpStatus.OK)
+            .clearCookie("access_token")
+            .json({ message: "Logout Success" });
     }
 }
