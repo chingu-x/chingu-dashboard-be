@@ -14,11 +14,9 @@ import {
 import { TechsService } from "./techs.service";
 import {
     ApiBearerAuth,
-    ApiOkResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
-    getSchemaPath,
 } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
