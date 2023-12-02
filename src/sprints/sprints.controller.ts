@@ -7,6 +7,7 @@ import {
     ParseIntPipe,
     Get,
     Delete,
+    ValidationPipe,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -131,7 +132,7 @@ export class SprintsController {
     createTeamMeeting(
         @Param("sprintNumber", ParseIntPipe) sprintNumber: number,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body() createTeamMeetingDto: CreateTeamMeetingDto,
+        @Body(ValidationPipe) createTeamMeetingDto: CreateTeamMeetingDto,
     ) {
         return this.sprintsService.createTeamMeeting(
             teamId,
@@ -161,7 +162,7 @@ export class SprintsController {
     })
     updateTeamMeeting(
         @Param("meetingId", ParseIntPipe) meetingId: number,
-        @Body() updateTeamMeetingDto: UpdateTeamMeetingDto,
+        @Body(ValidationPipe) updateTeamMeetingDto: UpdateTeamMeetingDto,
     ) {
         return this.sprintsService.updateTeamMeeting(
             meetingId,
@@ -190,7 +191,7 @@ export class SprintsController {
     })
     addMeetingAgenda(
         @Param("meetingId", ParseIntPipe) meetingId: number,
-        @Body() createAgendaDto: CreateAgendaDto,
+        @Body(ValidationPipe) createAgendaDto: CreateAgendaDto,
     ) {
         return this.sprintsService.createMeetingAgenda(
             meetingId,
@@ -219,7 +220,7 @@ export class SprintsController {
     })
     updateMeetingAgenda(
         @Param("agendaId", ParseIntPipe) agendaId: number,
-        @Body() updateAgendaDto: UpdateAgendaDto,
+        @Body(ValidationPipe) updateAgendaDto: UpdateAgendaDto,
     ) {
         return this.sprintsService.updateMeetingAgenda(
             agendaId,
