@@ -1,5 +1,7 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
+import { VoyageRoleEntity } from "../global/entities/voyage-role.entity";
+import { VoyageStatus } from "../global/responses/shared";
 
 class Gender {
     @ApiProperty({ example: 1 })
@@ -12,6 +14,30 @@ class Gender {
     description: string;
 
     createdAt: Date;
+    updatedAt: Date;
+}
+
+class VoyageTeamWithoutMember {
+    @ApiProperty()
+    id: number;
+
+    userId: string;
+
+    @ApiProperty()
+    voyageRole: VoyageRoleEntity;
+
+    statusId: number;
+
+    @ApiProperty()
+    status: VoyageStatus;
+
+    @ApiProperty({ example: 10 })
+    hrPerSprint: number;
+
+    @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
+    createdAt: Date;
+
+    @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
     updatedAt: Date;
 }
 
@@ -75,7 +101,13 @@ export class PrivateUserResponse extends OmitType(UserResponse, [
 
 // User details visible to public, all sensitive details are not included
 export class PublicUserResponse extends OmitType(UserResponse, [
+    "id",
     "comment",
     "gender",
     "email",
 ] as const) {}
+
+export class FullUserResponse extends UserResponse {
+    @ApiProperty({ isArray: true })
+    voyageTeamMembers: VoyageTeamWithoutMember;
+}

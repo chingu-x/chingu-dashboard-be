@@ -16,7 +16,11 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { PrivateUserResponse, UserResponse } from "./users.response";
+import {
+    FullUserResponse,
+    PrivateUserResponse,
+    UserResponse,
+} from "./users.response";
 import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
@@ -72,7 +76,7 @@ export class UsersController {
         status: HttpStatus.OK,
         description: "Successfully gets the full user detail given a userId",
         isArray: true,
-        type: UserResponse,
+        type: FullUserResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -105,7 +109,7 @@ export class UsersController {
         status: HttpStatus.OK,
         description: "Successfully gets the full user detail given an email.",
         isArray: true,
-        type: UserResponse,
+        type: FullUserResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

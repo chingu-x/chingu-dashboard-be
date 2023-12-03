@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
+import { publicVoyageTeamUserSelect } from "../global/selects/teams.select";
 
 @Injectable()
 export class TeamsService {
@@ -24,51 +25,20 @@ export class TeamsService {
             where: {
                 voyageId: id,
             },
+            select: publicVoyageTeamUserSelect,
         });
     }
 
     async findTeamById(id: number) {
         const voyageTeam = await this.prisma.voyageTeam.findUnique({
             where: { id },
+            select: publicVoyageTeamUserSelect,
         });
         if (!voyageTeam)
             throw new NotFoundException(
                 `Voyage team (teamId: ${id}) does not exist.`,
             );
         return voyageTeam;
-    }
-
-    findTeamMembersByTeamId(id: number) {
-        return this.prisma.voyageTeamMember.findMany({
-            where: {
-                voyageTeamId: id,
-            },
-            select: {
-                id: true,
-                member: {
-                    select: {
-                        id: true,
-                        firstName: true,
-                        lastName: true,
-                        avatar: true,
-                        githubId: true,
-                        discordId: true,
-                        twitterId: true,
-                        linkedinId: true,
-                        email: true,
-                        countryCode: true,
-                        timezone: true,
-                        comment: true,
-                    },
-                },
-                hrPerSprint: true,
-                voyageRole: {
-                    select: {
-                        name: true,
-                    },
-                },
-            },
-        });
     }
 
     // Update voyage team member by id

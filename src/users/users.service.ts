@@ -1,73 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserEntity } from "./entities/user.entity";
+import { fullUserDetailSelect } from "../global/selects/users.select";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
-
-    private fullUserDetailSelect = {
-        id: true,
-        firstName: true,
-        lastName: true,
-        avatar: true,
-        githubId: true,
-        discordId: true,
-        twitterId: true,
-        linkedinId: true,
-        email: true,
-        gender: {
-            select: {
-                abbreviation: true,
-                description: true,
-            },
-        },
-        countryCode: true,
-        timezone: true,
-        comment: true,
-        voyageTeamMembers: {
-            select: {
-                id: true,
-                voyageTeam: {
-                    select: {
-                        id: true,
-                        name: true,
-                        tier: {
-                            select: {
-                                name: true,
-                                description: true,
-                            },
-                        },
-                    },
-                },
-                voyageRole: {
-                    select: {
-                        name: true,
-                        description: true,
-                    },
-                },
-                status: true,
-                hrPerSprint: true,
-                teamTechStackItemVotes: {
-                    select: {
-                        id: true,
-                        teamTech: {
-                            select: {
-                                id: true,
-                                name: true,
-                                category: {
-                                    select: {
-                                        name: true,
-                                        description: true,
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    };
 
     findUserByEmail(email: string): Promise<UserEntity | undefined> {
         return this.prisma.user.findUnique({
@@ -130,7 +68,7 @@ export class UsersService {
             where: {
                 id: userId,
             },
-            select: this.fullUserDetailSelect,
+            select: fullUserDetailSelect,
         });
 
         if (!user) {
@@ -145,7 +83,7 @@ export class UsersService {
             where: {
                 email,
             },
-            select: this.fullUserDetailSelect,
+            select: fullUserDetailSelect,
         });
 
         if (!user) {

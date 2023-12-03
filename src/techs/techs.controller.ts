@@ -15,6 +15,7 @@ import { TechsService } from "./techs.service";
 import {
     ApiBearerAuth,
     ApiOperation,
+    ApiParam,
     ApiResponse,
     ApiTags,
 } from "@nestjs/swagger";
@@ -40,6 +41,13 @@ export class TechsController {
         status: HttpStatus.OK,
         description: "Successfully gets all selected tech stack for a team",
         type: TeamTechResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @Get()
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
@@ -70,6 +78,13 @@ export class TechsController {
         status: HttpStatus.UNAUTHORIZED,
         description: "Unauthorized",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -107,6 +122,20 @@ export class TechsController {
         description: "Unauthorized",
         type: UnauthorizedErrorResponse,
     })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @ApiParam({
+        name: "teamTechId",
+        description: "techId of a tech the team has select (TeamTechStackItem)",
+        type: "Integer",
+        required: true,
+        example: 11,
+    })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Post("/:teamTechId")
@@ -141,6 +170,20 @@ export class TechsController {
         status: HttpStatus.UNAUTHORIZED,
         description: "Unauthorized",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @ApiParam({
+        name: "teamTechId",
+        description: "techId of a tech the team has select (TeamTechStackItem)",
+        type: "Integer",
+        required: true,
+        example: 11,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

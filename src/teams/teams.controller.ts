@@ -7,23 +7,27 @@ import {
     ParseIntPipe,
     Request,
     UseGuards,
+    HttpStatus,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
 import {
     ApiBearerAuth,
-    ApiNotFoundResponse,
-    ApiOkResponse,
     ApiOperation,
+    ApiParam,
+    ApiResponse,
     ApiTags,
-    ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-import { VoyageTeamEntity } from "./entities/team.entity";
 import {
-    VoyageTeamMemberEntity,
-    VoyageTeamMemberUpdateEntity,
-} from "./entities/team-member.entity";
+    PublicVoyageTeamWithUserResponse,
+    VoyageTeamMemberUpdateResponse,
+    VoyageTeamResponse,
+} from "./teams.response";
+import {
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -32,11 +36,12 @@ export class TeamsController {
 
     @ApiOperation({
         summary: "Gets all voyage teams.",
+        description: "For development/admin purpose",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description: "Successfully gets all voyage teams",
-        type: VoyageTeamEntity,
+        type: VoyageTeamResponse,
         isArray: true,
     })
     @Get()
@@ -48,65 +53,74 @@ export class TeamsController {
         summary: "Gets all teams for a voyage given a voyageId (int).",
     })
     // Will need to be fixed to be RESTful
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description: "Successfully gets all the teams for a given voyage.",
-        type: VoyageTeamEntity,
+        type: PublicVoyageTeamWithUserResponse,
         isArray: true,
     })
-    @ApiNotFoundResponse({
-        status: 404,
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
         description: "Voyage with given ID does not exist.",
+        type: NotFoundErrorResponse,
     })
-    @Get("voyages/:id")
-    findTeamsByVoyageId(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findTeamsByVoyageId(id);
+    @ApiParam({
+        name: "voyageId",
+        description: "voyage id from the voyage table",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Get("voyages/:voyageId")
+    findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
+        return this.teamsService.findTeamsByVoyageId(voyageId);
     }
 
     @ApiOperation({
         summary: "Gets one team given a teamId (int).",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description: "Successfully gets all the teams for a given voyage.",
-        type: VoyageTeamEntity,
-        isArray: false,
+        type: PublicVoyageTeamWithUserResponse,
     })
-    @ApiNotFoundResponse({
-        status: 404,
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
         description: "Voyage team with given ID does not exist.",
+        type: NotFoundErrorResponse,
     })
-    @Get(":id")
-    findTeamById(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findTeamById(id);
-    }
-
-    @ApiOperation({
-        summary: "Gets all team members for a team given a teamId (int).",
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
-    @ApiOkResponse({
-        status: 200,
-        description: "Successfully gets all members of a voyage team.",
-        type: VoyageTeamMemberEntity,
-        isArray: true,
-    })
-    @Get(":id/members")
-    findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findTeamMembersByTeamId(id);
+    @Get(":teamId")
+    findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
+        return this.teamsService.findTeamById(teamId);
     }
 
     @ApiOperation({
         summary:
             "Updates team member hours per a sprint given a teamId (int) and userId (int).",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description: "successfully update users sprints per hour",
-        type: VoyageTeamMemberUpdateEntity,
+        type: VoyageTeamMemberUpdateResponse,
     })
-    @ApiUnauthorizedResponse({
-        status: 401,
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
         description: "user is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
