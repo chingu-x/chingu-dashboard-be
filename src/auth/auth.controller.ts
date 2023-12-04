@@ -27,7 +27,7 @@ export class AuthController {
         summary: "When a user logs in, creates jwt token.",
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description:
             "User successfully authenticated, jwt token is saved in cookies",
         type: LoginResponse,
@@ -58,7 +58,7 @@ export class AuthController {
                 httpOnly: true,
                 secure: true,
             });
-            res.status(HttpStatus.OK).send({ message: "Login Success" });
+            res.status(HttpStatus.CREATED).send({ message: "Login Success" });
         } catch (e) {
             throw new UnauthorizedException("Login Error");
         }
