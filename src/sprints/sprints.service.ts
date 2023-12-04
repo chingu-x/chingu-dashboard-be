@@ -103,6 +103,9 @@ export class SprintsService {
             select: {
                 id: true,
                 number: true,
+                soloProjectDeadline: true,
+                certificateIssueDate: true,
+                showcasePublishDate: true,
                 startDate: true,
                 endDate: true,
                 sprints: {
@@ -157,6 +160,7 @@ export class SprintsService {
                 sprint: {
                     select: {
                         id: true,
+                        number: true,
                         startDate: true,
                         endDate: true,
                     },

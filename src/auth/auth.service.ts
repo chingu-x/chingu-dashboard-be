@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -13,7 +13,10 @@ export class AuthService {
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.usersService.findUserByEmail(email);
         if (!user) {
-            throw new NotFoundException(`User with email ${email} not found.`);
+            // no user found, but not revealing that user account does not exist in the server
+            throw new BadRequestException(
+                `Login failed. Invalid email and/or password.`,
+            );
         }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (user && isPasswordMatch) {

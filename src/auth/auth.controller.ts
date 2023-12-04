@@ -1,16 +1,22 @@
 import {
     Body,
     Controller,
+    HttpStatus,
     Post,
     Request,
     Res,
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
+import {
+    BadRequestErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
+import { LoginResponse, LogoutResponse } from "./auth.response";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -19,6 +25,24 @@ export class AuthController {
 
     @ApiOperation({
         summary: "When a user logs in, creates jwt token.",
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description:
+            "User successfully authenticated, jwt token is saved in cookies",
+        type: LoginResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description:
+            "Account does not exist. A more generic error message " +
+            "so users can't tell if the account exist or not due to privacy reason",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Login fails. Usually wrong password",
+        type: UnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
     @Post("login")
@@ -30,13 +54,12 @@ export class AuthController {
         try {
             const access_token = await this.authService.login(req.user);
             res.cookie("access_token", access_token.access_token, {
-                expires: new Date(Date.now() + 60 * 60 * 7 * 24),
+                maxAge: 1000 * 60 * 60 * 24 * 7,
                 httpOnly: true,
                 secure: true,
             });
-            return access_token;
+            res.status(HttpStatus.CREATED).send({ message: "Login Success" });
         } catch (e) {
-            console.log(e);
             throw new UnauthorizedException("Login Error");
         }
     }
@@ -44,9 +67,16 @@ export class AuthController {
     @ApiOperation({
         summary: "When a user logs out, jwt token is cleared.",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description:
+            "User successfully logs out, jwt token in cookies is removed.",
+        type: LogoutResponse,
+    })
     @Post("logout")
     async logout(@Res({ passthrough: true }) res) {
-        res.clearCookie("access_token");
-        return {};
+        res.status(HttpStatus.OK)
+            .clearCookie("access_token")
+            .json({ message: "Logout Success" });
     }
 }

@@ -1,11 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { VoyageTeam } from "@prisma/client";
 
-export class Team {
+export class VoyageTeamEntity implements VoyageTeam {
     @ApiProperty()
     id: number;
 
     @ApiProperty()
     voyageId: number;
+
+    @ApiProperty()
+    name: string;
 
     @ApiProperty()
     statusId: number;
@@ -30,4 +34,7 @@ export class Team {
 
     @ApiProperty()
     createdAt: Date;
+
+    @ApiProperty()
+    updatedAt: Date;
 }
