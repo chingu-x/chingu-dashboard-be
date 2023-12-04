@@ -276,6 +276,7 @@ model ProjectFeature {
   category          FeatureCategory?  @relation(fields: [featureCategoryId], references: [id], onDelete: SetNull)
   featureCategoryId Int?
   description       String
+  order             Int?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
