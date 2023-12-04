@@ -16,6 +16,7 @@ import {
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
+import { UpdateFeatureOrderDto } from "./dto/update-feature-order.dto";
 import {
     ApiBearerAuth,
     ApiCreatedResponse,
@@ -105,6 +106,25 @@ export class FeaturesController {
         } else {
             throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
         }
+    }
+
+    @ApiOperation({
+        summary:
+            "Updates the order of features within a category given a featureId (int) and order (int).",
+    })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Patch("/features/:featureId/reorder")
+    async updateFeatureOrder(
+        @Request() req,
+        @Param("featureId", ParseIntPipe) featureId: number,
+        @Body() updateOrderDto: UpdateFeatureOrderDto,
+    ) {
+        return this.featuresService.updateFeatureOrder(
+            req,
+            featureId,
+            updateOrderDto,
+        );
     }
 
     @ApiOperation({
