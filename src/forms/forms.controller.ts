@@ -1,12 +1,14 @@
-import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
-import { FormsService } from "./forms.service";
 import {
-    ApiNotFoundResponse,
-    ApiOkResponse,
-    ApiOperation,
-    ApiParam,
-    ApiTags,
-} from "@nestjs/swagger";
+    Controller,
+    Get,
+    HttpStatus,
+    Param,
+    ParseIntPipe,
+} from "@nestjs/common";
+import { FormsService } from "./forms.service";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { FormResponse } from "./forms.response";
+import { NotFoundErrorResponse } from "../global/responses/errors";
 
 @Controller("forms")
 @ApiTags("Forms")
@@ -20,9 +22,11 @@ export class FormsController {
             "Returns all forms details with questions. <br>" +
             "This is currently for development purpose, or admin in future",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description: "Successfully gets the forms from the database",
+        type: FormResponse,
+        isArray: true,
     })
     getAllForms() {
         return this.formsService.getAllForms();
@@ -35,14 +39,16 @@ export class FormsController {
             "Returns form details of a form, with questions. <br>" +
             "This is currently for development purpose, or admin in future",
     })
-    @ApiOkResponse({
-        status: 200,
+    @ApiResponse({
+        status: HttpStatus.OK,
         description:
             "Successfully gets the form (with a given formId) from the database",
+        type: FormResponse,
     })
-    @ApiNotFoundResponse({
-        status: 404,
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
         description: "Invalid Form ID (FormId does not exist).",
+        type: NotFoundErrorResponse,
     })
     @ApiParam({
         name: "formId",

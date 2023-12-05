@@ -4,87 +4,48 @@ const prisma = new PrismaClient();
 
 export const populateSprints = async () => {
     const voyages = await prisma.voyage.findMany({});
-    await prisma.voyage.update({
-        where: {
-            id: voyages[0].id,
-        },
-        data: {
-            sprints: {
-                create: [
-                    {
-                        number: 1,
-                        startDate: voyages[0].startDate,
-                        endDate: addDays(voyages[0].startDate, 6),
-                    },
-                    {
-                        number: 2,
-                        startDate: addDays(voyages[0].startDate, 7),
-                        endDate: addDays(voyages[0].startDate, 13),
-                    },
-                    {
-                        number: 3,
-                        startDate: addDays(voyages[0].startDate, 14),
-                        endDate: addDays(voyages[0].startDate, 20),
-                    },
-                    {
-                        number: 4,
-                        startDate: addDays(voyages[0].startDate, 21),
-                        endDate: addDays(voyages[0].startDate, 27),
-                    },
-                    {
-                        number: 5,
-                        startDate: addDays(voyages[0].startDate, 28),
-                        endDate: addDays(voyages[0].startDate, 34),
-                    },
-                    {
-                        number: 6,
-                        startDate: addDays(voyages[0].startDate, 35),
-                        endDate: addDays(voyages[0].startDate, 41),
-                    },
-                ],
-            },
-        },
-    });
 
-    await prisma.voyage.update({
-        where: {
-            id: voyages[1].id,
-        },
-        data: {
-            sprints: {
-                create: [
-                    {
-                        number: 1,
-                        startDate: voyages[1].startDate,
-                        endDate: addDays(voyages[1].startDate, 6),
-                    },
-                    {
-                        number: 2,
-                        startDate: addDays(voyages[1].startDate, 7),
-                        endDate: addDays(voyages[1].startDate, 13),
-                    },
-                    {
-                        number: 3,
-                        startDate: addDays(voyages[1].startDate, 14),
-                        endDate: addDays(voyages[1].startDate, 20),
-                    },
-                    {
-                        number: 4,
-                        startDate: addDays(voyages[1].startDate, 21),
-                        endDate: addDays(voyages[1].startDate, 27),
-                    },
-                    {
-                        number: 5,
-                        startDate: addDays(voyages[1].startDate, 28),
-                        endDate: addDays(voyages[1].startDate, 34),
-                    },
-                    {
-                        number: 6,
-                        startDate: addDays(voyages[1].startDate, 35),
-                        endDate: addDays(voyages[1].startDate, 41),
-                    },
-                ],
+    for (const voyage of voyages) {
+        await prisma.voyage.update({
+            where: {
+                id: voyage.id,
             },
-        },
-    });
+            data: {
+                sprints: {
+                    create: [
+                        {
+                            number: 1,
+                            startDate: voyage.startDate,
+                            endDate: addDays(voyage.startDate, 6),
+                        },
+                        {
+                            number: 2,
+                            startDate: addDays(voyage.startDate, 7),
+                            endDate: addDays(voyage.startDate, 13),
+                        },
+                        {
+                            number: 3,
+                            startDate: addDays(voyage.startDate, 14),
+                            endDate: addDays(voyage.startDate, 20),
+                        },
+                        {
+                            number: 4,
+                            startDate: addDays(voyage.startDate, 21),
+                            endDate: addDays(voyage.startDate, 27),
+                        },
+                        {
+                            number: 5,
+                            startDate: addDays(voyage.startDate, 28),
+                            endDate: addDays(voyage.startDate, 34),
+                        },
+                        {
+                            number: 6,
+                            startDate: addDays(voyage.startDate, 35),
+                            endDate: addDays(voyage.startDate, 41),
+                        },
+                    ],
+                },
+            },
+        });
+    }
 };

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // VoyageTeams, VoyageMembers, Tech Stack, sprints
-export const populateTablesWithRelations = async () => {
+export const populateTeamResourcesAndProjectIdeas = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 
     await prisma.voyageTeamMember.update({

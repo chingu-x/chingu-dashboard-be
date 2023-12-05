@@ -103,6 +103,9 @@ export class SprintsService {
             select: {
                 id: true,
                 number: true,
+                soloProjectDeadline: true,
+                certificateIssueDate: true,
+                showcasePublishDate: true,
                 startDate: true,
                 endDate: true,
                 sprints: {
@@ -157,6 +160,7 @@ export class SprintsService {
                 sprint: {
                     select: {
                         id: true,
+                        number: true,
                         startDate: true,
                         endDate: true,
                     },
@@ -182,22 +186,26 @@ export class SprintsService {
                                 title: true,
                             },
                         },
-                        responses: {
+                        responseGroup: {
                             select: {
-                                question: {
+                                responses: {
                                     select: {
-                                        id: true,
+                                        question: {
+                                            select: {
+                                                id: true,
+                                                text: true,
+                                                description: true,
+                                                answerRequired: true,
+                                            },
+                                        },
                                         text: true,
-                                        description: true,
-                                        answerRequired: true,
-                                    },
-                                },
-                                text: true,
-                                numeric: true,
-                                boolean: true,
-                                optionChoice: {
-                                    select: {
-                                        text: true,
+                                        numeric: true,
+                                        boolean: true,
+                                        optionChoice: {
+                                            select: {
+                                                text: true,
+                                            },
+                                        },
                                     },
                                 },
                             },
@@ -344,12 +352,25 @@ export class SprintsService {
     async addMeetingFormResponse(meetingId: number, formId: number) {
         if (await this.isMeetingForm(formId)) {
             try {
-                return await this.prisma.formResponseMeeting.create({
-                    data: {
-                        formId,
-                        meetingId,
-                    },
-                });
+                const formResponseMeeting =
+                    await this.prisma.formResponseMeeting.create({
+                        data: {
+                            formId,
+                            meetingId,
+                        },
+                    });
+                const updatedFormResponse =
+                    await this.prisma.formResponseMeeting.update({
+                        where: {
+                            id: formResponseMeeting.id,
+                        },
+                        data: {
+                            responseGroup: {
+                                create: {},
+                            },
+                        },
+                    });
+                return updatedFormResponse;
             } catch (e) {
                 console.log(e);
                 if (e.code === "P2002") {
@@ -442,7 +463,8 @@ export class SprintsService {
                         },
                         responses: {
                             where: {
-                                formResponseMeetingId: formResponseMeeting.id,
+                                responseGroupId:
+                                    formResponseMeeting.responseGroupId,
                             },
                             select: {
                                 optionChoice: true,
@@ -474,6 +496,7 @@ export class SprintsService {
                 },
                 select: {
                     id: true,
+                    responseGroupId: true,
                 },
             });
 
@@ -511,14 +534,15 @@ export class SprintsService {
                 const { questionId, ...data } = response;
                 return this.prisma.response.upsert({
                     where: {
-                        questionResponseMeeting: {
-                            formResponseMeetingId: formResponseMeeting.id,
+                        questionResponseGroup: {
+                            responseGroupId:
+                                formResponseMeeting.responseGroupId,
                             questionId: response.questionId,
                         },
                     },
                     update: data,
                     create: {
-                        formResponseMeetingId: formResponseMeeting.id,
+                        responseGroupId: formResponseMeeting.responseGroupId,
                         ...response,
                     },
                 });

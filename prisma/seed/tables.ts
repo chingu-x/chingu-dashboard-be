@@ -15,13 +15,9 @@ import InputTypes from "./data/input-types";
 import OptionGroups from "./data/option-groups";
 
 const populateTable = async (tableName: string, data) => {
-    await Promise.all(
-        data.map((row) =>
-            prisma[tableName].create({
-                data: row,
-            }),
-        ),
-    );
+    await prisma[tableName].createMany({
+        data,
+    });
     console.log(`${tableName} table populated.`);
 };
 
