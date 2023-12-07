@@ -25,6 +25,12 @@ export const publicVoyageTeamUserSelect = {
             member: {
                 select: publicUserDetailSelect,
             },
+            hrPerSprint: true,
+            voyageRole: {
+                select: {
+                    name: true,
+                },
+            },
         },
     },
 };
