@@ -49,9 +49,20 @@ export class VoyageTeamResponse {
     updatedAt: Date;
 }
 
+class VoyageRole {
+    @ApiProperty({ example: "Developer" })
+    name: string;
+}
+
 class Member {
     @ApiProperty()
     member: PublicUserResponse;
+
+    @ApiProperty({ example: 20 })
+    hrPerSprint: number;
+
+    @ApiProperty()
+    voyageRole: VoyageRole;
 }
 
 export class PublicVoyageTeamWithUserResponse extends VoyageTeamResponse {
