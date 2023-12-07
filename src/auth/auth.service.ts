@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
@@ -66,14 +70,29 @@ export class AuthService {
                 console.log(
                     `User with email ${signupDto.email} already registered`,
                 );
-                // TODO:
-                // if user account is not activated - send another email (remove old token)
-                // if user account is activated - send them and email and tell them to use the reset password form
+                const user = await this.prisma.user.findUnique({
+                    where: { email: signupDto.email },
+                });
+                // if user account is not activated - send another email (replace old token)
+                if (user.emailVerified) {
+                    await this.prisma.emailVerificationToken.update({
+                        where: {
+                            userId: user.id,
+                        },
+                        data: {
+                            token,
+                        },
+                    });
+                    await sendSignupVerificationEmail(signupDto.email, token);
+                } else {
+                    // TODO:
+                    // if user account is activated - send them and email and tell them to use the reset password form
+                }
             } else {
                 console.log(`Other signup errors: ${e}`);
             }
         }
-        return token;
+        return;
     }
 
     async resendEmail(resendEmailDto: ResendEmailDto) {

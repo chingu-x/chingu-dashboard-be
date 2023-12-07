@@ -66,6 +66,11 @@ export class VoyageUserEntity implements User {
     id: string;
 
     @ApiProperty()
+    email: string;
+
+    emailVerified: boolean;
+
+    @ApiProperty()
     firstName: string;
 
     @ApiProperty()
@@ -85,9 +90,6 @@ export class VoyageUserEntity implements User {
 
     @ApiProperty()
     linkedinId: string;
-
-    @ApiProperty()
-    email: string;
 
     @Exclude()
     password: string;

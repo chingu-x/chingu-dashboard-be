@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    HttpCode,
     HttpStatus,
     Post,
     Request,
@@ -17,7 +18,7 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import {
     BadRequestErrorResponse,
-    UnauthorizedErrorResponse,
+    LoginUnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { LoginResponse, LogoutResponse } from "./auth.response";
 
@@ -31,6 +32,12 @@ export class AuthController {
         description:
             "Please use a 'real' email if you want to receive a verification email.",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description:
+            "Signup Success. User created, and verification email sent.",
+    })
+    @HttpCode(HttpStatus.OK)
     @Post("signup")
     async signup(@Body() signupDto: SignupDto) {
         return this.authService.signup(signupDto);
@@ -74,7 +81,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description: "Login fails. Usually wrong password",
-        type: UnauthorizedErrorResponse,
+        type: LoginUnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
     @Post("login")
@@ -92,7 +99,9 @@ export class AuthController {
             });
             res.status(HttpStatus.CREATED).send({ message: "Login Success" });
         } catch (e) {
-            throw new UnauthorizedException("Login Error");
+            throw new UnauthorizedException(
+                "Signup failed. Invalid email and/or password. Please try again.",
+            );
         }
     }
 
