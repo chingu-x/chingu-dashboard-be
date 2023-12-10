@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     NotFoundException,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -21,9 +22,16 @@ export class AuthService {
         private prisma: PrismaService,
     ) {}
 
-    private generateToken = () => crypto.randomBytes(64).toString("base64url");
+    private generateToken = (userId: string) => {
+        const randomString = crypto.randomBytes(64).toString("base64url");
+        const payload = {
+            sub: randomString,
+            userId,
+        };
+        return this.jwtService.sign(payload, { expiresIn: "1h" });
+    };
 
-    // Checks user email/username match database
+    // Checks user email/username match database - for passport
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.usersService.findUserByEmail(email);
         if (!user) {
@@ -48,22 +56,24 @@ export class AuthService {
     }
 
     async signup(signupDto: SignupDto) {
-        const token = this.generateToken();
-        console.log(token);
         try {
-            await this.prisma.user.create({
+            const user = await this.prisma.user.create({
                 data: {
                     email: signupDto.email,
                     password: await hashPassword(signupDto.password),
-                    emailVerificationToken: {
-                        create: {
-                            token: await hashPassword(token),
-                        },
-                    },
                 },
             });
+
+            const token = this.generateToken(user.id);
+            await this.prisma.emailVerificationToken.create({
+                data: {
+                    userId: user.id,
+                    token,
+                },
+            });
+            console.log(token);
             // TODO: uncomment this
-            await sendSignupVerificationEmail(signupDto.email, token);
+            // await sendSignupVerificationEmail(signupDto.email, token);
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
@@ -73,20 +83,29 @@ export class AuthService {
                 const user = await this.prisma.user.findUnique({
                     where: { email: signupDto.email },
                 });
+                const token = this.generateToken(user.id);
                 // if user account is not activated - send another email (replace old token)
-                if (user.emailVerified) {
-                    await this.prisma.emailVerificationToken.update({
+                if (!user.emailVerified) {
+                    await this.prisma.emailVerificationToken.upsert({
                         where: {
                             userId: user.id,
                         },
-                        data: {
+                        update: {
+                            token,
+                        },
+                        create: {
+                            userId: user.id,
                             token,
                         },
                     });
+                    console.log(
+                        `User account ${signupDto.email} is not verified, resending verification email.`,
+                    );
                     await sendSignupVerificationEmail(signupDto.email, token);
                 } else {
                     // TODO:
                     // if user account is activated - send them and email and tell them to use the reset password form
+                    console.log(`Email ${signupDto.email} already verified.`);
                 }
             } else {
                 console.log(`Other signup errors: ${e}`);
@@ -96,11 +115,11 @@ export class AuthService {
     }
 
     async resendEmail(resendEmailDto: ResendEmailDto) {
-        const token = this.generateToken();
-        console.log(token);
         const user = await this.usersService.findUserByEmail(
             resendEmailDto.email,
         );
+        const token = this.generateToken(user.id);
+        console.log(token);
         if (!user) {
             // user does not exist, has not signed up previously
             console.log("User does not exist");
@@ -115,10 +134,10 @@ export class AuthService {
                 },
                 create: {
                     userId: user.id,
-                    token: await hashPassword(token),
+                    token,
                 },
                 update: {
-                    token: await hashPassword(token),
+                    token,
                 },
             });
             // TODO: uncomment this
@@ -127,57 +146,72 @@ export class AuthService {
     }
 
     async verifyEmail(verifyEmailDto: VerifyEmailDto) {
-        const user = await this.usersService.findUserByEmail(
-            verifyEmailDto.email,
-        );
-        if (!user) {
-            // user does not exist, has not signed up previously
-            console.log("User does not exist");
-        } else {
-            // TODO: check if token is "Expired" by checking the updateAt time
-            if (user.emailVerified) {
-                // user email has already verified, tell user to reset password if they have forgotten their password
-                console.log("Email already verified");
+        try {
+            const payload = await this.jwtService.verifyAsync(
+                verifyEmailDto.token,
+            );
+
+            if (!payload.userId) {
+                throw new UnauthorizedException("Invalid token");
+            }
+            const user = await this.usersService.findUserById(payload.userId);
+            if (!user) {
+                // user does not exist, has not signed up previously,
+                // they should not have gotten an email with the token
+                console.log(`User ${payload.userId} does not exist`);
+                throw new UnauthorizedException("User does not exist.");
             } else {
-                // user not verified - verify it, and delete the token
-                const tokenInDb =
-                    await this.prisma.emailVerificationToken.findUnique({
-                        where: {
-                            userId: user.id,
-                        },
-                    });
-                if (!tokenInDb) {
-                    console.log("token expired"); // maybe send another one
-                    // email them or frontend will display saying token expired
-                    // with a resend verification email option
+                // TODO: 401
+                console.log("user exists");
+                if (payload.exp * 1000 - Date.now() <= 0) {
+                    throw new UnauthorizedException("Token has expired.");
+                    // TODO: delete the token
+                } else if (user.emailVerified) {
+                    // user email has already verified, just return the default status
+                    console.log(`Email ${user.email} already verified`);
                 } else {
-                    const isTokenMatched = await comparePassword(
-                        verifyEmailDto.token,
-                        tokenInDb.token,
-                    );
-                    console.log("isTokenMatched", isTokenMatched);
-                    if (!isTokenMatched) {
-                        console.log("Token mismatched");
+                    // user not verified - verify it, and delete the token
+                    const tokenInDb =
+                        await this.prisma.emailVerificationToken.findUnique({
+                            where: {
+                                userId: user.id,
+                            },
+                        });
+                    if (!tokenInDb) {
+                        console.log("token expired"); // maybe send another one
+                        // email them or frontend will display saying token expired
+                        // with a resend verification email option
                     } else {
-                        // set user emailVerified status to true, and delete the token
-                        await this.prisma.$transaction([
-                            this.prisma.user.update({
-                                where: {
-                                    email: verifyEmailDto.email,
-                                },
-                                data: {
-                                    emailVerified: true,
-                                },
-                            }),
-                            this.prisma.emailVerificationToken.delete({
-                                where: {
-                                    userId: user.id,
-                                },
-                            }),
-                        ]);
-                        console.log("Email verified");
+                        const isTokenMatched =
+                            verifyEmailDto.token === tokenInDb.token;
+                        console.log("isTokenMatched", isTokenMatched);
+                        if (!isTokenMatched) {
+                            console.log("Token mismatched");
+                        } else {
+                            // set user emailVerified status to true, and delete the token
+                            await this.prisma.$transaction([
+                                this.prisma.user.update({
+                                    where: {
+                                        email: user.email,
+                                    },
+                                    data: {
+                                        emailVerified: true,
+                                    },
+                                }),
+                                this.prisma.emailVerificationToken.delete({
+                                    where: {
+                                        userId: user.id,
+                                    },
+                                }),
+                            ]);
+                            console.log("Email verified");
+                        }
                     }
                 }
+            }
+        } catch (e) {
+            if (e.name === "JsonWebTokenError") {
+                throw new UnauthorizedException("Malformed Token");
             }
         }
     }
@@ -201,7 +235,7 @@ export class AuthService {
         if (token) {
             //delete
         } else {
-            const resetToken = this.generateToken();
+            const resetToken = this.generateToken(user.id);
             const hash = await hashPassword(resetToken);
             console.log(hash); // just to get rid of lint error so I can push to a remote branch
             // await this.prisma.resetToken.create({});

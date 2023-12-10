@@ -19,6 +19,7 @@ import { VerifyEmailDto } from "./dto/verify-email.dto";
 import {
     BadRequestErrorResponse,
     LoginUnauthorizedErrorResponse,
+    UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { LoginResponse, LogoutResponse } from "./auth.response";
 
@@ -53,9 +54,22 @@ export class AuthController {
         return this.authService.resendEmail(resendEmailDto);
     }
 
+    @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: "Verifies the users email",
         description: "Using a token sent to their email when sign up",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Email verified successfully",
+        //TODO: type:
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Token error - e.g. malformed token, or expired token. <br> " +
+            "Specific errors will be returned in <code>res.message</code>",
+        type: UnauthorizedErrorResponse,
     })
     @Post("verify-email")
     async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {

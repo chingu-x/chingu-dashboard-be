@@ -21,7 +21,7 @@ export const sendSignupVerificationEmail = async (
                 TemplateID: templateIds.verificationEmail,
                 TemplateLanguage: true,
                 Variables: {
-                    verificationLink: `${process.env.FRONTEND_URL}/users/verify?email=${email}&token=${token}`,
+                    verificationLink: `${process.env.FRONTEND_URL}/users/verify?token=${token}`,
                 },
             },
         ],
