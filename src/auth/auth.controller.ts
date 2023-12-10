@@ -22,6 +22,7 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { LoginResponse, LogoutResponse } from "./auth.response";
+import { GenericSuccessResponse } from "../global/responses/shared";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -62,7 +63,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Email verified successfully",
-        //TODO: type:
+        type: GenericSuccessResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,

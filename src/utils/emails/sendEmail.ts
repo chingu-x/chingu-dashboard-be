@@ -27,3 +27,22 @@ export const sendSignupVerificationEmail = async (
         ],
     });
 };
+
+export const sendAttemptedRegistrationEmail = async (email: string) => {
+    await mailjet.post("send", { version: "v3.1" }).request({
+        Messages: [
+            {
+                To: [
+                    {
+                        Email: email,
+                    },
+                ],
+                TemplateID: templateIds.attemptRegistrationEmail,
+                TemplateLanguage: true,
+                Variables: {
+                    userEmail: email,
+                },
+            },
+        ],
+    });
+};

@@ -10,7 +10,10 @@ import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
 import { comparePassword, hashPassword } from "../utils/auth";
-import { sendSignupVerificationEmail } from "../utils/emails/sendEmail";
+import {
+    sendAttemptedRegistrationEmail,
+    // sendSignupVerificationEmail,
+} from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 
@@ -31,7 +34,10 @@ export class AuthService {
         return this.jwtService.sign(payload, { expiresIn: "1h" });
     };
 
-    // Checks user email/username match database - for passport
+    // TODO: check if anything else needs to be in a transaction
+    /**
+     * Checks user email/username match database - for passport
+     */
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.usersService.findUserByEmail(email);
         if (!user) {
@@ -71,8 +77,8 @@ export class AuthService {
                     token,
                 },
             });
+            // TODO: remove and uncomment send email below
             console.log(token);
-            // TODO: uncomment this
             // await sendSignupVerificationEmail(signupDto.email, token);
         } catch (e) {
             if (e.code === "P2002") {
@@ -83,9 +89,9 @@ export class AuthService {
                 const user = await this.prisma.user.findUnique({
                     where: { email: signupDto.email },
                 });
-                const token = this.generateToken(user.id);
                 // if user account is not activated - send another email (replace old token)
                 if (!user.emailVerified) {
+                    const token = this.generateToken(user.id);
                     await this.prisma.emailVerificationToken.upsert({
                         where: {
                             userId: user.id,
@@ -101,11 +107,14 @@ export class AuthService {
                     console.log(
                         `User account ${signupDto.email} is not verified, resending verification email.`,
                     );
-                    await sendSignupVerificationEmail(signupDto.email, token);
+                    // TODO: uncomment below - working
+                    // await sendSignupVerificationEmail(signupDto.email, token);
                 } else {
                     // TODO:
-                    // if user account is activated - send them and email and tell them to use the reset password form
+                    // if user account is activated -
+                    // send them and email and tell them to use the reset password form
                     console.log(`Email ${signupDto.email} already verified.`);
+                    await sendAttemptedRegistrationEmail(signupDto.email);
                 }
             } else {
                 console.log(`Other signup errors: ${e}`);
@@ -150,7 +159,6 @@ export class AuthService {
             const payload = await this.jwtService.verifyAsync(
                 verifyEmailDto.token,
             );
-
             if (!payload.userId) {
                 throw new UnauthorizedException("Invalid token");
             }
@@ -161,12 +169,7 @@ export class AuthService {
                 console.log(`User ${payload.userId} does not exist`);
                 throw new UnauthorizedException("User does not exist.");
             } else {
-                // TODO: 401
-                console.log("user exists");
-                if (payload.exp * 1000 - Date.now() <= 0) {
-                    throw new UnauthorizedException("Token has expired.");
-                    // TODO: delete the token
-                } else if (user.emailVerified) {
+                if (user.emailVerified) {
                     // user email has already verified, just return the default status
                     console.log(`Email ${user.email} already verified`);
                 } else {
@@ -182,11 +185,8 @@ export class AuthService {
                         // email them or frontend will display saying token expired
                         // with a resend verification email option
                     } else {
-                        const isTokenMatched =
-                            verifyEmailDto.token === tokenInDb.token;
-                        console.log("isTokenMatched", isTokenMatched);
-                        if (!isTokenMatched) {
-                            console.log("Token mismatched");
+                        if (verifyEmailDto.token !== tokenInDb.token) {
+                            throw new UnauthorizedException("Token mismatch");
                         } else {
                             // set user emailVerified status to true, and delete the token
                             await this.prisma.$transaction([
@@ -204,7 +204,10 @@ export class AuthService {
                                     },
                                 }),
                             ]);
-                            console.log("Email verified");
+                            return {
+                                message: "Email verified",
+                                statusCode: 200,
+                            };
                         }
                     }
                 }
@@ -212,6 +215,11 @@ export class AuthService {
         } catch (e) {
             if (e.name === "JsonWebTokenError") {
                 throw new UnauthorizedException("Malformed Token");
+            } else if (e.name === "TokenExpiredError") {
+                throw new UnauthorizedException("Token has expired.");
+            } else {
+                console.log(`Email verification error: ${e.name}`);
+                throw e;
             }
         }
     }

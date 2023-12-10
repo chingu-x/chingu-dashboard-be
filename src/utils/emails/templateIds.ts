@@ -1,5 +1,5 @@
 export const templateIds = {
     verificationEmail: 5340132,
-    accountExistsEmail: 0,
+    attemptRegistrationEmail: 5403086,
     resetPasswordEmail: 0,
 };
