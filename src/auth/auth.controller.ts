@@ -50,12 +50,17 @@ export class AuthController {
         description:
             "Please use a 'real' email if you want to receive a verification email.",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Email successfully re-sent",
+        type: GenericSuccessResponse,
+    })
+    @HttpCode(HttpStatus.OK)
     @Post("resend-email")
     async resendVerificationEmail(@Body() resendEmailDto: ResendEmailDto) {
         return this.authService.resendEmail(resendEmailDto);
     }
 
-    @HttpCode(HttpStatus.OK)
     @ApiOperation({
         summary: "Verifies the users email",
         description: "Using a token sent to their email when sign up",
@@ -72,6 +77,7 @@ export class AuthController {
             "Specific errors will be returned in <code>res.message</code>",
         type: UnauthorizedErrorResponse,
     })
+    @HttpCode(HttpStatus.OK)
     @Post("verify-email")
     async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
         return this.authService.verifyEmail(verifyEmailDto);

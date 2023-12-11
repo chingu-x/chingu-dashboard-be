@@ -63,20 +63,22 @@ export class AuthService {
 
     async signup(signupDto: SignupDto) {
         try {
-            const user = await this.prisma.user.create({
-                data: {
-                    email: signupDto.email,
-                    password: await hashPassword(signupDto.password),
-                },
+            this.prisma.$transaction(async (tx) => {
+                const user = await tx.user.create({
+                    data: {
+                        email: signupDto.email,
+                        password: await hashPassword(signupDto.password),
+                    },
+                });
+                const token = this.generateToken(user.id);
+                await tx.emailVerificationToken.create({
+                    data: {
+                        userId: user.id,
+                        token,
+                    },
+                });
+                await sendSignupVerificationEmail(signupDto.email, token);
             });
-            const token = this.generateToken(user.id);
-            await this.prisma.emailVerificationToken.create({
-                data: {
-                    userId: user.id,
-                    token,
-                },
-            });
-            await sendSignupVerificationEmail(signupDto.email, token);
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
@@ -118,20 +120,27 @@ export class AuthService {
         return;
     }
 
+    /**
+     *
+     * Current assumption is, based on the auth flow on figma, frontend will only show the link if
+     * 1. user is signed up, but
+     * 2. not verified
+     */
     async resendEmail(resendEmailDto: ResendEmailDto) {
         const user = await this.usersService.findUserByEmail(
             resendEmailDto.email,
         );
-        const token = this.generateToken(user.id);
-        console.log(token);
         if (!user) {
             // user does not exist, has not signed up previously
-            console.log("User does not exist");
+            // should not happen under the assumption
+            console.log("[Auth/Resend-email]: User does not exist");
         } else if (user.emailVerified) {
-            // user email has already verified, tell user to reset password if they have forgotten their password
-            console.log("Email already verified");
+            // user email has already verified
+            // should not happen under the assumption
+            console.log("[Auth/Resend-email]: Email already verified");
         } else {
             // user not verified - resend email
+            const token = this.generateToken(user.id);
             await this.prisma.emailVerificationToken.upsert({
                 where: {
                     userId: user.id,
@@ -145,6 +154,10 @@ export class AuthService {
                 },
             });
             await sendSignupVerificationEmail(resendEmailDto.email, token);
+            return {
+                message: "Email successfully re-sent",
+                statusCode: 200,
+            };
         }
     }
 
