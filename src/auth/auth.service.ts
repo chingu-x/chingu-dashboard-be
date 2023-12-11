@@ -12,7 +12,7 @@ import { SignupDto } from "./dto/signup.dto";
 import { comparePassword, hashPassword } from "../utils/auth";
 import {
     sendAttemptedRegistrationEmail,
-    // sendSignupVerificationEmail,
+    sendSignupVerificationEmail,
 } from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
@@ -69,7 +69,6 @@ export class AuthService {
                     password: await hashPassword(signupDto.password),
                 },
             });
-
             const token = this.generateToken(user.id);
             await this.prisma.emailVerificationToken.create({
                 data: {
@@ -77,14 +76,12 @@ export class AuthService {
                     token,
                 },
             });
-            // TODO: remove and uncomment send email below
-            console.log(token);
-            // await sendSignupVerificationEmail(signupDto.email, token);
+            await sendSignupVerificationEmail(signupDto.email, token);
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
                 console.log(
-                    `User with email ${signupDto.email} already registered`,
+                    `[Auth/Signup]: User with email ${signupDto.email} already registered`,
                 );
                 const user = await this.prisma.user.findUnique({
                     where: { email: signupDto.email },
@@ -105,19 +102,17 @@ export class AuthService {
                         },
                     });
                     console.log(
-                        `User account ${signupDto.email} is not verified, resending verification email.`,
+                        `[Auth/Signup]: User account ${signupDto.email} is not verified, resending verification email.`,
                     );
-                    // TODO: uncomment below - working
-                    // await sendSignupVerificationEmail(signupDto.email, token);
+                    await sendSignupVerificationEmail(signupDto.email, token);
                 } else {
-                    // TODO:
-                    // if user account is activated -
-                    // send them and email and tell them to use the reset password form
-                    console.log(`Email ${signupDto.email} already verified.`);
+                    console.log(
+                        `[Auth/Signup]: Email ${signupDto.email} already verified. Sending "attempt registration" email.`,
+                    );
                     await sendAttemptedRegistrationEmail(signupDto.email);
                 }
             } else {
-                console.log(`Other signup errors: ${e}`);
+                console.log(`[Auth/Signup]: Other signup errors: ${e}`);
             }
         }
         return;
@@ -149,8 +144,7 @@ export class AuthService {
                     token,
                 },
             });
-            // TODO: uncomment this
-            // await sendSignupVerificationEmail(resendEmailDto.email, token);
+            await sendSignupVerificationEmail(resendEmailDto.email, token);
         }
     }
 
@@ -166,12 +160,16 @@ export class AuthService {
             if (!user) {
                 // user does not exist, has not signed up previously,
                 // they should not have gotten an email with the token
-                console.log(`User ${payload.userId} does not exist`);
+                console.log(
+                    `[Auth/Email verification]: User ${payload.userId} does not exist`,
+                );
                 throw new UnauthorizedException("User does not exist.");
             } else {
                 if (user.emailVerified) {
                     // user email has already verified, just return the default status
-                    console.log(`Email ${user.email} already verified`);
+                    console.log(
+                        `[Auth/Email verification]: Email ${user.email} already verified`,
+                    );
                 } else {
                     // user not verified - verify it, and delete the token
                     const tokenInDb =
@@ -181,9 +179,10 @@ export class AuthService {
                             },
                         });
                     if (!tokenInDb) {
-                        console.log("token expired"); // maybe send another one
-                        // email them or frontend will display saying token expired
-                        // with a resend verification email option
+                        // this should not really happen
+                        throw new UnauthorizedException(
+                            "[Auth/Email verification]: Error - Token not in database.",
+                        );
                     } else {
                         if (verifyEmailDto.token !== tokenInDb.token) {
                             throw new UnauthorizedException("Token mismatch");
@@ -205,7 +204,7 @@ export class AuthService {
                                 }),
                             ]);
                             return {
-                                message: "Email verified",
+                                message: "Email successfully verified",
                                 statusCode: 200,
                             };
                         }
