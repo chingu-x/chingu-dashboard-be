@@ -10,7 +10,7 @@ import {
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
@@ -24,7 +24,8 @@ import {
 } from "../global/responses/errors";
 import { LoginResponse, LogoutResponse } from "./auth.response";
 import { GenericSuccessResponse } from "../global/responses/shared";
-import { PasswordResetRequestDto } from "./dto/password-reset-request.dto";
+import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -155,13 +156,26 @@ export class AuthController {
         type: GenericSuccessResponse,
     })
     @HttpCode(HttpStatus.OK)
-    @Post("password-reset-request")
-    async passwordResetRequest(
-        @Body() passwordResetRequestDto: PasswordResetRequestDto,
+    @Post("reset-password/request")
+    async resetPasswordRequest(
+        @Body() resetPasswordRequestDto: ResetPasswordRequestDto,
     ) {
-        return this.authService.passwordResetRequest(passwordResetRequestDto);
+        return this.authService.resetPasswordRequest(resetPasswordRequestDto);
     }
 
-    @Post("password-reset")
-    async passwordReset() {}
+    @ApiOperation({
+        summary: "Reset user password",
+        description:
+            "The reset token is emailed to them when the request a password reset.",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Password reset email successfully sent",
+        type: GenericSuccessResponse,
+    })
+    @HttpCode(HttpStatus.OK)
+    @Post("reset-password/")
+    async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+        return this.authService.resetPassword(resetPasswordDto);
+    }
 }

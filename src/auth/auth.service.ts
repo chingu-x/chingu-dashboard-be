@@ -1,7 +1,6 @@
 import {
     BadRequestException,
     Injectable,
-    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
@@ -17,7 +16,8 @@ import {
 } from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
-import { PasswordResetRequestDto } from "./dto/password-reset-request.dto";
+import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -178,53 +178,54 @@ export class AuthService {
                 console.log(
                     `[Auth/Email verification]: User ${payload.userId} does not exist`,
                 );
-                throw new UnauthorizedException("User does not exist.");
+                throw new UnauthorizedException(
+                    `User ${payload.userId} does not exist.`,
+                );
+            }
+            if (user.emailVerified) {
+                // user email has already verified, just return the default status
+                // this should not happen, as token is single use
+                console.log(
+                    `[Auth/Email verification]: Email ${user.email} already verified`,
+                );
             } else {
-                if (user.emailVerified) {
-                    // user email has already verified, just return the default status
-                    console.log(
-                        `[Auth/Email verification]: Email ${user.email} already verified`,
+                // user not verified - verify it, and delete the token
+                const tokenInDb =
+                    await this.prisma.emailVerificationToken.findUnique({
+                        where: {
+                            userId: user.id,
+                        },
+                    });
+                if (!tokenInDb) {
+                    // this should not really happen, unless it's a really old token, and got deleted
+                    throw new UnauthorizedException(
+                        "[Auth/Email verification]: Error - Token not in database.",
                     );
+                }
+                if (verifyEmailDto.token !== tokenInDb.token) {
+                    throw new UnauthorizedException("Token mismatch");
                 } else {
-                    // user not verified - verify it, and delete the token
-                    const tokenInDb =
-                        await this.prisma.emailVerificationToken.findUnique({
+                    // set user emailVerified status to true, and delete the token
+                    await this.prisma.$transaction([
+                        this.prisma.user.update({
+                            where: {
+                                email: user.email,
+                            },
+                            data: {
+                                emailVerified: true,
+                            },
+                        }),
+                        this.prisma.emailVerificationToken.delete({
                             where: {
                                 userId: user.id,
                             },
-                        });
-                    if (!tokenInDb) {
-                        // this should not really happen
-                        throw new UnauthorizedException(
-                            "[Auth/Email verification]: Error - Token not in database.",
-                        );
-                    } else {
-                        if (verifyEmailDto.token !== tokenInDb.token) {
-                            throw new UnauthorizedException("Token mismatch");
-                        } else {
-                            // set user emailVerified status to true, and delete the token
-                            await this.prisma.$transaction([
-                                this.prisma.user.update({
-                                    where: {
-                                        email: user.email,
-                                    },
-                                    data: {
-                                        emailVerified: true,
-                                    },
-                                }),
-                                this.prisma.emailVerificationToken.delete({
-                                    where: {
-                                        userId: user.id,
-                                    },
-                                }),
-                            ]);
-                            return {
-                                message: "Email successfully verified",
-                                statusCode: 200,
-                            };
-                        }
-                    }
+                        }),
+                    ]);
                 }
+                return {
+                    message: "Email successfully verified",
+                    statusCode: 200,
+                };
             }
         } catch (e) {
             if (e.name === "JsonWebTokenError") {
@@ -242,8 +243,8 @@ export class AuthService {
      *
      * Note: this will not respond with success/fail status due to privacy reason
      */
-    async passwordResetRequest(
-        passwordResetRequestDto: PasswordResetRequestDto,
+    async resetPasswordRequest(
+        passwordResetRequestDto: ResetPasswordRequestDto,
     ) {
         const user = await this.usersService.findUserByEmail(
             passwordResetRequestDto.email,
@@ -275,23 +276,53 @@ export class AuthService {
         };
     }
 
-    async passwordReset(email: string) {
-        /*
-
-        const tokenInDb = await this.prisma.resetToken.findUnique({
-            where: {
-                userId: user.id,
-            },
-        });
-        if (token) {
-            //delete
-        } else {
-            const resetToken = this.generateToken(user.id);
-            const hash = await hashPassword(resetToken);
-            console.log(hash); // just to get rid of lint error so I can push to a remote branch
-            // await this.prisma.resetToken.create({});
+    async resetPassword(resetPasswordDto: ResetPasswordDto) {
+        try {
+            const payload = await this.jwtService.verifyAsync(
+                resetPasswordDto.token,
+            );
+            if (!payload.userId) {
+                throw new UnauthorizedException("Invalid token");
+            }
+            const user = await this.usersService.findUserById(payload.userId);
+            if (!user) {
+                console.log(
+                    `[Auth/Reset password]: User ${payload.userId} does not exist`,
+                );
+                throw new UnauthorizedException(
+                    `User ${payload.userId} does not exist.`,
+                );
+            }
+            const tokenInDb = await this.prisma.resetToken.findUnique({
+                where: {
+                    userId: user.id,
+                },
+            });
+            if (!tokenInDb) {
+                throw new UnauthorizedException(
+                    "[Auth/Reset Password]: Error - Token not in database.",
+                );
+            }
+            if (resetPasswordDto.token !== tokenInDb.token) {
+                throw new UnauthorizedException("Token mismatch");
+            }
+            await this.prisma.$transaction([
+                this.prisma.user.update({
+                    where: {
+                        id: user.id,
+                    },
+                    data: {
+                        password: await hashPassword(resetPasswordDto.password),
+                    },
+                }),
+                this.prisma.resetToken.delete({
+                    where: {
+                        userId: user.id,
+                    },
+                }),
+            ]);
+        } catch (e) {
+            console.log(`[Auth/Reset Password]: Other signup errors: ${e}`);
         }
-        
-         */
     }
 }
