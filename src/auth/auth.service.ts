@@ -36,7 +36,6 @@ export class AuthService {
         return this.jwtService.sign(payload, { expiresIn: "1h" });
     };
 
-    // TODO: check if anything else needs to be in a transaction
     /**
      * Checks user email/username match database - for passport
      */
@@ -65,22 +64,20 @@ export class AuthService {
 
     async signup(signupDto: SignupDto) {
         try {
-            this.prisma.$transaction(async (tx) => {
-                const user = await tx.user.create({
-                    data: {
-                        email: signupDto.email,
-                        password: await hashPassword(signupDto.password),
-                    },
-                });
-                const token = this.generateToken(user.id);
-                await tx.emailVerificationToken.create({
-                    data: {
-                        userId: user.id,
-                        token,
-                    },
-                });
-                await sendSignupVerificationEmail(signupDto.email, token);
+            const user = await this.prisma.user.create({
+                data: {
+                    email: signupDto.email,
+                    password: await hashPassword(signupDto.password),
+                },
             });
+            const token = this.generateToken(user.id);
+            await this.prisma.emailVerificationToken.create({
+                data: {
+                    userId: user.id,
+                    token,
+                },
+            });
+            await sendSignupVerificationEmail(signupDto.email, token);
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
@@ -118,8 +115,11 @@ export class AuthService {
             } else {
                 console.log(`[Auth/Signup]: Other signup errors: ${e}`);
             }
+            return {
+                message: "Signup Success.",
+                statusCode: 200,
+            };
         }
-        return;
     }
 
     /**
@@ -222,11 +222,11 @@ export class AuthService {
                         }),
                     ]);
                 }
-                return {
-                    message: "Email successfully verified",
-                    statusCode: 200,
-                };
             }
+            return {
+                message: "Email successfully verified",
+                statusCode: 200,
+            };
         } catch (e) {
             if (e.name === "JsonWebTokenError") {
                 throw new UnauthorizedException("Malformed Token");
@@ -255,23 +255,25 @@ export class AuthService {
             console.log(
                 `[Auth/PasswordResetRequest]: No user (email: ${passwordResetRequestDto.email}) found in the database`,
             );
+        } else {
+            const token = this.generateToken(user.id);
+            await this.prisma.resetToken.upsert({
+                where: {
+                    userId: user.id,
+                },
+                update: {
+                    token,
+                },
+                create: {
+                    userId: user.id,
+                    token,
+                },
+            });
+            await sendPasswordResetEmail(passwordResetRequestDto.email, token);
         }
-        const token = this.generateToken(user.id);
-        await this.prisma.resetToken.upsert({
-            where: {
-                userId: user.id,
-            },
-            update: {
-                token,
-            },
-            create: {
-                userId: user.id,
-                token,
-            },
-        });
-        await sendPasswordResetEmail(passwordResetRequestDto.email, token);
         return {
-            message: "Password reset email successfully sent",
+            message:
+                "Password reset email sent if you have an account with us.",
             statusCode: 200,
         };
     }
@@ -321,8 +323,13 @@ export class AuthService {
                     },
                 }),
             ]);
+            return {
+                message: "Password successfully reset",
+                statusCode: 200,
+            };
         } catch (e) {
-            console.log(`[Auth/Reset Password]: Other signup errors: ${e}`);
+            console.log(`[Auth/Reset Password]: error: ${e}`);
+            throw e;
         }
     }
 }

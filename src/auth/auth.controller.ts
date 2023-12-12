@@ -3,14 +3,13 @@ import {
     Controller,
     HttpCode,
     HttpStatus,
-    Param,
     Post,
     Request,
     Res,
     UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LocalAuthGuard } from "./local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
@@ -41,6 +40,7 @@ export class AuthController {
         status: HttpStatus.OK,
         description:
             "Signup Success. User created, and verification email sent.",
+        type: GenericSuccessResponse,
     })
     @HttpCode(HttpStatus.OK)
     @Post("signup")
@@ -146,13 +146,15 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "Request a password reset - email with password reset link",
+        summary:
+            "Request a password reset - email with password reset link (if the account exists)",
         description:
             "Please use a 'real' email if you want to receive a password reset email.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: "Password reset email successfully sent",
+        description:
+            "Password reset email successfully sent (if the user account exist)",
         type: GenericSuccessResponse,
     })
     @HttpCode(HttpStatus.OK)
@@ -172,6 +174,13 @@ export class AuthController {
         status: HttpStatus.OK,
         description: "Password reset email successfully sent",
         type: GenericSuccessResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Token error - e.g. malformed token, or expired token. <br> " +
+            "Specific errors will be returned in <code>res.message</code>",
+        type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
     @Post("reset-password/")
