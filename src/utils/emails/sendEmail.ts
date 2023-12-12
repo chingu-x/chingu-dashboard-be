@@ -48,3 +48,22 @@ export const sendAttemptedRegistrationEmail = async (email: string) => {
         ],
     });
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+    await mailjet.post("send", { version: "v3.1" }).request({
+        Messages: [
+            {
+                To: [
+                    {
+                        Email: email,
+                    },
+                ],
+                TemplateID: templateIds.passwordResetEmail,
+                TemplateLanguage: true,
+                Variables: {
+                    passwordResetLink: `https://chingu-dashboard.vercel.app/users/reset-password?token=${token}`,
+                },
+            },
+        ],
+    });
+};

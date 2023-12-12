@@ -3,6 +3,7 @@ import {
     Controller,
     HttpCode,
     HttpStatus,
+    Param,
     Post,
     Request,
     Res,
@@ -23,6 +24,7 @@ import {
 } from "../global/responses/errors";
 import { LoginResponse, LogoutResponse } from "./auth.response";
 import { GenericSuccessResponse } from "../global/responses/shared";
+import { PasswordResetRequestDto } from "./dto/password-reset-request.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -141,4 +143,25 @@ export class AuthController {
             .clearCookie("access_token")
             .json({ message: "Logout Success" });
     }
+
+    @ApiOperation({
+        summary: "Request a password reset - email with password reset link",
+        description:
+            "Please use a 'real' email if you want to receive a password reset email.",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Password reset email successfully sent",
+        type: GenericSuccessResponse,
+    })
+    @HttpCode(HttpStatus.OK)
+    @Post("password-reset-request")
+    async passwordResetRequest(
+        @Body() passwordResetRequestDto: PasswordResetRequestDto,
+    ) {
+        return this.authService.passwordResetRequest(passwordResetRequestDto);
+    }
+
+    @Post("password-reset")
+    async passwordReset() {}
 }

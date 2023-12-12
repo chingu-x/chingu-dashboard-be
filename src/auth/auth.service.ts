@@ -12,10 +12,12 @@ import { SignupDto } from "./dto/signup.dto";
 import { comparePassword, hashPassword } from "../utils/auth";
 import {
     sendAttemptedRegistrationEmail,
+    sendPasswordResetEmail,
     sendSignupVerificationEmail,
 } from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
+import { PasswordResetRequestDto } from "./dto/password-reset-request.dto";
 
 @Injectable()
 export class AuthService {
@@ -236,18 +238,47 @@ export class AuthService {
         }
     }
 
-    //  Note: this will not respond with success/fail status due to privacy reason
-    async resetPassword(email: string) {
-        const user = await this.usersService.findUserByEmail(email);
+    /**
+     *
+     * Note: this will not respond with success/fail status due to privacy reason
+     */
+    async passwordResetRequest(
+        passwordResetRequestDto: PasswordResetRequestDto,
+    ) {
+        const user = await this.usersService.findUserByEmail(
+            passwordResetRequestDto.email,
+        );
 
         if (!user) {
             // no user found with the email
-            throw new NotFoundException("no user found.");
+            console.log(
+                `[Auth/PasswordResetRequest]: No user (email: ${passwordResetRequestDto.email}) found in the database`,
+            );
         }
-        if (!user.emailVerified) {
-            // user email is not verified
-        }
-        const token = await this.prisma.resetToken.findUnique({
+        const token = this.generateToken(user.id);
+        await this.prisma.resetToken.upsert({
+            where: {
+                userId: user.id,
+            },
+            update: {
+                token,
+            },
+            create: {
+                userId: user.id,
+                token,
+            },
+        });
+        await sendPasswordResetEmail(passwordResetRequestDto.email, token);
+        return {
+            message: "Password reset email successfully sent",
+            statusCode: 200,
+        };
+    }
+
+    async passwordReset(email: string) {
+        /*
+
+        const tokenInDb = await this.prisma.resetToken.findUnique({
             where: {
                 userId: user.id,
             },
@@ -260,5 +291,7 @@ export class AuthService {
             console.log(hash); // just to get rid of lint error so I can push to a remote branch
             // await this.prisma.resetToken.create({});
         }
+        
+         */
     }
 }
