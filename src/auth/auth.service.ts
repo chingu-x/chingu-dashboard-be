@@ -301,9 +301,7 @@ export class AuthService {
                 },
             });
             if (!tokenInDb) {
-                throw new UnauthorizedException(
-                    "[Auth/Reset Password]: Error - Token not in database.",
-                );
+                throw new UnauthorizedException("Token not in database.");
             }
             if (resetPasswordDto.token !== tokenInDb.token) {
                 throw new UnauthorizedException("Token mismatch");
