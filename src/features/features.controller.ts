@@ -16,7 +16,7 @@ import {
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
-import { UpdateFeatureOrderDto } from "./dto/update-feature-order.dto";
+import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import {
     ApiBearerAuth,
     ApiCreatedResponse,
@@ -71,9 +71,14 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all features for a team given a teamId (int).",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get("/:teamId/features")
-    findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.featuresService.findAllFeatures(teamId);
+    findAllFeatures(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.featuresService.findAllFeatures(req, teamId);
     }
 
     @ApiOperation({
@@ -110,20 +115,20 @@ export class FeaturesController {
 
     @ApiOperation({
         summary:
-            "Updates the order of features within a category given a featureId (int) and order (int).",
+            "Updates the order and category? of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Patch("/features/:featureId/reorder")
-    async updateFeatureOrder(
+    async updateFeatureOrderAndCategory(
         @Request() req,
         @Param("featureId", ParseIntPipe) featureId: number,
-        @Body() updateOrderDto: UpdateFeatureOrderDto,
+        @Body() updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
     ) {
-        return this.featuresService.updateFeatureOrder(
+        return this.featuresService.updateFeatureOrderAndCategory(
             req,
             featureId,
-            updateOrderDto,
+            updateOrderAndCategoryDto,
         );
     }
 

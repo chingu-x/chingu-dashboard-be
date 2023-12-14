@@ -6,7 +6,7 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
-import { UpdateFeatureOrderDto } from "./dto/update-feature-order.dto";
+import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import { GlobalService } from "../global/global.service";
 
 @Injectable()
@@ -126,7 +126,12 @@ export class FeaturesService {
         }
     }
 
-    async findAllFeatures(teamId: number) {
+    async findAllFeatures(req, teamId: number) {
+        await this.globalService.validateLoggedInAndTeamMember(
+            teamId,
+            req.user.userId,
+        );
+
         try {
             const allTeamFeatures = await this.prisma.projectFeature.findMany({
                 where: {
@@ -204,100 +209,117 @@ export class FeaturesService {
         }
     }
 
-    async updateFeatureOrder(
+    async updateFeatureOrderAndCategory(
         req,
         featureId: number,
-        updateOrderDto: UpdateFeatureOrderDto,
+        updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
     ) {
-        const { order } = updateOrderDto;
+        const { order, featureCategoryId: newFeatureCategoryId } =
+            updateOrderAndCategoryDto;
 
-        const currFeature = await this.prisma.projectFeature.findUnique({
-            where: { id: featureId },
-        });
+        const currFeature = await this.findFeature(featureId);
 
-        if (!currFeature) {
-            throw new NotFoundException(
-                `Feature with ID ${featureId} not found.`,
-            );
-        }
-
-        const featureVoyageTeamMember =
+        const { voyageTeamId: teamId } =
             await this.prisma.voyageTeamMember.findFirst({
                 where: { id: currFeature.teamMemberId },
                 select: { voyageTeamId: true },
             });
 
-        const currentUserVoyageTeamMember =
-            await this.prisma.voyageTeamMember.findFirst({
-                where: { userId: req.user.userId },
-                select: { voyageTeamId: true },
+        await this.globalService.validateLoggedInAndTeamMember(
+            teamId,
+            req.user.userId,
+        );
+
+        const existingCategoryFeatures =
+            await this.prisma.projectFeature.findMany({
+                where: {
+                    featureCategoryId: currFeature.featureCategoryId,
+                    addedBy: { voyageTeamId: teamId },
+                },
             });
 
-        if (!currentUserVoyageTeamMember) {
-            throw new BadRequestException(
-                `User with ID ${req.user.userId} is not a member of a team.`,
-            );
-        }
-
-        if (
-            featureVoyageTeamMember.voyageTeamId !==
-            currentUserVoyageTeamMember.voyageTeamId
-        ) {
-            throw new BadRequestException(
-                `Feature with ID ${featureId} does not belong to the team with ID ${currentUserVoyageTeamMember.voyageTeamId}.`,
-            );
-        }
-
-        const categoryFeatures = await this.prisma.projectFeature.findMany({
+        const newCategoryFeatures = await this.prisma.projectFeature.findMany({
             where: {
-                featureCategoryId: currFeature.featureCategoryId,
-                addedBy: { voyageTeamId: featureVoyageTeamMember.voyageTeamId },
+                featureCategoryId: newFeatureCategoryId,
+                addedBy: { voyageTeamId: teamId },
             },
         });
 
-        const featuresToUpdate = categoryFeatures.filter(
-            (feature) => feature.id !== featureId,
-        );
+        if (order && newFeatureCategoryId) {
+            const existingFeaturesToUpdate =
+                await existingCategoryFeatures.filter(
+                    (feature) =>
+                        feature.id !== featureId &&
+                        feature.order > currFeature.order,
+                );
 
-        currFeature.order > order
-            ? await Promise.all(
-                  featuresToUpdate.map((feature) =>
-                      this.prisma.projectFeature.update({
-                          where: { id: feature.id },
-                          data: {
-                              order:
-                                  feature.order >= order &&
-                                  feature.order < currFeature.order
-                                      ? feature.order + 1
-                                      : feature.order,
-                          },
-                      }),
-                  ),
-              )
-            : await Promise.all(
-                  featuresToUpdate.map((feature) =>
-                      this.prisma.projectFeature.update({
-                          where: { id: feature.id },
-                          data: {
-                              order:
-                                  feature.order <= order &&
-                                  feature.order > currFeature.order
-                                      ? feature.order - 1
-                                      : feature.order,
-                          },
-                      }),
-                  ),
-              );
+            const newFeaturesToUpdate = await newCategoryFeatures.filter(
+                (feature) => feature.order >= order,
+            );
 
-        await this.prisma.projectFeature.update({
-            where: { id: featureId },
-            data: { order: order },
-        });
+            await existingFeaturesToUpdate.forEach((feature) => {
+                this.prisma.projectFeature.update({
+                    where: { id: feature.id },
+                    data: {
+                        order: feature.order - 1,
+                    },
+                });
+            });
+            await newFeaturesToUpdate.forEach((feature) => {
+                this.prisma.projectFeature.update({
+                    where: { id: feature.id },
+                    data: {
+                        order: feature.order + 1,
+                    },
+                });
+            });
 
-        return {
-            ...currFeature,
-            order: order,
-        };
+            await this.prisma.projectFeature.update({
+                where: { id: featureId },
+                data: {
+                    featureCategoryId: newFeatureCategoryId,
+                    order: order,
+                },
+            });
+        } else {
+            if (order < currFeature.order) {
+                const existingFeaturesToUpdate =
+                    await existingCategoryFeatures.filter(
+                        (feature) =>
+                            feature.id !== featureId &&
+                            feature.order >= order &&
+                            feature.order < currFeature.order,
+                    );
+
+                await existingFeaturesToUpdate.forEach((feature) => {
+                    this.prisma.projectFeature.update({
+                        where: { id: feature.id },
+                        data: {
+                            order: feature.order + 1,
+                        },
+                    });
+                });
+            } else {
+                const existingFeaturesToUpdate =
+                    await existingCategoryFeatures.filter(
+                        (feature) =>
+                            feature.id !== featureId &&
+                            feature.order <= order &&
+                            feature.order > currFeature.order,
+                    );
+
+                await existingFeaturesToUpdate.forEach((feature) => {
+                    this.prisma.projectFeature.update({
+                        where: { id: feature.id },
+                        data: {
+                            order: feature.order - 1,
+                        },
+                    });
+                });
+            }
+        }
+        const newCategoryFeaturesList = await this.findAllFeatures(req, teamId);
+        return newCategoryFeaturesList;
     }
 
     async deleteFeature(featureId: number) {
@@ -316,5 +338,19 @@ export class FeaturesService {
         } catch (e) {
             throw e;
         }
+    }
+
+    private async findFeature(featureId: number) {
+        const feature = await this.prisma.projectFeature.findUnique({
+            where: { id: featureId },
+        });
+
+        if (!feature) {
+            throw new NotFoundException(
+                `Feature with ID ${featureId} not found.`,
+            );
+        }
+
+        return feature;
     }
 }
