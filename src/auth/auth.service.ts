@@ -78,6 +78,10 @@ export class AuthService {
                 },
             });
             await sendSignupVerificationEmail(signupDto.email, token);
+            return {
+                message: "Signup Success.",
+                statusCode: 200,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
