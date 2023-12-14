@@ -27,6 +27,8 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { isEmail, isUUID } from "class-validator";
+import { Roles } from "../auth/roles/roles.decorator";
+import { Role } from "../auth/roles/role.enum";
 
 @Controller("users")
 @ApiTags("users")
@@ -44,6 +46,7 @@ export class UsersController {
         type: UserResponse,
     })
     @Get()
+    @Roles(Role.Admin)
     findAll() {
         return this.usersService.findAll();
     }

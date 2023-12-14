@@ -10,6 +10,9 @@ export const sendSignupVerificationEmail = async (
     email: string,
     token: string,
 ) => {
+    console.log(templateIds.verificationEmail);
+    console.log(process.env.MJ_APIKEY_PUBLIC);
+    console.log(process.env.MJ_APIKEY_PRIVATE);
     await mailjet.post("send", { version: "v3.1" }).request({
         Messages: [
             {
