@@ -7,3 +7,11 @@ export class VoyageStatus {
     @ApiProperty({ example: "Developer" })
     name: string;
 }
+
+export class GenericSuccessResponse {
+    @ApiProperty({ example: "Email verified" })
+    message: string;
+
+    @ApiProperty({ example: 200 })
+    statusCode: number;
+}

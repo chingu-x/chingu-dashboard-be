@@ -36,6 +36,14 @@ export class UnauthorizedErrorResponse {
     statusCode: number;
 }
 
+export class LoginUnauthorizedErrorResponse extends UnauthorizedErrorResponse {
+    @ApiProperty({
+        example:
+            "Signup failed. Invalid email and/or password. Please try again.",
+    })
+    message: string;
+}
+
 export class NotFoundErrorResponse {
     @ApiProperty({
         example: "Record to delete does not exist.",
