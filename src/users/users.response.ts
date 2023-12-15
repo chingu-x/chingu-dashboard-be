@@ -18,7 +18,7 @@ class Gender {
 }
 
 class VoyageTeamWithoutMember {
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     id: number;
 
     userId: string;
@@ -39,6 +39,25 @@ class VoyageTeamWithoutMember {
 
     @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
     updatedAt: Date;
+}
+
+class VoyageTeam {
+    @ApiProperty({ example: "v47-tier2-team-4" })
+    name: string;
+}
+
+class UserVoyageTeam {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamId: number;
+
+    @ApiProperty()
+    voyageTeam: VoyageTeam;
+
+    @ApiProperty()
+    voyageRole: VoyageRoleEntity;
 }
 
 // Full User detail - admin purpose, password excluded
@@ -97,7 +116,10 @@ export class UserResponse {
 // Details for user only, may include sensitive detail
 export class PrivateUserResponse extends OmitType(UserResponse, [
     "comment",
-] as const) {}
+] as const) {
+    @ApiProperty({ isArray: true })
+    voyageTeamMembers: UserVoyageTeam;
+}
 
 // User details visible to public, all sensitive details are not included
 export class PublicUserResponse extends OmitType(UserResponse, [
