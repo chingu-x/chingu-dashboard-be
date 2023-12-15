@@ -1,11 +1,12 @@
-import { IsNotEmpty } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsOptional } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class UpdateFeatureOrderAndCategoryDto {
     @IsNotEmpty()
     @ApiProperty()
     order: number;
 
-    @ApiProperty()
+    @IsOptional()
+    @ApiPropertyOptional()
     featureCategoryId: number;
 }

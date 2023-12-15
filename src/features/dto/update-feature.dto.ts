@@ -7,10 +7,6 @@ export class UpdateFeatureDto extends PartialType(CreateFeatureDto) {
     @ApiProperty()
     teamMemberId: number;
 
-    @IsNotEmpty()
-    @ApiProperty()
-    featureCategoryId: number;
-
     @IsString()
     @IsNotEmpty()
     @ApiProperty()
