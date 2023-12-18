@@ -67,7 +67,6 @@ describe("IdeationsController", () => {
             teamId,
             createIdeationDto,
         );
-        console.log(ideation);
         expect(service.createIdeation).toHaveBeenCalled();
         expect(ideation).toBe(ideationOne);
     });
@@ -119,7 +118,6 @@ describe("IdeationsController", () => {
             teamId,
             updateIdeationDto,
         );
-        console.log(ideation);
         expect(service.updateIdeation).toHaveBeenCalled();
         expect(ideation).toEqual(ideationOne);
     });
