@@ -54,7 +54,10 @@ class VoyageRole {
     name: string;
 }
 
-class Member {
+class VoyageTeamMember {
+    @ApiProperty({ example: 1 })
+    id: number;
+
     @ApiProperty()
     member: PublicUserResponse;
 
@@ -67,7 +70,7 @@ class Member {
 
 export class PublicVoyageTeamWithUserResponse extends VoyageTeamResponse {
     @ApiProperty({ isArray: true })
-    voyageTeamMembers: Member;
+    voyageTeamMembers: VoyageTeamMember;
 }
 
 export class VoyageTeamMemberUpdateResponse {
