@@ -67,6 +67,22 @@ export class UsersService {
                 email: true,
                 countryCode: true,
                 timezone: true,
+                voyageTeamMembers: {
+                    select: {
+                        id: true,
+                        voyageTeamId: true,
+                        voyageTeam: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                        voyageRole: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
             },
         });
     }

@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class VoyageRoleEntity implements VoyageRole {
     id: number;
 
-    @ApiProperty()
+    @ApiProperty({ example: "Developer" })
     name: string;
 
     description: string;
