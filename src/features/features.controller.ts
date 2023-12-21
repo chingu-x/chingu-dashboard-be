@@ -31,7 +31,6 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
 
-    //can only create if loggedIn
     @ApiOperation({
         summary:
             "Adds a new feature for a team given a teamId (int) and that the user is logged in.",

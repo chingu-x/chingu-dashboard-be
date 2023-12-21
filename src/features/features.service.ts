@@ -220,6 +220,20 @@ export class FeaturesService {
             teamId,
             req.user.userId,
         );
+
+        const verifyCategoryExists =
+            await this.prisma.featureCategory.findFirst({
+                where: {
+                    id: newFeatureCategoryId,
+                },
+            });
+
+        if (!verifyCategoryExists) {
+            throw new BadRequestException(
+                `CategoryId (id: ${newFeatureCategoryId}) is invalid.`,
+            );
+        }
+
         const existingCategoryFeatures =
             await this.prisma.projectFeature.findMany({
                 where: {
@@ -227,7 +241,11 @@ export class FeaturesService {
                     addedBy: { voyageTeamId: teamId },
                 },
             });
-        if (order && newFeatureCategoryId) {
+        if (
+            order &&
+            newFeatureCategoryId &&
+            newFeatureCategoryId !== currFeature.featureCategoryId
+        ) {
             const newCategoryFeatures =
                 await this.prisma.projectFeature.findMany({
                     where: {
