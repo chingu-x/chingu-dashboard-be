@@ -20,11 +20,6 @@ export class TeamResourceResponse {
     updatedAt: Date;
 }
 
-class AddedBy {
-    @ApiProperty()
-    member: MemberNameAndAvatar;
-}
-
 class MemberNameAndAvatar {
     @ApiProperty({ example: "Jessica" })
     firstName: string;
@@ -37,6 +32,11 @@ class MemberNameAndAvatar {
             "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
     })
     avatar: string;
+}
+
+class AddedBy {
+    @ApiProperty()
+    member: MemberNameAndAvatar;
 }
 
 export class TeamResourceAddedByResponse extends TeamResourceResponse {
