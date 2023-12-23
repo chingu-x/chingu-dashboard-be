@@ -54,7 +54,7 @@ export class ResourcesController {
     @ApiParam({
         name: "teamId",
         required: true,
-        description: "voyage team ID",
+        description: "Voyage team ID",
         example: 1,
     })
     @UseGuards(JwtAuthGuard)
@@ -85,6 +85,12 @@ export class ResourcesController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid teamId",
         type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        required: true,
+        description: "Voyage team ID",
+        example: 1,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -119,6 +125,12 @@ export class ResourcesController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid teamId",
         type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "resourceId",
+        required: true,
+        description: "Team resource ID",
+        example: 1,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -158,6 +170,12 @@ export class ResourcesController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid teamId",
         type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "resourceId",
+        required: true,
+        description: "Team resource ID",
+        example: 1,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
