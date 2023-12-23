@@ -22,6 +22,7 @@ export const publicVoyageTeamUserSelect = {
     endDate: true,
     voyageTeamMembers: {
         select: {
+            id: true,
             member: {
                 select: publicUserDetailSelect,
             },

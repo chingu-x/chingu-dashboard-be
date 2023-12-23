@@ -15,10 +15,20 @@ export class UsersService {
         });
     }
 
+    findUserById(id: string): Promise<UserEntity | undefined> {
+        return this.prisma.user.findUnique({
+            where: {
+                id,
+            },
+        });
+    }
+
     findAll() {
         return this.prisma.user.findMany({
             select: {
                 id: true,
+                email: true,
+                emailVerified: true,
                 firstName: true,
                 lastName: true,
                 avatar: true,
@@ -26,7 +36,6 @@ export class UsersService {
                 discordId: true,
                 twitterId: true,
                 linkedinId: true,
-                email: true,
                 gender: {
                     select: {
                         id: true,
@@ -58,6 +67,22 @@ export class UsersService {
                 email: true,
                 countryCode: true,
                 timezone: true,
+                voyageTeamMembers: {
+                    select: {
+                        id: true,
+                        voyageTeamId: true,
+                        voyageTeam: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                        voyageRole: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
             },
         });
     }
