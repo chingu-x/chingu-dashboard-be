@@ -26,7 +26,7 @@ import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "src/global/responses/errors";
+} from "../global/responses/errors";
 import {
     TeamResourceAddedByResponse,
     TeamResourceResponse,
@@ -50,6 +50,11 @@ export class ResourcesController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid teamId",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Invalid URL",
+        type: BadRequestErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -123,7 +128,7 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
-        description: "Invalid teamId",
+        description: "Invalid resourceId",
         type: NotFoundErrorResponse,
     })
     @ApiParam({
@@ -168,7 +173,7 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
-        description: "Invalid teamId",
+        description: "Invalid resourceId",
         type: NotFoundErrorResponse,
     })
     @ApiParam({
