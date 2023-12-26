@@ -15,6 +15,9 @@ export class Feature implements ProjectFeature {
     description: string;
 
     @ApiProperty()
+    order: number;
+
+    @ApiProperty()
     createdAt: Date;
 
     @ApiProperty()

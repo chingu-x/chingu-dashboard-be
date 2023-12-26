@@ -16,6 +16,7 @@ import {
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
+import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import {
     ApiBearerAuth,
     ApiCreatedResponse,
@@ -30,7 +31,6 @@ import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 export class FeaturesController {
     constructor(private readonly featuresService: FeaturesService) {}
 
-    //can only create if loggedIn
     @ApiOperation({
         summary:
             "Adds a new feature for a team given a teamId (int) and that the user is logged in.",
@@ -70,9 +70,14 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all features for a team given a teamId (int).",
     })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Get("/:teamId/features")
-    findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.featuresService.findAllFeatures(teamId);
+    findAllFeatures(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.featuresService.findAllFeatures(req, teamId);
     }
 
     @ApiOperation({
@@ -105,6 +110,25 @@ export class FeaturesController {
         } else {
             throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
         }
+    }
+
+    @ApiOperation({
+        summary:
+            "Updates the order and category? of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
+    })
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Patch("/features/:featureId/reorder")
+    async updateFeatureOrderAndCategory(
+        @Request() req,
+        @Param("featureId", ParseIntPipe) featureId: number,
+        @Body() updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
+    ) {
+        return this.featuresService.updateFeatureOrderAndCategory(
+            req,
+            featureId,
+            updateOrderAndCategoryDto,
+        );
     }
 
     @ApiOperation({
