@@ -26,6 +26,7 @@ import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
+    BadRequestErrorArrayResponse,
 } from "../global/responses/errors";
 import {
     TeamResourceAddedByResponse,
@@ -53,8 +54,8 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: "Bad Request - Invalid URL",
-        type: BadRequestErrorResponse,
+        description: "Bad Request - Invalid or missing URL/title",
+        type: BadRequestErrorArrayResponse,
     })
     @ApiParam({
         name: "teamId",
