@@ -5,11 +5,23 @@ export class CreateResourceDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    @IsUrl()
+    @IsUrl(
+        {
+            require_protocol: false,
+            require_port: false,
+            allow_underscores: true,
+        },
+        { message: "URL is not valid." },
+    )
+    @ApiProperty({
+        example: "https://www.github.com/",
+    })
     url: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({
+        example: "Github",
+    })
     title: string;
 }

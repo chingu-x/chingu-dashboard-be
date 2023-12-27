@@ -163,19 +163,4 @@ export class ResourcesService {
             throw new NotFoundException(`Team (id: ${teamId}) doesn't exist.`);
         }
     }
-
-    // also used to limit GET route to team members
-    private async findTeamMember(uuid, teamId) {
-        const teamMember = this.prisma.voyageTeamMember.findFirst({
-            where: {
-                userId: uuid,
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        return teamMember;
-    }
 }
