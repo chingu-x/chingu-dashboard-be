@@ -40,6 +40,6 @@ class AddedBy {
 }
 
 export class TeamResourceAddedByResponse extends TeamResourceResponse {
-    @ApiProperty({ isArray: true })
+    @ApiProperty()
     addedBy: AddedBy;
 }
