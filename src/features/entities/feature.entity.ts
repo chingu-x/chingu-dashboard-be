@@ -2,24 +2,24 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ProjectFeature } from "@prisma/client";
 
 export class Feature implements ProjectFeature {
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     id: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     teamMemberId: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     featureCategoryId: number;
 
-    @ApiProperty({ example: "Message Board" })
+    @ApiProperty()
     description: string;
 
-    @ApiProperty({ example: 5 })
+    @ApiProperty()
     order: number;
 
-    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    @ApiProperty()
     createdAt: Date;
 
-    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    @ApiProperty()
     updatedAt: Date;
 }

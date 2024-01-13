@@ -2,28 +2,25 @@ import { ApiProperty } from "@nestjs/swagger";
 import { ProjectIdea } from "@prisma/client";
 
 export class Ideation implements ProjectIdea {
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     id: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     voyageTeamMemberId: number;
 
-    @ApiProperty({ example: "Fitness Tracker App" })
+    @ApiProperty()
     title: string;
 
-    @ApiProperty({ example: "Use React app, node.js backend, and SQL" })
+    @ApiProperty()
     description: string;
 
-    @ApiProperty({
-        example:
-            "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
-    })
+    @ApiProperty()
     vision: string;
 
-    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    @ApiProperty()
     createdAt: Date;
 
-    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    @ApiProperty()
     updatedAt: Date;
 
     @ApiProperty({ type: [Number], required: false, nullable: true })

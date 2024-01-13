@@ -3,11 +3,11 @@ import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateFeatureDto {
     @IsNotEmpty()
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     featureCategoryId: number;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: "Message Board" })
+    @ApiProperty()
     description: string;
 }

@@ -4,19 +4,16 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class CreateIdeationDto {
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: "Fitness Tracker App" })
+    @ApiProperty()
     title: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: "Use React app, node.js backend, and SQL" })
+    @ApiProperty()
     description: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({
-        example:
-            "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
-    })
+    @ApiProperty()
     vision: string;
 }

@@ -4,11 +4,11 @@ import { IsNotEmpty, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateFeatureDto extends PartialType(CreateFeatureDto) {
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     teamMemberId: number;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: "Message Board" })
+    @ApiProperty()
     description: string;
 }

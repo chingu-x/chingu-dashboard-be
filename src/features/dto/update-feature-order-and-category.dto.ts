@@ -3,12 +3,12 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class UpdateFeatureOrderAndCategoryDto {
     @IsNotEmpty()
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     @IsNumber()
     order: number;
 
     @IsOptional()
-    @ApiPropertyOptional({ example: 1 })
+    @ApiPropertyOptional()
     @IsNumber()
     featureCategoryId: number;
 }
