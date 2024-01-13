@@ -44,7 +44,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
-            "Invalid uuid or teamID. User is not authorized to preform this action.",
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -80,7 +80,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
-            "Invalid uuid or teamID. User is not authorized to preform this action.",
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -139,7 +139,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
-            "Invalid uuid or teamID. User is not authorized to preform this action.",
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -181,7 +181,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
-            "Invalid uuid or teamID. User is not authorized to preform this action.",
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -227,7 +227,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
-            "Invalid uuid or teamID. User is not authorized to preform this action.",
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
