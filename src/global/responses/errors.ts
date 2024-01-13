@@ -27,7 +27,7 @@ export class BadRequestErrorResponse {
 }
 
 export class BadRequestErrorArrayResponse {
-    @ApiProperty({ isArray: true })
+    @ApiProperty({ isArray: true, example: "URL must be a URL address" })
     message: string;
 
     @ApiProperty({ example: "Bad Request" })
