@@ -57,6 +57,11 @@ export class ResourcesController {
         description: "Bad Request - Invalid or missing URL/title",
         type: BadRequestErrorArrayResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "teamId",
         required: true,
@@ -91,6 +96,11 @@ export class ResourcesController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid teamId",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "teamId",
