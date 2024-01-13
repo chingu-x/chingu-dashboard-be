@@ -20,7 +20,7 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { TeamTechResponse, TechItemResponse } from "./techs.response";
 import {
     BadRequestErrorResponse,

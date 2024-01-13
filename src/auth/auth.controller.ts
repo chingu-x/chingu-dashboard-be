@@ -10,7 +10,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { LocalAuthGuard } from "./local-auth-guard";
+import { LocalAuthGuard } from "./guards/local-auth-guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { SignupDto } from "./dto/signup.dto";
@@ -115,8 +115,14 @@ export class AuthController {
         @Res({ passthrough: true }) res,
     ) {
         try {
-            const access_token = await this.authService.login(req.user);
-            res.cookie("access_token", access_token.access_token, {
+            const { access_token, refresh_token } =
+                await this.authService.login(req.user);
+            res.cookie("access_token", access_token, {
+                maxAge: 1000 * 60 * 15,
+                httpOnly: true,
+                secure: true,
+            });
+            res.cookie("refresh_token", refresh_token, {
                 maxAge: 1000 * 60 * 60 * 24 * 7,
                 httpOnly: true,
                 secure: true,

@@ -18,7 +18,7 @@ import {
     ApiTags,
 } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import {
     PublicVoyageTeamWithUserResponse,
     VoyageTeamMemberUpdateResponse,

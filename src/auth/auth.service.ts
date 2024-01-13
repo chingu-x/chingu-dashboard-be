@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    ForbiddenException,
     Injectable,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -18,6 +19,7 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import * as process from "process";
 
 @Injectable()
 export class AuthService {
@@ -27,6 +29,7 @@ export class AuthService {
         private prisma: PrismaService,
     ) {}
 
+    // tokens for email verification, forget password
     private generateToken = (userId: string) => {
         const randomString = crypto.randomBytes(64).toString("base64url");
         const payload = {
@@ -34,6 +37,36 @@ export class AuthService {
             userId,
         };
         return this.jwtService.sign(payload, { expiresIn: "1h" });
+    };
+
+    // access token and refresh token
+    private generateAtRtTokens = async (payload: object) => {
+        const [at, rt] = await Promise.all([
+            this.jwtService.signAsync(payload, {
+                secret: process.env.AT_SECRET,
+                expiresIn: 60 * 15,
+            }),
+            this.jwtService.signAsync(payload, {
+                secret: process.env.RT_SECRET,
+                expiresIn: 60 * 60 * 24 * 7,
+            }),
+        ]);
+        return {
+            access_token: at,
+            refresh_token: rt,
+        };
+    };
+
+    private updateRtHash = async (userId: string, rt: string) => {
+        const hash = await hashPassword(rt);
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                refreshToken: hash,
+            },
+        });
     };
 
     /**
@@ -57,9 +90,8 @@ export class AuthService {
 
     async login(user: any) {
         const payload = { email: user.email, sub: user.id };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        const tokens = await this.generateAtRtTokens(payload);
+        return tokens;
     }
 
     async signup(signupDto: SignupDto) {
