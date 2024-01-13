@@ -5,14 +5,17 @@ import { CreateIdeationDto } from "./create-ideation.dto";
 
 export class UpdateIdeationDto extends PartialType(CreateIdeationDto) {
     @IsString()
-    @ApiProperty()
+    @ApiProperty({ example: "Fitness Tracker App" })
     title: string;
 
     @IsString()
-    @ApiProperty()
+    @ApiProperty({ example: "Use React app, node.js backend, and SQL" })
     description: string;
 
     @IsString()
-    @ApiProperty()
+    @ApiProperty({
+        example:
+            "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
+    })
     vision: string;
 }
