@@ -90,7 +90,35 @@ export class AuthService {
     async login(user: any) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
+        await this.updateRtHash(user.id, tokens.refresh_token);
         return tokens;
+    }
+
+    async logout(refreshToken: string) {
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshToken, {
+                secret: process.env.RT_SECRET,
+            });
+            if (!payload) {
+                return new BadRequestException("refresh token error");
+            }
+            await this.prisma.user.update({
+                where: {
+                    id: payload.sub,
+                    refreshToken: {
+                        not: null,
+                    },
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+        } catch (e) {
+            if (e.name === "JsonWebTokenError") {
+                throw new UnauthorizedException("Malformed refresh token");
+            }
+            throw e;
+        }
     }
 
     async signup(signupDto: SignupDto) {

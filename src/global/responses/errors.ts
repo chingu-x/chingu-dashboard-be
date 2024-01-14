@@ -1,7 +1,7 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ConflictErrorResponse {
-    @ApiProperty({
+    @ApiPropertyOptional({
         example: "Nextjs already exists in the available team tech stack.",
     })
     message: string;
@@ -14,7 +14,7 @@ export class ConflictErrorResponse {
 }
 
 export class BadRequestErrorResponse {
-    @ApiProperty({
+    @ApiPropertyOptional({
         example: "Invalid input",
     })
     message: string;
@@ -27,17 +27,20 @@ export class BadRequestErrorResponse {
 }
 
 export class UnauthorizedErrorResponse {
-    @ApiProperty({
-        example: "Unauthorized",
+    @ApiPropertyOptional({
+        example: "Malformed refresh token",
     })
     message: string;
+
+    @ApiProperty({ example: "Unauthorized" })
+    error: string;
 
     @ApiProperty({ example: 401 })
     statusCode: number;
 }
 
 export class LoginUnauthorizedErrorResponse extends UnauthorizedErrorResponse {
-    @ApiProperty({
+    @ApiPropertyOptional({
         example:
             "Signup failed. Invalid email and/or password. Please try again.",
     })
@@ -45,7 +48,7 @@ export class LoginUnauthorizedErrorResponse extends UnauthorizedErrorResponse {
 }
 
 export class NotFoundErrorResponse {
-    @ApiProperty({
+    @ApiPropertyOptional({
         example: "Record to delete does not exist.",
     })
     message: string;

@@ -136,7 +136,8 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "When a user logs out, jwt token is cleared.",
+        summary:
+            "When a user logs out, jwt token is cleared, refresh token is set to null in the database.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -144,10 +145,29 @@ export class AuthController {
             "User successfully logs out, jwt token in cookies is removed.",
         type: LogoutResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad request, e.g. missing a required cookie",
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "JWT token error",
+        type: UnauthorizedErrorResponse,
+    })
     @Post("logout")
-    async logout(@Res({ passthrough: true }) res) {
+    async logout(@Request() req, @Res({ passthrough: true }) res) {
+        const cookies = req.cookies;
+        if (!cookies) return res.status(HttpStatus.BAD_REQUEST);
+
+        const refreshToken = cookies.refresh_token;
+        if (!refreshToken) return res.status(HttpStatus.BAD_REQUEST);
+
+        await this.authService.logout(refreshToken);
+
+        // await this.authService.logout()
         res.status(HttpStatus.OK)
             .clearCookie("access_token")
+            .clearCookie("refresh_token")
             .json({ message: "Logout Success" });
     }
 
