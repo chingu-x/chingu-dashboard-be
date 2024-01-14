@@ -205,7 +205,7 @@ export class FeaturesController {
 
     @ApiOperation({
         summary:
-            "Updates the order and category? of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
+            "Updates the order and/or category of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
