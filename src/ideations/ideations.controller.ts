@@ -22,6 +22,7 @@ import {
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import {
+    BadRequestErrorResponse,
     ConflictErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
@@ -192,7 +193,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: "Ideation id or team member id given is invalid.",
-        type: IdeationResponse,
+        type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.OK,
