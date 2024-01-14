@@ -53,6 +53,12 @@ export class FeaturesController {
         type: NotFoundErrorResponse,
     })
     @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully created a new feature.",
         type: FeatureResponse,
