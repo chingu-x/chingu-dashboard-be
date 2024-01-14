@@ -150,7 +150,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.CONFLICT,
         description: "Uuid does not match team member ID on Ideation.",
-        type: NotFoundErrorResponse,
+        type: ConflictErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.OK,
