@@ -203,7 +203,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.CONFLICT,
         description: "Ideation cannot be deleted when any votes exist.",
-        type: NotFoundErrorResponse,
+        type: ConflictErrorResponse,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
