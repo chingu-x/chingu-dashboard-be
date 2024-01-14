@@ -70,7 +70,7 @@ export class FeatureCategoriesResponse {
     updatedAt: Date;
 }
 
-export class ExentedFeaturesResponse {
+export class ExtendedFeaturesResponse {
     @ApiProperty({ example: 1 })
     id: number;
 

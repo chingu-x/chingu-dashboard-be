@@ -34,7 +34,7 @@ import {
 } from "../global/responses/errors";
 import {
     FeatureCategoriesResponse,
-    ExentedFeaturesResponse,
+    ExtendedFeaturesResponse,
     FeatureResponse,
 } from "./features.response";
 
@@ -99,7 +99,7 @@ export class FeaturesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully found feature.",
-        type: ExentedFeaturesResponse,
+        type: ExtendedFeaturesResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
@@ -124,7 +124,7 @@ export class FeaturesController {
         status: HttpStatus.OK,
         description: "Successfully got all features for project.",
         isArray: true,
-        type: ExentedFeaturesResponse,
+        type: ExtendedFeaturesResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
@@ -227,7 +227,7 @@ export class FeaturesController {
         status: HttpStatus.OK,
         description: "Successfully updated feature category and ID.",
         isArray: true,
-        type: ExentedFeaturesResponse,
+        type: ExtendedFeaturesResponse,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
