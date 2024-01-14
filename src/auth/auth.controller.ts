@@ -11,7 +11,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { LocalAuthGuard } from "./guards/local-auth-guard";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { SignupDto } from "./dto/signup.dto";
@@ -26,6 +26,7 @@ import { LoginResponse, LogoutResponse } from "./auth.response";
 import { GenericSuccessResponse } from "../global/responses/shared";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -160,6 +161,7 @@ export class AuthController {
         description: "JWT token error",
         type: UnauthorizedErrorResponse,
     })
+    @UseGuards(JwtAuthGuard)
     @Post("logout")
     async logout(@Request() req, @Res({ passthrough: true }) res) {
         const cookies = req.cookies;
