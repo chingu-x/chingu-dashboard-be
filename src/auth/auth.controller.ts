@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     HttpCode,
@@ -157,14 +158,12 @@ export class AuthController {
     @Post("logout")
     async logout(@Request() req, @Res({ passthrough: true }) res) {
         const cookies = req.cookies;
-        if (!cookies) return res.status(HttpStatus.BAD_REQUEST);
 
-        const refreshToken = cookies.refresh_token;
-        if (!refreshToken) return res.status(HttpStatus.BAD_REQUEST);
+        if (!cookies?.refresh_token)
+            throw new BadRequestException("No Refresh Token");
 
-        await this.authService.logout(refreshToken);
+        await this.authService.logout(cookies.refresh_token);
 
-        // await this.authService.logout()
         res.status(HttpStatus.OK)
             .clearCookie("access_token")
             .clearCookie("refresh_token")

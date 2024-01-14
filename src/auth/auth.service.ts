@@ -100,7 +100,7 @@ export class AuthService {
                 secret: process.env.RT_SECRET,
             });
             if (!payload) {
-                return new BadRequestException("refresh token error");
+                throw new BadRequestException("refresh token error");
             }
             await this.prisma.user.update({
                 where: {
