@@ -91,7 +91,7 @@ export class AuthController {
         summary: "When a user logs in, creates jwt token.",
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         description:
             "User successfully authenticated, jwt token is saved in cookies",
         type: LoginResponse,
@@ -109,6 +109,7 @@ export class AuthController {
         type: LoginUnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
+    @HttpCode(HttpStatus.OK)
     @Post("login")
     async login(
         @Body() body: LoginDto,
@@ -128,13 +129,17 @@ export class AuthController {
                 httpOnly: true,
                 secure: true,
             });
-            res.status(HttpStatus.CREATED).send({ message: "Login Success" });
+            res.status(HttpStatus.OK).send({ message: "Login Success" });
         } catch (e) {
             throw new UnauthorizedException(
                 "Signup failed. Invalid email and/or password. Please try again.",
             );
         }
     }
+
+    @HttpCode(HttpStatus.OK)
+    @Post("refresh")
+    async refresh() {}
 
     @ApiOperation({
         summary:
