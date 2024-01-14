@@ -7,7 +7,6 @@ import {
     Post,
     Request,
     Res,
-    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -19,14 +18,23 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import {
     BadRequestErrorResponse,
+    ForbiddenErrorResponse,
     LoginUnauthorizedErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { LoginResponse, LogoutResponse } from "./auth.response";
+import {
+    LoginResponse,
+    LogoutResponse,
+    RefreshResponse,
+} from "./auth.response";
 import { GenericSuccessResponse } from "../global/responses/shared";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
+
+const AT_MAX_AGE: number = 1000 * 60 * 15;
+const RT_MAX_AGE: number = 1000 * 60 * 60 * 24 * 7;
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -117,30 +125,68 @@ export class AuthController {
         @Request() req,
         @Res({ passthrough: true }) res,
     ) {
-        try {
-            const { access_token, refresh_token } =
-                await this.authService.login(req.user);
-            res.cookie("access_token", access_token, {
-                maxAge: 1000 * 60 * 15,
-                httpOnly: true,
-                secure: true,
-            });
-            res.cookie("refresh_token", refresh_token, {
-                maxAge: 1000 * 60 * 60 * 24 * 7,
-                httpOnly: true,
-                secure: true,
-            });
-            res.status(HttpStatus.OK).send({ message: "Login Success" });
-        } catch (e) {
-            throw new UnauthorizedException(
-                "Signup failed. Invalid email and/or password. Please try again.",
-            );
-        }
+        const { access_token, refresh_token } = await this.authService.login(
+            req.user,
+        );
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE,
+            httpOnly: true,
+            secure: true,
+        });
+        res.status(HttpStatus.OK).send({ message: "Login Success" });
     }
 
+    @ApiOperation({
+        summary:
+            "Refresh an access token, with a valid refresh token in cookies",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Refresh token is successfully refreshed",
+        type: RefreshResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "JWT token error",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description:
+            "No user found in the database, maybe a tempered jwt token",
+        type: ForbiddenErrorResponse,
+    })
     @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtRefreshAuthGuard)
     @Post("refresh")
-    async refresh() {}
+    async refresh(@Request() req, @Res({ passthrough: true }) res) {
+        const cookies = req.cookies;
+
+        if (!cookies?.refresh_token)
+            throw new BadRequestException("No Refresh Token");
+        await this.authService.refresh(req.user);
+
+        const { access_token, refresh_token } = await this.authService.refresh(
+            req.user,
+        );
+
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE,
+            httpOnly: true,
+            secure: true,
+        });
+        res.status(HttpStatus.OK).send({ message: "Refresh Success" });
+    }
 
     @ApiOperation({
         summary:
@@ -155,6 +201,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: "Bad request, e.g. missing a required cookie",
+        type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,

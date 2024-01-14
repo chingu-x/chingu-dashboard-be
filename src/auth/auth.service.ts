@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    ForbiddenException,
     Injectable,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -91,6 +92,27 @@ export class AuthService {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
         await this.updateRtHash(user.id, tokens.refresh_token);
+        return tokens;
+    }
+
+    async refresh(user: any) {
+        const userInDb = await this.prisma.user.findUnique({
+            where: {
+                id: user.userId,
+            },
+        });
+        if (!userInDb) throw new ForbiddenException();
+
+        const rtMatch = await comparePassword(
+            user.refreshToken,
+            userInDb.refreshToken,
+        );
+
+        if (!rtMatch) throw new ForbiddenException();
+
+        const payload = { email: user.email, sub: user.userId };
+        const tokens = await this.generateAtRtTokens(payload);
+        await this.updateRtHash(user.userId, tokens.refresh_token);
         return tokens;
     }
 

@@ -59,3 +59,16 @@ export class NotFoundErrorResponse {
     @ApiProperty({ example: 404 })
     statusCode: number;
 }
+
+export class ForbiddenErrorResponse {
+    @ApiPropertyOptional({
+        example: "Access Denied",
+    })
+    message: string;
+
+    @ApiProperty({ example: "Forbidden" })
+    error: string;
+
+    @ApiProperty({ example: 403 })
+    statusCode: number;
+}

@@ -20,19 +20,18 @@ export class RtStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
     private static extractJWT(req: Request): string | null {
         if (
             req.cookies &&
-            "access_token" in req.cookies &&
-            req.cookies.access_token.length > 0
+            "refresh_token" in req.cookies &&
+            req.cookies.refresh_token.length > 0
         ) {
-            return req.cookies.access_token;
+            return req.cookies.refresh_token;
         }
     }
 
     async validate(req: Request, payload: any) {
-        const refreshToken = req.cookies.refresh_token;
         return {
             userId: payload.sub,
             email: payload.email,
-            refresh_token: refreshToken,
+            refreshToken: req.cookies.refresh_token,
         };
     }
 }
