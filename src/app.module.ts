@@ -8,11 +8,12 @@ import { SprintsModule } from "./sprints/sprints.module";
 import { FormsModule } from "./forms/forms.module";
 import { AuthModule } from "./auth/auth.module";
 import { GlobalModule } from "./global/global.module";
-import { RouterModule } from "@nestjs/core";
+import { APP_GUARD, RouterModule } from "@nestjs/core";
 import { ResourcesModule } from "./resources/resources.module";
 import { TechsModule } from "./techs/techs.module";
 import { FeaturesModule } from "./features/features.module";
 import { IdeationsModule } from "./ideations/ideations.module";
+import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 
 @Module({
     imports: [
@@ -41,6 +42,9 @@ import { IdeationsModule } from "./ideations/ideations.module";
         GlobalModule,
     ],
     controllers: [HealthCheckController],
-    providers: [HealthCheckService],
+    providers: [
+        HealthCheckService,
+        { provide: APP_GUARD, useClass: JwtAuthGuard },
+    ],
 })
 export class AppModule {}

@@ -32,6 +32,7 @@ import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
+import { Public } from "../global/decorators/public.decorator";
 
 const AT_MAX_AGE: number = 1000 * 60 * 15;
 const RT_MAX_AGE: number = 1000 * 60 * 60 * 24 * 7;
@@ -42,7 +43,7 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @ApiOperation({
-        summary: "Signup, and send a verification email",
+        summary: "Public Route: Signup, and send a verification email",
         description:
             "Please use a 'real' email if you want to receive a verification email.",
     })
@@ -53,6 +54,7 @@ export class AuthController {
         type: GenericSuccessResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Public()
     @Post("signup")
     async signup(@Body() signupDto: SignupDto) {
         return this.authService.signup(signupDto);
@@ -67,6 +69,11 @@ export class AuthController {
         status: HttpStatus.OK,
         description: "Email successfully re-sent",
         type: GenericSuccessResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
     @Post("resend-email")
@@ -97,7 +104,8 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "When a user logs in, creates jwt token.",
+        summary:
+            "Public Route: When a user logs in, sets access token and refresh token (http cookies).",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -118,6 +126,7 @@ export class AuthController {
         type: LoginUnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post("login")
     async login(
@@ -143,7 +152,7 @@ export class AuthController {
 
     @ApiOperation({
         summary:
-            "Refresh an access token, with a valid refresh token in cookies",
+            "Bypass access token jwt guard. Refresh an access token, with a valid refresh token in cookies",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -162,6 +171,7 @@ export class AuthController {
         type: ForbiddenErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Public()
     @UseGuards(JwtRefreshAuthGuard)
     @Post("refresh")
     async refresh(@Request() req, @Res({ passthrough: true }) res) {
@@ -226,7 +236,7 @@ export class AuthController {
 
     @ApiOperation({
         summary:
-            "Request a password reset - email with password reset link (if the account exists)",
+            "Public route: Request a password reset - email with password reset link (if the account exists)",
         description:
             "Please use a 'real' email if you want to receive a password reset email.",
     })
@@ -236,6 +246,7 @@ export class AuthController {
             "Password reset email successfully sent (if the user account exist)",
         type: GenericSuccessResponse,
     })
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post("reset-password/request")
     async resetPasswordRequest(
@@ -245,7 +256,7 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "Reset user password",
+        summary: "Public route: Reset user password",
         description:
             "The reset token is emailed to them when the request a password reset.",
     })
@@ -262,6 +273,7 @@ export class AuthController {
         type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Public()
     @Post("reset-password/")
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);

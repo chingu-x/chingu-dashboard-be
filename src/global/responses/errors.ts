@@ -28,7 +28,7 @@ export class BadRequestErrorResponse {
 
 export class UnauthorizedErrorResponse {
     @ApiProperty({
-        example: "Malformed refresh token",
+        example: "Unauthorized",
     })
     message: string;
 
