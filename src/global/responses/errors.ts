@@ -1,12 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ConflictErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example: "Nextjs already exists in the available team tech stack.",
     })
     message: string;
 
-    @ApiProperty({ example: "Conflict" })
+    @ApiPropertyOptional({ example: "Conflict" })
     error: string;
 
     @ApiProperty({ example: 409 })
@@ -14,12 +14,12 @@ export class ConflictErrorResponse {
 }
 
 export class BadRequestErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example: "Invalid input",
     })
     message: string;
 
-    @ApiProperty({ example: "Bad Request" })
+    @ApiPropertyOptional({ example: "Bad Request" })
     error: string;
 
     @ApiProperty({ example: 400 })
@@ -27,12 +27,12 @@ export class BadRequestErrorResponse {
 }
 
 export class UnauthorizedErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example: "Malformed refresh token",
     })
     message: string;
 
-    @ApiProperty({ example: "Unauthorized" })
+    @ApiPropertyOptional({ example: "Unauthorized" })
     error: string;
 
     @ApiProperty({ example: 401 })
@@ -40,7 +40,7 @@ export class UnauthorizedErrorResponse {
 }
 
 export class LoginUnauthorizedErrorResponse extends UnauthorizedErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example:
             "Signup failed. Invalid email and/or password. Please try again.",
     })
@@ -48,12 +48,12 @@ export class LoginUnauthorizedErrorResponse extends UnauthorizedErrorResponse {
 }
 
 export class NotFoundErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example: "Record to delete does not exist.",
     })
     message: string;
 
-    @ApiProperty({ example: "Not Found" })
+    @ApiPropertyOptional({ example: "Not Found" })
     error: string;
 
     @ApiProperty({ example: 404 })
@@ -61,12 +61,12 @@ export class NotFoundErrorResponse {
 }
 
 export class ForbiddenErrorResponse {
-    @ApiPropertyOptional({
+    @ApiProperty({
         example: "Access Denied",
     })
     message: string;
 
-    @ApiProperty({ example: "Forbidden" })
+    @ApiPropertyOptional({ example: "Forbidden" })
     error: string;
 
     @ApiProperty({ example: 403 })
