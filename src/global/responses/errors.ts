@@ -26,6 +26,17 @@ export class BadRequestErrorResponse {
     statusCode: number;
 }
 
+export class BadRequestErrorArrayResponse {
+    @ApiProperty({ isArray: true, example: "URL must be a URL address" })
+    message: string;
+
+    @ApiProperty({ example: "Bad Request" })
+    error: string;
+
+    @ApiProperty({ example: 400 })
+    statusCode: number;
+}
+
 export class UnauthorizedErrorResponse {
     @ApiProperty({
         example: "Unauthorized",
