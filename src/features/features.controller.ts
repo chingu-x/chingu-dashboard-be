@@ -12,6 +12,7 @@ import {
     HttpException,
     HttpStatus,
     NotFoundException,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -21,10 +22,21 @@ import {
     ApiBearerAuth,
     ApiCreatedResponse,
     ApiOperation,
+    ApiResponse,
     ApiTags,
 } from "@nestjs/swagger";
 import { Feature } from "./entities/feature.entity";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import {
+    BadRequestErrorResponse,
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
+import {
+    FeatureCategoriesResponse,
+    ExtendedFeaturesResponse,
+    FeatureResponse,
+} from "./features.response";
 
 @Controller()
 @ApiTags("Voyage - Features")
@@ -34,6 +46,22 @@ export class FeaturesController {
     @ApiOperation({
         summary:
             "Adds a new feature for a team given a teamId (int) and that the user is logged in.",
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Feature Category with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully created a new feature.",
+        type: FeatureResponse,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -54,6 +82,12 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets all feature category options.",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully got all feature categories.",
+        isArray: true,
+        type: FeatureCategoriesResponse,
+    })
     @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
@@ -62,6 +96,22 @@ export class FeaturesController {
     @ApiOperation({
         summary: "Gets one feature given a featureId (int).",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully found feature.",
+        type: ExtendedFeaturesResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Feature with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
     @Get("/features/:featureId")
     findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
         return this.featuresService.findOneFeature(featureId);
@@ -69,6 +119,24 @@ export class FeaturesController {
 
     @ApiOperation({
         summary: "Gets all features for a team given a teamId (int).",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully got all features for project.",
+        isArray: true,
+        type: ExtendedFeaturesResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description:
+            "Could not find features for project. Team with given ID does not exist.",
+        type: NotFoundErrorResponse,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -83,6 +151,26 @@ export class FeaturesController {
     @ApiOperation({
         summary:
             "Updates a feature given a featureId (int) and that the user who created it is logged in.",
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Feature with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "user is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid Req.body or featureId ",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated feature.",
+        type: FeatureResponse,
     })
     //Can only update if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
@@ -108,13 +196,38 @@ export class FeaturesController {
             );
             return updatedFeature;
         } else {
-            throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new HttpException(
+                "user is unauthorized to perform this action",
+                HttpStatus.UNAUTHORIZED,
+            );
         }
     }
 
     @ApiOperation({
         summary:
-            "Updates the order and category? of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
+            "Updates the order and/or category of features by team members given a featureId (int), featureCategoryId (int), and order (int).",
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "user is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Feature category with given ID does not exist.",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description:
+            "Could not find features for project. Team with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated feature category and ID.",
+        isArray: true,
+        type: ExtendedFeaturesResponse,
     })
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -134,6 +247,20 @@ export class FeaturesController {
     @ApiOperation({
         summary:
             "Deletes a feature given the featureId (int) and user who created it is logged in.",
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Feature with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "user is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully deleted feature.",
     })
     //Can only delete if loggedIn userId mataches addedBy userId
     @UseGuards(JwtAuthGuard)
@@ -156,7 +283,9 @@ export class FeaturesController {
                 await this.featuresService.deleteFeature(featureId);
             return deletedFeature;
         } else {
-            throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
+            throw new UnauthorizedException(
+                `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy.member.id}`,
+            );
         }
     }
 }
