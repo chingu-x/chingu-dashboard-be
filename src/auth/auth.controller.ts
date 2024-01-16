@@ -179,7 +179,6 @@ export class AuthController {
 
         if (!cookies?.refresh_token)
             throw new BadRequestException("No Refresh Token");
-        await this.authService.refresh(req.user);
 
         const { access_token, refresh_token } = await this.authService.refresh(
             req.user,
