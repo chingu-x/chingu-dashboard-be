@@ -8,19 +8,11 @@ import {
     ParseIntPipe,
     ValidationPipe,
     Request,
-    UseGuards,
     HttpStatus,
 } from "@nestjs/common";
 import { TechsService } from "./techs.service";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiParam,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { TeamTechResponse, TechItemResponse } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -86,8 +78,6 @@ export class TechsController {
         required: true,
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post()
     addNewTeamTech(
         @Request() req,
@@ -136,8 +126,6 @@ export class TechsController {
         required: true,
         example: 11,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post("/:teamTechId")
     addExistingTechVote(
         @Request() req,
@@ -185,8 +173,6 @@ export class TechsController {
         required: true,
         example: 11,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Delete("/:teamTechId")
     removeVote(
         @Request() req,

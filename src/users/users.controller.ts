@@ -5,17 +5,10 @@ import {
     HttpStatus,
     Param,
     Request,
-    UseGuards,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiParam,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+
 import {
     FullUserResponse,
     PrivateUserResponse,
@@ -61,8 +54,6 @@ export class UsersController {
         description: "User is not logged in",
         type: UnauthorizedErrorResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Get("me")
     getProfile(@Request() req) {
         return this.usersService.getPrivateUserProfile(req.user.userId);

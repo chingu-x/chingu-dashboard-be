@@ -7,7 +7,6 @@ import {
     Param,
     Delete,
     ParseIntPipe,
-    UseGuards,
     Request,
     HttpException,
     HttpStatus,
@@ -19,14 +18,12 @@ import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import {
-    ApiBearerAuth,
     ApiCreatedResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
 } from "@nestjs/swagger";
 import { Feature } from "./entities/feature.entity";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
@@ -63,8 +60,6 @@ export class FeaturesController {
         description: "Successfully created a new feature.",
         type: FeatureResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post("/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
@@ -138,8 +133,6 @@ export class FeaturesController {
             "Could not find features for project. Team with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Get("/:teamId/features")
     findAllFeatures(
         @Request() req,
@@ -173,8 +166,6 @@ export class FeaturesController {
         type: FeatureResponse,
     })
     //Can only update if loggedIn userId mataches addedBy userId
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Patch("/features/:featureId")
     async updateFeature(
         @Request() req,
@@ -229,8 +220,6 @@ export class FeaturesController {
         isArray: true,
         type: ExtendedFeaturesResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Patch("/features/:featureId/reorder")
     async updateFeatureOrderAndCategory(
         @Request() req,
@@ -263,8 +252,6 @@ export class FeaturesController {
         description: "Successfully deleted feature.",
     })
     //Can only delete if loggedIn userId mataches addedBy userId
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Delete("/features/:featureId")
     async deleteFeature(
         @Request() req,
