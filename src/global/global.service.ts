@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -20,7 +20,7 @@ export class GlobalService {
         });
 
         if (!teamMember) {
-            throw new NotFoundException(
+            throw new UnauthorizedException(
                 `TeamId (id: ${teamId}) and/or loggedIn userId (id: ${uuid}) is invalid.`,
             );
         }
