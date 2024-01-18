@@ -57,14 +57,17 @@ export class AuthService {
         };
     };
 
+    private hashJWT = (jwt) => {
+        return crypto.createHash("sha256").update(jwt).digest("hex");
+    };
+
     private updateRtHash = async (userId: string, rt: string) => {
-        const hash = await hashPassword(rt);
         await this.prisma.user.update({
             where: {
                 id: userId,
             },
             data: {
-                refreshToken: hash,
+                refreshToken: this.hashJWT(rt),
             },
         });
     };
@@ -103,10 +106,8 @@ export class AuthService {
         });
         if (!userInDb) throw new ForbiddenException();
 
-        const rtMatch = await comparePassword(
-            user.refreshToken,
-            userInDb.refreshToken,
-        );
+        const rtMatch =
+            this.hashJWT(user.refreshToken) === userInDb.refreshToken;
 
         if (!rtMatch) throw new ForbiddenException();
 
