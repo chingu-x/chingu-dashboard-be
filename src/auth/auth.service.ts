@@ -109,7 +109,19 @@ export class AuthService {
         const rtMatch =
             this.hashJWT(user.refreshToken) === userInDb.refreshToken;
 
-        if (!rtMatch) throw new ForbiddenException();
+        // token not found, but token is a valid token: possibly stolen old token
+        // invalidate user refresh token in the database, and do not issue new tokens
+        if (!rtMatch) {
+            await this.prisma.user.update({
+                where: {
+                    id: user.userId,
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+            throw new ForbiddenException();
+        }
 
         const payload = { email: user.email, sub: user.userId };
         const tokens = await this.generateAtRtTokens(payload);
