@@ -33,9 +33,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
-
-const AT_MAX_AGE: number = 1000 * 60 * 15;
-const RT_MAX_AGE: number = 1000 * 60 * 60 * 24 * 7;
+import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -138,12 +136,12 @@ export class AuthController {
             req.user,
         );
         res.cookie("access_token", access_token, {
-            maxAge: AT_MAX_AGE,
+            maxAge: AT_MAX_AGE * 1000,
             httpOnly: true,
             secure: true,
         });
         res.cookie("refresh_token", refresh_token, {
-            maxAge: RT_MAX_AGE,
+            maxAge: RT_MAX_AGE * 1000,
             httpOnly: true,
             secure: true,
         });

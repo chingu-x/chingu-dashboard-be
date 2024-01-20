@@ -20,6 +20,7 @@ import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import * as process from "process";
+import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 
 @Injectable()
 export class AuthService {
@@ -44,11 +45,11 @@ export class AuthService {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync(payload, {
                 secret: process.env.AT_SECRET,
-                expiresIn: 60 * 60,
+                expiresIn: AT_MAX_AGE,
             }),
             this.jwtService.signAsync(payload, {
                 secret: process.env.RT_SECRET,
-                expiresIn: 60 * 60 * 24 * 7,
+                expiresIn: RT_MAX_AGE,
             }),
         ]);
         return {
