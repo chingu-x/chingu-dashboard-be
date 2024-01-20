@@ -183,12 +183,12 @@ export class AuthController {
         );
 
         res.cookie("access_token", access_token, {
-            maxAge: AT_MAX_AGE,
+            maxAge: AT_MAX_AGE * 1000,
             httpOnly: true,
             secure: true,
         });
         res.cookie("refresh_token", refresh_token, {
-            maxAge: RT_MAX_AGE,
+            maxAge: RT_MAX_AGE * 1000,
             httpOnly: true,
             secure: true,
         });
