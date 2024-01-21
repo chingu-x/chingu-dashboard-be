@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     HttpCode,
@@ -6,11 +7,10 @@ import {
     Post,
     Request,
     Res,
-    UnauthorizedException,
     UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { LocalAuthGuard } from "./local-auth-guard";
+import { LocalAuthGuard } from "./guards/local-auth.guard";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { SignupDto } from "./dto/signup.dto";
@@ -18,13 +18,22 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import {
     BadRequestErrorResponse,
+    ForbiddenErrorResponse,
     LoginUnauthorizedErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { LoginResponse, LogoutResponse } from "./auth.response";
+import {
+    LoginResponse,
+    LogoutResponse,
+    RefreshResponse,
+} from "./auth.response";
 import { GenericSuccessResponse } from "../global/responses/shared";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
+import { Public } from "../global/decorators/public.decorator";
+import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -32,7 +41,7 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @ApiOperation({
-        summary: "Signup, and send a verification email",
+        summary: "Public Route: Signup, and send a verification email",
         description:
             "Please use a 'real' email if you want to receive a verification email.",
     })
@@ -43,6 +52,7 @@ export class AuthController {
         type: GenericSuccessResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Public()
     @Post("signup")
     async signup(@Body() signupDto: SignupDto) {
         return this.authService.signup(signupDto);
@@ -57,6 +67,11 @@ export class AuthController {
         status: HttpStatus.OK,
         description: "Email successfully re-sent",
         type: GenericSuccessResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
     @Post("resend-email")
@@ -87,10 +102,11 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "When a user logs in, creates jwt token.",
+        summary:
+            "Public Route: When a user logs in, sets access token and refresh token (http cookies).",
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         description:
             "User successfully authenticated, jwt token is saved in cookies",
         type: LoginResponse,
@@ -108,29 +124,80 @@ export class AuthController {
         type: LoginUnauthorizedErrorResponse,
     })
     @UseGuards(LocalAuthGuard)
+    @Public()
+    @HttpCode(HttpStatus.OK)
     @Post("login")
     async login(
         @Body() body: LoginDto,
         @Request() req,
         @Res({ passthrough: true }) res,
     ) {
-        try {
-            const access_token = await this.authService.login(req.user);
-            res.cookie("access_token", access_token.access_token, {
-                maxAge: 1000 * 60 * 60 * 24 * 7,
-                httpOnly: true,
-                secure: true,
-            });
-            res.status(HttpStatus.CREATED).send({ message: "Login Success" });
-        } catch (e) {
-            throw new UnauthorizedException(
-                "Signup failed. Invalid email and/or password. Please try again.",
-            );
-        }
+        const { access_token, refresh_token } = await this.authService.login(
+            req.user,
+        );
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.status(HttpStatus.OK).send({ message: "Login Success" });
     }
 
     @ApiOperation({
-        summary: "When a user logs out, jwt token is cleared.",
+        summary:
+            "Bypass access token jwt guard. Refresh an access token, with a valid refresh token in cookies",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Refresh token is successfully refreshed",
+        type: RefreshResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "JWT token error",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description:
+            "No user found in the database, maybe a tempered jwt token",
+        type: ForbiddenErrorResponse,
+    })
+    @HttpCode(HttpStatus.OK)
+    @Public()
+    @UseGuards(JwtRefreshAuthGuard)
+    @Post("refresh")
+    async refresh(@Request() req, @Res({ passthrough: true }) res) {
+        const cookies = req.cookies;
+
+        if (!cookies?.refresh_token)
+            throw new BadRequestException("No Refresh Token");
+
+        const { access_token, refresh_token } = await this.authService.refresh(
+            req.user,
+        );
+
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.status(HttpStatus.OK).send({ message: "Refresh Success" });
+    }
+
+    @ApiOperation({
+        summary:
+            "When a user logs out, jwt token is cleared, refresh token is set to null in the database.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -138,16 +205,35 @@ export class AuthController {
             "User successfully logs out, jwt token in cookies is removed.",
         type: LogoutResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad request, e.g. missing a required cookie",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "JWT token error",
+        type: UnauthorizedErrorResponse,
+    })
+    @UseGuards(JwtAuthGuard)
     @Post("logout")
-    async logout(@Res({ passthrough: true }) res) {
+    async logout(@Request() req, @Res({ passthrough: true }) res) {
+        const cookies = req.cookies;
+
+        if (!cookies?.refresh_token)
+            throw new BadRequestException("No Refresh Token");
+
+        await this.authService.logout(cookies.refresh_token);
+
         res.status(HttpStatus.OK)
             .clearCookie("access_token")
+            .clearCookie("refresh_token")
             .json({ message: "Logout Success" });
     }
 
     @ApiOperation({
         summary:
-            "Request a password reset - email with password reset link (if the account exists)",
+            "Public route: Request a password reset - email with password reset link (if the account exists)",
         description:
             "Please use a 'real' email if you want to receive a password reset email.",
     })
@@ -157,6 +243,7 @@ export class AuthController {
             "Password reset email successfully sent (if the user account exist)",
         type: GenericSuccessResponse,
     })
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post("reset-password/request")
     async resetPasswordRequest(
@@ -166,7 +253,7 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "Reset user password",
+        summary: "Public route: Reset user password",
         description:
             "The reset token is emailed to them when the request a password reset.",
     })
@@ -183,6 +270,7 @@ export class AuthController {
         type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Public()
     @Post("reset-password/")
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);

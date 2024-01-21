@@ -5,6 +5,11 @@ export class LoginResponse {
     message: string;
 }
 
+export class RefreshResponse {
+    @ApiProperty({ example: "Refresh Success" })
+    message: string;
+}
+
 export class LogoutResponse {
     @ApiProperty({ example: "Logout Success" })
     message: string;
