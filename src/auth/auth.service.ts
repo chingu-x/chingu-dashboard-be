@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    ForbiddenException,
     Injectable,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -18,6 +19,8 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import * as process from "process";
+import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 
 @Injectable()
 export class AuthService {
@@ -27,6 +30,7 @@ export class AuthService {
         private prisma: PrismaService,
     ) {}
 
+    // tokens for email verification, forget password
     private generateToken = (userId: string) => {
         const randomString = crypto.randomBytes(64).toString("base64url");
         const payload = {
@@ -34,6 +38,39 @@ export class AuthService {
             userId,
         };
         return this.jwtService.sign(payload, { expiresIn: "1h" });
+    };
+
+    // access token and refresh token
+    private generateAtRtTokens = async (payload: object) => {
+        const [at, rt] = await Promise.all([
+            this.jwtService.signAsync(payload, {
+                secret: process.env.AT_SECRET,
+                expiresIn: AT_MAX_AGE,
+            }),
+            this.jwtService.signAsync(payload, {
+                secret: process.env.RT_SECRET,
+                expiresIn: RT_MAX_AGE,
+            }),
+        ]);
+        return {
+            access_token: at,
+            refresh_token: rt,
+        };
+    };
+
+    private hashJWT = (jwt) => {
+        return crypto.createHash("sha256").update(jwt).digest("hex");
+    };
+
+    private updateRtHash = async (userId: string, rt: string) => {
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                refreshToken: this.hashJWT(rt),
+            },
+        });
     };
 
     /**
@@ -57,9 +94,67 @@ export class AuthService {
 
     async login(user: any) {
         const payload = { email: user.email, sub: user.id };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        const tokens = await this.generateAtRtTokens(payload);
+        await this.updateRtHash(user.id, tokens.refresh_token);
+        return tokens;
+    }
+
+    async refresh(user: any) {
+        const userInDb = await this.prisma.user.findUnique({
+            where: {
+                id: user.userId,
+            },
+        });
+        if (!userInDb) throw new ForbiddenException();
+
+        const rtMatch =
+            this.hashJWT(user.refreshToken) === userInDb.refreshToken;
+
+        // token not found, but token is a valid token: possibly stolen old token
+        // invalidate user refresh token in the database, and do not issue new tokens
+        if (!rtMatch) {
+            await this.prisma.user.update({
+                where: {
+                    id: user.userId,
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+            throw new ForbiddenException();
+        }
+
+        const payload = { email: user.email, sub: user.userId };
+        const tokens = await this.generateAtRtTokens(payload);
+        await this.updateRtHash(user.userId, tokens.refresh_token);
+        return tokens;
+    }
+
+    async logout(refreshToken: string) {
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshToken, {
+                secret: process.env.RT_SECRET,
+            });
+            if (!payload) {
+                throw new BadRequestException("refresh token error");
+            }
+            await this.prisma.user.update({
+                where: {
+                    id: payload.sub,
+                    refreshToken: {
+                        not: null,
+                    },
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+        } catch (e) {
+            if (e.name === "JsonWebTokenError") {
+                throw new UnauthorizedException("Malformed refresh token");
+            }
+            throw e;
+        }
     }
 
     async signup(signupDto: SignupDto) {

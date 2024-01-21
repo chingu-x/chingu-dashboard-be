@@ -8,19 +8,12 @@ import {
     Delete,
     ParseIntPipe,
     Request,
-    UseGuards,
     HttpStatus,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
@@ -59,8 +52,6 @@ export class IdeationsController {
         description: "Successfully created a new ideation and vote added.",
         type: IdeationResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post()
     createIdeation(
         @Request() req,
@@ -99,8 +90,6 @@ export class IdeationsController {
         description: "Successfully created a new ideation vote.",
         type: IdeationVoteResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post("/:ideationId/ideation-votes")
     createIdeationVote(
         @Request() req,
@@ -158,8 +147,6 @@ export class IdeationsController {
         description: "Successfully updated ideation.",
         type: IdeationResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Patch("/:ideationId")
     updateIdeation(
         @Request() req,
@@ -205,8 +192,6 @@ export class IdeationsController {
         description: "Ideation cannot be deleted when any votes exist.",
         type: ConflictErrorResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Delete("/:ideationId")
     deleteIdeation(
         @Request() req,
@@ -236,8 +221,6 @@ export class IdeationsController {
         description: "Successfully deleted ideation vote.",
         type: IdeationVoteResponse,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Delete("/:ideationId/ideation-votes")
     deleteIdeationVote(
         @Request() req,
