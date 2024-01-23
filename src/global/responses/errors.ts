@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ConflictErrorResponse {
     @ApiProperty({
@@ -6,7 +6,7 @@ export class ConflictErrorResponse {
     })
     message: string;
 
-    @ApiProperty({ example: "Conflict" })
+    @ApiPropertyOptional({ example: "Conflict" })
     error: string;
 
     @ApiProperty({ example: 409 })
@@ -19,7 +19,7 @@ export class BadRequestErrorResponse {
     })
     message: string;
 
-    @ApiProperty({ example: "Bad Request" })
+    @ApiPropertyOptional({ example: "Bad Request" })
     error: string;
 
     @ApiProperty({ example: 400 })
@@ -43,6 +43,9 @@ export class UnauthorizedErrorResponse {
     })
     message: string;
 
+    @ApiPropertyOptional({ example: "Unauthorized" })
+    error: string;
+
     @ApiProperty({ example: 401 })
     statusCode: number;
 }
@@ -61,9 +64,22 @@ export class NotFoundErrorResponse {
     })
     message: string;
 
-    @ApiProperty({ example: "Not Found" })
+    @ApiPropertyOptional({ example: "Not Found" })
     error: string;
 
     @ApiProperty({ example: 404 })
+    statusCode: number;
+}
+
+export class ForbiddenErrorResponse {
+    @ApiProperty({
+        example: "Access Denied",
+    })
+    message: string;
+
+    @ApiPropertyOptional({ example: "Forbidden" })
+    error: string;
+
+    @ApiProperty({ example: 403 })
     statusCode: number;
 }

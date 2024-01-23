@@ -7,21 +7,13 @@ import {
     Param,
     Delete,
     ParseIntPipe,
-    UseGuards,
     Request,
     HttpStatus,
 } from "@nestjs/common";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiParam,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
@@ -68,8 +60,6 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Post()
     createNewResource(
         @Request() req,
@@ -108,8 +98,6 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Get()
     findAllResources(
         @Request() req,
@@ -148,8 +136,6 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Patch("/:resourceId")
     updateResource(
         @Request() req,
@@ -193,8 +179,6 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Delete("/:resourceId")
     removeResource(
         @Request() req,

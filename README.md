@@ -23,6 +23,14 @@ PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
 PGADMIN_DEFAULT_PASSWORD=chingu5432
 PORT=8000
 
+AT_SECRET=
+RT_SECRET=
+MJ_APIKEY_PRIVATE=
+MJ_APIKEY_PUBLIC=
+NODE_ENV=development
+FRONTEND_URL=https://chingu-dashboard.vercel.app
+BCRYPT_HASHING_ROUNDS=10
+
 # .env.test
 DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard-test?schema=public
 POSTGRES_USER=chingu

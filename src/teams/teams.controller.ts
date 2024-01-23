@@ -6,19 +6,11 @@ import {
     Param,
     ParseIntPipe,
     Request,
-    UseGuards,
     HttpStatus,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiParam,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import {
     PublicVoyageTeamWithUserResponse,
     VoyageTeamMemberUpdateResponse,
@@ -122,8 +114,6 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
     @Patch(":teamId/members")
     update(
         @Param("teamId", ParseIntPipe) teamId: number,
