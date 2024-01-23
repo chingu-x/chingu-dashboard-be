@@ -28,7 +28,7 @@ RT_SECRET=
 MJ_APIKEY_PRIVATE=
 MJ_APIKEY_PUBLIC=
 NODE_ENV=development
-FRONTEND_URL=https://chingu-dashboard.vercel.app
+FRONTEND_URL=https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app/
 BCRYPT_HASHING_ROUNDS=10
 
 # .env.test
