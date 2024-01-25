@@ -3,8 +3,14 @@ import { hashPassword } from "../../src/utils/auth";
 
 const prisma = new PrismaClient();
 
+const getRoleId = (roles, name) => {
+    return roles.filter((role) => role.name == name)[0].id;
+};
+
 export const populateUsers = async () => {
-    await prisma.user.create({
+    const roles = await prisma.role.findMany({});
+
+    let user = await prisma.user.create({
         data: {
             email: "jessica.williamson@gmail.com",
             password: await hashPassword("password"),
@@ -26,7 +32,14 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+
+    user = await prisma.user.create({
         data: {
             email: "l.castro@outlook.com",
             password: await hashPassword("password"),
@@ -47,7 +60,21 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "admin"),
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+
+    user = await prisma.user.create({
         data: {
             email: "leo.rowe@outlook.com",
             password: await hashPassword("password"),
@@ -68,7 +95,14 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "user"),
+        },
+    });
+
+    user = await prisma.user.create({
         data: {
             email: "JosoMadar@dayrep.com",
             password: await hashPassword("password"),
@@ -81,6 +115,13 @@ export const populateUsers = async () => {
             timezone: "Europe/Zagreb",
             comment: "This is a random admin comment",
             countryCode: "HR",
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "user"),
         },
     });
 

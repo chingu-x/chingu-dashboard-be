@@ -21,7 +21,7 @@ model HealthCheck {
   updatedAt DateTime @updatedAt
 }
 
-// === User ===
+// === Users, roles, and tokens ===
 
 model Gender {
   id           Int    @id @default(autoincrement())
@@ -63,6 +63,30 @@ model User {
   voyageApplications     VoyageApplication[]
   resetToken             ResetToken?
   emailVerificationToken EmailVerificationToken?
+  userRole               UserRole[]
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  userRole UserRole[]
+}
+
+model UserRole {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.Uuid
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  roleId Int
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  @@unique(fields: [userId, roleId], name: "userRoleKey")
 }
 
 model ResetToken {
