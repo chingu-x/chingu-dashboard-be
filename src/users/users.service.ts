@@ -1,11 +1,25 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserEntity } from "./entities/user.entity";
-import { fullUserDetailSelect } from "../global/selects/users.select";
+import {
+    fullUserDetailSelect,
+    privateUserDetailSelect,
+} from "../global/selects/users.select";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
+
+    private formatUser = (user) => {
+        const formattedUser = {
+            ...user,
+            roles: user.userRole.flatMap((r) => r.role.name),
+        };
+
+        delete formattedUser.userRole;
+
+        return formattedUser;
+    };
 
     findUserByEmail(email: string): Promise<UserEntity | undefined> {
         return this.prisma.user.findUnique({
@@ -23,81 +37,23 @@ export class UsersService {
         });
     }
 
-    findAll() {
-        return this.prisma.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                emailVerified: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                githubId: true,
-                discordId: true,
-                twitterId: true,
-                linkedinId: true,
-                gender: {
-                    select: {
-                        id: true,
-                        abbreviation: true,
-                        description: true,
-                    },
-                },
-                countryCode: true,
-                timezone: true,
-                comment: true,
-            },
+    async findAll() {
+        const users = await this.prisma.user.findMany({
+            select: fullUserDetailSelect,
         });
+        return users.map((user) => this.formatUser(user));
     }
 
     // /me endpoint, user's own profile/data
-    getPrivateUserProfile(userId: string) {
-        return this.prisma.user.findUnique({
+    async getPrivateUserProfile(userId: string) {
+        const user = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                discordId: true,
-                githubId: true,
-                twitterId: true,
-                linkedinId: true,
-                email: true,
-                countryCode: true,
-                timezone: true,
-                voyageTeamMembers: {
-                    orderBy: {
-                        voyageTeamId: "desc",
-                    },
-                    select: {
-                        id: true,
-                        voyageTeamId: true,
-                        voyageTeam: {
-                            select: {
-                                name: true,
-                                voyage: {
-                                    select: {
-                                        status: {
-                                            select: {
-                                                name: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        voyageRole: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                    },
-                },
-            },
+            select: privateUserDetailSelect,
         });
+
+        return this.formatUser(user);
     }
 
     // full user detail, for dev purpose
@@ -113,7 +69,7 @@ export class UsersService {
             throw new NotFoundException(`User (userid: ${userId} not found`);
         }
 
-        return user;
+        return this.formatUser(user);
     }
 
     async getUserDetailsByEmail(email: string) {
@@ -128,6 +84,6 @@ export class UsersService {
             throw new NotFoundException(`User (email: ${email} not found`);
         }
 
-        return user;
+        return this.formatUser(user);
     }
 }

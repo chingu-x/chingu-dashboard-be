@@ -2,6 +2,7 @@ import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { VoyageRoleEntity } from "../global/entities/voyage-role.entity";
 import { VoyageStatus } from "../global/responses/shared";
+import { IsIn } from "class-validator";
 
 class Gender {
     @ApiProperty({ example: 1 })
@@ -116,6 +117,10 @@ export class UserResponse {
             "This is an admin comment. And should not be returned except for admin endpoints.",
     })
     comment: string;
+
+    @IsIn(["admin", "voyager", "user"])
+    @ApiProperty({ isArray: true, example: ["admin", "voyager"] })
+    roles: string;
 
     createdAt: Date;
     updatedAt: Date;

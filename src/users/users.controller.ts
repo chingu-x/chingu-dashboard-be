@@ -9,11 +9,7 @@ import {
 import { UsersService } from "./users.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import {
-    FullUserResponse,
-    PrivateUserResponse,
-    UserResponse,
-} from "./users.response";
+import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
@@ -34,7 +30,7 @@ export class UsersController {
         status: HttpStatus.OK,
         description: "Successfully gets all users in the database",
         isArray: true,
-        type: UserResponse,
+        type: FullUserResponse,
     })
     @Get()
     findAll() {
