@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { UserEntity } from "./entities/user.entity";
 import {
     fullUserDetailSelect,
     privateUserDetailSelect,
@@ -21,7 +20,7 @@ export class UsersService {
         return formattedUser;
     };
 
-    findUserByEmail(email: string): Promise<UserEntity | undefined> {
+    findUserByEmail(email: string) {
         return this.prisma.user.findUnique({
             where: {
                 email,
@@ -29,7 +28,7 @@ export class UsersService {
         });
     }
 
-    findUserById(id: string): Promise<UserEntity | undefined> {
+    findUserById(id: string) {
         return this.prisma.user.findUnique({
             where: {
                 id,
