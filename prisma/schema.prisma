@@ -85,13 +85,15 @@ model EmailVerificationToken {
 // === Voyage - Schedule, sprint dates and Teams ===
 
 model Voyage {
-  id                   Int       @id @default(autoincrement())
-  number               String    @unique
-  startDate            DateTime  @db.Timestamptz()
-  endDate              DateTime  @db.Timestamptz()
-  soloProjectDeadline  DateTime  @db.Timestamptz()
-  certificateIssueDate DateTime  @db.Timestamptz()
-  showcasePublishDate  DateTime? @db.Timestamptz()
+  id                   Int           @id @default(autoincrement())
+  number               String        @unique
+  status               VoyageStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  statusId             Int?
+  startDate            DateTime      @db.Timestamptz()
+  endDate              DateTime      @db.Timestamptz()
+  soloProjectDeadline  DateTime      @db.Timestamptz()
+  certificateIssueDate DateTime      @db.Timestamptz()
+  showcasePublishDate  DateTime?     @db.Timestamptz()
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -127,6 +129,7 @@ model VoyageStatus {
 
   voyageTeams       VoyageTeam[]
   voyageTeamMembers VoyageTeamMember[]
+  Voyage            Voyage[]
 }
 
 model Tier {

@@ -3,13 +3,14 @@ import * as process from "process";
 import { populateTeamResourcesAndProjectIdeas } from "./resources-project-ideas";
 import { populateTables } from "./tables";
 import { populateFormsAndResponses } from "./forms";
-import { populateVoyageTeams } from "./voyageTeams";
+import { populateVoyageTeams } from "./voyage-teams";
 import { populateUsers } from "./users";
 import { populateSprints } from "./sprints";
 import { populateMeetings } from "./meetings";
 import { populateSoloProjects } from "./solo-project";
 import { populateVoyageApplications } from "./voyage-app";
 import { populateChecklists } from "./checklist";
+import { populateVoyages } from "./voyage";
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,7 @@ const deleteAllTables = async () => {
     try {
         await deleteAllTables();
         await populateTables(); // tables with no relations
+        await populateVoyages();
         await populateUsers();
         await populateSprints();
         await populateVoyageTeams();

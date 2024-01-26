@@ -41,9 +41,17 @@ class VoyageTeamWithoutMember {
     updatedAt: Date;
 }
 
+class Voyage {
+    @ApiProperty()
+    status: VoyageStatus;
+}
+
 class VoyageTeam {
     @ApiProperty({ example: "v47-tier2-team-4" })
     name: string;
+
+    @ApiProperty()
+    voyage: Voyage;
 }
 
 class UserVoyageTeam {

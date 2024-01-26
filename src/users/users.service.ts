@@ -50,6 +50,7 @@ export class UsersService {
         });
     }
 
+    // /me endpoint, user's own profile/data
     getPrivateUserProfile(userId: string) {
         return this.prisma.user.findUnique({
             where: {
@@ -68,12 +69,24 @@ export class UsersService {
                 countryCode: true,
                 timezone: true,
                 voyageTeamMembers: {
+                    orderBy: {
+                        voyageTeamId: "desc",
+                    },
                     select: {
                         id: true,
                         voyageTeamId: true,
                         voyageTeam: {
                             select: {
                                 name: true,
+                                voyage: {
+                                    select: {
+                                        status: {
+                                            select: {
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                         voyageRole: {
