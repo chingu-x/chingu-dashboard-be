@@ -5,6 +5,21 @@ const prisma = new PrismaClient();
 export const populateVoyages = async () => {
     await prisma.voyage.create({
         data: {
+            number: "46",
+            status: {
+                connect: {
+                    name: "Inactive",
+                },
+            },
+            startDate: new Date("2023-11-06"),
+            endDate: new Date("2023-12-17"),
+            soloProjectDeadline: new Date("2023-11-04"),
+            certificateIssueDate: new Date("2023-12-31"),
+        },
+    });
+
+    await prisma.voyage.create({
+        data: {
             number: "47",
             status: {
                 connect: {
