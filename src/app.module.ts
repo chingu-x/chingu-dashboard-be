@@ -14,6 +14,8 @@ import { TechsModule } from "./techs/techs.module";
 import { FeaturesModule } from "./features/features.module";
 import { IdeationsModule } from "./ideations/ideations.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
+import { ScheduleModule } from "@nestjs/schedule";
+import { TasksModule } from "./tasks/tasks.module";
 
 @Module({
     imports: [
@@ -40,6 +42,8 @@ import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
         FormsModule,
         AuthModule,
         GlobalModule,
+        ScheduleModule.forRoot(),
+        TasksModule,
     ],
     controllers: [HealthCheckController],
     providers: [
