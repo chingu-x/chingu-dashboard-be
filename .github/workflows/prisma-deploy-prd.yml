@@ -19,5 +19,5 @@ jobs:
         run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PRD }},
-          MJ_APIKEY_PUBLIC: ${{secrets.MJ_APIKEY_PUBLIC_PRD}},
-          MJ_APIKEY_PRIVATE: ${{secrets.MJ_APIKEY_PRIVATE_PRD}}
+          MJ_APIKEY_PUBLIC: ${{secrets.MJ_APIKEY_PUBLIC}},
+          MJ_APIKEY_PRIVATE: ${{secrets.MJ_APIKEY_PRIVATE}}
