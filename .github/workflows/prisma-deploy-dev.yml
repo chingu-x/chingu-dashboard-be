@@ -18,4 +18,6 @@ jobs:
       - name: Apply all pending migrations to the database
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }},
+          MJ_APIKEY_PUBLIC: ${{secrets.MJ_APIKEY_PUBLIC}},
+          MJ_APIKEY_PRIVATE: ${{secrets.MJ_APIKEY_PRIVATE}}          
