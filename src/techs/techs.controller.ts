@@ -8,12 +8,18 @@ import {
     ParseIntPipe,
     ValidationPipe,
     Request,
-    UseGuards,
+    HttpStatus,
 } from "@nestjs/common";
 import { TechsService } from "./techs.service";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { TeamTechResponse, TechItemResponse } from "./techs.response";
+import {
+    BadRequestErrorResponse,
+    ConflictErrorResponse,
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -23,6 +29,18 @@ export class TechsController {
     @ApiOperation({
         summary: "Gets all selected tech for a team given a teamId (int)",
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully gets all selected tech stack for a team",
+        type: TeamTechResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @Get()
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.techsService.getAllTechItemsByTeamId(teamId);
@@ -30,10 +48,36 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "Adds a new tech (not already chosen by the team) to the team, and set first voter. UserId:uuid",
+            "Adds a new tech (not already chosen by the team) to the team, and set first voter.",
+        description: "Requires login",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully added a new tech stack item",
+        type: TechItemResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack item already exist for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid TeamId or userId",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @Post()
     addNewTeamTech(
         @Request() req,
@@ -47,8 +91,41 @@ export class TechsController {
         summary:
             'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description:
+            "Successfully added a vote for an existing tech stack item by a user",
+        type: TechItemResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack item already exist for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid TeamId or userId",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @ApiParam({
+        name: "teamTechId",
+        description: "techId of a tech the team has select (TeamTechStackItem)",
+        type: "Integer",
+        required: true,
+        example: 11,
+    })
     @Post("/:teamTechId")
     addExistingTechVote(
         @Request() req,
@@ -61,8 +138,41 @@ export class TechsController {
     @ApiOperation({
         summary: "Removes logged in users vote.",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description:
+            "Successfully removed a vote for an existing tech stack item by a user",
+        type: TechItemResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Vote to be deleted not found in the database",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid TeamId or userId",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @ApiParam({
+        name: "teamTechId",
+        description: "techId of a tech the team has select (TeamTechStackItem)",
+        type: "Integer",
+        required: true,
+        example: 11,
+    })
     @Delete("/:teamTechId")
     removeVote(
         @Request() req,

@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserEntity } from "./entities/user.entity";
+import { fullUserDetailSelect } from "../global/selects/users.select";
 
 @Injectable()
 export class UsersService {
@@ -14,34 +15,20 @@ export class UsersService {
         });
     }
 
-    findAll() {
-        return this.prisma.user.findMany({
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                githubId: true,
-                discordId: true,
-                twitterId: true,
-                linkedinId: true,
-                email: true,
-                gender: true,
-                countryCode: true,
-                timezone: true,
-                comment: true,
+    findUserById(id: string): Promise<UserEntity | undefined> {
+        return this.prisma.user.findUnique({
+            where: {
+                id,
             },
         });
     }
 
-    // full user detail, for dev purpose
-    getUserDetailsById(userId: string) {
-        return this.prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
+    findAll() {
+        return this.prisma.user.findMany({
             select: {
                 id: true,
+                email: true,
+                emailVerified: true,
                 firstName: true,
                 lastName: true,
                 avatar: true,
@@ -49,9 +36,9 @@ export class UsersService {
                 discordId: true,
                 twitterId: true,
                 linkedinId: true,
-                email: true,
                 gender: {
                     select: {
+                        id: true,
                         abbreviation: true,
                         description: true,
                     },
@@ -59,52 +46,11 @@ export class UsersService {
                 countryCode: true,
                 timezone: true,
                 comment: true,
-                voyageTeamMembers: {
-                    select: {
-                        id: true,
-                        voyageTeam: {
-                            select: {
-                                id: true,
-                                name: true,
-                                tier: {
-                                    select: {
-                                        name: true,
-                                        description: true,
-                                    },
-                                },
-                            },
-                        },
-                        voyageRole: {
-                            select: {
-                                name: true,
-                                description: true,
-                            },
-                        },
-                        status: true,
-                        hrPerSprint: true,
-                        teamTechStackItemVotes: {
-                            select: {
-                                id: true,
-                                teamTech: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        category: {
-                                            select: {
-                                                name: true,
-                                                description: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
             },
         });
     }
 
+    // /me endpoint, user's own profile/data
     getPrivateUserProfile(userId: string) {
         return this.prisma.user.findUnique({
             where: {
@@ -114,10 +60,74 @@ export class UsersService {
                 id: true,
                 firstName: true,
                 lastName: true,
-                countryCode: true,
+                avatar: true,
                 discordId: true,
-                // add other stuff
+                githubId: true,
+                twitterId: true,
+                linkedinId: true,
+                email: true,
+                countryCode: true,
+                timezone: true,
+                voyageTeamMembers: {
+                    orderBy: {
+                        voyageTeamId: "desc",
+                    },
+                    select: {
+                        id: true,
+                        voyageTeamId: true,
+                        voyageTeam: {
+                            select: {
+                                name: true,
+                                voyage: {
+                                    select: {
+                                        status: {
+                                            select: {
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        voyageRole: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                },
             },
         });
+    }
+
+    // full user detail, for dev purpose
+    async getUserDetailsById(userId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: fullUserDetailSelect,
+        });
+
+        if (!user) {
+            throw new NotFoundException(`User (userid: ${userId} not found`);
+        }
+
+        return user;
+    }
+
+    async getUserDetailsByEmail(email: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email,
+            },
+            select: fullUserDetailSelect,
+        });
+
+        if (!user) {
+            throw new NotFoundException(`User (email: ${email} not found`);
+        }
+
+        return user;
     }
 }

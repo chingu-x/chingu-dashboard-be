@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // VoyageTeams, VoyageMembers, Tech Stack, sprints
-export const populateTablesWithRelations = async () => {
+export const populateTeamResourcesAndProjectIdeas = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 
     await prisma.voyageTeamMember.update({
@@ -80,6 +80,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "must have",
                             },
                         },
+                        order: 1,
                     },
                     {
                         description: "User Accounts",
@@ -88,6 +89,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "must have",
                             },
                         },
+                        order: 2,
                     },
                     {
                         description: "Themes",
@@ -96,6 +98,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "should have",
                             },
                         },
+                        order: 1,
                     },
                 ],
             },
@@ -227,6 +230,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "should have",
                             },
                         },
+                        order: 2,
                     },
                     {
                         description: "Share on LinkedIn",
@@ -235,6 +239,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "nice to have",
                             },
                         },
+                        order: 1,
                     },
                     {
                         description: "Friend List",
@@ -243,6 +248,7 @@ export const populateTablesWithRelations = async () => {
                                 name: "must have",
                             },
                         },
+                        order: 3,
                     },
                 ],
             },

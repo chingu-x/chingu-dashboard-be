@@ -6,12 +6,20 @@ import {
     Param,
     ParseIntPipe,
     Request,
-    UseGuards,
+    HttpStatus,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import {
+    PublicVoyageTeamWithUserResponse,
+    VoyageTeamMemberUpdateResponse,
+    VoyageTeamResponse,
+} from "./teams.response";
+import {
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -19,7 +27,14 @@ export class TeamsController {
     constructor(private readonly teamsService: TeamsService) {}
 
     @ApiOperation({
-        summary: "Gets all teams.",
+        summary: "Gets all voyage teams.",
+        description: "For development/admin purpose",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully gets all voyage teams",
+        type: VoyageTeamResponse,
+        isArray: true,
     })
     @Get()
     findAll() {
@@ -30,33 +45,75 @@ export class TeamsController {
         summary: "Gets all teams for a voyage given a voyageId (int).",
     })
     // Will need to be fixed to be RESTful
-    @Get("voyages/:id")
-    findTeamsByVoyageId(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findAllByVoyageId(id);
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully gets all the teams for a given voyage.",
+        type: PublicVoyageTeamWithUserResponse,
+        isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Voyage with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "voyageId",
+        description: "voyage id from the voyage table",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Get("voyages/:voyageId")
+    findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
+        return this.teamsService.findTeamsByVoyageId(voyageId);
     }
 
     @ApiOperation({
         summary: "Gets one team given a teamId (int).",
     })
-    @Get(":id")
-    findOne(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findOne(id);
-    }
-
-    @ApiOperation({
-        summary: "Gets all team members for a team given a teamId (int).",
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully gets all the teams for a given voyage.",
+        type: PublicVoyageTeamWithUserResponse,
     })
-    @Get(":id/members")
-    findTeamMembersByTeamId(@Param("id", ParseIntPipe) id: number) {
-        return this.teamsService.findTeamMembersByTeamId(id);
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Voyage team with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Get(":teamId")
+    findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
+        return this.teamsService.findTeamById(teamId);
     }
 
     @ApiOperation({
         summary:
             "Updates team member hours per a sprint given a teamId (int) and userId (int).",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "successfully update users sprints per hour",
+        type: VoyageTeamMemberUpdateResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "user is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @Patch(":teamId/members")
     update(
         @Param("teamId", ParseIntPipe) teamId: number,

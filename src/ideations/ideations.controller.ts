@@ -8,19 +8,23 @@ import {
     Delete,
     ParseIntPipe,
     Request,
-    UseGuards,
+    HttpStatus,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
-    ApiBearerAuth,
-    ApiCreatedResponse,
-    ApiOperation,
-    ApiTags,
-} from "@nestjs/swagger";
-import { Ideation } from "./entities/ideation.entity";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+    BadRequestErrorResponse,
+    ConflictErrorResponse,
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+} from "../global/responses/errors";
+import {
+    IdeationVoteResponse,
+    IdeationResponse,
+    TeamIdeationsResponse,
+} from "./ideations.response";
 
 @Controller()
 @ApiTags("Voyage - Ideations")
@@ -31,10 +35,24 @@ export class IdeationsController {
         summary:
             "Adds a new ideation to the team, add the creator as first voter.",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description:
+            "Ideation vote cannot be added, ideation ID from created ideation does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully created a new ideation and vote added.",
+        type: IdeationResponse,
+    })
     @Post()
-    @ApiCreatedResponse({ type: Ideation })
     createIdeation(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -51,10 +69,28 @@ export class IdeationsController {
         summary:
             "Adds an ideation vote given a ideationId (int) and teamId (int).",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "User has already voted for ideation.",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully created a new ideation vote.",
+        type: IdeationVoteResponse,
+    })
     @Post("/:ideationId/ideation-votes")
-    @ApiCreatedResponse({ type: Ideation })
     createIdeationVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -70,8 +106,18 @@ export class IdeationsController {
     @ApiOperation({
         summary: "Gets all ideations for a team given a teamId (int).",
     })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Voyage Team with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully got ideations for given team.",
+        isArray: true,
+        type: TeamIdeationsResponse,
+    })
     @Get()
-    @ApiCreatedResponse({ type: Ideation })
     getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
     }
@@ -80,10 +126,28 @@ export class IdeationsController {
         summary:
             "Updates an ideation given a ideationId (int) and the that user that created it is logged in.",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Uuid does not match team member ID on Ideation.",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated ideation.",
+        type: IdeationResponse,
+    })
     @Patch("/:ideationId")
-    @ApiCreatedResponse({ type: Ideation })
     updateIdeation(
         @Request() req,
         @Param("ideationId", ParseIntPipe) ideationId: number,
@@ -102,10 +166,33 @@ export class IdeationsController {
         summary:
             "Deletes an ideation given a ideationId (int) and that the user that created it is logged in.",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Ideation id or team member id given is invalid.",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully deleted ideation.",
+        type: IdeationResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Ideation cannot be deleted when any votes exist.",
+        type: ConflictErrorResponse,
+    })
     @Delete("/:ideationId")
-    @ApiCreatedResponse({ type: Ideation })
     deleteIdeation(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -118,10 +205,23 @@ export class IdeationsController {
         summary:
             "Deletes an ideation vote given a ideationId (int) and teamId (int).",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation or ideation vote with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully deleted ideation vote.",
+        type: IdeationVoteResponse,
+    })
     @Delete("/:ideationId/ideation-votes")
-    @ApiCreatedResponse({ type: Ideation })
     deleteIdeationVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,

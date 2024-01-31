@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { populateCheckinForm } from "./forms/checkinform";
+import { populateCheckinForm } from "./checkinform";
+import { populateSoloProjectForm } from "./solo-project";
+import { populateVoyageApplicationForm } from "./voyage-app";
 
 const prisma = new PrismaClient();
 
@@ -137,62 +139,10 @@ export const populateFormsAndResponses = async () => {
         },
     });
 
-    // Voyage Application form
-    /* needs to be fixed after removing QuestionOption table
-    await prisma.form.create({
-        data: {
-            formType: {
-                connect: {
-                    name: 'user'
-                }
-            },
-            title: "Voyage Application",
-            questions: {
-                create: {
-                    order: 1,
-                    inputType: {
-                        connect: {
-                            name: 'radio'
-                        }
-                    },
-                    text: 'What role are you applying for?',
-                    answerRequired: true,
-                    questionOptions: {
-                        create: {
-                            responses: {
-                                create: {
-                                    responseUser: {
-                                        create: {
-                                            user: {
-                                                connect: {
-                                                    id: users[0].id
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            optionChoice: {
-                                connect: {
-                                    id: optionChoices[0].id
-                                }
-                            }
-                        }
-                    },
-                    optionGroup: {
-                        connect: {
-                            name: 'voyage roles'
-                        }
-                    }
-                }
-            }
-        },
-    })
-
-     */
-
     // Sprints checkin form
     await populateCheckinForm();
+    await populateSoloProjectForm();
+    await populateVoyageApplicationForm();
 
     console.log("Forms, Questions and Responses populated.");
 };

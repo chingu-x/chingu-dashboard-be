@@ -77,7 +77,8 @@ export class TechsService {
         createTechVoteDto: CreateTeamTechDto,
     ) {
         const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (!voyageMemberId) throw new BadRequestException("Invalid User");
+        if (!voyageMemberId)
+            throw new BadRequestException("Invalid User or Team Id");
 
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({

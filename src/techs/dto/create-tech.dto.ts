@@ -1,19 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsInt, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateTeamTechDto {
-    @IsUUID()
-    @IsNotEmpty()
-    @ApiProperty()
-    votedBy: string;
-
     @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({ example: "Nextjs" })
     techName: string;
 
     @IsInt()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({ example: 1 })
     techCategoryId: number;
 }

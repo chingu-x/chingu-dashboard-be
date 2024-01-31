@@ -79,7 +79,7 @@ export class IdeationsService {
                 return createVote;
             } else {
                 throw new ConflictException(
-                    `User has already voted for ${ideationId}`,
+                    `User has already voted for ideationId: ${ideationId}`,
                 );
             }
         } catch (e) {
@@ -112,6 +112,7 @@ export class IdeationsService {
                                 description: true,
                                 vision: true,
                                 createdAt: true,
+                                updatedAt: true,
                                 contributedBy: {
                                     select: {
                                         member: {
@@ -295,7 +296,7 @@ export class IdeationsService {
         });
         if (!checkVoteStatus)
             throw new BadRequestException(
-                "Invalid Ideation Id or Team Memeber Id",
+                "Invalid Ideation Id or Team Member Id",
             );
         return checkVoteStatus.length > 0;
     }

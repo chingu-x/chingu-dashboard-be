@@ -7,14 +7,23 @@ import {
     Param,
     Delete,
     ParseIntPipe,
-    UseGuards,
     Request,
+    HttpStatus,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import {
+    BadRequestErrorResponse,
+    NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
+    BadRequestErrorArrayResponse,
+} from "../global/responses/errors";
+import {
+    TeamResourceAddedByResponse,
+    TeamResourceResponse,
+} from "./resources.response";
 
 @Controller()
 @ApiTags("Voyage - Resources")
@@ -25,8 +34,32 @@ export class ResourcesController {
         summary:
             "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "The resource has been created successfully.",
+        type: TeamResourceResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid teamId",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Invalid or missing URL/title",
+        type: BadRequestErrorArrayResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        required: true,
+        description: "Voyage team ID",
+        example: 1,
+    })
     @Post()
     createNewResource(
         @Request() req,
@@ -43,8 +76,28 @@ export class ResourcesController {
     @ApiOperation({
         summary: "Gets all resources added by a team given a teamId (int)",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Returns all the resources for a particular team",
+        isArray: true,
+        type: TeamResourceAddedByResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid teamId",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        required: true,
+        description: "Voyage team ID",
+        example: 1,
+    })
     @Get()
     findAllResources(
         @Request() req,
@@ -57,8 +110,32 @@ export class ResourcesController {
         summary:
             "Edit URL/title for a resource if teamMemberId (int) matches logged in user",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Resource was successfully updated",
+        type: TeamResourceResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Resource couldn't be updated",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid resourceId",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "resourceId",
+        required: true,
+        description: "Team resource ID",
+        example: 1,
+    })
     @Patch("/:resourceId")
     updateResource(
         @Request() req,
@@ -76,8 +153,32 @@ export class ResourcesController {
         summary:
             "Delete a resource if teamMemberId (int) matches logged in user",
     })
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Resource was successfully deleted",
+        type: TeamResourceResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Resource couldn't be deleted",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid resourceId",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "resourceId",
+        required: true,
+        description: "Team resource ID",
+        example: 1,
+    })
     @Delete("/:resourceId")
     removeResource(
         @Request() req,

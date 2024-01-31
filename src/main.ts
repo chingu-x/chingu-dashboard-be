@@ -22,21 +22,23 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe());
 
-    const config = new DocumentBuilder()
-        .setTitle("Chingu Dashboard Project")
-        .setDescription("The api for chingu dashboard")
-        .setVersion("1.0")
-        .addBearerAuth()
-        .addOAuth2()
-        .build();
+    if (process.env.NODE_ENV !== "production") {
+        const config = new DocumentBuilder()
+            .setTitle("Chingu Dashboard Project")
+            .setDescription("The api for chingu dashboard")
+            .setVersion("1.0")
+            .addBearerAuth()
+            .addOAuth2()
+            .build();
 
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup("docs", app, document, {
-        swaggerOptions: {
-            tagsSorter: "alpha",
-            operationSorter: "alpha",
-        },
-    });
+        const document = SwaggerModule.createDocument(app, config);
+        SwaggerModule.setup("docs", app, document, {
+            swaggerOptions: {
+                tagsSorter: "alpha",
+                operationSorter: "alpha",
+            },
+        });
+    }
 
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
