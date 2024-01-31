@@ -5,6 +5,109 @@ const prisma = new PrismaClient();
 export const populateVoyageTeams = async () => {
     const users = await prisma.user.findMany({});
     const voyageRoles = await prisma.voyageRole.findMany({});
+
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "46",
+                },
+            },
+            name: "v46-tier3-team-35",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/v46-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 3" },
+            },
+            endDate: new Date("2023-12-06"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[0].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[1].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[2].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 20,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[4].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 60,
+                    },
+                ],
+            },
+        },
+    });
+
     await prisma.voyageTeam.create({
         data: {
             voyage: {
