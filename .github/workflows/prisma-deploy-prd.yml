@@ -21,3 +21,4 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PRD }},
           MJ_APIKEY_PUBLIC: ${{ secrets.MJ_APIKEY_PUBLIC }},
           MJ_APIKEY_PRIVATE: ${{ secrets.MJ_APIKEY_PRIVATE }}
+
