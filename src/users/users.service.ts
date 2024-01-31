@@ -10,14 +10,10 @@ export class UsersService {
     constructor(private prisma: PrismaService) {}
 
     private formatUser = (user) => {
-        const formattedUser = {
+        return {
             ...user,
-            roles: user.userRole.flatMap((r) => r.role.name),
+            roles: user.roles.flatMap((r) => r.role.name),
         };
-
-        delete formattedUser.userRole;
-
-        return formattedUser;
     };
 
     findUserByEmail(email: string) {
@@ -44,6 +40,7 @@ export class UsersService {
     }
 
     // /me endpoint, user's own profile/data
+    // TODO: add error handling for invalid id (invalid uuid)
     async getPrivateUserProfile(userId: string) {
         const user = await this.prisma.user.findUnique({
             where: {
@@ -52,6 +49,7 @@ export class UsersService {
             select: privateUserDetailSelect,
         });
 
+        if (!user) throw new NotFoundException("User not found");
         return this.formatUser(user);
     }
 

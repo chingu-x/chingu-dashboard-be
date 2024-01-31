@@ -63,7 +63,7 @@ model User {
   voyageApplications     VoyageApplication[]
   resetToken             ResetToken?
   emailVerificationToken EmailVerificationToken?
-  userRole               UserRole[]
+  roles                  UserRole[]
 }
 
 model Role {

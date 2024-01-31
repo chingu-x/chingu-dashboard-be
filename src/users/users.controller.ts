@@ -50,8 +50,14 @@ export class UsersController {
         description: "User is not logged in",
         type: UnauthorizedErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "User not found",
+        type: NotFoundErrorResponse,
+    })
     @Get("me")
     getProfile(@Request() req) {
+        console.log(req.user);
         return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 

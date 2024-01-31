@@ -4,7 +4,7 @@ export const fullUserDetailSelect = {
     emailVerified: true,
     firstName: true,
     lastName: true,
-    userRole: {
+    roles: {
         select: {
             role: {
                 select: {
@@ -61,7 +61,7 @@ export const privateUserDetailSelect = {
     id: true,
     firstName: true,
     lastName: true,
-    userRole: {
+    roles: {
         select: {
             role: {
                 select: {
