@@ -16,7 +16,7 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { isEmail, isUUID } from "class-validator";
-import { Roles } from "../global/decorators/roles.decortor";
+import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "../auth/auth.roles";
 
 @Controller("users")
@@ -34,6 +34,7 @@ export class UsersController {
         isArray: true,
         type: FullUserResponse,
     })
+    @Roles(AppRoles.Admin)
     @Get()
     findAll() {
         return this.usersService.findAll();
@@ -57,10 +58,8 @@ export class UsersController {
         description: "User not found",
         type: NotFoundErrorResponse,
     })
-    @Roles(AppRoles.Admin, AppRoles.User)
     @Get("me")
     getProfile(@Request() req) {
-        console.log(req.user);
         return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 
@@ -90,6 +89,7 @@ export class UsersController {
         description: "userId (uuid)",
         example: "6bd33861-04c0-4270-8e96-62d4fb587527",
     })
+    @Roles(AppRoles.Admin)
     @Get("id/:userId")
     getUserDetailsById(@Param("userId") userId: string) {
         if (!isUUID(userId))
@@ -123,6 +123,7 @@ export class UsersController {
         description: "email",
         example: "jessica.williamson@gmail.com",
     })
+    @Roles(AppRoles.Admin)
     @Get("email/:email")
     getUserDetailsByEmail(@Param("email") email: string) {
         if (!isEmail(email))
