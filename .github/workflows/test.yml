@@ -28,3 +28,6 @@ jobs:
           if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
             yarn test
           fi
+        env:
+          MJ_APIKEY_PUBLIC: ${{ secrets.MJ_APIKEY_PUBLIC }},
+          MJ_APIKEY_PRIVATE: ${{ secrets.MJ_APIKEY_PRIVATE }}

@@ -16,6 +16,8 @@ import { IdeationsModule } from "./ideations/ideations.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { RolesGuard } from "./auth/guards/roles.guard";
 import { PermissionsGuard } from "./auth/guards/permissions.guard";
+import { ScheduleModule } from "@nestjs/schedule";
+import { TasksModule } from "./tasks/tasks.module";
 
 @Module({
     imports: [
@@ -42,6 +44,8 @@ import { PermissionsGuard } from "./auth/guards/permissions.guard";
         FormsModule,
         AuthModule,
         GlobalModule,
+        ScheduleModule.forRoot(),
+        TasksModule,
     ],
     controllers: [HealthCheckController],
     providers: [

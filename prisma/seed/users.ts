@@ -125,5 +125,19 @@ export const populateUsers = async () => {
         },
     });
 
+    await prisma.user.create({
+        data: {
+            email: "dan@random.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
+            firstName: "Dan",
+            lastName: "Ko",
+            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            timezone: "America/Los_Angeles",
+            comment: "No comment",
+            countryCode: "US",
+        },
+    });
+
     console.log("Users Populated");
 };
