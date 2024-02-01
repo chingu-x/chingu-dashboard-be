@@ -16,6 +16,8 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { isEmail, isUUID } from "class-validator";
+import { Roles } from "../global/decorators/roles.decortor";
+import { AppRoles } from "../auth/auth.roles";
 
 @Controller("users")
 @ApiTags("users")
@@ -55,6 +57,7 @@ export class UsersController {
         description: "User not found",
         type: NotFoundErrorResponse,
     })
+    @Roles(AppRoles.Admin, AppRoles.User)
     @Get("me")
     getProfile(@Request() req) {
         console.log(req.user);
