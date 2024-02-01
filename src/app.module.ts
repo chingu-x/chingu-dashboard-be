@@ -15,6 +15,7 @@ import { FeaturesModule } from "./features/features.module";
 import { IdeationsModule } from "./ideations/ideations.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
 import { RolesGuard } from "./auth/guards/roles.guard";
+import { PermissionsGuard } from "./auth/guards/permissions.guard";
 
 @Module({
     imports: [
@@ -47,6 +48,7 @@ import { RolesGuard } from "./auth/guards/roles.guard";
         HealthCheckService,
         { provide: APP_GUARD, useClass: JwtAuthGuard },
         { provide: APP_GUARD, useClass: RolesGuard },
+        { provide: APP_GUARD, useClass: PermissionsGuard },
     ],
 })
 export class AppModule {}

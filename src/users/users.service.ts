@@ -48,6 +48,11 @@ export class UsersService {
                             },
                         },
                     },
+                    voyageTeamMembers: {
+                        select: {
+                            voyageTeamId: true,
+                        },
+                    },
                 },
             }),
         );

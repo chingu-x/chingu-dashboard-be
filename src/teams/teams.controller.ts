@@ -1,12 +1,12 @@
 import {
+    Body,
     Controller,
     Get,
-    Body,
-    Patch,
+    HttpStatus,
     Param,
     ParseIntPipe,
+    Patch,
     Request,
-    HttpStatus,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -20,6 +20,10 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
+import { Roles } from "../global/decorators/roles.decorator";
+import { Permissions } from "../global/decorators/permissions.decorator";
+import { AppRoles } from "../auth/auth.roles";
+import { AppPermissions } from "../auth/auth.permissions";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -36,6 +40,7 @@ export class TeamsController {
         type: VoyageTeamResponse,
         isArray: true,
     })
+    @Roles(AppRoles.Admin)
     @Get()
     findAll() {
         return this.teamsService.findAll();
@@ -63,6 +68,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
+    @Roles(AppRoles.Admin)
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);
@@ -88,6 +94,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
+    @Roles(AppRoles.Admin, AppRoles.Voyager)
     @Get(":teamId")
     findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.teamsService.findTeamById(teamId);
@@ -115,6 +122,8 @@ export class TeamsController {
         example: 1,
     })
     @Patch(":teamId/members")
+    @Roles(AppRoles.Voyager)
+    @Permissions(AppPermissions.OWN_TEAM)
     update(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Request() req,
