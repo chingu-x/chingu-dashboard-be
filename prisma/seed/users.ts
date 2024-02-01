@@ -38,6 +38,12 @@ export const populateUsers = async () => {
             roleId: getRoleId(roles, "voyager"),
         },
     });
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "admin"),
+        },
+    });
 
     user = await prisma.user.create({
         data: {
@@ -74,7 +80,8 @@ export const populateUsers = async () => {
         },
     });
 
-    user = await prisma.user.create({
+    // user with no role
+    await prisma.user.create({
         data: {
             email: "leo.rowe@outlook.com",
             password: await hashPassword("password"),
@@ -92,13 +99,6 @@ export const populateUsers = async () => {
                     abbreviation: "NB",
                 },
             },
-        },
-    });
-
-    await prisma.userRole.create({
-        data: {
-            userId: user.id,
-            roleId: getRoleId(roles, "user"),
         },
     });
 
