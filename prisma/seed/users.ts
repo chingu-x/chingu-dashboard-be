@@ -121,7 +121,7 @@ export const populateUsers = async () => {
     await prisma.userRole.create({
         data: {
             userId: user.id,
-            roleId: getRoleId(roles, "user"),
+            roleId: getRoleId(roles, "voyager"),
         },
     });
 

@@ -118,7 +118,7 @@ export class UserResponse {
     })
     comment: string;
 
-    @IsIn(["admin", "voyager", "user"])
+    @IsIn(["admin", "voyager"])
     @ApiProperty({ isArray: true, example: ["admin", "voyager"] })
     roles: string;
 

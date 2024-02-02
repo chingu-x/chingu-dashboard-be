@@ -94,7 +94,6 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @Roles(AppRoles.Admin, AppRoles.Voyager)
     @Permissions(AppPermissions.OWN_TEAM)
     @Get(":teamId")
     findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
@@ -123,7 +122,6 @@ export class TeamsController {
         example: 1,
     })
     @Patch(":teamId/members")
-    @Roles(AppRoles.Voyager)
     @Permissions(AppPermissions.OWN_TEAM)
     update(
         @Param("teamId", ParseIntPipe) teamId: number,

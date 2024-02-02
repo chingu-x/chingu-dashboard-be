@@ -1,9 +1,5 @@
 export default [
     {
-        name: "user",
-        description: "Website user / Chingu member",
-    },
-    {
         name: "voyager",
         description: "Member participating in a voyage",
     },
