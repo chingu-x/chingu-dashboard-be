@@ -159,3 +159,26 @@ $ yarn docker:test:e2e
 ```
 
 These commands will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
+
+## Custom Decorators 
+
+### @Roles()
+
+Adds role(s) requirements for the route in conjunction with the RolesGuard
+
+Examples: <br/>
+`@Roles(AppRoles.Admin)` will restrict the route for users with admin roles<br/>
+`@Roles(AppRoles.Admin, AppRoles.Voyager)` restricts the route to admin and voyagers
+
+### @Permissions()
+Adds permissions requirements for the route in conjunction with the PermissionGuard
+
+Examples: <br/>
+`@Permissions(AppPermissions.OWN_TEAM)` will restrict the route for voyagers to access their own team data
+
+## Roles
+- Admin
+- Voyager
+
+## Permissions
+- OWN_TEAM - only access their own team data, teamId param required (admins excepted)

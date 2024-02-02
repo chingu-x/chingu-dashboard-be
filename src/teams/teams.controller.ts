@@ -95,6 +95,7 @@ export class TeamsController {
         example: 1,
     })
     @Roles(AppRoles.Admin, AppRoles.Voyager)
+    @Permissions(AppPermissions.OWN_TEAM)
     @Get(":teamId")
     findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.teamsService.findTeamById(teamId);
