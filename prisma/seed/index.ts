@@ -35,21 +35,25 @@ const deleteAllTables = async () => {
     console.log("===\nAll tables deleted.\n===");
 };
 
+export const seed = async () => {
+    await deleteAllTables();
+    await populateTables(); // tables with no relations
+    await populateVoyages();
+    await populateUsers();
+    await populateSprints();
+    await populateVoyageTeams();
+    await populateTeamResourcesAndProjectIdeas();
+    await populateFormsAndResponses();
+    await populateMeetings();
+    await populateSoloProjects();
+    await populateVoyageApplications();
+    await populateChecklists();
+    console.log("===\n🌱 Database seeding completed.\n===");
+};
+
 (async function () {
     try {
-        await deleteAllTables();
-        await populateTables(); // tables with no relations
-        await populateVoyages();
-        await populateUsers();
-        await populateSprints();
-        await populateVoyageTeams();
-        await populateTeamResourcesAndProjectIdeas();
-        await populateFormsAndResponses();
-        await populateMeetings();
-        await populateSoloProjects();
-        await populateVoyageApplications();
-        await populateChecklists();
-        console.log("===\n🌱 Database seeding completed.\n===");
+        await seed();
     } catch (e) {
         console.error(e);
         process.exit(1);
