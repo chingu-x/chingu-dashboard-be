@@ -74,7 +74,7 @@ model Role {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  userRole UserRole[]
+  users UserRole[]
 }
 
 model UserRole {
