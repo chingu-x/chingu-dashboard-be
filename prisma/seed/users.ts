@@ -1,24 +1,26 @@
 import { PrismaClient } from "@prisma/client";
-import * as bcrypt from "bcrypt";
+import { hashPassword } from "../../src/utils/auth";
 
 const prisma = new PrismaClient();
-const roundsOfHashing = 10;
 
-const hashPassword = async (password: string) => {
-    return await bcrypt.hash(password, roundsOfHashing);
+const getRoleId = (roles, name) => {
+    return roles.filter((role) => role.name == name)[0].id;
 };
 
 export const populateUsers = async () => {
-    await prisma.user.create({
+    const roles = await prisma.role.findMany({});
+
+    let user = await prisma.user.create({
         data: {
+            email: "jessica.williamson@gmail.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
             firstName: "Jessica",
             lastName: "Williamson",
             githubId: "jess-github",
             discordId: "jess-discord",
             twitterId: "jess-twitter",
             linkedinId: "jess-linkedin",
-            email: "jessica.williamson@gmail.com",
-            password: await hashPassword("password"),
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
             timezone: "Australia/Melbourne",
             countryCode: "AU",
@@ -30,14 +32,28 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    await prisma.userRole.create({
         data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "admin"),
+        },
+    });
+
+    user = await prisma.user.create({
+        data: {
+            email: "l.castro@outlook.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
             firstName: "Larry",
             lastName: "Castro",
             githubId: "larryc-github",
             discordId: "larryc-discord",
-            email: "l.castro@outlook.com",
-            password: await hashPassword("password"),
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
             timezone: "America/Los_Angeles",
             comment: "Member seems to be inactive",
@@ -50,14 +66,30 @@ export const populateUsers = async () => {
         },
     });
 
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "admin"),
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+
+    // user with no role
     await prisma.user.create({
         data: {
+            email: "leo.rowe@outlook.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
             firstName: "Leonarda",
             lastName: "Rowe",
             githubId: "leo-github",
             discordId: "leo-discord",
-            email: "leo.rowe@outlook.com",
-            password: await hashPassword("password"),
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=identicon&r=x",
             timezone: "America/Los_Angeles",
             comment: "This is a random admin comment",
@@ -70,18 +102,40 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    user = await prisma.user.create({
         data: {
+            email: "JosoMadar@dayrep.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
             firstName: "Joso",
             lastName: "Mađar",
             githubId: "joso-github",
             discordId: "joso-discord",
-            email: "JosoMadar@dayrep.com",
-            password: await hashPassword("password"),
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
             timezone: "Europe/Zagreb",
             comment: "This is a random admin comment",
             countryCode: "HR",
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+
+    await prisma.user.create({
+        data: {
+            email: "dan@random.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
+            firstName: "Dan",
+            lastName: "Ko",
+            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            timezone: "America/Los_Angeles",
+            comment: "No comment",
+            countryCode: "US",
         },
     });
 

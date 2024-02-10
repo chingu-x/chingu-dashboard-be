@@ -1,12 +1,22 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { UserEntity } from "./entities/user.entity";
+import {
+    fullUserDetailSelect,
+    privateUserDetailSelect,
+} from "../global/selects/users.select";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
 
-    findUserByEmail(email: string): Promise<UserEntity | undefined> {
+    private formatUser = (user) => {
+        return {
+            ...user,
+            roles: user.roles.flatMap((r) => r.role.name),
+        };
+    };
+
+    findUserByEmail(email: string) {
         return this.prisma.user.findUnique({
             where: {
                 email,
@@ -14,110 +24,89 @@ export class UsersService {
         });
     }
 
-    findAll() {
-        return this.prisma.user.findMany({
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                githubId: true,
-                discordId: true,
-                twitterId: true,
-                linkedinId: true,
-                email: true,
-                gender: true,
-                countryCode: true,
-                timezone: true,
-                comment: true,
+    findUserById(id: string) {
+        return this.prisma.user.findUnique({
+            where: {
+                id,
             },
         });
+    }
+
+    async getUserRolesById(userId: string) {
+        return this.formatUser(
+            await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    roles: {
+                        select: {
+                            role: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                    voyageTeamMembers: {
+                        select: {
+                            voyageTeamId: true,
+                        },
+                    },
+                },
+            }),
+        );
+    }
+
+    async findAll() {
+        const users = await this.prisma.user.findMany({
+            select: fullUserDetailSelect,
+        });
+        return users.map((user) => this.formatUser(user));
+    }
+
+    // /me endpoint, user's own profile/data
+    // TODO: add error handling for invalid id (invalid uuid)
+    async getPrivateUserProfile(userId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: privateUserDetailSelect,
+        });
+
+        if (!user) throw new NotFoundException("User not found");
+        return this.formatUser(user);
     }
 
     // full user detail, for dev purpose
-    getUserDetailsById(userId: string) {
-        return this.prisma.user.findUnique({
+    async getUserDetailsById(userId: string) {
+        const user = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                githubId: true,
-                discordId: true,
-                twitterId: true,
-                linkedinId: true,
-                email: true,
-                gender: {
-                    select: {
-                        abbreviation: true,
-                        description: true,
-                    },
-                },
-                countryCode: true,
-                timezone: true,
-                comment: true,
-                voyageTeamMembers: {
-                    select: {
-                        id: true,
-                        voyageTeam: {
-                            select: {
-                                id: true,
-                                name: true,
-                                tier: {
-                                    select: {
-                                        name: true,
-                                        description: true,
-                                    },
-                                },
-                            },
-                        },
-                        voyageRole: {
-                            select: {
-                                name: true,
-                                description: true,
-                            },
-                        },
-                        status: true,
-                        hrPerSprint: true,
-                        teamTechStackItemVotes: {
-                            select: {
-                                id: true,
-                                teamTech: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        category: {
-                                            select: {
-                                                name: true,
-                                                description: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            select: fullUserDetailSelect,
         });
+
+        if (!user) {
+            throw new NotFoundException(`User (userid: ${userId} not found`);
+        }
+
+        return this.formatUser(user);
     }
 
-    getPrivateUserProfile(userId: string) {
-        return this.prisma.user.findUnique({
+    async getUserDetailsByEmail(email: string) {
+        const user = await this.prisma.user.findUnique({
             where: {
-                id: userId,
+                email,
             },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                countryCode: true,
-                discordId: true,
-                // add other stuff
-            },
+            select: fullUserDetailSelect,
         });
+
+        if (!user) {
+            throw new NotFoundException(`User (email: ${email} not found`);
+        }
+
+        return this.formatUser(user);
     }
 }
