@@ -94,6 +94,21 @@ $ yarn test:int
 $ yarn test:cov
 ```
 
+If using the docker terminal the commands would be 
+```bash
+# unit tests
+$ yarn test:docker
+
+# e2e tests
+$ yarn test:e2e:docker
+
+# integration tests
+$ yarn test:int:docker
+
+# test coverage
+$ yarn test:cov:docker
+```
+
 ## Docker 
 
 By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run prisma Studio and even tests.
@@ -104,10 +119,7 @@ With Docker open, from the project's root you can run Docker in dev or testing m
 
 ```bash
 # spin up dev Docker services (API, PGAdmin, Postgres DB)
-$ yarn docker:dev
-
-# spin up the Docker testing services (API, Postgres testing DB)
-$ yarn docker:test
+$ yarn docker
 ```
 Docker will run in detached mode, meaning it's effectively running in the background, however, you will need to use the various scripts inside the docker cli.
 
@@ -117,10 +129,28 @@ After, click on the CLI to into the terminal inside the container.
 
 From here, type all the commands [above](#prismaStudio).
 
-For PG Admin (use default email and default password from the env.dev file):
+## PG Admin
+
+Login with 
+```
+chinguadmin@chingu.com
+chingu5432
+```
+Right click Servers -> Register -> Server...
+
+dev database
 ```
 hostname: postgres
 port: 5433
+maintenance database: dashboard
+username: chingu
+password: chingu
+```
+
+test database
+```
+hostname: postgres-test
+port: 5434
 maintenance database: dashboard
 username: chingu
 password: chingu
@@ -144,24 +174,6 @@ $ yarn docker:down
 $ yarn docker:clean
 ```
 
-### <a name="dockerTests"></a> Running tests with Docker
-
-With the Docker test services running, run your tests as shown [above](#tests)
-When you've finished testing just [tear down the container](#tearDown)
-
-If you want to run integration or e2e tests on the fly you can quickly spin up a Postgres service and run your tests against it. 
-
-If you're using Linux, Mac OS, or Windows with Bash configured:
-
-```bash
-# run integration tests through Docker test image
-$ yarn docker:test:int
-
-# run e2e tests through Docker test image
-$ yarn docker:test:e2e
-```
-
-These commands will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
 
 ## Custom Decorators 
 
