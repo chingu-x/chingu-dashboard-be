@@ -10,33 +10,36 @@
 This is the Chingu Dashboard backend project. Be sure to set your .env [environment variables files](#envfiles)
 
 ## <a name="envfiles">Environment variables</a>
-These files are needed for development and testing purposes, set them in your root directory alongside the docker-compose.yml files.
-Make sure to match it exactly the same.
+
+- if using the docker databases, and an external terminal, use these DATABASE_URL
+```bash
+# .env
+DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+# .env.test
+DATABASE_URL=postgresql://chingu:chingu@localhost:5434/dashboard?schema=public
+```
+
 
 ```bash
-# .env.dev
-DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard?schema=public
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
-PGADMIN_DEFAULT_PASSWORD=chingu5432
+# .env
+DATABASE_URL={your database url}
 PORT=8000
 
+JWT_SECRET=
 AT_SECRET=
 RT_SECRET=
-MJ_APIKEY_PRIVATE=
-MJ_APIKEY_PUBLIC=
-NODE_ENV=development
-FRONTEND_URL=https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app/
 BCRYPT_HASHING_ROUNDS=10
 
+MJ_APIKEY_PRIVATE=
+MJ_APIKEY_PUBLIC=
+
+NODE_ENV=development
+
+FRONTEND_URL=https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app/
+
 # .env.test
-DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard-test?schema=public
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PORT=8000
+DATABASE_URL={your test database connection string}
+NODE_ENV=test
 ```
 
 ## Installation

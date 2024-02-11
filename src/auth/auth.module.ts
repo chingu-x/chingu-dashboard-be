@@ -7,9 +7,16 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
+import * as process from "process";
 
 @Module({
-    imports: [UsersModule, PassportModule, JwtModule.register({})],
+    imports: [
+        UsersModule,
+        PassportModule,
+        JwtModule.register({
+            secret: process.env.JWT_SECRET,
+        }),
+    ],
     providers: [AuthService, LocalStrategy, AtStrategy, RtStrategy],
     controllers: [AuthController],
     exports: [AuthService],
