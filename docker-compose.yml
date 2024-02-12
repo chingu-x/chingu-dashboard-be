@@ -3,21 +3,38 @@ services:
   postgres:
     container_name: postgres
     image: postgres:15-alpine
-    env_file:
-      - .env.dev
     restart: always
     ports:
       - "5433:5433"
     environment:
-      PGPORT: 5433
+      - POSTGRES_USER=chingu
+      - POSTGRES_PASSWORD=chingu
+      - POSTGRES_DB=dashboard
+      - PGPORT=5433
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  postgres-test:
+    container_name: postgres-test
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=chingu
+      - POSTGRES_PASSWORD=chingu
+      - POSTGRES_DB=dashboard
+      - PGPORT=5434
+    ports:
+      - "5434:5434"
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
-    env_file:
-      - .env.dev
     restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
+      - PGADMIN_DEFAULT_PASSWORD=chingu5432
     depends_on:
       - postgres
     ports:
@@ -28,7 +45,9 @@ services:
     build: .
     restart: always
     env_file:
-      - .env.dev
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard?schema=public
     ports:
       - "8000:8000"
       - "5555:5555"
@@ -40,4 +59,5 @@ services:
     command: ['yarn', 'start:dev']
 volumes:
   pgdata:
+  pgdata-test:
   pgadmin-data:
