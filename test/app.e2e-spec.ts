@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
-import * as process from "process";
 
 describe("AppController (e2e)", () => {
     let app: INestApplication;
@@ -19,7 +18,6 @@ describe("AppController (e2e)", () => {
     });
 
     it("/ (GET)", () => {
-        console.log(process.env.DATABASE_URL);
         return request(app.getHttpServer()).get("/health-check").expect(200);
     });
 });
