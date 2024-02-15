@@ -2,10 +2,11 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Request } from "express";
 import { Injectable } from "@nestjs/common";
+import { UsersService } from "../../users/users.service";
 
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
-    constructor() {
+    constructor(private usersService: UsersService) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 AtStrategy.extractJWT,
@@ -27,6 +28,13 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
     }
 
     async validate(payload: any) {
-        return { userId: payload.sub, email: payload.email };
+        const userInDb = await this.usersService.getUserRolesById(payload.sub);
+
+        return {
+            userId: payload.sub,
+            email: payload.email,
+            roles: userInDb.roles,
+            voyageTeams: userInDb.voyageTeamMembers.map((t) => t.voyageTeamId),
+        };
     }
 }

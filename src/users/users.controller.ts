@@ -9,17 +9,15 @@ import {
 import { UsersService } from "./users.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import {
-    FullUserResponse,
-    PrivateUserResponse,
-    UserResponse,
-} from "./users.response";
+import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
     BadRequestErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { isEmail, isUUID } from "class-validator";
+import { Roles } from "../global/decorators/roles.decorator";
+import { AppRoles } from "../auth/auth.roles";
 
 @Controller("users")
 @ApiTags("users")
@@ -34,8 +32,9 @@ export class UsersController {
         status: HttpStatus.OK,
         description: "Successfully gets all users in the database",
         isArray: true,
-        type: UserResponse,
+        type: FullUserResponse,
     })
+    @Roles(AppRoles.Admin)
     @Get()
     findAll() {
         return this.usersService.findAll();
@@ -53,6 +52,11 @@ export class UsersController {
         status: HttpStatus.UNAUTHORIZED,
         description: "User is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "User not found",
+        type: NotFoundErrorResponse,
     })
     @Get("me")
     getProfile(@Request() req) {
@@ -85,6 +89,7 @@ export class UsersController {
         description: "userId (uuid)",
         example: "6bd33861-04c0-4270-8e96-62d4fb587527",
     })
+    @Roles(AppRoles.Admin)
     @Get("id/:userId")
     getUserDetailsById(@Param("userId") userId: string) {
         if (!isUUID(userId))
@@ -118,6 +123,7 @@ export class UsersController {
         description: "email",
         example: "jessica.williamson@gmail.com",
     })
+    @Roles(AppRoles.Admin)
     @Get("email/:email")
     getUserDetailsByEmail(@Param("email") email: string) {
         if (!isEmail(email))

@@ -49,8 +49,6 @@ export class TeamsService {
     ) {
         const uuid = req.user.userId;
 
-        await this.globalService.validateLoggedInAndTeamMember(teamId, uuid);
-
         return this.prisma.voyageTeamMember.update({
             where: {
                 userVoyageId: {
