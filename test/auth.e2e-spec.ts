@@ -199,22 +199,15 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            // login with this user to get an access token
-            const r = await request(app.getHttpServer())
-                .post("/auth/login")
-                .send({
-                    email: newUserEmail,
-                    password: "password",
-                });
-
-            const at = extractCookieByKey(
-                r.headers["set-cookie"],
-                "access_token",
+            const { access_token } = await loginAndGetTokens(
+                newUserEmail,
+                "password",
+                app,
             );
 
             await request(app.getHttpServer())
                 .post(verifyUrl)
-                .set("Cookie", at)
+                .set("Cookie", access_token)
                 .send({
                     token: userInDb.emailVerificationToken.token,
                 })
@@ -242,22 +235,15 @@ describe("AuthController e2e Tests", () => {
                 password: "password",
             });
 
-            // login with this user to get an access token
-            const r = await request(app.getHttpServer())
-                .post("/auth/login")
-                .send({
-                    email: newUserEmail,
-                    password: "password",
-                });
-
-            const at = extractCookieByKey(
-                r.headers["set-cookie"],
-                "access_token",
+            const { access_token } = await loginAndGetTokens(
+                newUserEmail,
+                "password",
+                app,
             );
 
             await request(app.getHttpServer())
                 .post(verifyUrl)
-                .set("Cookie", at)
+                .set("Cookie", access_token)
                 .send({
                     token: "random token",
                 })
