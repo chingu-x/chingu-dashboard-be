@@ -29,6 +29,19 @@ const loginAndGetTokens = async (
     return { access_token, refresh_token };
 };
 
+const getUserIdByEmail = async (email: string, prisma: PrismaService) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+        select: {
+            id: true,
+        },
+    });
+
+    return user.id;
+};
+
 describe("AuthController e2e Tests", () => {
     let app: INestApplication;
     let prisma: PrismaService;
@@ -387,5 +400,55 @@ describe("AuthController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(403);
         });
+    });
+
+    describe("Request password reset POST /auth/reset-password/request", () => {
+        const resetRequestUrl = "/auth/reset-password/request";
+        it("should return 200 if user account exist, resetToken should be in the database", async () => {
+            const userEmail = "jessica.williamson@gmail.com";
+            await request(app.getHttpServer())
+                .post(resetRequestUrl)
+                .send({
+                    email: userEmail,
+                })
+                .expect(200);
+            // check token is in the database
+            const resetToken = await prisma.resetToken.findUnique({
+                where: {
+                    userId: await getUserIdByEmail(userEmail, prisma),
+                },
+                select: {
+                    token: true,
+                },
+            });
+            expect(resetToken?.token).not.toBeNull();
+        });
+        it("should return 200 if user account does not exist", async () => {
+            const userEmail = "notexist@example.com";
+            await request(app.getHttpServer())
+                .post(resetRequestUrl)
+                .send({
+                    email: userEmail,
+                })
+                .expect(200);
+        });
+        it("should return 400 if no email is in the request body", async () => {
+            await request(app.getHttpServer())
+                .post(resetRequestUrl)
+                .expect(400);
+        });
+        it("should return 400 if no email is not a valid email", async () => {
+            await request(app.getHttpServer())
+                .post(resetRequestUrl)
+                .send({
+                    email: "notAValidEmail",
+                })
+                .expect(400);
+        });
+    });
+
+    describe("Reset password POST /auth/reset-password", () => {
+        //const resetPWUrl = "/auth/reset-password";
+        it.todo("");
     });
 });
