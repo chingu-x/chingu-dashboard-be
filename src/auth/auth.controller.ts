@@ -51,6 +51,11 @@ export class AuthController {
             "Signup Success. User created, and verification email sent.",
         type: GenericSuccessResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "invalid email, password",
+        type: BadRequestErrorResponse,
+    })
     @HttpCode(HttpStatus.OK)
     @Public()
     @Post("signup")
@@ -197,12 +202,12 @@ export class AuthController {
 
     @ApiOperation({
         summary:
-            "When a user logs out, jwt token is cleared, refresh token is set to null in the database.",
+            "When a user logs out, access and refresh tokens are cleared from cookies, refresh token is set to null in the database.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
         description:
-            "User successfully logs out, jwt token in cookies is removed.",
+            "User successfully logs out, access and refresh tokens in cookies is removed.",
         type: LogoutResponse,
     })
     @ApiResponse({
@@ -212,7 +217,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "JWT token error",
+        description: "no access token (i.e. not logged in)",
         type: UnauthorizedErrorResponse,
     })
     @UseGuards(JwtAuthGuard)

@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ForbiddenException,
     Injectable,
+    Logger,
     UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
@@ -29,6 +30,8 @@ export class AuthService {
         private jwtService: JwtService,
         private prisma: PrismaService,
     ) {}
+
+    private readonly logger = new Logger(AuthService.name);
 
     // tokens for email verification, forget password
     private generateToken = (userId: string) => {
@@ -180,7 +183,7 @@ export class AuthService {
         } catch (e) {
             if (e.code === "P2002") {
                 // user with this email exist
-                console.log(
+                this.logger.debug(
                     `[Auth/Signup]: User with email ${signupDto.email} already registered`,
                 );
                 const user = await this.prisma.user.findUnique({
@@ -201,18 +204,18 @@ export class AuthService {
                             token,
                         },
                     });
-                    console.log(
+                    this.logger.debug(
                         `[Auth/Signup]: User account ${signupDto.email} is not verified, resending verification email.`,
                     );
                     await sendSignupVerificationEmail(signupDto.email, token);
                 } else {
-                    console.log(
+                    this.logger.debug(
                         `[Auth/Signup]: Email ${signupDto.email} already verified. Sending "attempt registration" email.`,
                     );
                     await sendAttemptedRegistrationEmail(signupDto.email);
                 }
             } else {
-                console.log(`[Auth/Signup]: Other signup errors: ${e}`);
+                this.logger.debug(`[Auth/Signup]: Other signup errors: ${e}`);
             }
             return {
                 message: "Signup Success.",
@@ -234,11 +237,11 @@ export class AuthService {
         if (!user) {
             // user does not exist, has not signed up previously
             // should not happen under the assumption
-            console.log("[Auth/Resend-email]: User does not exist");
+            this.logger.debug("[Auth/Resend-email]: User does not exist");
         } else if (user.emailVerified) {
             // user email has already verified
             // should not happen under the assumption
-            console.log("[Auth/Resend-email]: Email already verified");
+            this.logger.debug("[Auth/Resend-email]: Email already verified");
         } else {
             // user not verified - resend email
             const token = this.generateToken(user.id);
@@ -274,7 +277,7 @@ export class AuthService {
             if (!user) {
                 // user does not exist, has not signed up previously,
                 // they should not have gotten an email with the token
-                console.log(
+                this.logger.debug(
                     `[Auth/Email verification]: User ${payload.userId} does not exist`,
                 );
                 throw new UnauthorizedException(
@@ -284,7 +287,7 @@ export class AuthService {
             if (user.emailVerified) {
                 // user email has already verified, just return the default status
                 // this should not happen, as token is single use
-                console.log(
+                this.logger.debug(
                     `[Auth/Email verification]: Email ${user.email} already verified`,
                 );
             } else {
@@ -332,7 +335,7 @@ export class AuthService {
             } else if (e.name === "TokenExpiredError") {
                 throw new UnauthorizedException("Token has expired.");
             } else {
-                console.log(`Email verification error: ${e.name}`);
+                this.logger.debug(`Email verification error: ${e.name}`);
                 throw e;
             }
         }
@@ -351,7 +354,7 @@ export class AuthService {
 
         if (!user) {
             // no user found with the email
-            console.log(
+            this.logger.debug(
                 `[Auth/PasswordResetRequest]: No user (email: ${passwordResetRequestDto.email}) found in the database`,
             );
         } else {
@@ -387,7 +390,7 @@ export class AuthService {
             }
             const user = await this.usersService.findUserById(payload.userId);
             if (!user) {
-                console.log(
+                this.logger.debug(
                     `[Auth/Reset password]: User ${payload.userId} does not exist`,
                 );
                 throw new UnauthorizedException(
@@ -425,7 +428,7 @@ export class AuthService {
                 statusCode: 200,
             };
         } catch (e) {
-            console.log(`[Auth/Reset Password]: error: ${e}`);
+            this.logger.debug(`[Auth/Reset Password]: error: ${e}`);
             throw e;
         }
     }
