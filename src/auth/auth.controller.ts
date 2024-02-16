@@ -66,7 +66,8 @@ export class AuthController {
     @ApiOperation({
         summary: "Resend the verification email",
         description:
-            "Please use a 'real' email if you want to receive a verification email.",
+            "Please use a 'real' email if you want to receive a verification email.<br/>" +
+            "response will always be 200, due to privacy reason",
     })
     @ApiResponse({
         status: HttpStatus.OK,

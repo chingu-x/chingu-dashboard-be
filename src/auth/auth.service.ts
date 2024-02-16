@@ -189,7 +189,7 @@ export class AuthService {
                 const user = await this.prisma.user.findUnique({
                     where: { email: signupDto.email },
                 });
-                // if user account is not activated - send another email (replace old token)
+                // if user account is not activated - send another email (replace old token), also update the password
                 if (!user.emailVerified) {
                     const token = this.generateToken(user.id);
                     await this.prisma.emailVerificationToken.upsert({
@@ -202,6 +202,14 @@ export class AuthService {
                         create: {
                             userId: user.id,
                             token,
+                        },
+                    });
+                    await this.prisma.user.update({
+                        where: {
+                            id: user.id,
+                        },
+                        data: {
+                            password: await hashPassword(signupDto.password),
                         },
                     });
                     this.logger.debug(
