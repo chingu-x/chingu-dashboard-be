@@ -4,8 +4,30 @@ import { AppModule } from "../src/app.module";
 import { seed } from "../prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
-import { extractCookieByKey } from "./utils";
+import { extractCookieByKey, extractResCookieValueByKey } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
+
+const loginAndGetTokens = async (
+    email: string,
+    password: string,
+    app: INestApplication,
+) => {
+    const r = await request(app.getHttpServer()).post("/auth/login").send({
+        email,
+        password,
+    });
+
+    const access_token = extractCookieByKey(
+        r.headers["set-cookie"],
+        "access_token",
+    );
+    const refresh_token = extractCookieByKey(
+        r.headers["set-cookie"],
+        "refresh_token",
+    );
+
+    return { access_token, refresh_token };
+};
 
 describe("AuthController e2e Tests", () => {
     let app: INestApplication;
@@ -107,7 +129,7 @@ describe("AuthController e2e Tests", () => {
             //console.log("cookie", cookie);
             return request(app.getHttpServer())
                 .post(logoutUrl)
-                .set("cookie", cookie)
+                .set("Cookie", cookie)
                 .expect(200);
         });
 
@@ -118,7 +140,7 @@ describe("AuthController e2e Tests", () => {
         it("should return 400 if no refresh_token in cookie", async () => {
             return request(app.getHttpServer())
                 .post(logoutUrl)
-                .set("cookie", extractCookieByKey(cookie, "access_token"))
+                .set("Cookie", extractCookieByKey(cookie, "access_token"))
                 .expect(400);
         });
     });
@@ -129,7 +151,7 @@ describe("AuthController e2e Tests", () => {
         it("should return 200 if user exist", async () => {
             return request(app.getHttpServer())
                 .post(resendUrl)
-                .set("cookie", cookie)
+                .set("Cookie", cookie)
                 .send({
                     email: "jessica.williamson@gmail.com",
                 })
@@ -139,7 +161,7 @@ describe("AuthController e2e Tests", () => {
         it("should return 200 if user does not exist", async () => {
             return request(app.getHttpServer())
                 .post(resendUrl)
-                .set("cookie", cookie)
+                .set("Cookie", cookie)
                 .send({
                     email: "notexist@example.com",
                 })
@@ -192,7 +214,7 @@ describe("AuthController e2e Tests", () => {
 
             await request(app.getHttpServer())
                 .post(verifyUrl)
-                .set("cookie", at)
+                .set("Cookie", at)
                 .send({
                     token: userInDb.emailVerificationToken.token,
                 })
@@ -212,7 +234,7 @@ describe("AuthController e2e Tests", () => {
             expect(userAfterVerify.emailVerificationToken).toBe(null);
         });
 
-        it("should return 401 if token mismatch", async () => {
+        it("should return 401 if token mismatch, emailVerified = false, token still in database", async () => {
             const newUserEmail = "verifyTest2@example.com";
             // register a new user
             await request(app.getHttpServer()).post("/auth/signup").send({
@@ -235,7 +257,7 @@ describe("AuthController e2e Tests", () => {
 
             await request(app.getHttpServer())
                 .post(verifyUrl)
-                .set("cookie", at)
+                .set("Cookie", at)
                 .send({
                     token: "random token",
                 })
@@ -257,6 +279,127 @@ describe("AuthController e2e Tests", () => {
 
         it("should return 401 if the user is not logged in", async () => {
             return request(app.getHttpServer()).post(verifyUrl).expect(401);
+        });
+    });
+
+    describe("Get Refresh token POST /auth/refresh", () => {
+        const refreshUrl = "/auth/refresh";
+        describe("should return 200 on successful refresh, and return both new access and new refresh token", () => {
+            it("has valid access token and refresh token", async () => {
+                const { access_token, refresh_token } = await loginAndGetTokens(
+                    "jessica.williamson@gmail.com",
+                    "password",
+                    app,
+                );
+                await request(app.getHttpServer())
+                    .post(refreshUrl)
+                    .set("Cookie", [access_token, refresh_token])
+                    .expect(200)
+                    .then((res) => {
+                        // check new tokens exist and different from old tokens
+                        const newAccessToken = extractResCookieValueByKey(
+                            res.headers["set-cookie"],
+                            "access_token",
+                        );
+                        const newRefreshToken = extractResCookieValueByKey(
+                            res.headers["set-cookie"],
+                            "refresh_token",
+                        );
+                        expect(newAccessToken).not.toEqual(access_token);
+                        expect(newRefreshToken).not.toEqual(refresh_token);
+                    });
+            });
+            it("has valid refresh token and no access token", async () => {
+                const { access_token, refresh_token } = await loginAndGetTokens(
+                    "jessica.williamson@gmail.com",
+                    "password",
+                    app,
+                );
+                await request(app.getHttpServer())
+                    .post(refreshUrl)
+                    .set("Cookie", refresh_token)
+                    .expect(200)
+                    .then((res) => {
+                        // check new tokens exist and different from old tokens
+                        const newAccessToken = extractResCookieValueByKey(
+                            res.headers["set-cookie"],
+                            "access_token",
+                        );
+                        const newRefreshToken = extractResCookieValueByKey(
+                            res.headers["set-cookie"],
+                            "refresh_token",
+                        );
+                        expect(newAccessToken).not.toEqual(access_token);
+                        expect(newRefreshToken).not.toEqual(refresh_token);
+                    });
+            });
+        });
+
+        it("should return 401 if no refresh token in cookie", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .post(refreshUrl)
+                .set("Cookie", access_token)
+                .expect(401);
+        });
+
+        it("should return 401 if no access token is invalid or belong to another person", async () => {
+            const { access_token: wrongToken } = await loginAndGetTokens(
+                "l.castro@outlook.com",
+                "password",
+                app,
+            );
+            await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .post(refreshUrl)
+                .set("Cookie", wrongToken)
+                .expect(401);
+        });
+
+        it("should return 401 if refresh token is not valid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const temperedRefreshToken =
+                refresh_token.substring(0, 20) +
+                "6Y4" +
+                refresh_token.substring(20 + 3);
+
+            await request(app.getHttpServer())
+                .post(refreshUrl)
+                .set("Cookie", [access_token, temperedRefreshToken])
+                .expect(401);
+        });
+
+        it("should return 403 if refresh token is refresh token is revoked", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            await prisma.user.update({
+                where: {
+                    email: "jessica.williamson@gmail.com",
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+
+            await request(app.getHttpServer())
+                .post(refreshUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 });

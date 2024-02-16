@@ -165,7 +165,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "JWT token error",
+        description: "Invalid / tempered access token / no refresh token",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -179,11 +179,6 @@ export class AuthController {
     @UseGuards(JwtRefreshAuthGuard)
     @Post("refresh")
     async refresh(@Request() req, @Res({ passthrough: true }) res) {
-        const cookies = req.cookies;
-
-        if (!cookies?.refresh_token)
-            throw new BadRequestException("No Refresh Token");
-
         const { access_token, refresh_token } = await this.authService.refresh(
             req.user,
         );
