@@ -28,16 +28,16 @@
     "seed": "prisma db seed",
     "lint": "eslint \"{prisma/*seed,src,test}/**/*.ts\" --fix",
     "test": "dotenv -e ./.env.test jest",
-    "test:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest",
+    "test:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest",
     "test:watch": "dotenv -e ./.env.test jest --watch",
-    "test:watch:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest --watch",
+    "test:watch:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest --watch",
     "test:cov": "dotenv -e ./.env.test jest --coverage",
-    "test:cov:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest --coverage",
+    "test:cov:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:int": "dotenv -e ./.env.test -- jest -i --no-cache --verbose --config ./test/jest-int.json",
-    "test:int:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest -i --no-cache --verbose --config ./test/jest-int.json",
+    "test:int:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest -i --no-cache --verbose --config ./test/jest-int.json",
     "test:e2e": "dotenv -e ./.env.test -- jest --config ./test/jest-e2e.json --runInBand",
-    "test:e2e:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest --config ./test/jest-e2e.json --runInBand"
+    "test:e2e:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

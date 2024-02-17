@@ -437,6 +437,12 @@ export class AuthService {
             };
         } catch (e) {
             this.logger.debug(`[Auth/Reset Password]: error: ${e}`);
+            if (e.name === "TokenExpiredError") {
+                throw new UnauthorizedException("Reset token expired");
+            }
+            if (e.name === "JsonWebTokenError") {
+                throw new UnauthorizedException("Malformed token");
+            }
             throw e;
         }
     }

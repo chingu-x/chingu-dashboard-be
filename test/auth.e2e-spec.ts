@@ -6,13 +6,22 @@ import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { extractCookieByKey, extractResCookieValueByKey } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
+import { comparePassword } from "../src/utils/auth";
+
+const signupUrl = "/auth/signup";
+const loginUrl = "/auth/login";
+const logoutUrl = "/auth/logout";
+const resendUrl = "/auth/resend-email";
+const verifyUrl = "/auth/verify-email";
+const resetRequestUrl = "/auth/reset-password/request";
+const resetPWUrl = "/auth/reset-password";
 
 const loginAndGetTokens = async (
     email: string,
     password: string,
     app: INestApplication,
 ) => {
-    const r = await request(app.getHttpServer()).post("/auth/login").send({
+    const r = await request(app.getHttpServer()).post(loginUrl).send({
         email,
         password,
     });
@@ -42,6 +51,25 @@ const getUserIdByEmail = async (email: string, prisma: PrismaService) => {
     return user.id;
 };
 
+const requestAndGetResetToken = async (
+    email: string,
+    app: INestApplication,
+    prisma: PrismaService,
+) => {
+    await request(app.getHttpServer()).post(resetRequestUrl).send({
+        email,
+    });
+    const userInDb = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+        select: {
+            resetToken: true,
+        },
+    });
+    return userInDb.resetToken.token;
+};
+
 describe("AuthController e2e Tests", () => {
     let app: INestApplication;
     let prisma: PrismaService;
@@ -66,7 +94,6 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Creating new users POST /auth/signup", () => {
-        const signupUrl = "/auth/signup";
         it("should create a new user", async () => {
             return request(app.getHttpServer())
                 .post(signupUrl)
@@ -96,7 +123,6 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Log in POST auth/login", () => {
-        const loginUrl = "/auth/login";
         it("should login and return access and refresh token", async () => {
             return request(app.getHttpServer())
                 .post(loginUrl)
@@ -114,7 +140,7 @@ describe("AuthController e2e Tests", () => {
                 });
         });
 
-        it("should return 400 if account does not exist", () => {
+        it("should return 400 if account does not exist", async () => {
             return request(app.getHttpServer())
                 .post(loginUrl)
                 .send({
@@ -124,7 +150,7 @@ describe("AuthController e2e Tests", () => {
                 .expect(400);
         });
 
-        it("should return 401 if account exists but wrong password", () => {
+        it("should return 401 if account exists but wrong password", async () => {
             return request(app.getHttpServer())
                 .post(loginUrl)
                 .send({
@@ -136,10 +162,7 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Logout POST auth/logout", () => {
-        const logoutUrl = "/auth/logout";
-
         it("should logout", async () => {
-            //console.log("cookie", cookie);
             return request(app.getHttpServer())
                 .post(logoutUrl)
                 .set("Cookie", cookie)
@@ -159,8 +182,6 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Send request to resend verification email POST /auth/resend-email", () => {
-        const resendUrl = "/auth/resend-email";
-
         it("should return 200 if user exist", async () => {
             return request(app.getHttpServer())
                 .post(resendUrl)
@@ -192,13 +213,11 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Verify email POST /auth/verify-email", () => {
-        const verifyUrl = "/auth/verify-email";
-
         it("should return 200 if verification is successful, verified should be true, and token removed from db", async () => {
             const newUserEmail = "verifyTest@example.com";
 
             // register a new user
-            await request(app.getHttpServer()).post("/auth/signup").send({
+            await request(app.getHttpServer()).post(signupUrl).send({
                 email: newUserEmail,
                 password: "password",
             });
@@ -243,7 +262,7 @@ describe("AuthController e2e Tests", () => {
         it("should return 401 if token mismatch, emailVerified = false, token still in database", async () => {
             const newUserEmail = "verifyTest2@example.com";
             // register a new user
-            await request(app.getHttpServer()).post("/auth/signup").send({
+            await request(app.getHttpServer()).post(signupUrl).send({
                 email: newUserEmail,
                 password: "password",
             });
@@ -403,7 +422,6 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Request password reset POST /auth/reset-password/request", () => {
-        const resetRequestUrl = "/auth/reset-password/request";
         it("should return 200 if user account exist, resetToken should be in the database", async () => {
             const userEmail = "jessica.williamson@gmail.com";
             await request(app.getHttpServer())
@@ -448,7 +466,111 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Reset password POST /auth/reset-password", () => {
-        //const resetPWUrl = "/auth/reset-password";
-        it.todo("");
+        const email = "jessica.williamson@gmail.com";
+        const newPassword = "newPassword";
+        it("should return 200 if password is reset successfully, and new password should match req.password", async () => {
+            const resetToken = await requestAndGetResetToken(
+                email,
+                app,
+                prisma,
+            );
+            await request(app.getHttpServer())
+                .post(resetPWUrl)
+                .send({
+                    email,
+                    password: newPassword,
+                    token: resetToken,
+                })
+                .expect(200);
+
+            const userInDb = await prisma.user.findUnique({
+                where: {
+                    email,
+                },
+                select: {
+                    password: true,
+                },
+            });
+
+            expect(
+                await comparePassword(newPassword, userInDb.password),
+            ).toBeTruthy();
+        });
+        it("should return 401 if token is expired", async () => {
+            const expiredToken =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ4UmNjOExOWVNWeGxUalZCbnR1ZTN3YndwVVcycFh2R3RqbVhRVUpHdndzYkVkUUNGcjdrLUVSV0pCeWlFdEZ2VnN6R1IyYVBMTXRIS2N0S2ZDcVNQUSIsInVzZXJJZCI6IjEzY2QzNmU0LWExZmEtNDc5Zi1iYTM5LTk4MGIxYjIxN2IwYyIsImlhdCI6MTcwODA5MjIyNCwiZXhwIjoxNzA4MDk1ODI0fQ.C88C4Cl6vci2YLr3pfxRuMVdzmAd15trXr7e7YQ5leo";
+
+            await request(app.getHttpServer())
+                .post(resetPWUrl)
+                .send({
+                    email,
+                    password: newPassword,
+                    token: expiredToken,
+                })
+                .expect(401);
+        });
+        it("should return 401 if token is malformed", async () => {
+            await request(app.getHttpServer())
+                .post(resetPWUrl)
+                .send({
+                    email,
+                    password: newPassword,
+                    token: "wrongToken",
+                })
+                .expect(401);
+        });
+        describe("Should return 400 if request body is not valid", () => {
+            it("invalid email", async () => {
+                const token = await requestAndGetResetToken(email, app, prisma);
+                await request(app.getHttpServer())
+                    .post(resetPWUrl)
+                    .send({
+                        email: "notAnEmail",
+                        password: newPassword,
+                        token,
+                    })
+                    .expect(400);
+            });
+            it("missing email", async () => {
+                const token = await requestAndGetResetToken(email, app, prisma);
+                await request(app.getHttpServer())
+                    .post(resetPWUrl)
+                    .send({
+                        password: "short",
+                        token,
+                    })
+                    .expect(400);
+            });
+            it("invalid password", async () => {
+                const token = await requestAndGetResetToken(email, app, prisma);
+                await request(app.getHttpServer())
+                    .post(resetPWUrl)
+                    .send({
+                        email,
+                        password: "short",
+                        token,
+                    })
+                    .expect(400);
+            });
+            it("missing password", async () => {
+                const token = await requestAndGetResetToken(email, app, prisma);
+                await request(app.getHttpServer())
+                    .post(resetPWUrl)
+                    .send({
+                        email,
+                        token,
+                    })
+                    .expect(400);
+            });
+            it("missing token", async () => {
+                await request(app.getHttpServer())
+                    .post(resetPWUrl)
+                    .send({
+                        email,
+                        password: newPassword,
+                    })
+                    .expect(400);
+            });
+        });
     });
 });
