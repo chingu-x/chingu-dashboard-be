@@ -264,6 +264,11 @@ export class AuthController {
         type: GenericSuccessResponse,
     })
     @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Error in request body, e.g. missing or invalid data",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description:
             "Token error - e.g. malformed token, or expired token. <br> " +
