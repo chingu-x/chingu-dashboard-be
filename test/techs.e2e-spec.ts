@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-//import { TeamTechStackItem, TeamTechStackItemVote } from "@prisma/client";
 import { seed } from "../prisma/seed/seed";
 import { extractResCookieValueByKey } from "./utils";
 const newTechName = "anotherLayerJS";
