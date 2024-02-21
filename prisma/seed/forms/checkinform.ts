@@ -112,8 +112,150 @@ export const populateCheckinForm = async () => {
                             },
                         },
                     },
+                    {
+                        order: 5,
+                        inputType: {
+                            connect: {
+                                name: "checkbox",
+                            },
+                        },
+                        text: "What topics did your meetings cover this week? (Select all that apply)",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-meeting-topics",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "We didn't meet",
+                                            },
+                                            {
+                                                text: "Sprint Review",
+                                            },
+                                            {
+                                                text: "Sprint Retrospective",
+                                            },
+                                            {
+                                                text: "Sprint Planning",
+                                            },
+                                            {
+                                                text: "Other",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        order: 5,
+                        inputType: {
+                            connect: {
+                                name: "yesNo",
+                            },
+                        },
+                        text: "Did you deploy to Production at the end of this Sprint",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 6,
+                        inputType: {
+                            connect: {
+                                name: "teamMembersCheckbox",
+                            },
+                        },
+                        text: "Is there anyone on your team who has not been active? If yes, please select the user. If no, move onto the next question.",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 7,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "Please share any personal or team achievements this week here. (ex. held a meeting, teammate got a job, had a pair programming session, learned a valuable team lesson, solved a challenging problem).",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 8,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "If a Product Owner has been assigned to your team do you have feed back to share with us about how that's working?",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 9,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "If a Voyage Guide has been assigned to your team do you have feed back to share with us about how that's working?",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 10,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "Do you have any personal projects you've built that we can showcase in the Weekly Update? (these can be from anytime in your coding history! We want to showcase it!)",
+                        answerRequired: true,
+                    },
+                    {
+                        order: 11,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "Please provide any extra other comments, concerns, lessons learned, something you want to learn, etc. here. The more the better since this helps us find ways to support teams & improve the process. Thanks!",
+                        answerRequired: true,
+                    },
                 ],
             },
         },
     });
 };
+
+/*
+{
+                        order: 3,
+                        inputType: {
+                            connect: {
+                                name: "radioGroup",
+                            },
+                        },
+                        text: "How did you spend time on your project this week?",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "time-spent",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "0 hrs.",
+                                            },
+                                            {
+                                                text: "1-4 hrs.",
+                                            },
+                                            {
+                                                text: "5-8 hrs.",
+                                            },
+                                            {
+                                                text: "8+ hrs.",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+ */
