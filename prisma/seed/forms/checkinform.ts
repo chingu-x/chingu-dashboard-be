@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const populateCheckinForm = async () => {
     // Sprint - checkin form
-    await prisma.form.create({
+    const checkinForm = await prisma.form.create({
         data: {
             formType: {
                 connect: {
@@ -222,40 +222,86 @@ export const populateCheckinForm = async () => {
             },
         },
     });
-};
 
-/*
-{
-                        order: 3,
-                        inputType: {
-                            connect: {
-                                name: "radioGroup",
-                            },
-                        },
-                        text: "How did you spend time on your project this week?",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "time-spent",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "0 hrs.",
-                                            },
-                                            {
-                                                text: "1-4 hrs.",
-                                            },
-                                            {
-                                                text: "5-8 hrs.",
-                                            },
-                                            {
-                                                text: "8+ hrs.",
-                                            },
-                                        ],
-                                    },
+    const radioInput = await prisma.inputType.findUnique({
+        where: {
+            name: "radio",
+        },
+    });
+
+    // add the radio group question
+    await prisma.question.create({
+        data: {
+            form: {
+                connect: {
+                    id: checkinForm.id,
+                },
+            },
+            order: 3,
+            inputType: {
+                connect: {
+                    name: "radioGroup",
+                },
+            },
+            text: "How did you spend time on your project this week?",
+            answerRequired: true,
+            optionGroup: {
+                create: {
+                    name: "time-spent",
+                    optionChoices: {
+                        createMany: {
+                            data: [
+                                {
+                                    text: "0 hrs.",
                                 },
-                            },
+                                {
+                                    text: "1-4 hrs.",
+                                },
+                                {
+                                    text: "5-8 hrs.",
+                                },
+                                {
+                                    text: "8+ hrs.",
+                                },
+                            ],
                         },
                     },
- */
+                },
+            },
+            subQuestions: {
+                createMany: {
+                    data: [
+                        {
+                            formId: checkinForm.id,
+                            inputTypeId: radioInput.id,
+                            order: 1,
+                            text: "Pair programming",
+                            answerRequired: true,
+                        },
+                        {
+                            formId: checkinForm.id,
+                            inputTypeId: radioInput.id,
+                            order: 2,
+                            text: "On my own",
+                            answerRequired: true,
+                        },
+                        {
+                            formId: checkinForm.id,
+                            inputTypeId: radioInput.id,
+                            order: 3,
+                            text: "Learning & research",
+                            answerRequired: true,
+                        },
+                        {
+                            formId: checkinForm.id,
+                            inputTypeId: radioInput.id,
+                            order: 4,
+                            text: "Team activities (e.g. meetings, debugging, etc.)",
+                            answerRequired: true,
+                        },
+                    ],
+                },
+            },
+        },
+    });
+};
