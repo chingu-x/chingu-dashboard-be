@@ -51,6 +51,11 @@ export class AuthController {
             "Signup Success. User created, and verification email sent.",
         type: GenericSuccessResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "invalid email, password",
+        type: BadRequestErrorResponse,
+    })
     @HttpCode(HttpStatus.OK)
     @Public()
     @Post("signup")
@@ -61,7 +66,8 @@ export class AuthController {
     @ApiOperation({
         summary: "Resend the verification email",
         description:
-            "Please use a 'real' email if you want to receive a verification email.",
+            "Please use a 'real' email if you want to receive a verification email.<br/>" +
+            "response will always be 200, due to privacy reason",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -159,7 +165,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "JWT token error",
+        description: "Invalid / tempered access token / no refresh token",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -173,11 +179,6 @@ export class AuthController {
     @UseGuards(JwtRefreshAuthGuard)
     @Post("refresh")
     async refresh(@Request() req, @Res({ passthrough: true }) res) {
-        const cookies = req.cookies;
-
-        if (!cookies?.refresh_token)
-            throw new BadRequestException("No Refresh Token");
-
         const { access_token, refresh_token } = await this.authService.refresh(
             req.user,
         );
@@ -197,12 +198,12 @@ export class AuthController {
 
     @ApiOperation({
         summary:
-            "When a user logs out, jwt token is cleared, refresh token is set to null in the database.",
+            "When a user logs out, access and refresh tokens are cleared from cookies, refresh token is set to null in the database.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
         description:
-            "User successfully logs out, jwt token in cookies is removed.",
+            "User successfully logs out, access and refresh tokens in cookies is removed.",
         type: LogoutResponse,
     })
     @ApiResponse({
@@ -212,7 +213,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "JWT token error",
+        description: "no access token (i.e. not logged in)",
         type: UnauthorizedErrorResponse,
     })
     @UseGuards(JwtAuthGuard)
@@ -261,6 +262,11 @@ export class AuthController {
         status: HttpStatus.OK,
         description: "Password reset email successfully sent",
         type: GenericSuccessResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Error in request body, e.g. missing or invalid data",
+        type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
