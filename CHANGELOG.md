@@ -4,31 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Another example [here](https://co-pilot.dev/changelog)
 
-## 2024-02-16
 
-### Added
-
-- Add e2e tests for auth controller
-
-## 2024-01-24
+## [Unreleased]
 
 ### Added
 
-- Add Role/Permission guard ([#97](https://github.com/chingu-x/chingu-dashboard-be/pull/97))
-- Add CHANGELOG.md ([#84](https://github.com/chingu-x/chingu-dashboard-be/pull/84))
-- Add github action for STG ([#81](https://github.com/chingu-x/chingu-dashboard-be/pull/81))
-- Add status to voyage table and return in /me endpoint ([#79](https://github.com/chingu-x/chingu-dashboard-be/pull/79))
-- Add refresh token functionality and global guard to protect all routes ([#78](https://github.com/chingu-x/chingu-dashboard-be/pull/78))
-- Add @ApiResponse tags to ideations and features ([#65](https://github.com/chingu-x/chingu-dashboard-be/pull/77))
 - Add @ApiResponse tags to resources ([#76](https://github.com/chingu-x/chingu-dashboard-be/pull/76))
-- Add e2e tests for auth controller
+- Add @ApiResponse tags to ideations and features ([#65](https://github.com/chingu-x/chingu-dashboard-be/pull/77))
+- Add refresh token functionality and global guard to protect all routes ([#78](https://github.com/chingu-x/chingu-dashboard-be/pull/78))- 
+- Add status to voyage table and return in /me endpoint ([#79](https://github.com/chingu-x/chingu-dashboard-be/pull/79))
+- Add github action for STG ([#81](https://github.com/chingu-x/chingu-dashboard-be/pull/81))
+- Add CHANGELOG.md ([#84](https://github.com/chingu-x/chingu-dashboard-be/pull/84))
+- Add Role/Permission guard ([#97](https://github.com/chingu-x/chingu-dashboard-be/pull/97))
+- Add e2e tests for auth controller ([#102](https://github.com/chingu-x/chingu-dashboard-be/pull/102))
+- Add e2e tests for techs controller (([#103](https://github.com/chingu-x/chingu-dashboard-be/pull/103))
 
 ### Changed
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
 - Restructure seed/index.ts to work with e2e tests, and add  --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
+- Update changelog (([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 
 ### Fixed
-- Fix failed tests in app and ideation due to the change from jwt token response to http cookies
+- Fix failed tests in app and ideation due to the change from jwt token response to http cookies (([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
 
 ### Removed
