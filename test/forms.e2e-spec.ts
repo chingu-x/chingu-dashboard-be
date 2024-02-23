@@ -62,5 +62,17 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
         });
+        it("Get a specific form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const formId = 1;
+            await request(app.getHttpServer())
+                .get(`/forms/${formId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200);
+        });
     });
 });
