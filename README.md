@@ -10,33 +10,36 @@
 This is the Chingu Dashboard backend project. Be sure to set your .env [environment variables files](#envfiles)
 
 ## <a name="envfiles">Environment variables</a>
-These files are needed for development and testing purposes, set them in your root directory alongside the docker-compose.yml files.
-Make sure to match it exactly the same.
+
+- if using the docker databases, and an external terminal, use these DATABASE_URL
+```bash
+# .env
+DATABASE_URL=postgresql://chingu:chingu@localhost:5433/dashboard?schema=public
+# .env.test
+DATABASE_URL=postgresql://chingu:chingu@localhost:5434/dashboard?schema=public
+```
+
 
 ```bash
-# .env.dev
-DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard?schema=public
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PGADMIN_DEFAULT_EMAIL=chinguadmin@chingu.com
-PGADMIN_DEFAULT_PASSWORD=chingu5432
+# .env
+DATABASE_URL={your database url}
 PORT=8000
 
+JWT_SECRET=
 AT_SECRET=
 RT_SECRET=
-MJ_APIKEY_PRIVATE=
-MJ_APIKEY_PUBLIC=
-NODE_ENV=development
-FRONTEND_URL=https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app/
 BCRYPT_HASHING_ROUNDS=10
 
+MJ_APIKEY_PRIVATE=
+MJ_APIKEY_PUBLIC=
+
+NODE_ENV=development
+
+FRONTEND_URL=https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app/
+
 # .env.test
-DATABASE_URL=postgresql://chingu:chingu@postgres:5433/dashboard-test?schema=public
-POSTGRES_USER=chingu
-POSTGRES_PASSWORD=chingu
-POSTGRES_DB=dashboard
-PORT=8000
+DATABASE_URL={your test database connection string}
+NODE_ENV=test
 ```
 
 ## Installation
@@ -91,6 +94,21 @@ $ yarn test:int
 $ yarn test:cov
 ```
 
+If using the docker terminal the commands would be 
+```bash
+# unit tests
+$ yarn test:docker
+
+# e2e tests
+$ yarn test:e2e:docker
+
+# integration tests
+$ yarn test:int:docker
+
+# test coverage
+$ yarn test:cov:docker
+```
+
 ## Docker 
 
 By using Docker you can: spin up Postgres, the API & PGAdmin, as well as run prisma Studio and even tests.
@@ -101,10 +119,7 @@ With Docker open, from the project's root you can run Docker in dev or testing m
 
 ```bash
 # spin up dev Docker services (API, PGAdmin, Postgres DB)
-$ yarn docker:dev
-
-# spin up the Docker testing services (API, Postgres testing DB)
-$ yarn docker:test
+$ yarn docker
 ```
 Docker will run in detached mode, meaning it's effectively running in the background, however, you will need to use the various scripts inside the docker cli.
 
@@ -114,10 +129,28 @@ After, click on the CLI to into the terminal inside the container.
 
 From here, type all the commands [above](#prismaStudio).
 
-For PG Admin (use default email and default password from the env.dev file):
+## PG Admin
+
+Login with 
+```
+chinguadmin@chingu.com
+chingu5432
+```
+Right click Servers -> Register -> Server...
+
+dev database
 ```
 hostname: postgres
 port: 5433
+maintenance database: dashboard
+username: chingu
+password: chingu
+```
+
+test database
+```
+hostname: postgres-test
+port: 5434
 maintenance database: dashboard
 username: chingu
 password: chingu
@@ -141,21 +174,26 @@ $ yarn docker:down
 $ yarn docker:clean
 ```
 
-### <a name="dockerTests"></a> Running tests with Docker
 
-With the Docker test services running, run your tests as shown [above](#tests)
-When you've finished testing just [tear down the container](#tearDown)
+## Custom Decorators 
 
-If you want to run integration or e2e tests on the fly you can quickly spin up a Postgres service and run your tests against it. 
+### @Roles()
 
-If you're using Linux, Mac OS, or Windows with Bash configured:
+Adds role(s) requirements for the route in conjunction with the RolesGuard
 
-```bash
-# run integration tests through Docker test image
-$ yarn docker:test:int
+Examples: <br/>
+`@Roles(AppRoles.Admin)` will restrict the route for users with admin roles<br/>
+`@Roles(AppRoles.Admin, AppRoles.Voyager)` restricts the route to admin and voyagers
 
-# run e2e tests through Docker test image
-$ yarn docker:test:e2e
-```
+### @Permissions()
+Adds permissions requirements for the route in conjunction with the PermissionGuard
 
-These commands will spin up the test Postgres container, run your tests and tear down the containers for you in one command.
+Examples: <br/>
+`@Permissions(AppPermissions.OWN_TEAM)` will restrict the route for voyagers to access their own team data
+
+## Roles
+- Admin
+- Voyager
+
+## Permissions
+- OWN_TEAM - only access their own team data, teamId param required (admins excepted)

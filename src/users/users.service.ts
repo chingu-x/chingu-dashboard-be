@@ -1,13 +1,22 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { UserEntity } from "./entities/user.entity";
-import { fullUserDetailSelect } from "../global/selects/users.select";
+import {
+    fullUserDetailSelect,
+    privateUserDetailSelect,
+} from "../global/selects/users.select";
 
 @Injectable()
 export class UsersService {
     constructor(private prisma: PrismaService) {}
 
-    findUserByEmail(email: string): Promise<UserEntity | undefined> {
+    private formatUser = (user) => {
+        return {
+            ...user,
+            roles: user.roles.flatMap((r) => r.role.name),
+        };
+    };
+
+    findUserByEmail(email: string) {
         return this.prisma.user.findUnique({
             where: {
                 email,
@@ -15,7 +24,7 @@ export class UsersService {
         });
     }
 
-    findUserById(id: string): Promise<UserEntity | undefined> {
+    findUserById(id: string) {
         return this.prisma.user.findUnique({
             where: {
                 id,
@@ -23,81 +32,51 @@ export class UsersService {
         });
     }
 
-    findAll() {
-        return this.prisma.user.findMany({
-            select: {
-                id: true,
-                email: true,
-                emailVerified: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                githubId: true,
-                discordId: true,
-                twitterId: true,
-                linkedinId: true,
-                gender: {
-                    select: {
-                        id: true,
-                        abbreviation: true,
-                        description: true,
-                    },
+    async getUserRolesById(userId: string) {
+        return this.formatUser(
+            await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
                 },
-                countryCode: true,
-                timezone: true,
-                comment: true,
-            },
-        });
-    }
-
-    // /me endpoint, user's own profile/data
-    getPrivateUserProfile(userId: string) {
-        return this.prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-                discordId: true,
-                githubId: true,
-                twitterId: true,
-                linkedinId: true,
-                email: true,
-                countryCode: true,
-                timezone: true,
-                voyageTeamMembers: {
-                    orderBy: {
-                        voyageTeamId: "desc",
-                    },
-                    select: {
-                        id: true,
-                        voyageTeamId: true,
-                        voyageTeam: {
-                            select: {
-                                name: true,
-                                voyage: {
-                                    select: {
-                                        status: {
-                                            select: {
-                                                name: true,
-                                            },
-                                        },
-                                    },
+                select: {
+                    roles: {
+                        select: {
+                            role: {
+                                select: {
+                                    name: true,
                                 },
                             },
                         },
-                        voyageRole: {
-                            select: {
-                                name: true,
-                            },
+                    },
+                    voyageTeamMembers: {
+                        select: {
+                            voyageTeamId: true,
                         },
                     },
                 },
-            },
+            }),
+        );
+    }
+
+    async findAll() {
+        const users = await this.prisma.user.findMany({
+            select: fullUserDetailSelect,
         });
+        return users.map((user) => this.formatUser(user));
+    }
+
+    // /me endpoint, user's own profile/data
+    // TODO: add error handling for invalid id (invalid uuid)
+    async getPrivateUserProfile(userId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: privateUserDetailSelect,
+        });
+
+        if (!user) throw new NotFoundException("User not found");
+        return this.formatUser(user);
     }
 
     // full user detail, for dev purpose
@@ -113,7 +92,7 @@ export class UsersService {
             throw new NotFoundException(`User (userid: ${userId} not found`);
         }
 
-        return user;
+        return this.formatUser(user);
     }
 
     async getUserDetailsByEmail(email: string) {
@@ -128,6 +107,6 @@ export class UsersService {
             throw new NotFoundException(`User (email: ${email} not found`);
         }
 
-        return user;
+        return this.formatUser(user);
     }
 }

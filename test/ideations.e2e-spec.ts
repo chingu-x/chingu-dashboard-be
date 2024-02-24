@@ -14,6 +14,7 @@ import {
 import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
 import { CreateIdeationDto } from "src/ideations/dto/create-ideation.dto";
 import * as bcrypt from "bcrypt";
+import { extractResCookieValueByKey } from "./utils";
 
 const roundsOfHashing = 10;
 
@@ -44,6 +45,7 @@ describe("IdeationsController (e2e)", () => {
         description: expect.any(String),
         vision: expect.any(String),
         createdAt: expect.any(String),
+        updatedAt: expect.any(String),
     };
 
     let newIdeation: ProjectIdea;
@@ -161,9 +163,12 @@ describe("IdeationsController (e2e)", () => {
                 email: newUser.email,
                 password: "password",
             })
-            .expect(201)
+            .expect(200)
             .then((res) => {
-                newUserAccessToken = res.body.access_token;
+                newUserAccessToken = extractResCookieValueByKey(
+                    res.headers["set-cookie"],
+                    "access_token",
+                );
             });
     }
 
@@ -250,6 +255,7 @@ describe("IdeationsController (e2e)", () => {
 
         return request(app.getHttpServer())
             .get(`/voyages/${teamId}/ideations`)
+            .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(200)
             .expect("Content-Type", /json/)
             .expect((res) => {

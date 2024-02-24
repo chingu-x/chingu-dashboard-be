@@ -1,5 +1,6 @@
 import { templateIds } from "./templateIds";
 import * as Mailjet from "node-mailjet";
+import * as process from "process";
 
 const mailjet = new Mailjet.Client({
     apiKey: process.env.MJ_APIKEY_PUBLIC,
@@ -10,6 +11,7 @@ export const sendSignupVerificationEmail = async (
     email: string,
     token: string,
 ) => {
+    if (process.env.NODE_ENV === "test") return;
     await mailjet.post("send", { version: "v3.1" }).request({
         Messages: [
             {
@@ -29,6 +31,7 @@ export const sendSignupVerificationEmail = async (
 };
 
 export const sendAttemptedRegistrationEmail = async (email: string) => {
+    if (process.env.NODE_ENV === "test") return;
     await mailjet.post("send", { version: "v3.1" }).request({
         Messages: [
             {
