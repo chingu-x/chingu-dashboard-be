@@ -50,8 +50,8 @@ describe("FormController e2e Tests", () => {
         await app.close();
     });
 
-    describe("Get Forms", () => {
-        it("Get all forms", async () => {
+    describe("Get Forms Endpoint Testing", () => {
+        it("should successfully retrieve all forms", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
@@ -62,7 +62,7 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
         });
-        it("Get a specific form", async () => {
+        it("should successfully retrieve a specific form by ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
@@ -74,7 +74,7 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
         });
-        it("Get a form with invalid ID", async () => {
+        it("should return a 404 error for a non-existent form ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
