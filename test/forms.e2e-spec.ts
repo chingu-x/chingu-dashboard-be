@@ -5,7 +5,7 @@ import { seed } from "../prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { extractCookieByKey } from "./utils";
-//
+
 const loginUrl = "/auth/login";
 
 const loginAndGetTokens = async (
@@ -73,6 +73,23 @@ describe("FormController e2e Tests", () => {
                 .get(`/forms/${formId}`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
+        });
+        it("Get a form with invalid ID", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const invalidFormId = 9999;
+            await request(app.getHttpServer())
+                .get(`/forms/${invalidFormId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404) // Not Found
+                .expect({
+                    message: `Invalid formId: Form (id:${invalidFormId}) does not exist.`,
+                    error: "Not Found",
+                    statusCode: 404,
+                });
         });
     });
 });
