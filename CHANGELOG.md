@@ -19,14 +19,15 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add CHANGELOG.md ([#84](https://github.com/chingu-x/chingu-dashboard-be/pull/84))
 - Add Role/Permission guard ([#97](https://github.com/chingu-x/chingu-dashboard-be/pull/97))
 - Add e2e tests for auth controller ([#102](https://github.com/chingu-x/chingu-dashboard-be/pull/102))
-- Add e2e tests for techs controller (([#103](https://github.com/chingu-x/chingu-dashboard-be/pull/103))
+- Add e2e tests for techs controller ([#103](https://github.com/chingu-x/chingu-dashboard-be/pull/103))
+- Add end-to-end tests for form endpoints ([#107](https://github.com/chingu-x/chingu-dashboard-be/pull/107))
 
 ### Changed
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
 - Restructure seed/index.ts to work with e2e tests, and add  --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
-- Update changelog (([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
+- Update changelog ([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 
 ### Fixed
-- Fix failed tests in app and ideation due to the change from jwt token response to http cookies (([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
+- Fix failed tests in app and ideation due to the change from jwt token response to http cookies ([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
 
 ### Removed

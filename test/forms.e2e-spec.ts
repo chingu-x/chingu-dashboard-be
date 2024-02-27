@@ -84,7 +84,7 @@ describe("FormController e2e Tests", () => {
             await request(app.getHttpServer())
                 .get(`/forms/${invalidFormId}`)
                 .set("Cookie", [access_token, refresh_token])
-                .expect(404) // Not Found
+                .expect(404)
                 .expect({
                     message: `Invalid formId: Form (id:${invalidFormId}) does not exist.`,
                     error: "Not Found",
