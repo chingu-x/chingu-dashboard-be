@@ -1,5 +1,3 @@
-jest.setTimeout(70000)
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { seed } from "../prisma/seed/seed";
@@ -29,7 +27,7 @@ const loginUser = async (
         );
 }
 
-const findVoyageTeamMemberByEmail = async (
+const findVoyageTeamId = async (
     email: string,
     prisma: PrismaService
 ) => {
@@ -46,40 +44,6 @@ const findVoyageTeamMemberByEmail = async (
         }
     })
 }
-
-const findUserOnOtherTeam = async (
-    voyageTeamId: number,
-    prisma: PrismaService
-) => {
-    return await prisma.user.findFirst({
-        where: {
-            AND: [
-                {
-                    NOT: {
-                        voyageTeamMembers: {
-                            every: {
-                                voyageTeamId: {
-                                    equals: voyageTeamId
-                                }
-                            }
-                        }
-                    }
-                },
-                {
-                    NOT: {
-                        roles: {
-                            some: {
-                                role: {
-                                    name: 'admin'
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        }
-    });
-};
 
 describe("ResourcesController (e2e)", () => {
     let app: INestApplication;
@@ -119,8 +83,8 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/POST voyages/:teamId/resources", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
@@ -151,18 +115,14 @@ describe("ResourcesController (e2e)", () => {
 
     it("should not allow members of other teams to POST", async () => {
         const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
-
-        const otherUser = await findUserOnOtherTeam(
-            voyageTeamId, 
-            prisma
-        )
-
+        
+        const otherUserEmail: string = "JosoMadar@dayrep.com" 
         const otherUserAccessToken = await loginUser(
-            otherUser.email, 
+            otherUserEmail, 
             "password", 
             app
         )     
@@ -180,8 +140,8 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/GET voyages/:teamId/resources", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
@@ -222,22 +182,18 @@ describe("ResourcesController (e2e)", () => {
 
     it("should not allow users to GET other teams' resources", async () => {
         const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
-
-        const otherUser = await findUserOnOtherTeam(
-            voyageTeamId, 
-            prisma
-        )
-
+        
+        const otherUserEmail: string = "JosoMadar@dayrep.com" 
         const otherUserAccessToken = await loginUser(
-            otherUser.email, 
+            otherUserEmail, 
             "password", 
             app
         )     
-        console.log(otherUserAccessToken, otherUser, voyageTeamId)
+        
         return request(app.getHttpServer())
             .get(`/voyages/${voyageTeamId}/resources`)
             .set("Authorization", `Bearer ${otherUserAccessToken}`)
@@ -245,8 +201,8 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/PATCH :teamId/resources/:resourceId", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
@@ -287,27 +243,25 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("should only allow resource creator to patch", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
 
-        const otherUser = await findUserOnOtherTeam(
-            voyageTeamId, 
-            prisma
-        )
-
+        const otherUserEmail: string = "JosoMadar@dayrep.com" 
         const otherUserAccessToken = await loginUser(
-            otherUser.email, 
+            otherUserEmail, 
             "password", 
             app
-        )        
+        )     
 
         const resourceToPatch = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
-                    voyageTeamId
+                    member: {
+                        email: userEmail
+                    }
                 }
             }
         })
@@ -326,8 +280,8 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/DELETE :teamId/resources/:resourceId", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
@@ -361,19 +315,15 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("should only allow resource creator to delete", async () => {
-        const userEmail: string = "jessica.williamson@gmail.com" 
-        const { voyageTeamId } = await findVoyageTeamMemberByEmail(
+        const userEmail: string = "dan@random.com" 
+        const { voyageTeamId } = await findVoyageTeamId(
             userEmail,
             prisma
         )
 
-        const otherUser = await findUserOnOtherTeam(
-            voyageTeamId, 
-            prisma
-        )
-
+        const otherUserEmail: string = "JosoMadar@dayrep.com" 
         const otherUserAccessToken = await loginUser(
-            otherUser.email, 
+            otherUserEmail, 
             "password", 
             app
         )
@@ -381,7 +331,9 @@ describe("ResourcesController (e2e)", () => {
         const resourceToDelete = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
-                    voyageTeamId
+                    member: {
+                        email: userEmail
+                    }
                 }
             }
         })
