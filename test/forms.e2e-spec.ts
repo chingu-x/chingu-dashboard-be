@@ -50,7 +50,7 @@ describe("FormController e2e Tests", () => {
         await app.close();
     });
 
-    describe("Get Forms Endpoint Testing", () => {
+    describe("GET ALL /forms", () => {
         it("should successfully retrieve all forms", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
@@ -62,6 +62,8 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
         });
+    });
+    describe("GET a specific form /forms/:formId and handle a form with invalid ID", () => {
         it("should successfully retrieve a specific form by ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
