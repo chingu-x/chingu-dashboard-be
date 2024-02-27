@@ -20,6 +20,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add Role/Permission guard ([#97](https://github.com/chingu-x/chingu-dashboard-be/pull/97))
 - Add e2e tests for auth controller ([#102](https://github.com/chingu-x/chingu-dashboard-be/pull/102))
 - Add e2e tests for techs controller (([#103](https://github.com/chingu-x/chingu-dashboard-be/pull/103))
+- Add check-in form database implementation and seed data (([#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105))
 
 ### Changed
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
