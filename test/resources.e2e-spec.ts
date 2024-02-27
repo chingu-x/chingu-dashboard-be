@@ -11,7 +11,7 @@ import { extractResCookieValueByKey } from "./utils";
 const loginUser = async (
     email: string,
     password: string,
-    app: INestApplication
+    app: INestApplication,
 ) => {
     const res = await request(app.getHttpServer())
         .post("/auth/login")
@@ -19,31 +19,27 @@ const loginUser = async (
             email,
             password,
         })
-        .expect(200)
+        .expect(200);
 
-        return extractResCookieValueByKey(
-            res.headers["set-cookie"],
-            "access_token",
-        );
-}
+    return extractResCookieValueByKey(
+        res.headers["set-cookie"],
+        "access_token",
+    );
+};
 
-const findVoyageTeamId = async (
-    email: string,
-    prisma: PrismaService
-) => {
+const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
     return await prisma.voyageTeamMember.findFirst({
         where: {
             member: {
-                email:
-                    email
+                email: email,
             },
         },
         select: {
             userId: true,
-            voyageTeamId: true
-        }
-    })
-}
+            voyageTeamId: true,
+        },
+    });
+};
 
 describe("ResourcesController (e2e)", () => {
     let app: INestApplication;
@@ -83,21 +79,14 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/POST voyages/:teamId/resources", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const userAccessToken = await loginUser(
-            userEmail, 
-            "password", 
-            app
-        )
+        const userAccessToken = await loginUser(userEmail, "password", app);
 
         const newResource: CreateResourceDto = {
             url: "http://www.github.com/chingux",
-            title: "Chingu Github repo"
+            title: "Chingu Github repo",
         };
 
         return request(app.getHttpServer())
@@ -114,43 +103,41 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("should not allow members of other teams to POST", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
-        
-        const otherUserEmail: string = "JosoMadar@dayrep.com" 
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
+
+        const otherUserEmail: string = "JosoMadar@dayrep.com";
         const otherUserAccessToken = await loginUser(
-            otherUserEmail, 
-            "password", 
-            app
-        )     
+            otherUserEmail,
+            "password",
+            app,
+        );
+        const { voyageTeamId: otherVoyageTeamId } = await findVoyageTeamId(
+            otherUserEmail,
+            prisma,
+        );
 
         const newResource: CreateResourceDto = {
             url: "http://www.github.com/chingux",
-            title: "Chingu Github repo"
+            title: "Chingu Github repo",
         };
+
+        if (voyageTeamId === otherVoyageTeamId) {
+            throw new Error("Voyage team IDs should be different");
+        }
 
         return request(app.getHttpServer())
             .post(`/voyages/${voyageTeamId}/resources`)
             .set("Authorization", `Bearer ${otherUserAccessToken}`)
             .send(newResource)
-            .expect(401)
+            .expect(401);
     });
 
     it("/GET voyages/:teamId/resources", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const userAccessToken = await loginUser(
-            userEmail, 
-            "password", 
-            app
-        )
+        const userAccessToken = await loginUser(userEmail, "password", app);
 
         const resourceCount: number = await prisma.teamResource.count({
             where: {
@@ -181,52 +168,50 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("should not allow users to GET other teams' resources", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
-        
-        const otherUserEmail: string = "JosoMadar@dayrep.com" 
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
+
+        const otherUserEmail: string = "JosoMadar@dayrep.com";
         const otherUserAccessToken = await loginUser(
-            otherUserEmail, 
-            "password", 
-            app
-        )     
-        
+            otherUserEmail,
+            "password",
+            app,
+        );
+        const { voyageTeamId: otherVoyageTeamId } = await findVoyageTeamId(
+            otherUserEmail,
+            prisma,
+        );
+
+        if (voyageTeamId === otherVoyageTeamId) {
+            throw new Error("Voyage team IDs should be different");
+        }
+
         return request(app.getHttpServer())
             .get(`/voyages/${voyageTeamId}/resources`)
             .set("Authorization", `Bearer ${otherUserAccessToken}`)
-            .expect(401)
+            .expect(401);
     });
 
     it("/PATCH :teamId/resources/:resourceId", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const userAccessToken = await loginUser(
-            userEmail, 
-            "password", 
-            app
-        )
+        const userAccessToken = await loginUser(userEmail, "password", app);
 
         const resourceToPatch = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
                     member: {
-                        email: userEmail
-                    }
-                }
-            }
-        })
+                        email: userEmail,
+                    },
+                },
+            },
+        });
 
         const resourceId: number = resourceToPatch.id;
         const patchedResource: UpdateResourceDto = {
             url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-            title: "Chingu Github BE repo"
+            title: "Chingu Github BE repo",
         };
 
         return request(app.getHttpServer())
@@ -242,34 +227,31 @@ describe("ResourcesController (e2e)", () => {
             });
     });
 
-    it("should only allow resource creator to patch", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+    it("should only allow resource creator to PATCH", async () => {
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const otherUserEmail: string = "JosoMadar@dayrep.com" 
+        const otherUserEmail: string = "JosoMadar@dayrep.com";
         const otherUserAccessToken = await loginUser(
-            otherUserEmail, 
-            "password", 
-            app
-        )     
+            otherUserEmail,
+            "password",
+            app,
+        );
 
         const resourceToPatch = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
                     member: {
-                        email: userEmail
-                    }
-                }
-            }
-        })
+                        email: userEmail,
+                    },
+                },
+            },
+        });
 
         const resourceId: number = resourceToPatch.id;
         const patchedResource: UpdateResourceDto = {
             url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-            title: "Chingu Github BE repo"
+            title: "Chingu Github BE repo",
         };
 
         return request(app.getHttpServer())
@@ -280,27 +262,20 @@ describe("ResourcesController (e2e)", () => {
     });
 
     it("/DELETE :teamId/resources/:resourceId", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const userAccessToken = await loginUser(
-            userEmail, 
-            "password", 
-            app
-        )
+        const userAccessToken = await loginUser(userEmail, "password", app);
 
         const resourceToDelete = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
                     member: {
-                        email: userEmail
-                    }
-                }
-            }
-        })
+                        email: userEmail,
+                    },
+                },
+            },
+        });
 
         const resourceId: number = resourceToDelete.id;
 
@@ -314,29 +289,26 @@ describe("ResourcesController (e2e)", () => {
             });
     });
 
-    it("should only allow resource creator to delete", async () => {
-        const userEmail: string = "dan@random.com" 
-        const { voyageTeamId } = await findVoyageTeamId(
-            userEmail,
-            prisma
-        )
+    it("should only allow resource creator to DELETE", async () => {
+        const userEmail: string = "dan@random.com";
+        const { voyageTeamId } = await findVoyageTeamId(userEmail, prisma);
 
-        const otherUserEmail: string = "JosoMadar@dayrep.com" 
+        const otherUserEmail: string = "JosoMadar@dayrep.com";
         const otherUserAccessToken = await loginUser(
-            otherUserEmail, 
-            "password", 
-            app
-        )
+            otherUserEmail,
+            "password",
+            app,
+        );
 
         const resourceToDelete = await prisma.teamResource.findFirst({
             where: {
                 addedBy: {
                     member: {
-                        email: userEmail
-                    }
-                }
-            }
-        })
+                        email: userEmail,
+                    },
+                },
+            },
+        });
 
         const resourceId: number = resourceToDelete.id;
 
@@ -345,5 +317,4 @@ describe("ResourcesController (e2e)", () => {
             .set("Authorization", `Bearer ${otherUserAccessToken}`)
             .expect(401);
     });
-
 });
