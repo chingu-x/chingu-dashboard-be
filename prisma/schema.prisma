@@ -139,6 +139,7 @@ model Sprint {
   updatedAt DateTime @updatedAt
 
   teamMeetings TeamMeeting[]
+  checkinForms FormResponseCheckin[]
 
   @@unique(fields: [voyageId, number], name: "voyageSprintNumber")
 }
@@ -221,6 +222,7 @@ model VoyageTeamMember {
   projectIdeaVotes       ProjectIdeaVote[]
   teamResources          TeamResource[]
   projectFeatures        ProjectFeature[]
+  checkinForms           FormResponseCheckin[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -545,20 +547,35 @@ model ResponseGroup {
   soloProject         SoloProject?
   voyageApplication   VoyageApplication?
   formResponseMeeting FormResponseMeeting?
+  formResponseCheckin FormResponseCheckin?
 }
 
 model FormResponseMeeting {
-  id        Int         @id @default(autoincrement())
-  formId    Int
-  form      Form        @relation(fields: [formId], references: [id])
-  meetingId Int
-  meeting   TeamMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  id              Int            @id @default(autoincrement())
+  formId          Int
+  form            Form           @relation(fields: [formId], references: [id])
+  meetingId       Int
+  meeting         TeamMeeting    @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  responseGroupId Int?           @unique
+  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responseGroupId Int?           @unique
-  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
-
   @@unique(fields: [formId, meetingId], name: "meetingFormId")
+}
+
+model FormResponseCheckin {
+  id                 Int              @id @default(autoincrement())
+  voyageTeamMemberId Int
+  voyageTeamMember   VoyageTeamMember @relation(fields: [voyageTeamMemberId], references: [id], onDelete: Cascade)
+  sprintId           Int
+  sprint             Sprint           @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  adminComments      String
+  feedbackSent       Boolean
+  responseGroupId    Int?             @unique
+  responseGroup      ResponseGroup?   @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 }
