@@ -5,6 +5,7 @@ import { seed } from "../prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { extractCookieByKey } from "./utils";
+import { PrismaClient } from "@prisma/client";
 
 const loginUrl = "/auth/login";
 
@@ -57,13 +58,19 @@ describe("FormController e2e Tests", () => {
                 "password",
                 app,
             );
-            await request(app.getHttpServer())
+            const response = await request(app.getHttpServer())
                 .get("/forms")
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
+
+            const prisma = new PrismaClient();
+            const forms = await prisma.form.findMany();
+            const formsLength = forms.length;
+            expect(response.body.length).toEqual(formsLength);
+            await prisma.$disconnect();
         });
     });
-    describe("GET a specific form /forms/:formId and handle a form with invalid ID", () => {
+    describe("GET /forms/:formId", () => {
         it("should successfully retrieve a specific form by ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
@@ -71,10 +78,20 @@ describe("FormController e2e Tests", () => {
                 app,
             );
             const formId = 1;
-            await request(app.getHttpServer())
+            const prisma = new PrismaClient();
+            const expectedForm = await prisma.form.findUnique({
+                where: {
+                    id: formId,
+                },
+            });
+            const response = await request(app.getHttpServer())
                 .get(`/forms/${formId}`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
+
+            expect(response.body).toEqual(expectedForm);
+
+            await prisma.$disconnect();
         });
         it("should return a 404 error for a non-existent form ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
