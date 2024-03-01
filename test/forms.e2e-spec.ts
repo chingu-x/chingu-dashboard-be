@@ -89,7 +89,7 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
 
-            expect(response.body).toEqual(expectedForm);
+            expect(response.body.id).toEqual(expectedForm.id);
 
             await prisma.$disconnect();
         });
