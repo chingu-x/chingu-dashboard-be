@@ -175,6 +175,7 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 })
                 .expect((res) => {
+                    //agendas array
                     expect(res.body.agendas).toEqual(
                         expect.arrayContaining([
                             expect.objectContaining({
@@ -187,6 +188,7 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 })
                 .expect((res) => {
+                    //form response meeting array
                     expect(res.body.formResponseMeeting).toEqual(
                         expect.arrayContaining([
                             expect.objectContaining({
@@ -194,6 +196,32 @@ describe("Sprints Controller (e2e)", () => {
                                 form: expect.objectContaining({
                                     id: expect.any(Number),
                                     title: expect.any(String),
+                                }),
+                                responseGroup: expect.objectContaining({
+                                    responses: expect.arrayContaining([
+                                        expect.objectContaining({
+                                            text: expect.any(String),
+                                            numeric: expect.toBeOneOf([
+                                                null,
+                                                expect.any(Number),
+                                            ]),
+                                            boolean: expect.toBeOneOf([
+                                                null,
+                                                expect.any(Boolean),
+                                            ]),
+                                            optionChoice: expect.toBeOneOf([
+                                                null,
+                                                expect.any(Number),
+                                            ]),
+                                            question: expect.objectContaining({
+                                                id: expect.any(Number),
+                                                text: expect.any(String),
+                                                description: expect.any(String),
+                                                answerRequired:
+                                                    expect.any(Boolean),
+                                            }),
+                                        }),
+                                    ]),
                                 }),
                             }),
                         ]),
@@ -215,6 +243,113 @@ describe("Sprints Controller (e2e)", () => {
                 .get(`/voyages/sprints/meetings/${meetingId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
+        });
+
+        it("PATCH 200 - Returns all the sprint dates of a particular team", async () => {
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Sprint Planning",
+                    dateTime: "2024-02-29T17:17:50.100Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            sprintId: expect.any(Number),
+                            voyageTeamId: expect.any(Number),
+                            title: expect.any(String),
+                            dateTime: expect.any(String),
+                            meetingLink: expect.any(String),
+                            notes: expect.any(String),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
+                    );
+                });
+        });
+    });
+
+    describe("/voyages/sprints/:sprintNumber/teams/:teamId/meetings", () => {
+        it("POST 201 - Created sprint meeting, returned details", async () => {
+            const teamId = 1;
+            const sprintNumber = 4;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Sprint Planning",
+                    dateTime: "2024-03-01T23:11:20.271Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(201)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                        }),
+                    );
+                });
+        });
+
+        it("POST 409 - Tried to create meeting, one already exists for this sprint", async () => {
+            const teamId = 1;
+            const sprintNumber = 4;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Sprint Planning",
+                    dateTime: "2024-03-01T23:11:20.271Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(409);
+        });
+
+        it("POST 404 - Resource (team Id) not found", async () => {
+            const teamId = 5;
+            const sprintNumber = 5;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Sprint Planning",
+                    dateTime: "2024-03-01T23:11:20.271Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(404);
+        });
+
+        it("POST 400 - Bad request", async () => {
+            const teamId = 1;
+            const sprintNumber = 5;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: 1, //bad request - title should be string
+                    dateTime: "2024-03-01T23:11:20.271Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(400);
         });
     });
 });
