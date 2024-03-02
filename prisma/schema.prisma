@@ -571,11 +571,13 @@ model FormResponseCheckin {
   voyageTeamMember   VoyageTeamMember @relation(fields: [voyageTeamMemberId], references: [id], onDelete: Cascade)
   sprintId           Int
   sprint             Sprint           @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  adminComments      String
-  feedbackSent       Boolean
-  responseGroupId    Int?             @unique
-  responseGroup      ResponseGroup?   @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+  adminComments      String?
+  feedbackSent       Boolean          @default(false)
+  responseGroupId    Int              @unique
+  responseGroup      ResponseGroup    @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
+
+  @@unique(fields: [voyageTeamMemberId, sprintId], name: "voyageTeamMemberSprintId")
 }

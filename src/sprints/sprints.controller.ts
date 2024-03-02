@@ -418,4 +418,12 @@ export class SprintsController {
             updateMeetingFormResponse,
         );
     }
+
+    /*
+    @Post("checkin/voyageTeamMemberId/:voyageTeamMemberId")
+    addCheckinFormResponse(
+        @Param("voyageTeamMemberId", ParseIntPipe) voyageTeamMemberId: number,
+    ) {}
+
+     */
 }
