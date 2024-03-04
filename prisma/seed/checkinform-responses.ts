@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { formSelect } from "../../src/forms/forms.service";
 
 const prisma = new PrismaClient();
 
@@ -21,11 +22,24 @@ export const populateCheckinFormResponse = async () => {
         },
     });
 
+    // get questions
+    const questions = await prisma.form.findUnique({
+        where: {
+            title: "Sprint Check-in",
+        },
+        select: formSelect,
+    });
+
     const responseGroup = await prisma.responseGroup.create({
         data: {
             responses: {
                 createMany: {
-                    data: [],
+                    data: [
+                        {
+                            questionId: questions[0],
+                            //optionChoiceId: questions[0],
+                        },
+                    ],
                 },
             },
         },
