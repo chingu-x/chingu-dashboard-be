@@ -10,6 +10,9 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FormResponse } from "./forms.response";
 import { NotFoundErrorResponse } from "../global/responses/errors";
 
+import { AppRoles } from "../auth/auth.roles";
+import { Roles } from "../global/decorators/roles.decorator";
+
 @Controller("forms")
 @ApiTags("Forms")
 export class FormsController {
@@ -17,7 +20,7 @@ export class FormsController {
 
     @Get()
     @ApiOperation({
-        summary: "gets all forms from the database",
+        summary: "[Roles: admin] gets all forms from the database",
         description:
             "Returns all forms details with questions. <br>" +
             "This is currently for development purpose, or admin in future",
@@ -28,6 +31,7 @@ export class FormsController {
         type: FormResponse,
         isArray: true,
     })
+    @Roles(AppRoles.Admin)
     getAllForms() {
         return this.formsService.getAllForms();
     }

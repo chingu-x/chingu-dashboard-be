@@ -34,6 +34,8 @@ import {
     ExtendedFeaturesResponse,
     FeatureResponse,
 } from "./features.response";
+import { AppPermissions } from "../auth/auth.permissions";
+import { Permissions } from "../global/decorators/permissions.decorator";
 
 @Controller()
 @ApiTags("Voyage - Features")
@@ -42,7 +44,7 @@ export class FeaturesController {
 
     @ApiOperation({
         summary:
-            "Adds a new feature for a team given a teamId (int) and that the user is logged in.",
+            "[Permission: own_team] Adds a new feature for a team given a teamId (int) and that the user is logged in.",
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -60,6 +62,7 @@ export class FeaturesController {
         description: "Successfully created a new feature.",
         type: FeatureResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Post("/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
@@ -75,7 +78,8 @@ export class FeaturesController {
     }
 
     @ApiOperation({
-        summary: "Gets all feature category options.",
+        summary:
+            "Gets all feature category options. e.g. Must have, should have, nice to have",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -113,7 +117,8 @@ export class FeaturesController {
     }
 
     @ApiOperation({
-        summary: "Gets all features for a team given a teamId (int).",
+        summary:
+            "[Permission: own_team] Gets all features for a team given a teamId (int).",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -133,6 +138,7 @@ export class FeaturesController {
             "Could not find features for project. Team with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Get("/:teamId/features")
     findAllFeatures(
         @Request() req,

@@ -25,7 +25,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @ApiOperation({
-        summary: "Gets all users.",
+        summary: "[Roles: Admin] Gets all users.",
         description: "This endpoint is for development/admin purpose.",
     })
     @ApiResponse({
@@ -64,7 +64,8 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a user with full details given a userId (uuid).",
+        summary:
+            "[Roles: Admin] Gets a user with full details given a userId (uuid).",
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
@@ -98,7 +99,7 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a user with full details given an email.",
+        summary: "[Roles: Admin] Gets a user with full details given an email.",
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
