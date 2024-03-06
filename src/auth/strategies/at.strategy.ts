@@ -30,6 +30,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
     async validate(payload: any) {
         const userInDb = await this.usersService.getUserRolesById(payload.sub);
 
+        // Note: Update global/types/CustomRequest when updating this
         return {
             userId: payload.sub,
             email: payload.email,

@@ -9,7 +9,6 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import { AppPermissions } from "../auth.permissions";
 import { PERM_KEY } from "../../global/decorators/permissions.decorator";
-import { AppRoles } from "../auth.roles";
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -28,7 +27,7 @@ export class PermissionsGuard implements CanActivate {
 
         if (requiredPermissions.includes(AppPermissions.OWN_TEAM)) {
             // Admin can bypass this
-            if (user.roles.includes(AppRoles.Admin)) return true;
+            // if (user.roles.includes(AppRoles.Admin)) return true;
             if (!params.teamId) {
                 throw new InternalServerErrorException(
                     "This permission guard requires :teamId param",

@@ -36,6 +36,7 @@ import {
 } from "./features.response";
 import { AppPermissions } from "../auth/auth.permissions";
 import { Permissions } from "../global/decorators/permissions.decorator";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Features")
@@ -53,9 +54,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid teamId",
+        type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
@@ -66,7 +71,7 @@ export class FeaturesController {
     @Post("/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createFeatureDto: CreateFeatureDto,
     ) {
@@ -93,30 +98,6 @@ export class FeaturesController {
     }
 
     @ApiOperation({
-        summary: "Gets one feature given a featureId (int).",
-    })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: "Successfully found feature.",
-        type: ExtendedFeaturesResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
-        type: UnauthorizedErrorResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        description: "Feature with given ID does not exist.",
-        type: NotFoundErrorResponse,
-    })
-    @Get("/features/:featureId")
-    findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
-        return this.featuresService.findOneFeature(featureId);
-    }
-
-    @ApiOperation({
         summary:
             "[Permission: own_team] Gets all features for a team given a teamId (int).",
     })
@@ -140,11 +121,32 @@ export class FeaturesController {
     })
     @Permissions(AppPermissions.OWN_TEAM)
     @Get("/:teamId/features")
-    findAllFeatures(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-    ) {
-        return this.featuresService.findAllFeatures(req, teamId);
+    findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
+        return this.featuresService.findAllFeatures(teamId);
+    }
+
+    @ApiOperation({
+        summary: "Gets one feature given a featureId (int).",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully found feature.",
+        type: ExtendedFeaturesResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Feature with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @Get("/features/:featureId")
+    findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
+        return this.featuresService.findOneFeature(featureId);
     }
 
     @ApiOperation({

@@ -23,13 +23,6 @@ export class FeaturesService {
     ) {
         const { featureCategoryId, description } = createFeatureDto;
 
-        console.log("req", req.user);
-        const teamMember =
-            await this.globalService.validateLoggedInAndTeamMember(
-                teamId,
-                req.user.userId,
-            );
-
         const validCategory = await this.prisma.featureCategory.findFirst({
             where: {
                 id: featureCategoryId,
@@ -59,7 +52,10 @@ export class FeaturesService {
 
             const newFeature = await this.prisma.projectFeature.create({
                 data: {
-                    teamMemberId: teamMember.id,
+                    teamMemberId: this.globalService.getVoyageTeamMemberId(
+                        req,
+                        teamId,
+                    ),
                     featureCategoryId,
                     description,
                     order: newOrder,
@@ -76,6 +72,55 @@ export class FeaturesService {
             const featureCategories =
                 await this.prisma.featureCategory.findMany();
             return featureCategories;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async findAllFeatures(teamId: number) {
+        try {
+            const allTeamFeatures = await this.prisma.projectFeature.findMany({
+                where: {
+                    addedBy: {
+                        voyageTeamId: teamId,
+                    },
+                },
+                select: {
+                    id: true,
+                    description: true,
+                    order: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    teamMemberId: true,
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    addedBy: {
+                        select: {
+                            member: {
+                                select: {
+                                    id: true,
+                                    avatar: true,
+                                    firstName: true,
+                                    lastName: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: [{ category: { id: "asc" } }, { order: "asc" }],
+            });
+
+            if (!allTeamFeatures) {
+                throw new NotFoundException(
+                    `TeamId (id: ${teamId}) does not exist.`,
+                );
+            }
+
+            return allTeamFeatures;
         } catch (e) {
             throw e;
         }
@@ -122,60 +167,6 @@ export class FeaturesService {
             }
 
             return projectFeature;
-        } catch (e) {
-            throw e;
-        }
-    }
-
-    async findAllFeatures(req, teamId: number) {
-        await this.globalService.validateLoggedInAndTeamMember(
-            teamId,
-            req.user.userId,
-        );
-
-        try {
-            const allTeamFeatures = await this.prisma.projectFeature.findMany({
-                where: {
-                    addedBy: {
-                        voyageTeamId: teamId,
-                    },
-                },
-                select: {
-                    id: true,
-                    description: true,
-                    order: true,
-                    createdAt: true,
-                    updatedAt: true,
-                    teamMemberId: true,
-                    category: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                    addedBy: {
-                        select: {
-                            member: {
-                                select: {
-                                    id: true,
-                                    avatar: true,
-                                    firstName: true,
-                                    lastName: true,
-                                },
-                            },
-                        },
-                    },
-                },
-                orderBy: [{ category: { id: "asc" } }, { order: "asc" }],
-            });
-
-            if (!allTeamFeatures) {
-                throw new NotFoundException(
-                    `TeamId (id: ${teamId}) does not exist.`,
-                );
-            }
-
-            return allTeamFeatures;
         } catch (e) {
             throw e;
         }
@@ -336,7 +327,7 @@ export class FeaturesService {
                 },
             });
         }
-        const newCategoryFeaturesList = await this.findAllFeatures(req, teamId);
+        const newCategoryFeaturesList = await this.findAllFeatures(teamId);
         return newCategoryFeaturesList;
     }
 
