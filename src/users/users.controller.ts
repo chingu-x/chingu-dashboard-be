@@ -41,7 +41,8 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a logged in users detail via userId:uuid in jwt token.",
+        summary:
+            "Gets a logged in users own detail via userId:uuid in jwt token.",
     })
     @ApiResponse({
         status: HttpStatus.OK,

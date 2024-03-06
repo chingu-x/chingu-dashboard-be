@@ -34,7 +34,12 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
             userId: payload.sub,
             email: payload.email,
             roles: userInDb.roles,
-            voyageTeams: userInDb.voyageTeamMembers.map((t) => t.voyageTeamId),
+            voyageTeams: userInDb.voyageTeamMembers.map((t) => {
+                return {
+                    teamId: t.voyageTeamId,
+                    memberId: t.id,
+                };
+            }),
         };
     }
 }

@@ -23,6 +23,7 @@ export class FeaturesService {
     ) {
         const { featureCategoryId, description } = createFeatureDto;
 
+        console.log("req", req.user);
         const teamMember =
             await this.globalService.validateLoggedInAndTeamMember(
                 teamId,
