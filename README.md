@@ -131,6 +131,8 @@ From here, type all the commands [above](#prismaStudio).
 
 ## PG Admin
 
+http://localhost:4000/
+
 Login with 
 ```
 chinguadmin@chingu.com
