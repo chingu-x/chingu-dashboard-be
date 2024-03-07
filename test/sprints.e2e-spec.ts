@@ -100,7 +100,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/teams/{teamId}", () => {
+    describe("/voyages/sprints/teams/:teamId", () => {
         it("GET 200 - returns all the sprint dates of a particular team", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
@@ -147,7 +147,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/meetings/{meetingId}", () => {
+    describe("/voyages/sprints/meetings/:meetingId", () => {
         it("GET 200 - returns meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
@@ -245,16 +245,16 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(401);
         });
 
-        it("PATCH 200 - Returns all the sprint dates of a particular team", async () => {
+        it("PATCH 200 - Update, return meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
-                    title: "Sprint Planning",
+                    title: "Test title",
                     dateTime: "2024-02-29T17:17:50.100Z",
                     meetingLink: "samplelink.com/meeting1234",
-                    notes: "Notes for the meeting",
+                    notes: "Test notes",
                 })
                 .expect(200)
                 .expect((res) => {
@@ -272,6 +272,16 @@ describe("Sprints Controller (e2e)", () => {
                         }),
                     );
                 });
+        });
+
+        it("    verify meeting update in database", async () => {
+            const meeting = await prisma.teamMeeting.findMany({
+                where: {
+                    title: "Test title",
+                    notes: "Test notes",
+                },
+            });
+            return expect(meeting[0].title).toEqual("Test title");
         });
     });
 
@@ -349,6 +359,210 @@ describe("Sprints Controller (e2e)", () => {
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
                 })
+                .expect(400);
+        });
+    });
+
+    describe("/voyages/sprints/meetings/:meetingId/agendas", () => {
+        it("POST 201 - Agenda created successfully", async () => {
+            const meetingId = 1;
+            return (
+                request(app.getHttpServer())
+                    .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                    .set("Authorization", `Bearer ${userAccessToken}`)
+                    .send({
+                        title: "Test 1",
+                        description: "New agenda",
+                    })
+                    .expect(201)
+                    // req.body returns {}???
+                    .expect((res) => {
+                        expect(res.body).toEqual(
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                            }),
+                        );
+                    })
+            );
+        });
+
+        it("POST 400 - Bad Request - Invalid Meeting Id", async () => {
+            const meetingId = " ";
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Contribute to the agenda!",
+                    description:
+                        "To get started, click the Add Topic button...",
+                })
+                .expect(400);
+        });
+    });
+
+    describe("/voyages/sprints/agendas/:agendaId", () => {
+        it("PATCH 200 - Agenda updated successfully", async () => {
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: 1,
+                            teamMeetingId: 1,
+                            title: "Title updated",
+                            description: "New agenda",
+                            status: true,
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
+                    );
+                });
+        });
+
+        it("PATCH 404 - Invalid Agenda Id", async () => {
+            const agendaId = 9999;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(404);
+        });
+
+        it("DELETE 200 - Agenda deleted successfully", async () => {
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: 1,
+                            title: expect.any(String),
+                            description: expect.any(String),
+                            status: expect.any(Boolean),
+                            teamMeetingId: expect.any(Number),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
+                    );
+                });
+        });
+
+        it("DELETE 404 - Invalid Agenda Id", async () => {
+            const agendaId = 9999;
+            return request(app.getHttpServer())
+                .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(404);
+        });
+    });
+
+    describe("/voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+        it("POST 200 - Meeting form created successfully", async () => {
+            const meetingId = 2;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(201)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            formId: 1,
+                            meetingId: 2,
+                            responseGroupId: expect.any(Number),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
+                    );
+                });
+        });
+
+        it("POST 409 - Form already exists for this meeting", async () => {
+            const meetingId = 2;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(409);
+        });
+
+        it("POST 400 - Invalid form or meeting", async () => {
+            const meetingId = 9999;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(400);
+        });
+
+        it("GET 200 - Successfully get the meeting form with responses", async () => {
+            const meetingId = 2;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            formType: expect.objectContaining({
+                                id: expect.any(Number),
+                                name: expect.any(String),
+                            }),
+                            title: expect.any(String),
+                            description: null,
+                            questions: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.any(Number),
+                                    order: expect.any(Number),
+                                    inputType: {
+                                        id: expect.any(Number),
+                                        name: expect.any(String),
+                                    },
+                                    text: expect.any(String),
+                                    description: expect.any(String),
+                                    answerRequired: expect.any(Boolean),
+                                    multipleAllowed: null,
+                                    optionGroup: null,
+                                    responses: expect.any(Array),
+                                }),
+                            ]),
+                        }),
+                    );
+                });
+        });
+
+        it("GET 404 - Invalid meeting", async () => {
+            const meetingId = 9999;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(404);
+        });
+
+        it("GET 400 - Invalid form", async () => {
+            const meetingId = 2;
+            const formId = 9999;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
     });
