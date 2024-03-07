@@ -28,6 +28,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Restructure seed/index.ts to work with e2e tests, and add  --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
 - Update changelog ([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 - Update test.yml to run e2e tests on pull requests to the main branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
+- Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
 
 ### Fixed
 - Fix failed tests in app and ideation due to the change from jwt token response to http cookies ([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
