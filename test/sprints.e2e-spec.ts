@@ -5,6 +5,7 @@ import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
 import { extractResCookieValueByKey } from "./utils";
+import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
 expect.extend({ toBeOneOf });
 
@@ -306,9 +307,27 @@ describe("Sprints Controller (e2e)", () => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             id: expect.any(Number),
+                            sprintId: 4,
+                            voyageTeamId: 1,
+                            title: expect.any(String),
+                            dateTime: expect.any(String),
+                            meetingLink: expect.any(String),
+                            notes: expect.any(String),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
                         }),
                     );
                 });
+        });
+
+        it("    verify sprint meeting in database", async () => {
+            const meeting = await prisma.teamMeeting.findMany({
+                where: {
+                    title: "Sprint Planning",
+                    notes: "Notes for the meeting",
+                },
+            });
+            return expect(meeting[0].title).toEqual("Sprint Planning");
         });
 
         it("POST 409 - Tried to create meeting, one already exists for this sprint", async () => {
@@ -364,26 +383,41 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("/voyages/sprints/meetings/:meetingId/agendas", () => {
-        it("POST 201 - Agenda created successfully", async () => {
+        it("POST 201 - New agenda added", async () => {
             const meetingId = 1;
-            return (
-                request(app.getHttpServer())
-                    .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                    .set("Authorization", `Bearer ${userAccessToken}`)
-                    .send({
-                        title: "Test 1",
-                        description: "New agenda",
-                    })
-                    .expect(201)
-                    // req.body returns {}???
-                    .expect((res) => {
-                        expect(res.body).toEqual(
-                            expect.objectContaining({
-                                id: expect.any(Number),
-                            }),
-                        );
-                    })
-            );
+            const createAgendaDto: CreateAgendaDto = {
+                title: "Test agenda 3",
+                description: "See if it works...",
+                status: false,
+            };
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send(createAgendaDto)
+                .expect(201)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            teamMeetingId: expect.any(Number),
+                            title: "Test agenda 3",
+                            description: "See if it works...",
+                            status: expect.any(Boolean),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
+                    );
+                });
+        });
+
+        it("    verify new agenda in database", async () => {
+            const agenda = await prisma.agenda.findMany({
+                where: {
+                    title: "Test agenda 3",
+                    description: "See if it works...",
+                },
+            });
+            return expect(agenda[0].title).toEqual("Test agenda 3");
         });
 
         it("POST 400 - Bad Request - Invalid Meeting Id", async () => {
@@ -427,6 +461,16 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
+        it("    verify patch in database", async () => {
+            const agenda = await prisma.agenda.findMany({
+                where: {
+                    title: "Title updated",
+                    description: "New agenda",
+                },
+            });
+            return expect(agenda[0].title).toEqual("Title updated");
+        });
+
         it("PATCH 404 - Invalid Agenda Id", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
@@ -461,6 +505,15 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
+        it("    verify agenda deleted from database", async () => {
+            const agenda = await prisma.agenda.findUnique({
+                where: {
+                    id: 1,
+                },
+            });
+            return expect(agenda).toEqual(null);
+        });
+
         it("DELETE 404 - Invalid Agenda Id", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
@@ -490,6 +543,16 @@ describe("Sprints Controller (e2e)", () => {
                         }),
                     );
                 });
+        });
+
+        it("    verify meeting form in database", async () => {
+            const responseMeeting = await prisma.formResponseMeeting.findMany({
+                where: {
+                    formId: 1,
+                    meetingId: 2,
+                },
+            });
+            return expect(responseMeeting[0].formId).toEqual(1);
         });
 
         it("POST 409 - Form already exists for this meeting", async () => {
@@ -563,6 +626,74 @@ describe("Sprints Controller (e2e)", () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(400);
+        });
+
+        it("PATCH 200 - Successfully update the meeting form with responses", async () => {
+            const meetingId = 1;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    response: {
+                        questionId: 1,
+                        optionChoiceId: 1,
+                        text: "Team member x landed a job this week.",
+                        boolean: true,
+                        number: 1,
+                    },
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                questionId: expect.any(Number),
+                                optionChoiceId: expect.any(Number),
+                                numeric: expect.toBeOneOf([
+                                    null,
+                                    expect.any(Number),
+                                ]),
+                                boolean: expect.any(Boolean),
+                                text: expect.any(String),
+                                responseGroupId: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("    verify meeting response in database", async () => {
+            const response = await prisma.response.findMany({
+                where: {
+                    questionId: 1,
+                    optionChoiceId: 1,
+                    text: "Team member x landed a job this week.",
+                    boolean: true,
+                },
+            });
+            return expect(response[0].questionId).toEqual(1);
+        });
+
+        it("PATCH 400 - Bad request", async () => {
+            const meetingId = 2;
+            const formId = "Bad request";
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    response: {
+                        questionId: 1,
+                        optionChoiceId: 1,
+                        text: "Team member x landed a job this week.",
+                        boolean: true,
+                        number: 1,
+                    },
+                })
                 .expect(400);
         });
     });
