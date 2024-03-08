@@ -134,8 +134,13 @@ export class AuthService {
         return tokens;
     }
 
-    async revoke(param?: any) {
-        const { userId, email } = param;
+    async revokeRefreshToken(body?: any): Promise<void> {
+        const { userId, email } = body;
+
+        if (userId && email)
+            throw new BadRequestException(
+                "Please provide either userId or email, not both",
+            );
 
         if (userId) {
             await this.prisma.user.update({
