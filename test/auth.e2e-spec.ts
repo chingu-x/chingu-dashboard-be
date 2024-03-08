@@ -463,6 +463,25 @@ describe("AuthController e2e Tests", () => {
                 .expect(404);
         });
 
+        it("should return 403 if email and user id is provided", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    userId: "c4daf07c-8dde-4a43-bfa4-a6fd49762dd5",
+                    email: "l.castro@outlook.com",
+                })
+                .expect(400);
+        });
+
         it("should return 403 if user is not permitted", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
