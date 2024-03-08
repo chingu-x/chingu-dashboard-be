@@ -21,6 +21,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for auth controller ([#102](https://github.com/chingu-x/chingu-dashboard-be/pull/102))
 - Add e2e tests for techs controller ([#103](https://github.com/chingu-x/chingu-dashboard-be/pull/103))
 - Add end-to-end tests for form endpoints ([#107](https://github.com/chingu-x/chingu-dashboard-be/pull/107))
+- Add e2e tests for sprint controller
 
 ### Changed
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
