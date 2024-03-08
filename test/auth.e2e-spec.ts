@@ -15,7 +15,7 @@ const resendUrl = "/auth/resend-email";
 const verifyUrl = "/auth/verify-email";
 const resetRequestUrl = "/auth/reset-password/request";
 const resetPWUrl = "/auth/reset-password";
-
+const revokeRTUrl = "/auth/refresh/userId";
 const loginAndGetTokens = async (
     email: string,
     password: string,
@@ -417,6 +417,67 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(refreshUrl)
                 .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+    });
+
+    describe("Revoke Refresh Token DELETE /auth/refresh/userId", () => {
+        it("should return 200 if refresh token is revoked", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await prisma.user.update({
+                where: {
+                    email: "l.castro@outlook.com",
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({ email: "l.castro@outlook.com" })
+                .expect(200);
+        });
+
+        it("should return 401 if email is invalid", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({})
+                .expect(404);
+        });
+
+        it("should return 403 if user is not permitted", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    email: "l.castro@outlook.com",
+                })
                 .expect(403);
         });
     });
