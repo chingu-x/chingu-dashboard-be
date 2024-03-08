@@ -3,6 +3,7 @@ import {
     ForbiddenException,
     Injectable,
     Logger,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
@@ -131,6 +132,36 @@ export class AuthService {
         const tokens = await this.generateAtRtTokens(payload);
         await this.updateRtHash(user.userId, tokens.refresh_token);
         return tokens;
+    }
+
+    async revoke(param?: any) {
+        console.log(param);
+        const { userId, email } = param;
+
+        if (userId) {
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+        } else if (email) {
+            await this.prisma.user.update({
+                where: {
+                    email: email,
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+        } else {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: "User not found",
+            });
+        }
     }
 
     async logout(refreshToken: string) {
