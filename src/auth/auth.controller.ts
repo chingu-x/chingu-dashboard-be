@@ -36,7 +36,7 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
-import { RevokeRTDTo } from "./dto/revoke.dto";
+import { RevokeRTDTo } from "./dto/revoke-refresh-token.dto";
 import { RolesGuard } from "./guards/roles.guard";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "./auth.roles";
@@ -217,6 +217,11 @@ export class AuthController {
         type: NotFoundErrorResponse,
     })
     @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "userId and email is provided",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
         status: HttpStatus.FORBIDDEN,
         description: "user doesn't have permission to preform operation",
         type: ForbiddenErrorResponse,
@@ -225,8 +230,8 @@ export class AuthController {
     @Roles(AppRoles.Admin)
     @UseGuards(RolesGuard)
     @Delete("refresh/userId")
-    async revoke(@Body() revokeTRDTo: RevokeRTDTo) {
-        await this.authService.revoke(revokeTRDTo);
+    async revoke(@Body() body: RevokeRTDTo) {
+        await this.authService.revokeRefreshToken(body);
     }
 
     @ApiOperation({
