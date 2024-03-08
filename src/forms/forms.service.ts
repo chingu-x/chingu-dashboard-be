@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 export const formSelect = {
     id: true,
@@ -12,6 +13,9 @@ export const formSelect = {
     title: true,
     description: true,
     questions: {
+        orderBy: {
+            order: "asc",
+        },
         select: {
             id: true,
             order: true,
@@ -37,16 +41,23 @@ export const formSelect = {
             },
         },
     },
-};
+} as Prisma.FormSelect;
 
 @Injectable()
 export class FormsService {
     constructor(private prisma: PrismaService) {}
 
-    getAllForms() {
-        return this.prisma.form.findMany({
+    async getAllForms() {
+        const data = await this.prisma.form.findMany({
             select: formSelect,
         });
+
+        const dataToReturn = data.map(({ questions, ...i }) => ({
+            ...i,
+            subQuestions: questions,
+        }));
+
+        return dataToReturn;
     }
 
     async getFormById(formId: number) {
@@ -60,6 +71,12 @@ export class FormsService {
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
-        return form;
+
+        const { questions, ...rest } = form;
+        const data = {
+            ...rest,
+            subQuestions: questions,
+        };
+        return data;
     }
 }
