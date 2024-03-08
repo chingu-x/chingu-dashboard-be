@@ -135,7 +135,6 @@ export class AuthService {
     }
 
     async revoke(param?: any) {
-        console.log(param);
         const { userId, email } = param;
 
         if (userId) {
