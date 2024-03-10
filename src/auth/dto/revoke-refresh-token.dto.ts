@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class RevokeRTDTo {
+export class RevokeRTDto {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
