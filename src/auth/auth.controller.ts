@@ -37,7 +37,6 @@ import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
-import { RolesGuard } from "./guards/roles.guard";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "./auth.roles";
 
