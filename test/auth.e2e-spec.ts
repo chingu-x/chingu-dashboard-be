@@ -447,6 +447,21 @@ describe("AuthController e2e Tests", () => {
                 .expect(200);
         });
 
+        describe("checks if refresh token is null", () => {
+            it("should return null for user's refresh token", async () => {
+                const userEmail = "l.castro@outlook.com";
+                const updatedUser = await prisma.user.findUnique({
+                    where: {
+                        id: await getUserIdByEmail(userEmail, prisma),
+                    },
+                    select: {
+                        refreshToken: true,
+                    },
+                });
+                expect(updatedUser.refreshToken).toBeNull();
+            });
+        });
+
         it("should return 401 if email is invalid", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
