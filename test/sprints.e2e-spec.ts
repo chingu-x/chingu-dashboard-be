@@ -131,7 +131,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("GET 404 - Invalid teamId", async () => {
+        it("should return 404 if teamId is invalid", async () => {
             const teamId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
