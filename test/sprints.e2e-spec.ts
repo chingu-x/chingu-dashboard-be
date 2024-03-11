@@ -620,7 +620,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("GET 400 - Invalid form", async () => {
+        it("should return 400 if meeting id is correct but form id is invalid", async () => {
             const meetingId = 2;
             const formId = 9999;
             return request(app.getHttpServer())
