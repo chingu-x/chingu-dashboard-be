@@ -139,7 +139,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("GET 401 - Unauthorized", async () => {
+        it("should return 401 if authorization token is present", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
