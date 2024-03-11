@@ -51,8 +51,8 @@ describe("Sprints Controller (e2e)", () => {
         await loginUser();
     });
 
-    describe("/voyages/sprints", () => {
-        it("GET - 200 successfully gets all voyage and sprints data", async () => {
+    describe("GET /voyages/sprints - Gets all voyage and sprints data", () => {
+        it("should successfully return all voyage and sprints data - 200", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
@@ -101,8 +101,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/teams/:teamId", () => {
-        it("GET 200 - returns all the sprint dates of a particular team", async () => {
+    describe("GET /voyages/sprints/teams/:teamId", () => {
+        it("should return all the sprint dates of a particular team - 200", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
@@ -139,7 +139,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("should return 401 if authorization token is present", async () => {
+        it("should return 401 if authorization token is not present", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
@@ -148,8 +148,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/meetings/:meetingId", () => {
-        it("GET 200 - returns meeting details", async () => {
+    describe("GET /voyages/sprints/meetings/:meetingId", () => {
+        it("should return meeting details - 200", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
@@ -230,7 +230,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("GET 404 - Invalid meetingId", async () => {
+        it("should return 404 if meetingId is invalid", async () => {
             const meetingId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
@@ -238,15 +238,17 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("GET 401 - Unauthorized", async () => {
+        it("should return 401 if authorization token is not present", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
+    });
 
-        it("PATCH 200 - Update, return meeting details", async () => {
+    describe("PATCH /voyages/sprints/meetings/:meetingId", () => {
+        it("should update and return meeting details- 200", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
@@ -275,19 +277,19 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify meeting update in database", async () => {
-            const meeting = await prisma.teamMeeting.findMany({
+        it("    verify meeting details updated in database", async () => {
+            const meeting = await prisma.teamMeeting.findFirst({
                 where: {
                     title: "Test title",
                     notes: "Test notes",
                 },
             });
-            return expect(meeting[0].title).toEqual("Test title");
+            return expect(meeting.title).toEqual("Test title");
         });
     });
 
-    describe("/voyages/sprints/:sprintNumber/teams/:teamId/meetings", () => {
-        it("POST 201 - Created sprint meeting, returned details", async () => {
+    describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings", () => {
+        it("201 - Created sprint meeting, returned details", async () => {
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
@@ -330,7 +332,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(meeting[0].title).toEqual("Sprint Planning");
         });
 
-        it("POST 409 - Tried to create meeting, one already exists for this sprint", async () => {
+        it("409 - Tried to create meeting, one already exists for this sprint", async () => {
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
@@ -347,7 +349,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(409);
         });
 
-        it("POST 404 - Resource (team Id) not found", async () => {
+        it("404 - Resource (team Id) not found", async () => {
             const teamId = 5;
             const sprintNumber = 5;
             return request(app.getHttpServer())
@@ -364,7 +366,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("POST 400 - Bad request", async () => {
+        it("400 - Bad request", async () => {
             const teamId = 1;
             const sprintNumber = 5;
             return request(app.getHttpServer())
@@ -382,8 +384,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/meetings/:meetingId/agendas", () => {
-        it("POST 201 - New agenda added", async () => {
+    describe("POST /voyages/sprints/meetings/:meetingId/agendas", () => {
+        it(" 201 - New agenda added", async () => {
             const meetingId = 1;
             const createAgendaDto: CreateAgendaDto = {
                 title: "Test agenda 3",
@@ -420,7 +422,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(agenda[0].title).toEqual("Test agenda 3");
         });
 
-        it("POST 400 - Bad Request - Invalid Meeting Id", async () => {
+        it("400 - Bad Request - Invalid Meeting Id", async () => {
             const meetingId = " ";
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
@@ -434,8 +436,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/agendas/:agendaId", () => {
-        it("PATCH 200 - Agenda updated successfully", async () => {
+    describe("PATCH /voyages/sprints/agendas/:agendaId", () => {
+        it("200 - Agenda updated successfully", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
@@ -471,7 +473,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(agenda[0].title).toEqual("Title updated");
         });
 
-        it("PATCH 404 - Invalid Agenda Id", async () => {
+        it("404 - Invalid Agenda Id", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
@@ -483,8 +485,9 @@ describe("Sprints Controller (e2e)", () => {
                 })
                 .expect(404);
         });
-
-        it("DELETE 200 - Agenda deleted successfully", async () => {
+    });
+    describe("DELETE /voyages/sprints/agendas/:agendaId", () => {
+        it("200 - Agenda deleted successfully", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
@@ -514,7 +517,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(agenda).toEqual(null);
         });
 
-        it("DELETE 404 - Invalid Agenda Id", async () => {
+        it("404 - Invalid Agenda Id", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
@@ -523,8 +526,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("/voyages/sprints/meetings/:meetingId/forms/:formId", () => {
-        it("POST 200 - Meeting form created successfully", async () => {
+    describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+        it("200 - Meeting form created successfully", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -555,7 +558,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(responseMeeting[0].formId).toEqual(1);
         });
 
-        it("POST 409 - Form already exists for this meeting", async () => {
+        it("409 - Form already exists for this meeting", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -564,7 +567,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(409);
         });
 
-        it("POST 400 - Invalid form or meeting", async () => {
+        it("400 - Invalid form or meeting", async () => {
             const meetingId = 9999;
             const formId = 1;
             return request(app.getHttpServer())
@@ -572,8 +575,9 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
-
-        it("GET 200 - Successfully get the meeting form with responses", async () => {
+    });
+    describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+        it("200 - Successfully get the meeting form with responses", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -628,8 +632,9 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
-
-        it("PATCH 200 - Successfully update the meeting form with responses", async () => {
+    });
+    describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+        it("200 - Successfully update the meeting form with responses", async () => {
             const meetingId = 1;
             const formId = 1;
             return request(app.getHttpServer())
