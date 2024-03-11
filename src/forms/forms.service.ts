@@ -39,6 +39,7 @@ export const formSelect = {
                     },
                 },
             },
+            subQuestions: true,
         },
     },
 } as Prisma.FormSelect;
@@ -52,31 +53,20 @@ export class FormsService {
             select: formSelect,
         });
 
-        const dataToReturn = data.map(({ questions, ...i }) => ({
-            ...i,
-            subQuestions: questions,
-        }));
-
-        return dataToReturn;
+        return data;
     }
 
     async getFormById(formId: number) {
-        const form = await this.prisma.form.findUnique({
+        const data = await this.prisma.form.findUnique({
             where: {
                 id: formId,
             },
             select: formSelect,
         });
-        if (!form)
+        if (!data)
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
-
-        const { questions, ...rest } = form;
-        const data = {
-            ...rest,
-            subQuestions: questions,
-        };
         return data;
     }
 }
