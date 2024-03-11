@@ -30,6 +30,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Update test.yml to run e2e tests on pull requests to the main branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
 - Add role and permission guard to some existing routes
   [#112](https://github.com/chingu-x/chingu-dashboard-be/pull/112)
+- Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
 
 ### Fixed
 - Fix failed tests in app and ideation due to the change from jwt token response to http cookies ([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
