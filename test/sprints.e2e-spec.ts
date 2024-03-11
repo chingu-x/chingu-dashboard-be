@@ -93,7 +93,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("GET 401 - Unauthorized", async () => {
+        it("should return 401 if authorized token isn't present", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
                 .set("Authorization", `Bearer ${undefined}`)
