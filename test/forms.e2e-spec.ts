@@ -4,35 +4,12 @@ import { AppModule } from "../src/app.module";
 import { seed } from "../prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
-import { extractCookieByKey } from "./utils";
-import { PrismaClient } from "@prisma/client";
-
-const loginUrl = "/auth/login";
-
-const loginAndGetTokens = async (
-    email: string,
-    password: string,
-    app: INestApplication,
-) => {
-    const r = await request(app.getHttpServer()).post(loginUrl).send({
-        email,
-        password,
-    });
-
-    const access_token = extractCookieByKey(
-        r.headers["set-cookie"],
-        "access_token",
-    );
-    const refresh_token = extractCookieByKey(
-        r.headers["set-cookie"],
-        "refresh_token",
-    );
-
-    return { access_token, refresh_token };
-};
+import { getNonAdminUser, loginAndGetTokens } from "./utils";
+import { PrismaService } from "../src/prisma/prisma.service";
 
 describe("FormController e2e Tests", () => {
     let app: INestApplication;
+    let prisma: PrismaService;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,6 +19,7 @@ describe("FormController e2e Tests", () => {
         await seed();
 
         app = moduleFixture.createNestApplication();
+        prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
         app.use(cookieParser());
         await app.init();
@@ -49,6 +27,7 @@ describe("FormController e2e Tests", () => {
 
     afterAll(async () => {
         await app.close();
+        await prisma.$disconnect();
     });
 
     describe("GET ALL /forms", () => {
@@ -63,11 +42,21 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
 
-            const prisma = new PrismaClient();
             const forms = await prisma.form.findMany();
-            const formsLength = forms.length;
-            expect(response.body.length).toEqual(formsLength);
-            await prisma.$disconnect();
+            expect(response.body.length).toEqual(forms.length);
+        });
+
+        it("should return 403 when accessed by a user without the admin role", async () => {
+            const nonAdminUser = await getNonAdminUser();
+            const { access_token } = await loginAndGetTokens(
+                nonAdminUser.email,
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .get("/forms")
+                .set("Cookie", [access_token])
+                .expect(403);
         });
     });
     describe("GET /forms/:formId", () => {
@@ -78,7 +67,6 @@ describe("FormController e2e Tests", () => {
                 app,
             );
             const formId = 1;
-            const prisma = new PrismaClient();
             const expectedForm = await prisma.form.findUnique({
                 where: {
                     id: formId,
@@ -90,8 +78,6 @@ describe("FormController e2e Tests", () => {
                 .expect(200);
 
             expect(response.body.id).toEqual(expectedForm.id);
-
-            await prisma.$disconnect();
         });
         it("should return a 404 error for a non-existent form ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
