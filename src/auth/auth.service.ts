@@ -23,6 +23,7 @@ import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import * as process from "process";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
+import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -134,7 +135,7 @@ export class AuthService {
         return tokens;
     }
 
-    async revokeRefreshToken(body?: any): Promise<void> {
+    async revokeRefreshToken(body?: RevokeRTDto) {
         const { userId, email } = body;
 
         if (userId && email)
@@ -143,23 +144,37 @@ export class AuthService {
             );
 
         if (userId) {
-            await this.prisma.user.update({
-                where: {
-                    id: userId,
-                },
-                data: {
-                    refreshToken: null,
-                },
-            });
+            try {
+                await this.prisma.user.update({
+                    where: {
+                        id: userId,
+                    },
+                    data: {
+                        refreshToken: null,
+                    },
+                });
+            } catch (error) {
+                throw new NotFoundException({
+                    statusCode: 404,
+                    message: `User by "${userId}" cannot be found.`,
+                });
+            }
         } else if (email) {
-            await this.prisma.user.update({
-                where: {
-                    email: email,
-                },
-                data: {
-                    refreshToken: null,
-                },
-            });
+            try {
+                await this.prisma.user.update({
+                    where: {
+                        email: email,
+                    },
+                    data: {
+                        refreshToken: null,
+                    },
+                });
+            } catch (error) {
+                throw new NotFoundException({
+                    statusCode: 404,
+                    message: `User by "${email}" cannot be found.`,
+                });
+            }
         } else {
             throw new NotFoundException({
                 statusCode: 404,
