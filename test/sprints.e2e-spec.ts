@@ -679,7 +679,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(response[0].questionId).toEqual(1);
         });
 
-        it("PATCH 400 - Bad request", async () => {
+        it("should return 400 if form id is a string", async () => {
             const meetingId = 2;
             const formId = "Bad request";
             return request(app.getHttpServer())
