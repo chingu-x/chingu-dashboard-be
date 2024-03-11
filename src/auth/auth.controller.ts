@@ -202,8 +202,10 @@ export class AuthController {
     }
 
     @ApiOperation({
-        summary: "Revokes user's refresh token, with a valid user id",
-        description: "using the user's id, removes user's refresh token",
+        summary:
+            "[Admin only]: Revokes user's refresh token, with a valid user id or email",
+        description:
+            "using the user's id or email, removes user's refresh token",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -227,9 +229,13 @@ export class AuthController {
     })
     @HttpCode(HttpStatus.OK)
     @Roles(AppRoles.Admin)
-    @Delete("refresh/userId")
-    async revoke(@Body() body: RevokeRTDto) {
+    @Delete("refresh/revoke")
+    async revoke(@Body() body: RevokeRTDto, @Res() res) {
         await this.authService.revokeRefreshToken(body);
+        res.status(HttpStatus.OK).json({
+            message: "User Refresh token Successfully revoke.",
+            statusCode: 200,
+        });
     }
 
     @ApiOperation({
