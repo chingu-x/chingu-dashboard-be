@@ -15,7 +15,7 @@ const resendUrl = "/auth/resend-email";
 const verifyUrl = "/auth/verify-email";
 const resetRequestUrl = "/auth/reset-password/request";
 const resetPWUrl = "/auth/reset-password";
-const revokeRTUrl = "/auth/refresh/userId";
+const revokeRTUrl = "/auth/refresh/revoke";
 const loginAndGetTokens = async (
     email: string,
     password: string,
