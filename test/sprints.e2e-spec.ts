@@ -611,7 +611,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("GET 404 - Invalid meeting", async () => {
+        it("should return 404 if meeting id is invalid", async () => {
             const meetingId = 9999;
             const formId = 1;
             return request(app.getHttpServer())
