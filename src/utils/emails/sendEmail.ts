@@ -44,8 +44,7 @@ export const sendAttemptedRegistrationEmail = async (email: string) => {
                 TemplateLanguage: true,
                 Variables: {
                     userEmail: email,
-                    passwordResetPage:
-                        "https://chingu-dashboard.vercel.app/users/reset-password",
+                    passwordResetPage: `${process.env.FRONTEND_URL}/users/reset-password`,
                 },
             },
         ],
@@ -64,7 +63,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
                 TemplateID: templateIds.passwordResetEmail,
                 TemplateLanguage: true,
                 Variables: {
-                    passwordResetLink: `https://chingu-dashboard.vercel.app/users/reset-password?token=${token}`,
+                    passwordResetLink: `${process.env.FRONTEND_URL}/users/reset-password?token=${token}`,
                 },
             },
         ],
