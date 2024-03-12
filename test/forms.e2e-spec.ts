@@ -31,7 +31,7 @@ describe("FormController e2e Tests", () => {
     });
 
     describe("GET ALL /forms", () => {
-        it("should successfully retrieve all forms", async () => {
+        it("should return 200 when successfully retrieve all forms", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
@@ -44,6 +44,10 @@ describe("FormController e2e Tests", () => {
 
             const forms = await prisma.form.findMany();
             expect(response.body.length).toEqual(forms.length);
+        });
+
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer()).get("/forms").expect(401);
         });
 
         it("should return 403 when accessed by a user without the admin role", async () => {
@@ -60,7 +64,7 @@ describe("FormController e2e Tests", () => {
         });
     });
     describe("GET /forms/:formId", () => {
-        it("should successfully retrieve a specific form by ID", async () => {
+        it("should return 200 when successfully retrieve a specific form by ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
@@ -79,6 +83,11 @@ describe("FormController e2e Tests", () => {
 
             expect(response.body.id).toEqual(expectedForm.id);
         });
+
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer()).get("/forms/1").expect(401);
+        });
+
         it("should return a 404 error for a non-existent form ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
