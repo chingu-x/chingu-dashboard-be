@@ -172,7 +172,7 @@ export class AuthService {
             } catch (error) {
                 throw new NotFoundException({
                     statusCode: 404,
-                    message: `User by "${email}" cannot be found.`,
+                    message: `User by '${email}' cannot be found.`,
                 });
             }
         } else {
