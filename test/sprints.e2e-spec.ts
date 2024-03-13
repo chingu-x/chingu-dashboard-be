@@ -52,7 +52,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints - Gets all voyage and sprints data", () => {
-        it("should successfully return all voyage and sprints data - 200", async () => {
+        it("200 - should successfully return all voyage and sprints data", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
@@ -102,7 +102,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints/teams/:teamId", () => {
-        it("should return all the sprint dates of a particular team - 200", async () => {
+        it("200 - should return all the sprint dates of a particular team", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
@@ -149,7 +149,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints/meetings/:meetingId", () => {
-        it("should return meeting details - 200", async () => {
+        it("200 - should return meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
@@ -248,7 +248,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("PATCH /voyages/sprints/meetings/:meetingId", () => {
-        it("should update and return meeting details- 200", async () => {
+        it("200 - should update and return meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
@@ -277,7 +277,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify meeting details updated in database", async () => {
+        it(" - verify meeting details updated in database", async () => {
             const meeting = await prisma.teamMeeting.findFirst({
                 where: {
                     title: "Test title",
@@ -289,7 +289,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings", () => {
-        it("201 - Created sprint meeting, returned details", async () => {
+        it("201 - should create sprint meeting and return details", async () => {
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
@@ -322,17 +322,17 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify sprint meeting in database", async () => {
-            const meeting = await prisma.teamMeeting.findMany({
+        it("- verify sprint meeting added to database", async () => {
+            const meeting = await prisma.teamMeeting.findFirst({
                 where: {
                     title: "Sprint Planning",
                     notes: "Notes for the meeting",
                 },
             });
-            return expect(meeting[0].title).toEqual("Sprint Planning");
+            return expect(meeting.title).toEqual("Sprint Planning");
         });
 
-        it("409 - Tried to create meeting, one already exists for this sprint", async () => {
+        it("should return 409 if trying to create a meeting that already exists for sprint", async () => {
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
@@ -349,7 +349,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(409);
         });
 
-        it("404 - Resource (team Id) not found", async () => {
+        it("should return 404 if teamId not found", async () => {
             const teamId = 5;
             const sprintNumber = 5;
             return request(app.getHttpServer())
@@ -366,7 +366,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("400 - Bad request", async () => {
+        it("should return 400 for bad request (title is Number)", async () => {
             const teamId = 1;
             const sprintNumber = 5;
             return request(app.getHttpServer())
@@ -385,7 +385,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/meetings/:meetingId/agendas", () => {
-        it(" 201 - New agenda added", async () => {
+        it("201 - should add new agenda", async () => {
             const meetingId = 1;
             const createAgendaDto: CreateAgendaDto = {
                 title: "Test agenda 3",
@@ -412,17 +412,17 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify new agenda in database", async () => {
-            const agenda = await prisma.agenda.findMany({
+        it("- verify new agenda added to database", async () => {
+            const agenda = await prisma.agenda.findFirst({
                 where: {
                     title: "Test agenda 3",
                     description: "See if it works...",
                 },
             });
-            return expect(agenda[0].title).toEqual("Test agenda 3");
+            return expect(agenda.title).toEqual("Test agenda 3");
         });
 
-        it("400 - Bad Request - Invalid Meeting Id", async () => {
+        it("should return 400 if meetingId is String", async () => {
             const meetingId = " ";
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
@@ -437,7 +437,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("PATCH /voyages/sprints/agendas/:agendaId", () => {
-        it("200 - Agenda updated successfully", async () => {
+        it("200 - should update agenda with provided values", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
@@ -463,17 +463,17 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify patch in database", async () => {
-            const agenda = await prisma.agenda.findMany({
+        it("- verify patch in database", async () => {
+            const agenda = await prisma.agenda.findFirst({
                 where: {
                     title: "Title updated",
                     description: "New agenda",
                 },
             });
-            return expect(agenda[0].title).toEqual("Title updated");
+            return expect(agenda.title).toEqual("Title updated");
         });
 
-        it("404 - Invalid Agenda Id", async () => {
+        it("should return 404 if agendaId is not found", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
@@ -487,7 +487,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("DELETE /voyages/sprints/agendas/:agendaId", () => {
-        it("200 - Agenda deleted successfully", async () => {
+        it("200 - should delete agenda from database", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
@@ -508,7 +508,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify agenda deleted from database", async () => {
+        it("- verify agenda deleted from database", async () => {
             const agenda = await prisma.agenda.findUnique({
                 where: {
                     id: 1,
@@ -517,7 +517,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(agenda).toEqual(null);
         });
 
-        it("404 - Invalid Agenda Id", async () => {
+        it("should return 404 if agendaId is not found", async () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
@@ -527,7 +527,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
-        it("200 - Meeting form created successfully", async () => {
+        it("200 - should create new meeting form", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -548,17 +548,17 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify meeting form in database", async () => {
-            const responseMeeting = await prisma.formResponseMeeting.findMany({
+        it("- verify meeting form in database", async () => {
+            const responseMeeting = await prisma.formResponseMeeting.findFirst({
                 where: {
                     formId: 1,
                     meetingId: 2,
                 },
             });
-            return expect(responseMeeting[0].formId).toEqual(1);
+            return expect(responseMeeting.formId).toEqual(1);
         });
 
-        it("409 - Form already exists for this meeting", async () => {
+        it("should return 409 if form already exists for this meeting", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -567,7 +567,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(409);
         });
 
-        it("400 - Invalid form or meeting", async () => {
+        it("should return 400 if meetingId is not found", async () => {
             const meetingId = 9999;
             const formId = 1;
             return request(app.getHttpServer())
@@ -575,9 +575,18 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
+
+        it("should return 400 if formId is not found", async () => {
+            const meetingId = 1;
+            const formId = 999;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(400);
+        });
     });
     describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
-        it("200 - Successfully get the meeting form with responses", async () => {
+        it("200 - should successfully return the meeting form with responses", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
@@ -615,7 +624,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("should return 404 if meeting id is invalid", async () => {
+        it("should return 404 if meetingId is not found", async () => {
             const meetingId = 9999;
             const formId = 1;
             return request(app.getHttpServer())
@@ -624,7 +633,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("should return 400 if meeting id is correct but form id is invalid", async () => {
+        it("should return 400 if formId is is not found", async () => {
             const meetingId = 2;
             const formId = 9999;
             return request(app.getHttpServer())
@@ -634,7 +643,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
-        it("200 - Successfully update the meeting form with responses", async () => {
+        it("200 - should successfully update the meeting form with responses", async () => {
             const meetingId = 1;
             const formId = 1;
             return request(app.getHttpServer())
@@ -672,7 +681,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("    verify meeting response in database", async () => {
+        it("- verify meeting response in database", async () => {
             const response = await prisma.response.findMany({
                 where: {
                     questionId: 1,
@@ -684,7 +693,7 @@ describe("Sprints Controller (e2e)", () => {
             return expect(response[0].questionId).toEqual(1);
         });
 
-        it("should return 400 if form id is a string", async () => {
+        it("should return 400 if formId is a string", async () => {
             const meetingId = 2;
             const formId = "Bad request";
             return request(app.getHttpServer())
