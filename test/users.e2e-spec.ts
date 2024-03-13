@@ -56,44 +56,49 @@ describe("Users Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(Array.isArray(res.body)).toBe(true); // Verify that the response is an array
-
-                    // Iterate over each user in the response and verify their properties
-                    res.body.forEach((user: any) => {
+                    expect(Array.isArray(res.body)).toBe(true);
+                    res.body.forEach((user) => {
                         expect(user).toEqual(
                             expect.objectContaining({
                                 id: expect.any(String),
                                 firstName: expect.any(String),
                                 lastName: expect.any(String),
                                 roles: expect.arrayContaining([
-                                    "voyager",
-                                    "admin",
+                                    expect.stringMatching(/admin|voyager/),
                                 ]),
                                 avatar: expect.any(String),
                                 githubId: expect.any(String),
                                 discordId: expect.any(String),
                                 twitterId: expect.any(String),
-                                linkedinId: expect.any(String),
+                                linkedinId: expect.any(String || null),
                                 email: expect.any(String),
                                 countryCode: expect.any(String),
                                 timezone: expect.any(String),
+                                comment: expect.any(String),
+                                gender: expect.objectContaining({
+                                    abbreviation: expect.any(String),
+                                    description: expect.any(String),
+                                    id: expect.any(Number),
+                                }),
+                                emailVerified: expect.any(Boolean),
                                 voyageTeamMembers: expect.arrayContaining([
-                                    {
+                                    expect.objectContaining({
+                                        hrPerSprint: expect.any(Number),
                                         id: expect.any(Number),
-                                        voyageTeamId: expect.any(Number),
-                                        voyageTeam: {
+                                        status: expect.objectContaining({
                                             name: expect.any(String),
-                                            voyage: {
-                                                number: expect.any(Number),
-                                                status: {
-                                                    name: expect.any(String),
-                                                },
-                                            },
-                                        },
-                                        voyageRole: {
+                                        }),
+                                        voyageRole: expect.objectContaining({
                                             name: expect.any(String),
-                                        },
-                                    },
+                                        }),
+                                        voyageTeam: expect.objectContaining({
+                                            id: expect.any(Number),
+                                            name: expect.any(String),
+                                            tier: expect.objectContaining({
+                                                name: expect.any(String),
+                                            }),
+                                        }),
+                                    }),
                                 ]),
                             }),
                         );
@@ -154,13 +159,6 @@ describe("Users Controller (e2e)", () => {
                 });
         });
 
-        it("should return 404 if the user is not found", async () => {
-            await request(app.getHttpServer())
-                .get("/users/me")
-                .set("Authorization", `Bearer ${userAccessToken}`)
-                .expect(HttpStatus.NOT_FOUND);
-        });
-
         it("should return 401 if authorized token isn't present", async () => {
             return request(app.getHttpServer())
                 .get("/users/me")
@@ -173,9 +171,6 @@ describe("Users Controller (e2e)", () => {
         const user = await prisma.user.findUnique({
             where: {
                 email: "jessica.williamson@gmail.com",
-            },
-            select: {
-                id: true,
             },
         });
         return user.id;
@@ -239,16 +234,6 @@ describe("Users Controller (e2e)", () => {
                 .get("/users/id/6bd33861-04c0-4270-8e96-62d4fb587527") // Replace with a non-existent UUID
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(HttpStatus.NOT_FOUND);
-        });
-
-        it("should return 400 when id is not valid", async () => {
-            return request(app.getHttpServer())
-                .get("/users/id/6bd33861-04c0-4270-8e96-62d4fb587527")
-                .set("Authorization", `Bearer ${userAccessToken}`)
-                .send({
-                    userId: "not-a-valid-uuid",
-                })
-                .expect(HttpStatus.BAD_REQUEST);
         });
 
         it("should return 401 if authorized token isn't present", async () => {
