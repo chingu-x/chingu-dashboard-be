@@ -277,7 +277,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it(" - verify meeting details updated in database", async () => {
+        it("- verify updated meeting details found in database", async () => {
             const meeting = await prisma.teamMeeting.findFirst({
                 where: {
                     title: "Test title",
@@ -321,8 +321,7 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 });
         });
-
-        it("- verify sprint meeting added to database", async () => {
+        it("- verify new sprint meeting found in database", async () => {
             const meeting = await prisma.teamMeeting.findFirst({
                 where: {
                     title: "Sprint Planning",
@@ -412,7 +411,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("- verify new agenda added to database", async () => {
+        it("- verify new agenda found in database", async () => {
             const agenda = await prisma.agenda.findFirst({
                 where: {
                     title: "Test agenda 3",
@@ -463,7 +462,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("- verify patch in database", async () => {
+        it("- verify updated agenda found in database", async () => {
             const agenda = await prisma.agenda.findFirst({
                 where: {
                     title: "Title updated",
@@ -507,8 +506,7 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 });
         });
-
-        it("- verify agenda deleted from database", async () => {
+        it("- verify agenda id: 1 not found in database", async () => {
             const agenda = await prisma.agenda.findUnique({
                 where: {
                     id: 1,
@@ -548,7 +546,7 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("- verify meeting form in database", async () => {
+        it("- verify meeting form found in database", async () => {
             const responseMeeting = await prisma.formResponseMeeting.findFirst({
                 where: {
                     formId: 1,
@@ -680,8 +678,7 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 });
         });
-
-        it("- verify meeting response in database", async () => {
+        it("- verify meeting response found in database", async () => {
             const response = await prisma.response.findMany({
                 where: {
                     questionId: 1,
