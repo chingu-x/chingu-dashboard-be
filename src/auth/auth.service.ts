@@ -156,7 +156,7 @@ export class AuthService {
             } catch (error) {
                 throw new NotFoundException({
                     statusCode: 404,
-                    message: `User by "${userId}" cannot be found.`,
+                    message: `User by '${userId}' cannot be found.`,
                 });
             }
         } else if (email) {
