@@ -51,7 +51,7 @@ describe("Sprints Controller (e2e)", () => {
         await loginUser();
     });
 
-    describe("GET /voyages/sprints - Gets all voyage and sprints data", () => {
+    describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
         it("200 - should successfully return all voyage and sprints data", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
@@ -101,7 +101,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("GET /voyages/sprints/teams/:teamId", () => {
+    describe("GET /voyages/sprints/teams/:teamId - gets a team's sprint dates", () => {
         it("200 - should return all the sprint dates of a particular team", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
@@ -148,7 +148,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("GET /voyages/sprints/meetings/:meetingId", () => {
+    describe("GET /voyages/sprints/meetings/:meetingId - gets details for one meeting", () => {
         it("200 - should return meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
@@ -247,7 +247,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH /voyages/sprints/meetings/:meetingId", () => {
+    describe("PATCH /voyages/sprints/meetings/:meetingId - updates details for a meeting", () => {
         it("200 - should update and return meeting details", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
@@ -288,7 +288,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings", () => {
+    describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings - creates new meeting for a sprint", () => {
         it("201 - should create sprint meeting and return details", async () => {
             const teamId = 1;
             const sprintNumber = 4;
@@ -383,8 +383,8 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("POST /voyages/sprints/meetings/:meetingId/agendas", () => {
-        it("201 - should add new agenda", async () => {
+    describe("POST /voyages/sprints/meetings/:meetingId/agendas - creates a new meeting agenda", () => {
+        it("201 - should create and add new agenda", async () => {
             const meetingId = 1;
             const createAgendaDto: CreateAgendaDto = {
                 title: "Test agenda 3",
@@ -435,7 +435,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH /voyages/sprints/agendas/:agendaId", () => {
+    describe("PATCH /voyages/sprints/agendas/:agendaId - supdate an agenda", () => {
         it("200 - should update agenda with provided values", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
@@ -485,7 +485,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
     });
-    describe("DELETE /voyages/sprints/agendas/:agendaId", () => {
+    describe("DELETE /voyages/sprints/agendas/:agendaId - deletes specified agenda", () => {
         it("200 - should delete agenda from database", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
@@ -524,7 +524,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+    describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId - creates new meeting form", () => {
         it("200 - should create new meeting form", async () => {
             const meetingId = 2;
             const formId = 1;
@@ -583,7 +583,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(400);
         });
     });
-    describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+    describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId - gets meeting form", () => {
         it("200 - should successfully return the meeting form with responses", async () => {
             const meetingId = 2;
             const formId = 1;
@@ -640,7 +640,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(400);
         });
     });
-    describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId", () => {
+    describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId - updates a meeting form", () => {
         it("200 - should successfully update the meeting form with responses", async () => {
             const meetingId = 1;
             const formId = 1;
