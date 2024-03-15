@@ -248,7 +248,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("PATCH /voyages/sprints/meetings/:meetingId - updates details for a meeting", () => {
-        it("200 - should update and return meeting details", async () => {
+        it("should return 200 if meeting details was successfully updated", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
