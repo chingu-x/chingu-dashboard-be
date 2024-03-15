@@ -641,7 +641,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId - updates a meeting form", () => {
-        it("200 - should successfully update the meeting form with responses", async () => {
+        it("should return 200 if successfully update the meeting form with responses", async () => {
             const meetingId = 1;
             const formId = 1;
             return request(app.getHttpServer())
