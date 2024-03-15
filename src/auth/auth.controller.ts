@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     HttpCode,
     HttpStatus,
     Post,
@@ -20,6 +21,7 @@ import {
     BadRequestErrorResponse,
     ForbiddenErrorResponse,
     LoginUnauthorizedErrorResponse,
+    NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import {
@@ -34,6 +36,9 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
+import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
+import { Roles } from "../global/decorators/roles.decorator";
+import { AppRoles } from "./auth.roles";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -194,6 +199,43 @@ export class AuthController {
             secure: true,
         });
         res.status(HttpStatus.OK).send({ message: "Refresh Success" });
+    }
+
+    @ApiOperation({
+        summary:
+            "[Admin only]: Revokes user's refresh token, with a valid user id or email",
+        description:
+            "using the user's id or email, removes user's refresh token",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Refresh token successfully revoked",
+        type: GenericSuccessResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "User not found.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "userId and email is provided",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "user doesn't have permission to preform operation",
+        type: ForbiddenErrorResponse,
+    })
+    @HttpCode(HttpStatus.OK)
+    @Roles(AppRoles.Admin)
+    @Delete("refresh/revoke")
+    async revoke(@Body() body: RevokeRTDto, @Res() res) {
+        await this.authService.revokeRefreshToken(body);
+        res.status(HttpStatus.OK).json({
+            message: "User Refresh token Successfully revoke.",
+            statusCode: 200,
+        });
     }
 
     @ApiOperation({
