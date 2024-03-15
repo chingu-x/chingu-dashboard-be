@@ -486,7 +486,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("DELETE /voyages/sprints/agendas/:agendaId - deletes specified agenda", () => {
-        it("200 - should delete agenda from database", async () => {
+        it("should return 200 and delete agenda from database", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
