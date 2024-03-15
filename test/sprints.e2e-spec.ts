@@ -436,7 +436,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("PATCH /voyages/sprints/agendas/:agendaId - supdate an agenda", () => {
-        it("200 - should update agenda with provided values", async () => {
+        it("should return 200 if updating the agenda was successful with provided values", async () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
