@@ -28,7 +28,7 @@ const loginUser = async (
 };
 
 const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
-    return await prisma.voyageTeamMember.findFirst({
+    return prisma.voyageTeamMember.findFirst({
         where: {
             member: {
                 email,
@@ -42,7 +42,7 @@ const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
 };
 
 const findOwnResource = async (email: string, prisma: PrismaService) => {
-    return await prisma.teamResource.findFirst({
+    return prisma.teamResource.findFirst({
         where: {
             addedBy: {
                 member: {
