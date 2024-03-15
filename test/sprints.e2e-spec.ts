@@ -149,7 +149,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints/meetings/:meetingId - gets details for one meeting", () => {
-        it("200 - should return meeting details", async () => {
+        it("should return 200 if fetching meeting details was successful", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
