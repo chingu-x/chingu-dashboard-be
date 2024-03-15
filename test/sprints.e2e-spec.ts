@@ -102,7 +102,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints/teams/:teamId - gets a team's sprint dates", () => {
-        it("200 - should return all the sprint dates of a particular team", async () => {
+        it("should return 200 if fetching all the sprint dates of a particular team was successful", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
