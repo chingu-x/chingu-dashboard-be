@@ -525,7 +525,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId - creates new meeting form", () => {
-        it("200 - should create new meeting form", async () => {
+        it("should return 200 and create new meeting form", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
