@@ -384,7 +384,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/meetings/:meetingId/agendas - creates a new meeting agenda", () => {
-        it("201 - should create and add new agenda", async () => {
+        it("should return 201 if create new agenda was successful", async () => {
             const meetingId = 1;
             const createAgendaDto: CreateAgendaDto = {
                 title: "Test agenda 3",
