@@ -584,7 +584,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId - gets meeting form", () => {
-        it("200 - should successfully return the meeting form with responses", async () => {
+        it("should return 200 if the meeting form was successfully fetched #with responses", async () => {
             const meetingId = 2;
             const formId = 1;
             return request(app.getHttpServer())
