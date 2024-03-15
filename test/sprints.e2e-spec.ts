@@ -289,7 +289,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings - creates new meeting for a sprint", () => {
-        it("201 - should create sprint meeting and return details", async () => {
+        it("should return 201 if creating sprint meeting details was successful", async () => {
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
