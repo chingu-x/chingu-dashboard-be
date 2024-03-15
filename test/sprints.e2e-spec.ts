@@ -52,7 +52,7 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
-        it("200 - should successfully return all voyage and sprints data", async () => {
+        it("should return 200 if fetching all voyage and sprints data", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
