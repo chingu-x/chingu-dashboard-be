@@ -572,7 +572,6 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: resetToken,
                 })
@@ -598,7 +597,6 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: expiredToken,
                 })
@@ -608,7 +606,6 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: "wrongToken",
                 })
