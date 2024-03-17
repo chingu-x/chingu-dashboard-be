@@ -612,33 +612,11 @@ describe("AuthController e2e Tests", () => {
                 .expect(401);
         });
         describe("Should return 400 if request body is not valid", () => {
-            it("invalid email", async () => {
-                const token = await requestAndGetResetToken(email, app, prisma);
-                await request(app.getHttpServer())
-                    .post(resetPWUrl)
-                    .send({
-                        email: "notAnEmail",
-                        password: newPassword,
-                        token,
-                    })
-                    .expect(400);
-            });
-            it("missing email", async () => {
-                const token = await requestAndGetResetToken(email, app, prisma);
-                await request(app.getHttpServer())
-                    .post(resetPWUrl)
-                    .send({
-                        password: "short",
-                        token,
-                    })
-                    .expect(400);
-            });
             it("invalid password", async () => {
                 const token = await requestAndGetResetToken(email, app, prisma);
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         password: "short",
                         token,
                     })
@@ -649,7 +627,6 @@ describe("AuthController e2e Tests", () => {
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         token,
                     })
                     .expect(400);
@@ -658,7 +635,6 @@ describe("AuthController e2e Tests", () => {
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         password: newPassword,
                     })
                     .expect(400);
