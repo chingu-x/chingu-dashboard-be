@@ -67,11 +67,11 @@ describe("ResourcesController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     // main user
-    let userEmail: string = "dan@random.com";
+    const userEmail: string = "dan@random.com";
     let voyageTeamId: number;
     let userAccessToken: string;
     // user for testing access control
-    let otherUserEmail: string = "JosoMadar@dayrep.com";
+    const otherUserEmail: string = "JosoMadar@dayrep.com";
     let otherVoyageTeamId: number;
     let otherUserAccessToken: string;
 
