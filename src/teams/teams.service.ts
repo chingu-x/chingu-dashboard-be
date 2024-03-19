@@ -1,15 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
 import { publicVoyageTeamUserSelect } from "../global/selects/teams.select";
 
 @Injectable()
 export class TeamsService {
-    constructor(
-        private prisma: PrismaService,
-        private readonly globalService: GlobalService,
-    ) {}
+    constructor(private prisma: PrismaService) {}
 
     findAll() {
         return this.prisma.voyageTeam.findMany({});

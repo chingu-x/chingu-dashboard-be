@@ -38,6 +38,8 @@ Another example [here](https://co-pilot.dev/changelog)
   branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
 - Update email templates to use domain in environment
   variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
+- Add role and permission guard to some existing routes (features, forms, ideations, teams) [#112](https://github.com/chingu-x/chingu-dashboard-be/pull/112)
+
 
 ### Fixed
 
