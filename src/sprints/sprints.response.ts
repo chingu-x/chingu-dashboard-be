@@ -13,6 +13,9 @@ class Sprint {
 
     @ApiProperty({ example: "2024-01-14T00:00:00.000Z" })
     endDate: Date;
+
+    @ApiProperty({ isArray: true, example: [1] })
+    teamMeetings: number;
 }
 
 export class VoyageResponse {
