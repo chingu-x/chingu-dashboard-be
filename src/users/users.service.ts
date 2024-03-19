@@ -50,6 +50,7 @@ export class UsersService {
                     },
                     voyageTeamMembers: {
                         select: {
+                            id: true,
                             voyageTeamId: true,
                         },
                     },

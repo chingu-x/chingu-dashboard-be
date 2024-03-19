@@ -91,6 +91,7 @@ describe("AuthController e2e Tests", () => {
 
     afterAll(async () => {
         await app.close();
+        await prisma.$disconnect();
     });
 
     describe("Creating new users POST /auth/signup", () => {
