@@ -517,25 +517,25 @@ describe("AuthController e2e Tests", () => {
     });
 
     describe("Request password reset POST /auth/reset-password/request", () => {
-        // it("should return 200 if user account exist, resetToken should be in the database", async () => {
-        //     const userEmail = "jessica.williamson@gmail.com";
-        //     await request(app.getHttpServer())
-        //         .post(resetRequestUrl)
-        //         .send({
-        //             email: userEmail,
-        //         })
-        //         .expect(200);
-        //     // check token is in the database
-        //     const resetToken = await prisma.resetToken.findUnique({
-        //         where: {
-        //             userId: await getUserIdByEmail(userEmail, prisma),
-        //         },
-        //         select: {
-        //             token: true,
-        //         },
-        //     });
-        //     expect(resetToken?.token).not.toBeNull();
-        // });
+        it("should return 200 if user account exist, resetToken should be in the database", async () => {
+            const userEmail = "jessica.williamson@gmail.com";
+            await request(app.getHttpServer())
+                .post(resetRequestUrl)
+                .send({
+                    email: userEmail,
+                })
+                .expect(200);
+            // check token is in the database
+            const resetToken = await prisma.resetToken.findUnique({
+                where: {
+                    userId: await getUserIdByEmail(userEmail, prisma),
+                },
+                select: {
+                    token: true,
+                },
+            });
+            expect(resetToken?.token).not.toBeNull();
+        });
         it("should return 200 if user account does not exist", async () => {
             const userEmail = "notexist@example.com";
             await request(app.getHttpServer())
