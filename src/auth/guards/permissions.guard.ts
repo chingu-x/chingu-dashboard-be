@@ -27,15 +27,17 @@ export class PermissionsGuard implements CanActivate {
         const { user, params } = context.switchToHttp().getRequest();
 
         if (requiredPermissions.includes(AppPermissions.OWN_TEAM)) {
+            // Admin can bypass this
             if (user.roles.includes(AppRoles.Admin)) return true;
             if (!params.teamId) {
                 throw new InternalServerErrorException(
                     "This permission guard requires :teamId param",
                 );
             }
-            const canAccess = user.voyageTeams?.includes(
-                parseInt(params?.teamId),
-            );
+
+            const canAccess = user.voyageTeams
+                ?.map((t) => t.teamId)
+                ?.includes(parseInt(params?.teamId));
 
             if (!canAccess) {
                 throw new ForbiddenException(
