@@ -114,6 +114,11 @@ export class SprintsService {
                         number: true,
                         startDate: true,
                         endDate: true,
+                        teamMeetings: {
+                            select: {
+                                id: true,
+                            },
+                        },
                     },
                 },
             },
@@ -138,6 +143,11 @@ export class SprintsService {
                                 number: true,
                                 startDate: true,
                                 endDate: true,
+                                teamMeetings: {
+                                    select: {
+                                        id: true,
+                                    },
+                                },
                             },
                         },
                     },
@@ -372,7 +382,6 @@ export class SprintsService {
                     });
                 return updatedFormResponse;
             } catch (e) {
-                console.log(e);
                 if (e.code === "P2002") {
                     throw new ConflictException(
                         `FormId and MeetingId combination should be unique. Each meeting can only have at most 1 of each sprint review and sprint planning form.`,

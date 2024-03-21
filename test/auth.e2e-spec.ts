@@ -15,7 +15,7 @@ const resendUrl = "/auth/resend-email";
 const verifyUrl = "/auth/verify-email";
 const resetRequestUrl = "/auth/reset-password/request";
 const resetPWUrl = "/auth/reset-password";
-
+const revokeRTUrl = "/auth/refresh/revoke";
 const loginAndGetTokens = async (
     email: string,
     password: string,
@@ -91,6 +91,7 @@ describe("AuthController e2e Tests", () => {
 
     afterAll(async () => {
         await app.close();
+        await prisma.$disconnect();
     });
 
     describe("Creating new users POST /auth/signup", () => {
@@ -421,6 +422,101 @@ describe("AuthController e2e Tests", () => {
         });
     });
 
+    describe("Revoke Refresh Token DELETE /auth/refresh/userId", () => {
+        it("should return 200 if refresh token is revoked", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await prisma.user.update({
+                where: {
+                    email: "l.castro@outlook.com",
+                },
+                data: {
+                    refreshToken: null,
+                },
+            });
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({ email: "l.castro@outlook.com" })
+                .expect(200);
+        });
+
+        describe("checks if refresh token is null", () => {
+            it("should return null for user's refresh token", async () => {
+                const userEmail = "l.castro@outlook.com";
+                const updatedUser = await prisma.user.findUnique({
+                    where: {
+                        id: await getUserIdByEmail(userEmail, prisma),
+                    },
+                    select: {
+                        refreshToken: true,
+                    },
+                });
+                expect(updatedUser.refreshToken).toBeNull();
+            });
+        });
+
+        it("should return 401 if email is invalid", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({})
+                .expect(404);
+        });
+
+        it("should return 403 if email and user id is provided", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    userId: "c4daf07c-8dde-4a43-bfa4-a6fd49762dd5",
+                    email: "l.castro@outlook.com",
+                })
+                .expect(400);
+        });
+
+        it("should return 403 if user is not permitted", async () => {
+            await loginAndGetTokens("l.castro@outlook.com", "password", app);
+
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(revokeRTUrl)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    email: "l.castro@outlook.com",
+                })
+                .expect(403);
+        });
+    });
+
     describe("Request password reset POST /auth/reset-password/request", () => {
         it("should return 200 if user account exist, resetToken should be in the database", async () => {
             const userEmail = "jessica.williamson@gmail.com";
@@ -477,7 +573,6 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: resetToken,
                 })
@@ -503,7 +598,6 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: expiredToken,
                 })
@@ -513,40 +607,17 @@ describe("AuthController e2e Tests", () => {
             await request(app.getHttpServer())
                 .post(resetPWUrl)
                 .send({
-                    email,
                     password: newPassword,
                     token: "wrongToken",
                 })
                 .expect(401);
         });
         describe("Should return 400 if request body is not valid", () => {
-            it("invalid email", async () => {
-                const token = await requestAndGetResetToken(email, app, prisma);
-                await request(app.getHttpServer())
-                    .post(resetPWUrl)
-                    .send({
-                        email: "notAnEmail",
-                        password: newPassword,
-                        token,
-                    })
-                    .expect(400);
-            });
-            it("missing email", async () => {
-                const token = await requestAndGetResetToken(email, app, prisma);
-                await request(app.getHttpServer())
-                    .post(resetPWUrl)
-                    .send({
-                        password: "short",
-                        token,
-                    })
-                    .expect(400);
-            });
             it("invalid password", async () => {
                 const token = await requestAndGetResetToken(email, app, prisma);
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         password: "short",
                         token,
                     })
@@ -557,7 +628,6 @@ describe("AuthController e2e Tests", () => {
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         token,
                     })
                     .expect(400);
@@ -566,7 +636,6 @@ describe("AuthController e2e Tests", () => {
                 await request(app.getHttpServer())
                     .post(resetPWUrl)
                     .send({
-                        email,
                         password: newPassword,
                     })
                     .expect(400);
