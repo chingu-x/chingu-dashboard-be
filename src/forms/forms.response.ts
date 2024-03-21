@@ -66,6 +66,38 @@ class Response {
     responseGroupId: number;
 }
 
+class subQuestion {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    order: number;
+
+    @ApiProperty()
+    inputType: InputType;
+
+    @ApiProperty({ example: "Changes to be made for the next sprint?" })
+    text: string;
+
+    @Optional()
+    @ApiProperty({
+        example:
+            "Share your thoughts on what could be changed for the next sprint",
+    })
+    description: string;
+
+    @ApiProperty({ example: false })
+    answerRequired: boolean;
+
+    @Optional()
+    @ApiProperty({ example: null })
+    multipleAllowed: boolean;
+
+    @Optional()
+    @ApiProperty({ example: null })
+    optionGroup: OptionGroup;
+}
+
 class Question {
     @ApiProperty({ example: 1 })
     id: number;
@@ -97,8 +129,9 @@ class Question {
     @ApiProperty({ example: null })
     optionGroup: OptionGroup;
 
+    @Optional()
     @ApiProperty({ isArray: true })
-    responses: Response;
+    subQuestions: subQuestion;
 }
 
 export class FormResponse {

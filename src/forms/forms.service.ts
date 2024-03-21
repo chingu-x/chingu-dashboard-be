@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma } from "@prisma/client";
+import { Prisma, Question } from "@prisma/client";
 
 export const formSelect = {
     id: true,
@@ -53,6 +53,28 @@ export class FormsService {
             select: formSelect,
         });
 
+        const subQuestionsIds = [];
+
+        data.forEach((form) => {
+            form.questions.forEach((question) => {
+                const currentQuestion = question as Question & {
+                    subQuestions: Question[];
+                };
+                currentQuestion.subQuestions.forEach((subQuestion) => {
+                    subQuestionsIds.push(subQuestion.id);
+                });
+            });
+        });
+
+        for (let i = 0; i < data.length; i++) {
+            const form = data[i];
+            const filteredQuestions = form.questions.filter(
+                (i) => !subQuestionsIds.includes(i.id),
+            );
+
+            form.questions = filteredQuestions;
+        }
+
         return data;
     }
 
@@ -67,6 +89,24 @@ export class FormsService {
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
+        const subQuestionsIds = [];
+
+        data.questions.forEach((question) => {
+            const currentQuestion = question as Question & {
+                subQuestions: Question[];
+            };
+            currentQuestion.subQuestions.forEach((subQuestion) => {
+                subQuestionsIds.push(subQuestion.id);
+            });
+        });
+
+        const filteredQuestions = data.questions.filter(
+            (i) => !subQuestionsIds.includes(i.id),
+        );
+
+        data.questions = filteredQuestions;
+
         return data;
     }
 }
+//
