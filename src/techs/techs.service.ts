@@ -6,10 +6,23 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 
 @Injectable()
 export class TechsService {
     constructor(private prisma: PrismaService) {}
+
+    validateTeamId = async (teamId: number) => {
+        const voyageTeam = await this.prisma.voyageTeam.findUnique({
+            where: {
+                id: teamId,
+            },
+        });
+
+        if (!voyageTeam) {
+            throw new NotFoundException(`Team (id: ${teamId}) doesn't exist.`);
+        }
+    };
 
     findVoyageMemberId = async (
         req,
@@ -28,15 +41,8 @@ export class TechsService {
     };
 
     getAllTechItemsByTeamId = async (teamId: number) => {
-        const voyageTeam = await this.prisma.voyageTeam.findUnique({
-            where: {
-                id: teamId,
-            },
-        });
+        this.validateTeamId(teamId);
 
-        if (!voyageTeam) {
-            throw new NotFoundException(`Team (id: ${teamId}) doesn't exist.`);
-        }
         return this.prisma.techStackCategory.findMany({
             select: {
                 id: true,
@@ -70,6 +76,77 @@ export class TechsService {
             },
         });
     };
+
+    findSelectedTechInCategory = async (
+        voyageTeamId: number,
+        categoryId: number,
+    ) => {
+        this.validateTeamId(voyageTeamId);
+        return this.prisma.teamTechStackItem.findFirst({
+            where: {
+                voyageTeamId,
+                categoryId,
+                isSelected: true,
+            },
+        });
+    };
+
+    async updateTechStackSelections(
+        req,
+        teamId: number,
+        updateTechSelectionsDto: UpdateTechSelectionsDto,
+    ) {
+        let test: any[];
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId); //TODO:
+        if (!voyageMemberId)
+            throw new BadRequestException("Invalid User or Team Id"); // extract to function
+        for (const tech of updateTechSelectionsDto.techs) {
+            //test += `techId: ${tech.techId} categoryId: ${tech.categoryId}\n`;
+            // //clear current selection
+            // const currentSelection = await this.findSelectedTechInCategory(
+            //     teamId,
+            //     categoryId,
+            // );
+            // if (currentSelection) {
+            //     this.prisma.teamTechStackItem.update({
+            //         where: {
+            //             id: currentSelection.id,
+            //         },
+            //         data: {
+            //             isSelected: false,
+            //         },
+            //     });
+            // }
+
+            //set new selection
+            // test = await this.prisma.teamTechStackItem.update({
+            //     where: {
+            //         id: tech.techId,
+            //     },
+            //     data: {
+            //         isSelected: true,
+            //     },
+            // });
+            try {
+                const trial = await this.prisma.teamTechStackItem.update({
+                    where: {
+                        id: tech.techId,
+                    },
+                    data: {
+                        isSelected: true,
+                    },
+                });
+                test.push({ techId: tech.techId });
+                //test += `techId: ${tech.techId}\n`;
+                //return trial;
+            } catch (e) {
+                if (e.code === "P2025") {
+                    throw new NotFoundException(`Invalid`);
+                }
+            }
+        }
+        return JSON.stringify(test); //Json
+    }
 
     async addNewTeamTech(
         req,
