@@ -12,6 +12,7 @@ import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
+import { FormResponseDto } from "../global/dtos/FormResponse.dto";
 
 @Injectable()
 export class SprintsService {
@@ -24,22 +25,23 @@ export class SprintsService {
         responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
     ) => {
         const responsesArray = [];
+        const responseIndex = ["response", "responses"];
         for (const index in responses) {
-            if (index !== "constructor") {
-                responsesArray.push({
-                    questionId: responses[index].questionId,
-                    ...(responses[index].text
-                        ? { text: responses[index].text }
-                        : { text: null }),
-                    ...(responses[index].numeric
-                        ? { numeric: responses[index].numeric }
-                        : { numeric: null }),
-                    ...(responses[index].boolean
-                        ? { boolean: responses[index].boolean }
-                        : { boolean: null }),
-                    ...(responses[index].optionChoiceId
-                        ? { optionChoiceId: responses[index].optionChoiceId }
-                        : { optionChoiceId: null }),
+            if (responseIndex.includes(index)) {
+                responses[index].forEach((v: FormResponseDto) => {
+                    responsesArray.push({
+                        questionId: v.questionId,
+                        ...(v.text ? { text: v.text } : { text: null }),
+                        ...(v.numeric
+                            ? { numeric: v.numeric }
+                            : { numeric: null }),
+                        ...(v.boolean
+                            ? { boolean: v.boolean }
+                            : { boolean: null }),
+                        ...(v.optionChoiceId
+                            ? { optionChoiceId: v.optionChoiceId }
+                            : { optionChoiceId: null }),
+                    });
                 });
             }
         }
@@ -561,7 +563,7 @@ export class SprintsService {
 
     /*
     async addCheckinFormResponse(voyageTeamMemberId: number) {
-        return ApiOkResponse;
+        return { voyageTeamMemberId: voyageTeamMemberId };
     }
 
      */

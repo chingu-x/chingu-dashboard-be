@@ -391,7 +391,7 @@ export class SprintsController {
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description:
-            "invalid meeting id, form id, question id(s) not found in form with a given formId",
+            "invalid meeting id, form id, question id(s) not found in form with a given formId, responses not an array",
         type: BadRequestErrorResponse,
     })
     @ApiParam({
@@ -420,10 +420,14 @@ export class SprintsController {
     }
 
     /*
-    @Post("checkin/voyageTeamMemberId/:voyageTeamMemberId")
+    @Post("checkin/voyage-team-members/:voyageTeamMemberId")
     addCheckinFormResponse(
         @Param("voyageTeamMemberId", ParseIntPipe) voyageTeamMemberId: number,
-    ) {}
+        @Body(new FormInputValidationPipe())
+        createCheckinFormResponse: CreateCheckinFormResponseDto,
+    ) {
+        return this.sprintsService.addCheckinFormResponse(voyageTeamMemberId);
+    }
 
      */
 }
