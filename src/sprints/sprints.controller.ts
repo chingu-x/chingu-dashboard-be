@@ -391,7 +391,7 @@ export class SprintsController {
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description:
-            "invalid meeting id, form id, question id(s) not found in form with a given formId",
+            "invalid meeting id, form id, question id(s) not found in form with a given formId, responses not an array",
         type: BadRequestErrorResponse,
     })
     @ApiParam({
