@@ -420,15 +420,16 @@ export class SprintsController {
         );
     }
 
-    @Post("checkin/voyage-team-members/:voyageTeamMemberId")
+    // 400
+    // 401
+    // 409
+    @Post("checkin")
     addCheckinFormResponse(
-        @Param("voyageTeamMemberId", ParseIntPipe) voyageTeamMemberId: number,
         @Body(new FormInputValidationPipe())
         createCheckinFormResponse: CreateCheckinFormResponseDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(
             createCheckinFormResponse,
-            voyageTeamMemberId,
         );
     }
 }

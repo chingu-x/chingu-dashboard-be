@@ -9,7 +9,6 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
-import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { FormResponseDto } from "../global/dtos/FormResponse.dto";
@@ -22,9 +21,9 @@ export class SprintsService {
         private formServices: FormsService,
     ) {}
 
-    private responseDtoToArray = (
-        responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
-    ) => {
+    // pass in any form response DTO, this will extract responses from the DTO,
+    // and parse it into and array for prisma bulk insert/update
+    private responseDtoToArray = (responses: any) => {
         const responsesArray = [];
         const responseIndex = ["response", "responses"];
         for (const index in responses) {
@@ -564,17 +563,43 @@ export class SprintsService {
 
     async addCheckinFormResponse(
         createCheckinFormResponse: CreateCheckinFormResponseDto,
-        voyageTeamMemberId: number,
     ) {
+        const responsesArray = this.responseDtoToArray(
+            createCheckinFormResponse,
+        );
+
+        // TODO: check if question id's is in the form
+
+        // TODO: do we need to check if sprintID is a reasonable sprint Id?
+
         try {
-            await this.prisma.formResponseCheckin.create({
-                data: {
-                    voyageTeamMemberId: 4,
-                    sprintId: 2,
-                    responseGroupId: 1,
-                },
+            return await this.prisma.$transaction(async (tx) => {
+                const responseGroup = await tx.responseGroup.create({
+                    data: {
+                        responses: {
+                            createMany: {
+                                data: responsesArray,
+                            },
+                        },
+                    },
+                });
+                return tx.formResponseCheckin.create({
+                    data: {
+                        voyageTeamMemberId:
+                            createCheckinFormResponse.voyageTeamMemberId,
+                        sprintId: createCheckinFormResponse.sprintId,
+                        responseGroupId: responseGroup.id,
+                    },
+                });
             });
-        } catch (e) {}
-        return { voyageTeamMemberId, createCheckinFormResponse };
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `User ${createCheckinFormResponse.voyageTeamMemberId} has already submitted a checkin form for sprint id ${createCheckinFormResponse.sprintId}.`,
+                );
+            } else {
+                console.log(e);
+            }
+        }
     }
 }
