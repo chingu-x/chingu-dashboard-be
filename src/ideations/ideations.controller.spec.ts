@@ -3,6 +3,7 @@ import { IdeationsController } from "./ideations.controller";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 describe("IdeationsController", () => {
     let controller: IdeationsController;
@@ -61,7 +62,7 @@ describe("IdeationsController", () => {
             user: {
                 userId: userId,
             },
-        };
+        } as CustomRequest;
         const ideation = await controller.createIdeation(
             req,
             teamId,
@@ -80,7 +81,7 @@ describe("IdeationsController", () => {
             user: {
                 userId: userId,
             },
-        };
+        } as CustomRequest;
         const ideationVote = await controller.createIdeationVote(
             req,
             teamId,
@@ -107,7 +108,7 @@ describe("IdeationsController", () => {
             user: {
                 userId: userId,
             },
-        };
+        } as CustomRequest;
         const updateIdeationDto: UpdateIdeationDto = {
             title: "Ideation 1",
             description: "Ideation 1 description",
@@ -132,7 +133,7 @@ describe("IdeationsController", () => {
             user: {
                 userId: userId,
             },
-        };
+        } as CustomRequest;
         const ideation = await controller.deleteIdeation(
             req,
             teamId,
@@ -151,7 +152,7 @@ describe("IdeationsController", () => {
             user: {
                 userId: userId,
             },
-        };
+        } as CustomRequest;
         const ideationVote = await controller.deleteIdeationVote(
             req,
             teamId,
