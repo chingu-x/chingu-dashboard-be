@@ -13,6 +13,7 @@ import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response
 import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { FormResponseDto } from "../global/dtos/FormResponse.dto";
+import { CreateCheckinFormResponseDto } from "./dto/create-checkin-form-response.dto";
 
 @Injectable()
 export class SprintsService {
@@ -561,10 +562,19 @@ export class SprintsService {
         );
     }
 
-    /*
-    async addCheckinFormResponse(voyageTeamMemberId: number) {
-        return { voyageTeamMemberId: voyageTeamMemberId };
+    async addCheckinFormResponse(
+        createCheckinFormResponse: CreateCheckinFormResponseDto,
+        voyageTeamMemberId: number,
+    ) {
+        try {
+            await this.prisma.formResponseCheckin.create({
+                data: {
+                    voyageTeamMemberId: 4,
+                    sprintId: 2,
+                    responseGroupId: 1,
+                },
+            });
+        } catch (e) {}
+        return { voyageTeamMemberId, createCheckinFormResponse };
     }
-
-     */
 }

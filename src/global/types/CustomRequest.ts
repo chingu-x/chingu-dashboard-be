@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 type VoyageTeam = {
     teamId: number;
     memberId: number;

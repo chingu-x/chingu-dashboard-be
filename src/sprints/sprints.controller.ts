@@ -31,6 +31,7 @@ import {
     NotFoundErrorResponse,
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
+import { CreateCheckinFormResponseDto } from "./dto/create-checkin-form-response.dto";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -419,15 +420,15 @@ export class SprintsController {
         );
     }
 
-    /*
     @Post("checkin/voyage-team-members/:voyageTeamMemberId")
     addCheckinFormResponse(
         @Param("voyageTeamMemberId", ParseIntPipe) voyageTeamMemberId: number,
         @Body(new FormInputValidationPipe())
         createCheckinFormResponse: CreateCheckinFormResponseDto,
     ) {
-        return this.sprintsService.addCheckinFormResponse(voyageTeamMemberId);
+        return this.sprintsService.addCheckinFormResponse(
+            createCheckinFormResponse,
+            voyageTeamMemberId,
+        );
     }
-
-     */
 }
