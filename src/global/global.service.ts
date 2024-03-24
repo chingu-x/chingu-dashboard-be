@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
+import { FormResponseDto } from "./dtos/FormResponse.dto";
 
 @Injectable()
 export class GlobalService {
@@ -43,5 +44,88 @@ export class GlobalService {
         return teamMemberId;
     }
 
-    // ---- FORM responses helper functions ------
+    // ======= FORM responses helper functions =====
+
+    // pass in any form response DTO, this will extract responses from the DTO,
+    // and parse it into and array for prisma bulk insert/update
+    public responseDtoToArray = (responses: any) => {
+        const responsesArray = [];
+        const responseIndex = ["response", "responses"];
+        for (const index in responses) {
+            if (responseIndex.includes(index)) {
+                responses[index].forEach((v: FormResponseDto) => {
+                    responsesArray.push({
+                        questionId: v.questionId,
+                        ...(v.text ? { text: v.text } : { text: null }),
+                        ...(v.numeric
+                            ? { numeric: v.numeric }
+                            : { numeric: null }),
+                        ...(v.boolean
+                            ? { boolean: v.boolean }
+                            : { boolean: null }),
+                        ...(v.optionChoiceId
+                            ? { optionChoiceId: v.optionChoiceId }
+                            : { optionChoiceId: null }),
+                    });
+                });
+            }
+        }
+        return responsesArray;
+    };
+
+    // Checks that questions submitted for update match the form questions
+    // using the formId
+    public checkQuestionsInFormById = async (
+        formId: number,
+        responsesArray: FormResponseDto[],
+    ) => {
+        const form = await this.prisma.form.findUnique({
+            where: { id: formId },
+            select: {
+                title: true,
+                questions: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        const questionIds = form.questions.flatMap((question) => question.id);
+
+        responsesArray.forEach((response) => {
+            if (questionIds.indexOf(response.questionId) === -1)
+                throw new BadRequestException(
+                    `Question Id ${response.questionId} is not in form ${form.title} (id: ${formId})`,
+                );
+        });
+    };
+
+    // Checks that questions submitted for update match the form questions
+    // using the form title
+    public checkQuestionsInFormByTitle = async (
+        title: string,
+        responsesArray: FormResponseDto[],
+    ) => {
+        const form = await this.prisma.form.findUnique({
+            where: { title },
+            select: {
+                id: true,
+                questions: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        const questionIds = form.questions.flatMap((question) => question.id);
+
+        responsesArray.forEach((response) => {
+            if (questionIds.indexOf(response.questionId) === -1)
+                throw new BadRequestException(
+                    `Question Id ${response.questionId} is not in form ${title} (id: ${form.id})`,
+                );
+        });
+    };
 }

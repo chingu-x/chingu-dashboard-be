@@ -31,7 +31,7 @@ import {
     NotFoundErrorResponse,
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
-import { CreateCheckinFormResponseDto } from "./dto/create-checkin-form-response.dto";
+import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -426,7 +426,7 @@ export class SprintsController {
     @Post("checkin")
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe())
-        createCheckinFormResponse: CreateCheckinFormResponseDto,
+        createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(
             createCheckinFormResponse,

@@ -2,7 +2,7 @@ import { FormResponseDto } from "../../global/dtos/FormResponse.dto";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class CreateCheckinFormResponseDto {
+export class CreateCheckinFormDto {
     @ApiProperty({
         description: "voyage team member id, not userId",
         example: 1,
@@ -20,8 +20,8 @@ export class CreateCheckinFormResponseDto {
     @ApiProperty({
         description: "An array of form responses",
         example: [
-            { questionId: 1, text: "All" },
-            { questionId: 2, text: "Deploy app" },
+            { questionId: 11, text: "All" },
+            { questionId: 12, text: "Deploy app" },
         ],
     })
     @IsNotEmpty()
