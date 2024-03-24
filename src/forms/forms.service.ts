@@ -39,7 +39,36 @@ export const formSelect = {
                     },
                 },
             },
-            subQuestions: true,
+            subQuestions: {
+                select: {
+                    id: true,
+                    order: true,
+                    inputType: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    text: true,
+                    description: true,
+                    answerRequired: true,
+                    multipleAllowed: true,
+                    optionGroup: {
+                        select: {
+                            optionChoices: {
+                                select: {
+                                    id: true,
+                                    text: true,
+                                },
+                            },
+                        },
+                    },
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            },
+            createdAt: true,
+            updatedAt: true,
         },
     },
 } as Prisma.FormSelect;
@@ -109,4 +138,3 @@ export class FormsService {
         return data;
     }
 }
-//

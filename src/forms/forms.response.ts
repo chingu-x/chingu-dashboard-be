@@ -66,7 +66,7 @@ class Response {
     responseGroupId: number;
 }
 
-class subQuestion {
+class BaseQuestion {
     @ApiProperty({ example: 1 })
     id: number;
 
@@ -96,42 +96,24 @@ class subQuestion {
     @Optional()
     @ApiProperty({ example: null })
     optionGroup: OptionGroup;
+
+    @ApiProperty()
+    createdAt: Date;
+
+    @ApiProperty()
+    updatedAt: Date;
 }
 
-class Question {
-    @ApiProperty({ example: 1 })
-    id: number;
+class SubQuestion extends BaseQuestion {
+    // No need for parentQuestionId in SubQuestion
+    // @ApiProperty()
+    // parentQuestionId: number;
+}
 
-    @ApiProperty({ example: 1 })
-    order: number;
-
-    @ApiProperty()
-    inputType: InputType;
-
-    @ApiProperty({ example: "Changes to be made for the next sprint?" })
-    text: string;
-
+class Question extends BaseQuestion {
     @Optional()
-    @ApiProperty({
-        example:
-            "Share your thoughts on what could be changed for the next sprint",
-    })
-    description: string;
-
-    @ApiProperty({ example: false })
-    answerRequired: boolean;
-
-    @Optional()
-    @ApiProperty({ example: null })
-    multipleAllowed: boolean;
-
-    @Optional()
-    @ApiProperty({ example: null })
-    optionGroup: OptionGroup;
-
-    @Optional()
-    @ApiProperty({ isArray: true })
-    subQuestions: subQuestion;
+    @ApiProperty({ isArray: true, type: SubQuestion })
+    subQuestions: SubQuestion[];
 }
 
 export class FormResponse {
