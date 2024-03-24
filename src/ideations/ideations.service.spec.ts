@@ -249,7 +249,7 @@ describe("IdeationsService", () => {
                     },
                 ],
             },
-        };
+        } as CustomRequest;
         console.log(req);
         const result = await service.deleteIdeation(req, teamId, ideationId);
         expect(result).toEqual(ideationOne);

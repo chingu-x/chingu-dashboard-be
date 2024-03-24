@@ -200,7 +200,7 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(req, teamId, ideationId: number) {
+    async deleteIdeation(req: CustomRequest, teamId, ideationId: number) {
         let voteCount: number;
 
         const checkVotes = await this.getIdeationVoteCount(ideationId);
