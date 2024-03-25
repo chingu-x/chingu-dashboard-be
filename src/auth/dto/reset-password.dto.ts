@@ -1,8 +1,8 @@
 import { SignupDto } from "./signup.dto";
 import { IsNotEmpty } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
 
-export class ResetPasswordDto extends SignupDto {
+export class ResetPasswordDto extends OmitType(SignupDto, ["email"] as const) {
     @IsNotEmpty()
     @ApiProperty({
         example:

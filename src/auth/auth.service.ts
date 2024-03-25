@@ -3,6 +3,7 @@ import {
     ForbiddenException,
     Injectable,
     Logger,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
@@ -22,6 +23,7 @@ import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import * as process from "process";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
+import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -131,6 +133,54 @@ export class AuthService {
         const tokens = await this.generateAtRtTokens(payload);
         await this.updateRtHash(user.userId, tokens.refresh_token);
         return tokens;
+    }
+
+    async revokeRefreshToken(body?: RevokeRTDto) {
+        const { userId, email } = body;
+
+        if (userId && email)
+            throw new BadRequestException(
+                "Please provide either userId or email, not both",
+            );
+
+        if (userId) {
+            try {
+                await this.prisma.user.update({
+                    where: {
+                        id: userId,
+                    },
+                    data: {
+                        refreshToken: null,
+                    },
+                });
+            } catch (error) {
+                throw new NotFoundException({
+                    statusCode: 404,
+                    message: `User by '${userId}' cannot be found.`,
+                });
+            }
+        } else if (email) {
+            try {
+                await this.prisma.user.update({
+                    where: {
+                        email: email,
+                    },
+                    data: {
+                        refreshToken: null,
+                    },
+                });
+            } catch (error) {
+                throw new NotFoundException({
+                    statusCode: 404,
+                    message: `User by '${email}' cannot be found.`,
+                });
+            }
+        } else {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: "User not found",
+            });
+        }
     }
 
     async logout(refreshToken: string) {
@@ -393,10 +443,14 @@ export class AuthService {
             const payload = await this.jwtService.verifyAsync(
                 resetPasswordDto.token,
             );
+
             if (!payload.userId) {
+                console.log("Invalid token");
                 throw new UnauthorizedException("Invalid token");
             }
+
             const user = await this.usersService.findUserById(payload.userId);
+
             if (!user) {
                 this.logger.debug(
                     `[Auth/Reset password]: User ${payload.userId} does not exist`,

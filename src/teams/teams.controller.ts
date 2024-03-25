@@ -31,7 +31,7 @@ export class TeamsController {
     constructor(private readonly teamsService: TeamsService) {}
 
     @ApiOperation({
-        summary: "Gets all voyage teams.",
+        summary: "[Roles: Admin] Gets all voyage teams.",
         description: "For development/admin purpose",
     })
     @ApiResponse({
@@ -47,7 +47,8 @@ export class TeamsController {
     }
 
     @ApiOperation({
-        summary: "Gets all teams for a voyage given a voyageId (int).",
+        summary:
+            "[Roles: Admin] Gets all teams for a voyage given a voyageId (int).",
     })
     // Will need to be fixed to be RESTful
     @ApiResponse({
@@ -75,7 +76,7 @@ export class TeamsController {
     }
 
     @ApiOperation({
-        summary: "Gets one team given a teamId (int).",
+        summary: "[Permission: own_team] Gets one team given a teamId (int).",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -102,7 +103,7 @@ export class TeamsController {
 
     @ApiOperation({
         summary:
-            "Updates team member hours per a sprint given a teamId (int) and userId (int).",
+            "[Permission: own_team] Updates team member hours per a sprint given a teamId (int) and userId (int).",
     })
     @ApiResponse({
         status: HttpStatus.OK,

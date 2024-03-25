@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { IdeationsService } from "./ideations.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 describe("IdeationsService", () => {
     let service: IdeationsService;
@@ -125,6 +126,12 @@ describe("IdeationsService", () => {
         const req = {
             user: {
                 userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
             },
         };
         const createIdeationDto = {
@@ -149,6 +156,12 @@ describe("IdeationsService", () => {
         const req = {
             user: {
                 userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
             },
         };
 
@@ -174,8 +187,14 @@ describe("IdeationsService", () => {
         const req = {
             user: {
                 userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
             },
-        };
+        } as CustomRequest;
         const updateIdeationDto = {
             req,
             title: "Ideation 1",
@@ -199,8 +218,14 @@ describe("IdeationsService", () => {
         const req = {
             user: {
                 userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
             },
-        };
+        } as CustomRequest;
 
         const result = await service.deleteIdeationVote(
             req,
@@ -217,8 +242,14 @@ describe("IdeationsService", () => {
         const req = {
             user: {
                 userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
             },
-        };
+        } as CustomRequest;
         console.log(req);
         const result = await service.deleteIdeation(req, teamId, ideationId);
         expect(result).toEqual(ideationOne);
