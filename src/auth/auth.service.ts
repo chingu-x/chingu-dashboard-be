@@ -148,10 +148,12 @@ export class AuthService {
                 id: user.userId,
             },
         });
-        if (!userInDb) throw new ForbiddenException();
+        if (!userInDb) {
+            throw new ForbiddenException();
+        }
 
-        const rtMatch =
-            this.hashJWT(user.refreshToken) === userInDb.refreshToken;
+        const rtHash = this.hashJWT(user.refreshToken);
+        const rtMatch = userInDb.refreshToken.some((token) => token === rtHash);
 
         // token not found, but token is a valid token: possibly stolen old token
         // invalidate user refresh token in the database, and do not issue new tokens
@@ -161,7 +163,9 @@ export class AuthService {
                     id: user.userId,
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: null,
+                    },
                 },
             });
             throw new ForbiddenException();
@@ -169,7 +173,12 @@ export class AuthService {
 
         const payload = { email: user.email, sub: user.userId };
         const tokens = await this.generateAtRtTokens(payload);
-        await this.updateRtHash(user.userId, tokens.refresh_token);
+        // user.refreshToken comes from cookies, not the DB
+        await this.updateRtHash(
+            user.userId,
+            tokens.refresh_token,
+            user.refreshToken,
+        );
         return tokens;
     }
 
