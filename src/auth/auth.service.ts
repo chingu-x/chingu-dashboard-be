@@ -86,18 +86,34 @@ export class AuthService {
                 (token) => token === this.hashJWT(oldRtInCookies),
             );
         }
-        console.log(existingTokenIndex);
 
-        await this.prisma.user.update({
-            where: {
-                id: userId,
-            },
-            data: {
-                refreshToken: {
-                    push: rtHash,
+        if (existingTokenIndex !== -1) {
+            // user has a refresh token to update, keep array same size
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
                 },
-            },
-        });
+                data: {
+                    refreshToken: {
+                        set: user.refreshToken.map((token, index) =>
+                            index === existingTokenIndex ? rtHash : token,
+                        ),
+                    },
+                },
+            });
+        } else {
+            // no token found, grow array by one with new token
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    refreshToken: {
+                        push: rtHash,
+                    },
+                },
+            });
+        }
     };
 
     /**
