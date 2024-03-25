@@ -70,7 +70,7 @@ export class AuthService {
     private updateRtHash = async (
         userId: string,
         rt: string,
-        oldRt: string,
+        oldRtInCookies: string,
     ) => {
         const rtHash = this.hashJWT(rt);
         const user = await this.prisma.user.findUnique({
@@ -78,7 +78,15 @@ export class AuthService {
                 id: userId,
             },
         });
-        console.log(oldRt, user);
+
+        // find index of current RT from cookies to replace with new one
+        let existingTokenIndex = -1;
+        if (oldRtInCookies) {
+            existingTokenIndex = user.refreshToken.findIndex(
+                (token) => token === this.hashJWT(oldRtInCookies),
+            );
+        }
+        console.log(existingTokenIndex);
 
         await this.prisma.user.update({
             where: {
@@ -111,10 +119,10 @@ export class AuthService {
         return null;
     }
 
-    async login(user: any, oldRt?: string) {
+    async login(user: any, oldRtInCookies?: string) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
-        await this.updateRtHash(user.id, tokens.refresh_token, oldRt);
+        await this.updateRtHash(user.id, tokens.refresh_token, oldRtInCookies);
         return tokens;
     }
 
