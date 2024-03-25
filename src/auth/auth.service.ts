@@ -72,13 +72,22 @@ export class AuthService {
         rt: string,
         oldRt: string,
     ) => {
-        console.log("oldRt", oldRt);
+        const rtHash = this.hashJWT(rt);
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+        console.log(oldRt, user);
+
         await this.prisma.user.update({
             where: {
                 id: userId,
             },
             data: {
-                refreshToken: this.hashJWT(rt),
+                refreshToken: {
+                    push: rtHash,
+                },
             },
         });
     };
