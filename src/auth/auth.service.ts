@@ -67,7 +67,12 @@ export class AuthService {
         return crypto.createHash("sha256").update(jwt).digest("hex");
     };
 
-    private updateRtHash = async (userId: string, rt: string) => {
+    private updateRtHash = async (
+        userId: string,
+        rt: string,
+        oldRt: string,
+    ) => {
+        console.log("oldRt", oldRt);
         await this.prisma.user.update({
             where: {
                 id: userId,
@@ -97,10 +102,10 @@ export class AuthService {
         return null;
     }
 
-    async login(user: any) {
+    async login(user: any, oldRt?: string) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
-        await this.updateRtHash(user.id, tokens.refresh_token);
+        await this.updateRtHash(user.id, tokens.refresh_token, oldRt);
         return tokens;
     }
 
