@@ -238,16 +238,22 @@ export class AuthService {
             if (!payload) {
                 throw new BadRequestException("refresh token error");
             }
+            const userInDb = await this.prisma.user.findFirst({
+                where: { id: payload.sub },
+                select: { refreshToken: true },
+            });
+
+            if (!userInDb) {
+                throw new NotFoundException("User not found");
+            }
+
+            const filteredTokens = userInDb.refreshToken.filter(
+                (token) => this.hashJWT(token) !== this.hashJWT(refreshToken),
+            );
+
             await this.prisma.user.update({
-                where: {
-                    id: payload.sub,
-                    refreshToken: {
-                        not: null,
-                    },
-                },
-                data: {
-                    refreshToken: null,
-                },
+                where: { id: payload.sub },
+                data: { refreshToken: { set: filteredTokens } },
             });
         } catch (e) {
             if (e.name === "JsonWebTokenError") {
