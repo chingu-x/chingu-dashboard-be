@@ -104,11 +104,7 @@ class BaseQuestion {
     updatedAt: Date;
 }
 
-class SubQuestion extends BaseQuestion {
-    // No need for parentQuestionId in SubQuestion
-    // @ApiProperty()
-    // parentQuestionId: number;
-}
+class SubQuestion extends BaseQuestion {}
 
 class Question extends BaseQuestion {
     @Optional()
