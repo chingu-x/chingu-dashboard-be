@@ -185,47 +185,28 @@ export class AuthService {
     async revokeRefreshToken(body?: RevokeRTDto) {
         const { userId, email } = body;
 
-        if (userId && email)
+        if (userId && email) {
             throw new BadRequestException(
                 "Please provide either userId or email, not both",
             );
+        }
 
-        if (userId) {
-            try {
-                await this.prisma.user.update({
-                    where: {
-                        id: userId,
+        try {
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                    OR: [{ email }],
+                },
+                data: {
+                    refreshToken: {
+                        set: [],
                     },
-                    data: {
-                        refreshToken: null,
-                    },
-                });
-            } catch (error) {
-                throw new NotFoundException({
-                    statusCode: 404,
-                    message: `User by '${userId}' cannot be found.`,
-                });
-            }
-        } else if (email) {
-            try {
-                await this.prisma.user.update({
-                    where: {
-                        email: email,
-                    },
-                    data: {
-                        refreshToken: null,
-                    },
-                });
-            } catch (error) {
-                throw new NotFoundException({
-                    statusCode: 404,
-                    message: `User by '${email}' cannot be found.`,
-                });
-            }
-        } else {
+                },
+            });
+        } catch (error) {
             throw new NotFoundException({
                 statusCode: 404,
-                message: "User not found",
+                message: `User not found.`,
             });
         }
     }
