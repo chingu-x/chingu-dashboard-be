@@ -105,9 +105,6 @@ class BaseQuestion {
 }
 
 class SubQuestion extends BaseQuestion {
-    // No need for parentQuestionId in SubQuestion
-    // @ApiProperty()
-    // parentQuestionId: number;
 }
 
 class Question extends BaseQuestion {
