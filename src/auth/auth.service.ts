@@ -156,7 +156,7 @@ export class AuthService {
         const rtMatch = userInDb.refreshToken.some((token) => token === rtHash);
 
         // token not found, but token is a valid token: possibly stolen old token
-        // invalidate user refresh token in the database, and do not issue new tokens
+        // invalidate user refresh tokens in the database, and do not issue new tokens
         if (!rtMatch) {
             await this.prisma.user.update({
                 where: {
@@ -184,7 +184,6 @@ export class AuthService {
 
     async revokeRefreshToken(body?: RevokeRTDto) {
         const { userId, email } = body;
-
         if (userId && email) {
             throw new BadRequestException(
                 "Please provide either userId or email, not both",
@@ -196,7 +195,6 @@ export class AuthService {
                 OR: [{ email }, { id: userId }],
             },
         });
-
         if (!userInDb) {
             throw new NotFoundException("User not found");
         }
@@ -226,11 +224,11 @@ export class AuthService {
             if (!payload) {
                 throw new BadRequestException("refresh token error");
             }
+
             const userInDb = await this.prisma.user.findFirst({
                 where: { id: payload.sub },
                 select: { refreshToken: true },
             });
-
             if (!userInDb) {
                 throw new NotFoundException("User not found");
             }
