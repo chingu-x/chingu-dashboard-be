@@ -482,10 +482,14 @@ export class AuthService {
             const payload = await this.jwtService.verifyAsync(
                 resetPasswordDto.token,
             );
+
             if (!payload.userId) {
+                console.log("Invalid token");
                 throw new UnauthorizedException("Invalid token");
             }
+
             const user = await this.usersService.findUserById(payload.userId);
+
             if (!user) {
                 this.logger.debug(
                     `[Auth/Reset password]: User ${payload.userId} does not exist`,
