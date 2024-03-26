@@ -164,7 +164,7 @@ export class AuthService {
                 },
                 data: {
                     refreshToken: {
-                        set: null,
+                        set: [],
                     },
                 },
             });
@@ -191,11 +191,20 @@ export class AuthService {
             );
         }
 
+        const userInDb = await this.prisma.user.findFirst({
+            where: {
+                OR: [{ email }, { id: userId }],
+            },
+        });
+
+        if (!userInDb) {
+            throw new NotFoundException("User not found");
+        }
+
         try {
             await this.prisma.user.update({
                 where: {
-                    id: userId,
-                    OR: [{ email }],
+                    id: userInDb.id,
                 },
                 data: {
                     refreshToken: {
@@ -203,11 +212,9 @@ export class AuthService {
                     },
                 },
             });
-        } catch (error) {
-            throw new NotFoundException({
-                statusCode: 404,
-                message: `User not found.`,
-            });
+        } catch (e) {
+            this.logger.debug(`Revoke refresh token error: ${e.name}`);
+            throw e;
         }
     }
 
