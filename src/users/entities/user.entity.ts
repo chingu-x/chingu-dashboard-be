@@ -51,7 +51,7 @@ export class UserEntity implements User {
     @ApiProperty()
     comment: string;
 
-    refreshToken: string;
+    refreshToken: Array<string>;
 
     @ApiProperty()
     createdAt: Date;
