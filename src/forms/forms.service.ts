@@ -108,19 +108,19 @@ export class FormsService {
     }
 
     async getFormById(formId: number) {
-        const data = await this.prisma.form.findUnique({
+        const form = await this.prisma.form.findUnique({
             where: {
                 id: formId,
             },
             select: formSelect,
         });
-        if (!data)
+        if (!form)
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
         const subQuestionsIds = [];
 
-        data.questions.forEach((question) => {
+        form.questions.forEach((question) => {
             const currentQuestion = question as Question & {
                 subQuestions: Question[];
             };
@@ -129,12 +129,12 @@ export class FormsService {
             });
         });
 
-        const filteredQuestions = data.questions.filter(
+        const filteredQuestions = form.questions.filter(
             (i) => !subQuestionsIds.includes(i.id),
         );
 
-        data.questions = filteredQuestions;
+        form.questions = filteredQuestions;
 
-        return data;
+        return form;
     }
 }
