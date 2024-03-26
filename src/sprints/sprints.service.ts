@@ -532,25 +532,34 @@ export class SprintsService {
         // TODO: do we need to check if sprintID is a reasonable sprint Id?
 
         try {
-            return await this.prisma.$transaction(async (tx) => {
-                const responseGroup = await tx.responseGroup.create({
-                    data: {
-                        responses: {
-                            createMany: {
-                                data: responsesArray,
+            const checkinSubmission = await this.prisma.$transaction(
+                async (tx) => {
+                    const responseGroup = await tx.responseGroup.create({
+                        data: {
+                            responses: {
+                                createMany: {
+                                    data: responsesArray,
+                                },
                             },
                         },
-                    },
-                });
-                return tx.formResponseCheckin.create({
-                    data: {
-                        voyageTeamMemberId:
-                            createCheckinForm.voyageTeamMemberId,
-                        sprintId: createCheckinForm.sprintId,
-                        responseGroupId: responseGroup.id,
-                    },
-                });
-            });
+                    });
+                    return tx.formResponseCheckin.create({
+                        data: {
+                            voyageTeamMemberId:
+                                createCheckinForm.voyageTeamMemberId,
+                            sprintId: createCheckinForm.sprintId,
+                            responseGroupId: responseGroup.id,
+                        },
+                    });
+                },
+            );
+            return {
+                id: checkinSubmission.id,
+                voyageTeamMemberId: checkinSubmission.voyageTeamMemberId,
+                sprintId: checkinSubmission.sprintId,
+                responseGroupId: checkinSubmission.responseGroupId,
+                createdAt: checkinSubmission.createdAt,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(

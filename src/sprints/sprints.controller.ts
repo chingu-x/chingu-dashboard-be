@@ -20,6 +20,7 @@ import { FormInputValidationPipe } from "../pipes/form-input-validation";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import {
     AgendaResponse,
+    CheckinSubmissionResponse,
     MeetingFormResponse,
     MeetingResponse,
     MeetingResponseWithSprintAndAgenda,
@@ -29,6 +30,7 @@ import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
     NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
@@ -420,8 +422,26 @@ export class SprintsController {
         );
     }
 
+    // 201
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "The meeting form has been successfully updated",
+        type: CheckinSubmissionResponse,
+        isArray: true,
+    })
     // 400
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description:
+            "request body data error, e.g. missing question id, missing response inputs",
+        type: BadRequestErrorResponse,
+    })
     // 401
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     // 409
     @Post("checkin")
     addCheckinFormResponse(
