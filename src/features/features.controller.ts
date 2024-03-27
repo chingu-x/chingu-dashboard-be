@@ -68,7 +68,7 @@ export class FeaturesController {
         type: FeatureResponse,
     })
     @Permissions(AppPermissions.OWN_TEAM)
-    @Post("/:teamId/features")
+    @Post("/teams/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
         @Request() req: CustomRequest,
@@ -120,7 +120,7 @@ export class FeaturesController {
         type: NotFoundErrorResponse,
     })
     @Permissions(AppPermissions.OWN_TEAM)
-    @Get("/:teamId/features")
+    @Get("/teams/:teamId/features")
     findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.featuresService.findAllFeatures(teamId);
     }

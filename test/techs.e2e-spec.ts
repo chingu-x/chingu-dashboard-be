@@ -53,12 +53,12 @@ describe("Techs Controller (e2e)", () => {
     beforeEach(async () => {
         await loginUser();
     });
-    describe("voyages/:teamId/techs", () => {
+    describe("voyages/teams/:teamId/techs", () => {
         it("GET - 200 returns array of tech categories, populated with techs and votes", async () => {
             const teamId: number = 2;
 
             return await request(app.getHttpServer())
-                .get(`/voyages/${teamId}/techs`)
+                .get(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -113,7 +113,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -148,7 +148,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
                     techName: newTechName,
@@ -170,7 +170,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 9999999;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -193,7 +193,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -213,13 +213,13 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("voyages/:teamId/techs/:teamTechId", () => {
+    describe("voyages/teams/:teamId/techs/:teamTechId", () => {
         it("POST - 200 vote for tech", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -251,7 +251,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -270,7 +270,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400)
                 .expect("Content-Type", /json/)
@@ -290,7 +290,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(409)
                 .expect("Content-Type", /json/)
@@ -306,13 +306,13 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("voyages/:teamId/techs/:teamTechId", () => {
+    describe("voyages/teams/:teamId/techs/:teamTechId", () => {
         it("DELETE - 200 tech vote deleted", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -344,7 +344,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -363,7 +363,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400)
                 .expect("Content-Type", /json/)
@@ -383,7 +383,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(404)
                 .expect("Content-Type", /json/)

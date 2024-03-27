@@ -25,10 +25,16 @@ import { TasksModule } from "./tasks/tasks.module";
             {
                 path: "voyages",
                 children: [
-                    { path: ":teamId/resources", module: ResourcesModule },
-                    { path: ":teamId/techs", module: TechsModule },
+                    {
+                        path: "teams/:teamId/resources",
+                        module: ResourcesModule,
+                    },
+                    { path: "teams/:teamId/techs", module: TechsModule },
                     { path: "/", module: FeaturesModule },
-                    { path: ":teamId/ideations", module: IdeationsModule },
+                    {
+                        path: "teams/:teamId/ideations",
+                        module: IdeationsModule,
+                    },
                     { path: "sprints", module: SprintsModule },
                 ],
             },
