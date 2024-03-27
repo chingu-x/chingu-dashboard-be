@@ -473,7 +473,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 3;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/${teamId}/techs/selections`)
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     categories: [
