@@ -214,7 +214,7 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("POST voyages/:teamId/techs/:teamTechId - add user vote for tech item", () => {
+    describe("POST voyages/teams/:teamId/techs/:teamTechId - add user vote for tech item", () => {
         it("should return 200 if vote successfully added", async () => {
             const teamId: number = 2;
             const techId: number = 3;
