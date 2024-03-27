@@ -79,21 +79,6 @@ export class TechsService {
         });
     };
 
-    // findSelectedTechIdInCategory = async (
-    //     voyageTeamId: number,
-    //     categoryId: number,
-    // ) => {
-    //     this.validateTeamId(voyageTeamId);
-    //     const selected = await this.prisma.teamTechStackItem.findFirst({
-    //         where: {
-    //             voyageTeamId,
-    //             categoryId,
-    //             isSelected: true,
-    //         },
-    //     });
-    //     return selected;
-    // };
-
     async updateTechStackSelections(
         req,
         teamId: number,
