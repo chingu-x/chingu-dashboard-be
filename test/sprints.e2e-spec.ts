@@ -4,7 +4,7 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
 import * as cookieParser from "cookie-parser";
@@ -15,23 +15,7 @@ expect.extend({ toBeOneOf });
 describe("Sprints Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userAccessToken: string;
-
-    async function loginUser() {
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: "jessica.williamson@gmail.com",
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                userAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
-    }
+    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,14 +36,20 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     beforeEach(async () => {
-        await loginUser();
+        await loginAndGetTokens(
+            "jessica.williamson@gmail.com",
+            "password",
+            app,
+        ).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     });
 
     describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
         it("should return 200 if fetching all voyage and sprints data", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -110,7 +100,7 @@ describe("Sprints Controller (e2e)", () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -139,7 +129,7 @@ describe("Sprints Controller (e2e)", () => {
             const teamId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -157,7 +147,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -238,7 +228,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -256,7 +246,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Test title",
                     dateTime: "2024-02-29T17:17:50.100Z",
@@ -300,7 +290,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -342,7 +332,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -359,7 +349,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -376,7 +366,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: 1, //bad request - title should be string
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -397,7 +387,7 @@ describe("Sprints Controller (e2e)", () => {
             };
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send(createAgendaDto)
                 .expect(201)
                 .expect((res) => {
@@ -429,7 +419,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = " ";
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Contribute to the agenda!",
                     description:
@@ -444,7 +434,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -480,7 +470,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -494,7 +484,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -523,7 +513,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
     });
@@ -534,7 +524,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(201)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -565,7 +555,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(409);
         });
 
@@ -574,7 +564,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
 
@@ -583,7 +573,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 999;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
     });
@@ -593,7 +583,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -631,7 +621,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -640,7 +630,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
     });
@@ -650,7 +640,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: [
                         {
@@ -701,7 +691,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = "Bad request";
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: [
                         {
@@ -721,7 +711,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: {
                         questionId: 1,
@@ -739,12 +729,6 @@ describe("Sprints Controller (e2e)", () => {
         const sprintCheckinUrl = "/voyages/sprints/check-in";
 
         it("should return 201 if successfully submitted a check in form", async () => {
-            const { access_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
-                "password",
-                app,
-            );
-
             const checkinForm = await prisma.form.findUnique({
                 where: {
                     title: FormTitles.sprintCheckin,
@@ -765,7 +749,7 @@ describe("Sprints Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", access_token)
+                .set("Cookie", accessToken)
                 .send({
                     voyageTeamMemberId: 1,
                     sprintId: 1,

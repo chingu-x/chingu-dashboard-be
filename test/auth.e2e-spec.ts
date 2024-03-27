@@ -4,7 +4,11 @@ import { AppModule } from "../src/app.module";
 import { seed } from "../prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
-import { extractCookieByKey, extractResCookieValueByKey } from "./utils";
+import {
+    extractCookieByKey,
+    extractResCookieValueByKey,
+    loginAndGetTokens,
+} from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { comparePassword } from "../src/utils/auth";
 
@@ -16,27 +20,6 @@ const verifyUrl = "/auth/verify-email";
 const resetRequestUrl = "/auth/reset-password/request";
 const resetPWUrl = "/auth/reset-password";
 const revokeRTUrl = "/auth/refresh/revoke";
-const loginAndGetTokens = async (
-    email: string,
-    password: string,
-    app: INestApplication,
-) => {
-    const r = await request(app.getHttpServer()).post(loginUrl).send({
-        email,
-        password,
-    });
-
-    const access_token = extractCookieByKey(
-        r.headers["set-cookie"],
-        "access_token",
-    );
-    const refresh_token = extractCookieByKey(
-        r.headers["set-cookie"],
-        "refresh_token",
-    );
-
-    return { access_token, refresh_token };
-};
 
 const getUserIdByEmail = async (email: string, prisma: PrismaService) => {
     const user = await prisma.user.findUnique({
