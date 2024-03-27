@@ -12,7 +12,6 @@ import {
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import {
-    ApiBody,
     ApiOperation,
     ApiParam,
     ApiResponse,
@@ -25,7 +24,7 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { isEmail, isUUID } from "class-validator";
+import { isUUID } from "class-validator";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "../auth/auth.roles";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
