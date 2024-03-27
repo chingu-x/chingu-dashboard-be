@@ -422,27 +422,28 @@ export class SprintsController {
         );
     }
 
-    // 201
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "The meeting form has been successfully updated",
         type: CheckinSubmissionResponse,
         isArray: true,
     })
-    // 400
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description:
             "request body data error, e.g. missing question id, missing response inputs",
         type: BadRequestErrorResponse,
     })
-    // 401
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description: "User is not logged in",
         type: UnauthorizedErrorResponse,
     })
-    // 409
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "User has already submitted a check in for that sprint.",
+        type: ConflictErrorResponse,
+    })
     @Post("checkin")
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe())
