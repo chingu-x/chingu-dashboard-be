@@ -398,4 +398,62 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
     });
+
+    describe("PATCH voyages/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
+        it("should return 200 and an array of updated techs, if successful", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(200)
+                .expect("Content-Type", /json/);
+            // .expect((res) => {
+            //     expect(res.body).toEqual(
+            //         expect.objectContaining({
+            //             id: expect.any(Number),
+            //             teamTechId: expect.any(Number),
+            //             teamMemberId: expect.any(Number),
+            //             createdAt: expect.any(String),
+            //             updatedAt: expect.any(String),
+            //         }),
+            //     );
+            // });
+        });
+
+        it("should return 401 if no valid user token", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(401);
+        });
+    });
 });

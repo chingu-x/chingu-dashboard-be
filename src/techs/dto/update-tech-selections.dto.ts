@@ -1,22 +1,39 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class SelectTechDto {
+export class TechSelectionDto {
     @ApiProperty({
         description: "tech id",
+        example: 1,
     })
     techId: number;
 
     @ApiProperty({
-        description: "category id of tech",
+        description: "Selected flag",
+        example: true,
+    })
+    isSelected: boolean;
+}
+
+export class TechCategoryDto {
+    @ApiProperty({
+        description: "tech id",
+        example: 1,
     })
     categoryId: number;
+
+    @ApiProperty({
+        description: "Array of tech items to set as 'isSelected'.",
+        type: TechSelectionDto,
+        isArray: true,
+    })
+    techs: TechSelectionDto[];
 }
 
 export class UpdateTechSelectionsDto {
     @ApiProperty({
-        description: "Array of tech items to set as 'isSelected'.",
-        type: SelectTechDto,
+        description: "Array of categories with tech selection values",
+        type: TechCategoryDto,
         isArray: true,
     })
-    techs: SelectTechDto[];
+    categories: TechCategoryDto[];
 }

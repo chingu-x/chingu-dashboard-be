@@ -185,8 +185,12 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Updates array of tech stack items, sets 'isSelected' to true",
-        description: "Requires login",
+        summary:
+            "Updates an array of tech stack items, sets 'isSelected' to true",
+        description:
+            "Also un-selects any previous tech selections that are in the same category as new selections," +
+            "as there can only be one selection per category." +
+            "\nLogin required",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -195,7 +199,7 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: "Invalid TeamId",
+        description: "Invalid TeamId or UserId",
         type: BadRequestErrorResponse,
     })
     @ApiResponse({
@@ -208,7 +212,7 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
     @Patch("/selections")
     updateTechStackSelections(

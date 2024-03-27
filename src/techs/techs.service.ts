@@ -8,6 +8,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 
+const MAX_SELECTION_COUNT = 3;
+
 @Injectable()
 export class TechsService {
     constructor(private prisma: PrismaService) {}
@@ -77,75 +79,61 @@ export class TechsService {
         });
     };
 
-    findSelectedTechInCategory = async (
-        voyageTeamId: number,
-        categoryId: number,
-    ) => {
-        this.validateTeamId(voyageTeamId);
-        return this.prisma.teamTechStackItem.findFirst({
-            where: {
-                voyageTeamId,
-                categoryId,
-                isSelected: true,
-            },
-        });
-    };
+    // findSelectedTechIdInCategory = async (
+    //     voyageTeamId: number,
+    //     categoryId: number,
+    // ) => {
+    //     this.validateTeamId(voyageTeamId);
+    //     const selected = await this.prisma.teamTechStackItem.findFirst({
+    //         where: {
+    //             voyageTeamId,
+    //             categoryId,
+    //             isSelected: true,
+    //         },
+    //     });
+    //     return selected;
+    // };
 
     async updateTechStackSelections(
         req,
         teamId: number,
         updateTechSelectionsDto: UpdateTechSelectionsDto,
     ) {
-        let test: any[];
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId); //TODO:
-        if (!voyageMemberId)
-            throw new BadRequestException("Invalid User or Team Id"); // extract to function
-        for (const tech of updateTechSelectionsDto.techs) {
-            //test += `techId: ${tech.techId} categoryId: ${tech.categoryId}\n`;
-            // //clear current selection
-            // const currentSelection = await this.findSelectedTechInCategory(
-            //     teamId,
-            //     categoryId,
-            // );
-            // if (currentSelection) {
-            //     this.prisma.teamTechStackItem.update({
-            //         where: {
-            //             id: currentSelection.id,
-            //         },
-            //         data: {
-            //             isSelected: false,
-            //         },
-            //     });
-            // }
+        const categories = updateTechSelectionsDto.categories;
 
-            //set new selection
-            // test = await this.prisma.teamTechStackItem.update({
-            //     where: {
-            //         id: tech.techId,
-            //     },
-            //     data: {
-            //         isSelected: true,
-            //     },
-            // });
-            try {
-                const trial = await this.prisma.teamTechStackItem.update({
+        //count selections in categories for exceeding MAX_SELECT_COUNT
+        categories.forEach((category) => {
+            const selectCount = category.techs.reduce(
+                (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
+                0,
+            );
+            if (selectCount > MAX_SELECTION_COUNT)
+                throw new BadRequestException(
+                    `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
+                );
+        });
+
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
+        if (!voyageMemberId)
+            throw new BadRequestException("Invalid User or Team Id");
+
+        //extract techs to an array for .map
+        const techsArray: any[] = [];
+        categories.forEach((category) => {
+            category.techs.forEach((tech) => techsArray.push(tech));
+        });
+        return this.prisma.$transaction(
+            techsArray.map((tech) => {
+                return this.prisma.teamTechStackItem.update({
                     where: {
                         id: tech.techId,
                     },
                     data: {
-                        isSelected: true,
+                        isSelected: tech.isSelected,
                     },
                 });
-                test.push({ techId: tech.techId });
-                //test += `techId: ${tech.techId}\n`;
-                //return trial;
-            } catch (e) {
-                if (e.code === "P2025") {
-                    throw new NotFoundException(`Invalid`);
-                }
-            }
-        }
-        return JSON.stringify(test); //Json
+            }),
+        );
     }
 
     async addNewTeamTech(
