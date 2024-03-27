@@ -400,7 +400,7 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH voyages/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
+    describe("PATCH voyages/teams/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
         it("should return 200 and an array of updated techs, if successful", async () => {
             const teamId: number = 2;
 
