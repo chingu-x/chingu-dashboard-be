@@ -109,7 +109,7 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
     });
-    describe("POST voyages/:teamId/techs - add new tech item", () => {
+    describe("POST voyages/teams/:teamId/techs - add new tech item", () => {
         it("should return 201 if new tech item successfully added", async () => {
             const teamId: number = 2;
 
