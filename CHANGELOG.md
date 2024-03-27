@@ -23,6 +23,8 @@ Another example [here](https://co-pilot.dev/changelog)
 -   Add e2e tests for forms controller ([#107](https://github.com/chingu-x/chingu-dashboard-be/pull/107))
 -   Add e2e tests for sprint controller ([#113](https://github.com/chingu-x/chingu-dashboard-be/pull/113))
 -   Add new endpoint to revoke refresh token ([#116](https://github.com/chingu-x/chingu-dashboard-be/pull/116))
+-   Add new endpoint to select tech stack items ([#124](https://github.com/chingu-x/chingu-dashboard-be/pull/124))
+
 
 
 ### Changed
