@@ -444,7 +444,7 @@ export class SprintsController {
         description: "User has already submitted a check in for that sprint.",
         type: ConflictErrorResponse,
     })
-    @Post("checkin")
+    @Post("check-in")
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe())
         createCheckinFormResponse: CreateCheckinFormDto,

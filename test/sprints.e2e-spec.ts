@@ -4,9 +4,11 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { extractResCookieValueByKey } from "./utils";
+import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
 import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
+import * as cookieParser from "cookie-parser";
+import { FormTitles } from "../src/global/constants/formTitles";
 
 expect.extend({ toBeOneOf });
 
@@ -40,6 +42,7 @@ describe("Sprints Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.use(cookieParser());
         await app.init();
     });
 
@@ -729,6 +732,71 @@ describe("Sprints Controller (e2e)", () => {
                     },
                 })
                 .expect(400);
+        });
+    });
+
+    describe("POST /voyages/sprints/check-in - submit sprint check in form", () => {
+        const sprintCheckinUrl = "/voyages/sprints/check-in";
+
+        it("should return 201 if successfully submitted a check in form", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            const checkinForm = await prisma.form.findUnique({
+                where: {
+                    title: FormTitles.sprintCheckin,
+                },
+            });
+            const questions = await prisma.question.findMany({
+                where: {
+                    formId: checkinForm.id,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", access_token)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                        {
+                            questionId: questions[1].id,
+                            boolean: true,
+                        },
+                        {
+                            questionId: questions[2].id,
+                            numeric: 12,
+                        },
+                        {
+                            questionId: questions[3].id,
+                            optionChoiceId: 1,
+                        },
+                    ],
+                })
+                .expect(201);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore + 4);
+            expect(responseGroupAfter).toEqual(responseGroupBefore + 1);
+            expect(checkinsAfter).toEqual(checkinsBefore + 1);
         });
     });
 });
