@@ -1,3 +1,4 @@
+import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import {
@@ -90,13 +91,14 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException(`User (userid: ${userId} not found`);
+            throw new NotFoundException(`User (userid: ${userId}) not found`);
         }
 
         return this.formatUser(user);
     }
 
-    async getUserDetailsByEmail(email: string) {
+    async getUserDetailsByEmail(userLookupByEmailDto: UserLookupByEmailDto) {
+        const { email } = userLookupByEmailDto;
         const user = await this.prisma.user.findUnique({
             where: {
                 email,

@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
     HttpStatus,
     NotFoundException,
     Param,
@@ -10,7 +11,13 @@ import {
     Request,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+    ApiBody,
+    ApiOperation,
+    ApiParam,
+    ApiResponse,
+    ApiTags,
+} from "@nestjs/swagger";
 
 import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
@@ -21,6 +28,7 @@ import {
 import { isEmail, isUUID } from "class-validator";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "../auth/auth.roles";
+import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -107,7 +115,7 @@ export class UsersController {
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         description: "Successfully gets the full user detail given an email.",
         isArray: true,
         type: FullUserResponse,
@@ -119,27 +127,17 @@ export class UsersController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: "Given email is not a valid email.",
+        description: "Given email is not in a valid email syntax.",
         type: BadRequestErrorResponse,
     })
-    @ApiBody({
-        schema: {
-            type: "object",
-            properties: {
-                email: {
-                    type: "string",
-                    description: "email",
-                },
-            },
-        },
-    })
+
     @Roles(AppRoles.Admin)
+    @HttpCode(200)
     @Post("/lookup-by-email")
-    async getUserDetailsByEmail(@Body("email") email: string) {
-        if (!isEmail(email))
-            throw new BadRequestException(`${email} is not a valid Email.`);
+    async getUserDetailsByEmail(@Body() userLookupByEmailDto: UserLookupByEmailDto) {
+
         const userDetails =
-            await this.usersService.getUserDetailsByEmail(email);
+            await this.usersService.getUserDetailsByEmail(userLookupByEmailDto);
         if (!userDetails) {
             throw new NotFoundException(`User not found`);
         }
