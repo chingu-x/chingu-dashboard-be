@@ -22,7 +22,7 @@ export class TechCategoryDto {
     categoryId: number;
 
     @ApiProperty({
-        description: "Array of tech items to set as 'isSelected'.",
+        description: "Array of tech items to update 'isSelected'.",
         type: TechSelectionDto,
         isArray: true,
     })

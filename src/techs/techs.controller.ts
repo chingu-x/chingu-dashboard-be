@@ -186,11 +186,9 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "Updates an array of tech stack items, sets 'isSelected' to true",
+            "Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
         description:
-            "Also un-selects any previous tech selections that are in the same category as new selections," +
-            "as there can only be one selection per category." +
-            "\nLogin required",
+            "Maximum of 3 selections per category allowed. Login required",
     })
     @ApiResponse({
         status: HttpStatus.OK,
