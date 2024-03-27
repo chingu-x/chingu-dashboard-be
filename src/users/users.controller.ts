@@ -1,13 +1,16 @@
 import {
     BadRequestException,
+    Body,
     Controller,
     Get,
     HttpStatus,
+    NotFoundException,
     Param,
+    Post,
     Request,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
@@ -92,7 +95,7 @@ export class UsersController {
         example: "6bd33861-04c0-4270-8e96-62d4fb587527",
     })
     @Roles(AppRoles.Admin)
-    @Get("id/:userId")
+    @Get("/:userId")
     getUserDetailsById(@Param("userId") userId: string) {
         if (!isUUID(userId))
             throw new BadRequestException(`${userId} is not a valid UUID.`);
@@ -104,7 +107,7 @@ export class UsersController {
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: "Successfully gets the full user detail given an email.",
         isArray: true,
         type: FullUserResponse,
@@ -119,17 +122,27 @@ export class UsersController {
         description: "Given email is not a valid email.",
         type: BadRequestErrorResponse,
     })
-    @ApiParam({
-        name: "email",
-        required: true,
-        description: "email",
-        example: "jessica.williamson@gmail.com",
+    @ApiBody({
+        schema: {
+            type: "object",
+            properties: {
+                email: {
+                    type: "string",
+                    description: "email",
+                },
+            },
+        },
     })
     @Roles(AppRoles.Admin)
-    @Get("email/:email")
-    getUserDetailsByEmail(@Param("email") email: string) {
+    @Post("/lookup-by-email")
+    async getUserDetailsByEmail(@Body("email") email: string) {
         if (!isEmail(email))
             throw new BadRequestException(`${email} is not a valid Email.`);
-        return this.usersService.getUserDetailsByEmail(email);
+        const userDetails =
+            await this.usersService.getUserDetailsByEmail(email);
+        if (!userDetails) {
+            throw new NotFoundException(`User not found`);
+        }
+        return userDetails;
     }
 }
