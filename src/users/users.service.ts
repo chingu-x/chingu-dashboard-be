@@ -105,7 +105,7 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException(`User (email: ${email} not found`);
+            throw new NotFoundException(`User with ${email} not found`);
         }
 
         return this.formatUser(user);
