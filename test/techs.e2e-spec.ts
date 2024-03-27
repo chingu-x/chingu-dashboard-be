@@ -53,7 +53,7 @@ describe("Techs Controller (e2e)", () => {
     beforeEach(async () => {
         await loginUser();
     });
-    describe("GET voyages/:teamId/techs - get data on all tech categories and items", () => {
+    describe("GET voyages/teams/:teamId/techs - get data on all tech categories and items", () => {
         it("should return 200 and array of tech categories, populated with techs and votes", async () => {
             const teamId: number = 2;
 
