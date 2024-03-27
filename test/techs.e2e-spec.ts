@@ -307,7 +307,7 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("DELETE voyages/:teamId/techs/:teamTechId - delete user vote for tech", () => {
+    describe("DELETE voyages/teams/:teamId/techs/:teamTechId - delete user vote for tech", () => {
         it("should return 200 if tech vote deleted", async () => {
             const teamId: number = 2;
             const techId: number = 3;
