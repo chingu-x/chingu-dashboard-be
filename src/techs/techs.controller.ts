@@ -188,7 +188,7 @@ export class TechsController {
         summary:
             "Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
         description:
-            "Maximum of 3 selections per category allowed. Login required",
+            "Maximum of 3 selections per category allowed. All tech items (isSelected === true/false) are required for updated categories. Login required.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
