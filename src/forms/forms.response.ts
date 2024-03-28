@@ -66,7 +66,7 @@ class Response {
     responseGroupId: number;
 }
 
-class Question {
+class BaseQuestion {
     @ApiProperty({ example: 1 })
     id: number;
 
@@ -97,8 +97,19 @@ class Question {
     @ApiProperty({ example: null })
     optionGroup: OptionGroup;
 
-    @ApiProperty({ isArray: true })
-    responses: Response;
+    @ApiProperty()
+    createdAt: Date;
+
+    @ApiProperty()
+    updatedAt: Date;
+}
+
+class SubQuestion extends BaseQuestion {}
+
+class Question extends BaseQuestion {
+    @Optional()
+    @ApiProperty({ isArray: true, type: SubQuestion })
+    subQuestions: SubQuestion[];
 }
 
 export class FormResponse {
