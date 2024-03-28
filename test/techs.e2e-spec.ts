@@ -53,7 +53,7 @@ describe("Techs Controller (e2e)", () => {
     beforeEach(async () => {
         await loginUser();
     });
-    describe("GET voyages/:teamId/techs - get data on all tech categories and items", () => {
+    describe("GET voyages/teams/:teamId/techs - get data on all tech categories and items", () => {
         it("should return 200 and array of tech categories, populated with techs and votes", async () => {
             const teamId: number = 2;
 
@@ -109,7 +109,7 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
     });
-    describe("POST voyages/:teamId/techs - add new tech item", () => {
+    describe("POST voyages/teams/:teamId/techs - add new tech item", () => {
         it("should return 201 if new tech item successfully added", async () => {
             const teamId: number = 2;
 
@@ -214,7 +214,7 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("POST voyages/:teamId/techs/:teamTechId - add user vote for tech item", () => {
+    describe("POST voyages/teams/:teamId/techs/:teamTechId - add user vote for tech item", () => {
         it("should return 200 if vote successfully added", async () => {
             const teamId: number = 2;
             const techId: number = 3;
@@ -307,7 +307,7 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("DELETE voyages/:teamId/techs/:teamTechId - delete user vote for tech", () => {
+    describe("DELETE voyages/teams/:teamId/techs/:teamTechId - delete user vote for tech", () => {
         it("should return 200 if tech vote deleted", async () => {
             const teamId: number = 2;
             const techId: number = 3;
@@ -400,12 +400,12 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH voyages/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
+    describe("PATCH voyages/teams/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
         it("should return 200 and an array of updated techs, if successful", async () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/${teamId}/techs/selections`)
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     categories: [
@@ -439,7 +439,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/${teamId}/techs/selections`)
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     categories: [
@@ -473,7 +473,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 3;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/${teamId}/techs/selections`)
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     categories: [
@@ -495,7 +495,7 @@ describe("Techs Controller (e2e)", () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/${teamId}/techs/selections`)
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
                     categories: [
