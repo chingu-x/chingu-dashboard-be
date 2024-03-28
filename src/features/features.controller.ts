@@ -34,6 +34,9 @@ import {
     ExtendedFeaturesResponse,
     FeatureResponse,
 } from "./features.response";
+import { AppPermissions } from "../auth/auth.permissions";
+import { Permissions } from "../global/decorators/permissions.decorator";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Features")
@@ -42,7 +45,7 @@ export class FeaturesController {
 
     @ApiOperation({
         summary:
-            "Adds a new feature for a team given a teamId (int) and that the user is logged in.",
+            "[Permission: own_team] Adds a new feature for a team given a teamId (int) and that the user is logged in.",
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -51,19 +54,24 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid teamId",
+        type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully created a new feature.",
         type: FeatureResponse,
     })
-    @Post("/:teamId/features")
+    @Permissions(AppPermissions.OWN_TEAM)
+    @Post("/teams/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createFeatureDto: CreateFeatureDto,
     ) {
@@ -75,7 +83,8 @@ export class FeaturesController {
     }
 
     @ApiOperation({
-        summary: "Gets all feature category options.",
+        summary:
+            "Gets all feature category options. e.g. Must have, should have, nice to have",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -86,6 +95,34 @@ export class FeaturesController {
     @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
+    }
+
+    @ApiOperation({
+        summary:
+            "[Permission: own_team] Gets all features for a team given a teamId (int).",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully got all features for project.",
+        isArray: true,
+        type: ExtendedFeaturesResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description:
+            "Could not find features for project. Team with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @Permissions(AppPermissions.OWN_TEAM)
+    @Get("/teams/:teamId/features")
+    findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
+        return this.featuresService.findAllFeatures(teamId);
     }
 
     @ApiOperation({
@@ -110,35 +147,6 @@ export class FeaturesController {
     @Get("/features/:featureId")
     findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
         return this.featuresService.findOneFeature(featureId);
-    }
-
-    @ApiOperation({
-        summary: "Gets all features for a team given a teamId (int).",
-    })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: "Successfully got all features for project.",
-        isArray: true,
-        type: ExtendedFeaturesResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
-        type: UnauthorizedErrorResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        description:
-            "Could not find features for project. Team with given ID does not exist.",
-        type: NotFoundErrorResponse,
-    })
-    @Get("/:teamId/features")
-    findAllFeatures(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-    ) {
-        return this.featuresService.findAllFeatures(req, teamId);
     }
 
     @ApiOperation({

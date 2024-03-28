@@ -1,13 +1,22 @@
 import {
     BadRequestException,
+    Body,
     Controller,
     Get,
+    HttpCode,
     HttpStatus,
+    NotFoundException,
     Param,
+    Post,
     Request,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+    ApiOperation,
+    ApiParam,
+    ApiResponse,
+    ApiTags,
+} from "@nestjs/swagger";
 
 import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
@@ -15,9 +24,10 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { isEmail, isUUID } from "class-validator";
+import { isUUID } from "class-validator";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "../auth/auth.roles";
+import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -25,7 +35,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @ApiOperation({
-        summary: "Gets all users.",
+        summary: "[Roles: Admin] Gets all users.",
         description: "This endpoint is for development/admin purpose.",
     })
     @ApiResponse({
@@ -41,7 +51,8 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a logged in users detail via userId:uuid in jwt token.",
+        summary:
+            "Gets a logged in users own detail via userId:uuid in jwt token.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -64,7 +75,8 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a user with full details given a userId (uuid).",
+        summary:
+            "[Roles: Admin] Gets a user with full details given a userId (uuid).",
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
@@ -90,7 +102,7 @@ export class UsersController {
         example: "6bd33861-04c0-4270-8e96-62d4fb587527",
     })
     @Roles(AppRoles.Admin)
-    @Get("id/:userId")
+    @Get("/:userId")
     getUserDetailsById(@Param("userId") userId: string) {
         if (!isUUID(userId))
             throw new BadRequestException(`${userId} is not a valid UUID.`);
@@ -98,7 +110,7 @@ export class UsersController {
     }
 
     @ApiOperation({
-        summary: "Gets a user with full details given an email.",
+        summary: "[Roles: Admin] Gets a user with full details given an email.",
         description: "This is currently only for development/admin",
     })
     @ApiResponse({
@@ -114,20 +126,20 @@ export class UsersController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: "Given email is not a valid email.",
+        description: "Given email is not in a valid email syntax.",
         type: BadRequestErrorResponse,
     })
-    @ApiParam({
-        name: "email",
-        required: true,
-        description: "email",
-        example: "jessica.williamson@gmail.com",
-    })
+
     @Roles(AppRoles.Admin)
-    @Get("email/:email")
-    getUserDetailsByEmail(@Param("email") email: string) {
-        if (!isEmail(email))
-            throw new BadRequestException(`${email} is not a valid Email.`);
-        return this.usersService.getUserDetailsByEmail(email);
+    @HttpCode(200)
+    @Post("/lookup-by-email")
+    async getUserDetailsByEmail(@Body() userLookupByEmailDto: UserLookupByEmailDto) {
+
+        const userDetails =
+            await this.usersService.getUserDetailsByEmail(userLookupByEmailDto);
+        if (!userDetails) {
+            throw new NotFoundException(`User not found`);
+        }
+        return userDetails;
     }
 }

@@ -1,14 +1,14 @@
 import {
-    Controller,
-    Get,
-    Param,
-    Post,
     Body,
-    Patch,
+    Controller,
     Delete,
-    ParseIntPipe,
-    Request,
+    Get,
     HttpStatus,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Request,
 } from "@nestjs/common";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
@@ -21,10 +21,13 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import {
-    IdeationVoteResponse,
     IdeationResponse,
+    IdeationVoteResponse,
     TeamIdeationsResponse,
 } from "./ideations.response";
+import { AppPermissions } from "../auth/auth.permissions";
+import { Permissions } from "../global/decorators/permissions.decorator";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Ideations")
@@ -52,9 +55,10 @@ export class IdeationsController {
         description: "Successfully created a new ideation and vote added.",
         type: IdeationResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Post()
     createIdeation(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createIdeationDto: CreateIdeationDto,
     ) {
@@ -90,9 +94,10 @@ export class IdeationsController {
         description: "Successfully created a new ideation vote.",
         type: IdeationVoteResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Post("/:ideationId/ideation-votes")
     createIdeationVote(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
@@ -117,6 +122,7 @@ export class IdeationsController {
         isArray: true,
         type: TeamIdeationsResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Get()
     getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.ideationsService.getIdeationsByVoyageTeam(teamId);
@@ -138,18 +144,14 @@ export class IdeationsController {
         type: NotFoundErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.CONFLICT,
-        description: "Uuid does not match team member ID on Ideation.",
-        type: ConflictErrorResponse,
-    })
-    @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully updated ideation.",
         type: IdeationResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Patch("/:ideationId")
     updateIdeation(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("ideationId", ParseIntPipe) ideationId: number,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() updateIdeationDto: UpdateIdeationDto,
@@ -192,9 +194,10 @@ export class IdeationsController {
         description: "Ideation cannot be deleted when any votes exist.",
         type: ConflictErrorResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Delete("/:ideationId")
     deleteIdeation(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
@@ -221,9 +224,10 @@ export class IdeationsController {
         description: "Successfully deleted ideation vote.",
         type: IdeationVoteResponse,
     })
+    @Permissions(AppPermissions.OWN_TEAM)
     @Delete("/:ideationId/ideation-votes")
     deleteIdeationVote(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
