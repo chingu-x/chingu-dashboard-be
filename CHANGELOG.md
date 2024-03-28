@@ -34,6 +34,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
 -Update /forms /forms/id response to include subQuestions [#115](https://github.com/chingu-x/chingu-dashboard-be/pull/115)
 - Add role and permission guard to some existing routes (features, forms, ideations, teams) [#112](https://github.com/chingu-x/chingu-dashboard-be/pull/112)
+- Refactor voyages endpoint paths to follow API naming conversion [#123](https://github.com/chingu-x/chingu-dashboard-be/pull/123)
 
 ### Fixed
 
