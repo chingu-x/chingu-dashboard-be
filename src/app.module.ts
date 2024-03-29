@@ -26,7 +26,7 @@ import { TasksModule } from "./tasks/tasks.module";
                 path: "voyages",
                 children: [
                     {
-                        path: "teams/:teamId/resources",
+                        path: "/",
                         module: ResourcesModule,
                     },
                     { path: "teams/:teamId/techs", module: TechsModule },
