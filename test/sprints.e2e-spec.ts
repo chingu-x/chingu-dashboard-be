@@ -727,14 +727,16 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("POST /voyages/sprints/check-in - submit sprint check in form", () => {
         const sprintCheckinUrl = "/voyages/sprints/check-in";
+        let checkinForm: any;
+        let questions: any;
 
-        it("should return 201 if successfully submitted a check in form", async () => {
-            const checkinForm = await prisma.form.findUnique({
+        beforeEach(async () => {
+            checkinForm = await prisma.form.findUnique({
                 where: {
                     title: FormTitles.sprintCheckin,
                 },
             });
-            const questions = await prisma.question.findMany({
+            questions = await prisma.question.findMany({
                 where: {
                     formId: checkinForm.id,
                 },
@@ -742,7 +744,9 @@ describe("Sprints Controller (e2e)", () => {
                     id: true,
                 },
             });
+        });
 
+        it("should return 201 if successfully submitted a check in form", async () => {
             const responsesBefore = await prisma.response.count();
             const responseGroupBefore = await prisma.responseGroup.count();
             const checkinsBefore = await prisma.formResponseCheckin.count();
@@ -781,6 +785,201 @@ describe("Sprints Controller (e2e)", () => {
             expect(responsesAfter).toEqual(responsesBefore + 4);
             expect(responseGroupAfter).toEqual(responseGroupBefore + 1);
             expect(checkinsAfter).toEqual(checkinsBefore + 1);
+        });
+        it("should return 400 for invalid inputs", async () => {
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+            // missing voyageTeamMemberId
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing sprintId"
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing responses
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                })
+                .expect(400);
+
+            // missing questionId in responses - response validation pipe
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing input in responses - response validation pipe
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // wrong response input types
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            numeric: "not a number",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            responseGroupId: "not an id",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            optionGroupId: "not an id",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            boolean: "not a boolean",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore);
+            expect(responseGroupAfter).toEqual(responseGroupBefore);
+            expect(checkinsAfter).toEqual(checkinsBefore);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(401);
+        });
+
+        it("should return 409 if user has already submitted the check in form for the same sprint", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                });
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(409);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore);
+            expect(responseGroupAfter).toEqual(responseGroupBefore);
+            expect(checkinsAfter).toEqual(checkinsBefore);
         });
     });
 });
