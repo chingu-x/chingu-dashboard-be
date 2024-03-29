@@ -422,9 +422,37 @@ export class SprintsController {
         );
     }
 
+    @ApiOperation({
+        summary: "Submit end of sprint check in form",
+        description:
+            "Inputs (choiceId, text, boolean, number are all optional), <br>" +
+            "depends on the question type, but AT LEAST ONE of them must be present, <br>" +
+            "questionId is required <br><br>" +
+            "responses example" +
+            "<code>" +
+            JSON.stringify([
+                {
+                    questionId: 1,
+                    text: "All",
+                },
+                {
+                    questionId: 2,
+                    optionChoiceId: 1,
+                },
+                {
+                    questionId: 3,
+                    boolean: true,
+                },
+                {
+                    questionId: 4,
+                    numeric: 352,
+                },
+            ]) +
+            "</code><br>",
+    })
     @ApiResponse({
         status: HttpStatus.CREATED,
-        description: "The meeting form has been successfully updated",
+        description: "The check in form has been successfully Submitted.",
         type: CheckinSubmissionResponse,
         isArray: true,
     })
