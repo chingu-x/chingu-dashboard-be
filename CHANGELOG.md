@@ -24,7 +24,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for sprint controller ([#113](https://github.com/chingu-x/chingu-dashboard-be/pull/113))
 - Add new endpoint to revoke refresh token ([#116](https://github.com/chingu-x/chingu-dashboard-be/pull/116))
 - Add meetingId to sprints/teams endpoint (([#1169](https://github.com/chingu-x/chingu-dashboard-be/pull/119)))
-- Add multiple device support ([#127](https://github.com/chingu-x/chingu-dashboard-be/pull/127))
+- Add multiple device support ([#128](https://github.com/chingu-x/chingu-dashboard-be/pull/128))
 
 ### Changed
 
