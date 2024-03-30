@@ -439,9 +439,7 @@ describe("AuthController e2e Tests", () => {
                     email: "l.castro@outlook.com",
                 },
                 data: {
-                    refreshToken: {
-                        set: [],
-                    },
+                    refreshToken: null,
                 },
             });
 
