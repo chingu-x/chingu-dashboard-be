@@ -467,7 +467,7 @@ describe("AuthController e2e Tests", () => {
             });
         });
 
-        it("should return 401 if email is invalid", async () => {
+        it("should return 404 if email is invalid", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
