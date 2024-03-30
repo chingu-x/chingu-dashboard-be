@@ -483,7 +483,7 @@ describe("AuthController e2e Tests", () => {
                 .expect(404);
         });
 
-        it("should return 403 if email and user id is provided", async () => {
+        it("should return 400 if email and user id is provided", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
