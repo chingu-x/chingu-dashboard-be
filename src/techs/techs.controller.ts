@@ -2,6 +2,7 @@ import {
     Controller,
     Get,
     Post,
+    Patch,
     Body,
     Param,
     Delete,
@@ -13,6 +14,7 @@ import {
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { TeamTechResponse, TechItemResponse } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -180,5 +182,46 @@ export class TechsController {
         @Param("teamTechId", ParseIntPipe) teamTechId: number,
     ) {
         return this.techsService.removeVote(req, teamId, teamTechId);
+    }
+
+    @ApiOperation({
+        summary:
+            "Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
+        description:
+            "Maximum of 3 selections per category allowed.  All tech items (isSelected === true/false) are required for updated categories. Login required.",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated selected tech stack items",
+        type: TechItemResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid TeamId or UserId",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 2,
+    })
+    @Patch("/selections")
+    updateTechStackSelections(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body(ValidationPipe) updateTechSelectionsDto: UpdateTechSelectionsDto,
+    ) {
+        return this.techsService.updateTechStackSelections(
+            req,
+            teamId,
+            updateTechSelectionsDto,
+        );
     }
 }

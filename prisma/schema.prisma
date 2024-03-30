@@ -247,6 +247,7 @@ model TeamTechStackItem {
   categoryId   Int?
   voyageTeam   VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId Int
+  isSelected   Boolean            @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
