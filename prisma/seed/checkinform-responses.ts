@@ -52,7 +52,7 @@ const populateQuestionResponses = async (
     teamMemberId: number,
     responseGroupId: number,
 ) => {
-    let data: any = {
+    const data: any = {
         questionId: question.id,
         responseGroupId: responseGroupId,
     };
