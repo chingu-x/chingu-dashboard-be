@@ -10,6 +10,7 @@ import { populateSoloProjects } from "./solo-project";
 import { populateVoyageApplications } from "./voyage-app";
 import { populateChecklists } from "./checklist";
 import { PrismaClient } from "@prisma/client";
+import { populateCheckinFormResponse } from "./checkinform-responses";
 
 const prisma = new PrismaClient();
 
@@ -47,5 +48,6 @@ export const seed = async () => {
     await populateSoloProjects();
     await populateVoyageApplications();
     await populateChecklists();
+    await populateCheckinFormResponse();
     console.log("===\n🌱 Database seeding completed.\n===");
 };

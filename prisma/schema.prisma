@@ -534,8 +534,6 @@ model Response {
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
-
-  @@unique(fields: [questionId, responseGroupId], name: "questionResponseGroup")
 }
 
 model ResponseGroup {
