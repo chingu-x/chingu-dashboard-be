@@ -500,23 +500,41 @@ export class SprintsService {
         );
 
         return this.prisma.$transaction(
-            responsesArray.map((response) => {
-                const { questionId, ...data } = response;
-                return this.prisma.response.upsert({
-                    where: {
-                        questionResponseGroup: {
-                            responseGroupId:
-                                formResponseMeeting.responseGroupId,
-                            questionId: response.questionId,
-                        },
-                    },
-                    update: data,
-                    create: {
-                        responseGroupId: formResponseMeeting.responseGroupId,
-                        ...response,
-                    },
-                });
-            }),
+            async (tx) =>
+                await Promise.all(
+                    responsesArray.map(async (response) => {
+                        const responseToUpdate = await tx.response.findFirst({
+                            where: {
+                                responseGroupId:
+                                    formResponseMeeting.responseGroupId,
+                                questionId: response.questionId,
+                            },
+                        });
+
+                        // if response does not already exist, update
+                        // (this happens for a fresh meeting form)
+                        // else create a new response
+                        if (!responseToUpdate) {
+                            return tx.response.create({
+                                data: {
+                                    responseGroupId:
+                                        formResponseMeeting.responseGroupId,
+                                    ...response,
+                                },
+                            });
+                        }
+                        return tx.response.update({
+                            where: {
+                                id: responseToUpdate.id,
+                            },
+                            data: {
+                                responseGroupId:
+                                    formResponseMeeting.responseGroupId,
+                                ...response,
+                            },
+                        });
+                    }),
+                ),
         );
     }
 

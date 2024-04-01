@@ -635,7 +635,7 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
     describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId - updates a meeting form", () => {
-        it("should return 200 if successfully update the meeting form with responses", async () => {
+        it("should return 200 if successfully create a meeting form response", async () => {
             const meetingId = 1;
             const formId = 1;
             return request(app.getHttpServer())
@@ -645,10 +645,7 @@ describe("Sprints Controller (e2e)", () => {
                     responses: [
                         {
                             questionId: 1,
-                            optionChoiceId: 1,
                             text: "Team member x landed a job this week.",
-                            boolean: true,
-                            number: 1,
                         },
                     ],
                 })
@@ -659,12 +656,6 @@ describe("Sprints Controller (e2e)", () => {
                             expect.objectContaining({
                                 id: expect.any(Number),
                                 questionId: expect.any(Number),
-                                optionChoiceId: expect.any(Number),
-                                numeric: expect.toBeOneOf([
-                                    null,
-                                    expect.any(Number),
-                                ]),
-                                boolean: expect.any(Boolean),
                                 text: expect.any(String),
                                 responseGroupId: expect.any(Number),
                                 createdAt: expect.any(String),
@@ -674,15 +665,54 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 });
         });
-        it("- verify meeting response found in database", async () => {
+        it("- verify meeting response found in database (create)", async () => {
             const response = await prisma.response.findMany({
                 where: {
                     questionId: 1,
-                    optionChoiceId: 1,
                     text: "Team member x landed a job this week.",
-                    boolean: true,
                 },
             });
+            expect(response.length).toBe(1);
+            return expect(response[0].questionId).toEqual(1);
+        });
+        it("should return 200 if successfully update a meeting form response", async () => {
+            const meetingId = 1;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Cookie", accessToken)
+                .send({
+                    responses: [
+                        {
+                            questionId: 1,
+                            text: "Update - Team member x landed a job this week.",
+                        },
+                    ],
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                questionId: expect.any(Number),
+                                text: expect.any(String),
+                                responseGroupId: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                            }),
+                        ]),
+                    );
+                });
+        });
+        it("- verify meeting response is updated database", async () => {
+            const response = await prisma.response.findMany({
+                where: {
+                    questionId: 1,
+                    text: "Update - Team member x landed a job this week.",
+                },
+            });
+            expect(response.length).toBe(1);
             return expect(response[0].questionId).toEqual(1);
         });
 
@@ -755,7 +785,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 1,
+                    voyageTeamMemberId: 2, // voyageTeamMemberId 1 is already in the seed
                     sprintId: 1,
                     responses: [
                         {
