@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { addDays } from "./utils";
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 export const populateSprints = async () => {
     const voyages = await prisma.voyage.findMany({});

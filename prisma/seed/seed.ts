@@ -9,10 +9,8 @@ import { populateMeetings } from "./meetings";
 import { populateSoloProjects } from "./solo-project";
 import { populateVoyageApplications } from "./voyage-app";
 import { populateChecklists } from "./checklist";
-import { PrismaClient } from "@prisma/client";
 import { populateCheckinFormResponse } from "./checkinform-responses";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 export const deleteAllTables = async () => {
     const tablenames = await prisma.$queryRaw<

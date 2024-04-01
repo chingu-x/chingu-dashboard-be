@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { formSelect } from "../../src/forms/forms.service";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 // TODO: move these to a  helper function file
 const getRandomOptionId = async (

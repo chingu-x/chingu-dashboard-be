@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../../src/utils/auth";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 const getRoleId = (roles, name) => {
     return roles.filter((role) => role.name == name)[0].id;
