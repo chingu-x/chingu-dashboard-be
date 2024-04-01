@@ -7,6 +7,7 @@ import { seed } from "../prisma/seed/seed";
 import { extractResCookieValueByKey } from "./utils";
 import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
+
 expect.extend({ toBeOneOf });
 
 describe("Sprints Controller (e2e)", () => {
@@ -648,13 +649,15 @@ describe("Sprints Controller (e2e)", () => {
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
-                    response: {
-                        questionId: 1,
-                        optionChoiceId: 1,
-                        text: "Team member x landed a job this week.",
-                        boolean: true,
-                        number: 1,
-                    },
+                    responses: [
+                        {
+                            questionId: 1,
+                            optionChoiceId: 1,
+                            text: "Team member x landed a job this week.",
+                            boolean: true,
+                            number: 1,
+                        },
+                    ],
                 })
                 .expect(200)
                 .expect((res) => {
@@ -697,7 +700,27 @@ describe("Sprints Controller (e2e)", () => {
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
-                    response: {
+                    responses: [
+                        {
+                            questionId: 1,
+                            optionChoiceId: 1,
+                            text: "Team member x landed a job this week.",
+                            boolean: true,
+                            number: 1,
+                        },
+                    ],
+                })
+                .expect(400);
+        });
+
+        it("should return 400 if responses in the body is not an array", async () => {
+            const meetingId = 1;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    responses: {
                         questionId: 1,
                         optionChoiceId: 1,
                         text: "Team member x landed a job this week.",

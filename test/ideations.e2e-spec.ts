@@ -194,7 +194,7 @@ describe("IdeationsController (e2e)", () => {
         await reseed();
     });
 
-    it("/POST voyages/:teamId/ideations", async () => {
+    it("/POST voyages/teams/:teamId/ideations", async () => {
         await prisma.projectIdea.delete({
             where: {
                 id: newIdeation.id,
@@ -209,7 +209,7 @@ describe("IdeationsController (e2e)", () => {
         };
 
         return request(app.getHttpServer())
-            .post(`/voyages/${teamId}/ideations`)
+            .post(`/voyages/teams/${teamId}/ideations`)
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .send(createIdeationDto)
             .expect(201)
@@ -223,7 +223,7 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/POST voyages/:teamId/ideations/:ideationId/ideation-votes", async () => {
+    it("/POST voyages/teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
         await prisma.projectIdeaVote.delete({
             where: {
                 id: newIdeationVote.id,
@@ -234,7 +234,9 @@ describe("IdeationsController (e2e)", () => {
         const ideationId: number = newIdeation.id;
 
         return request(app.getHttpServer())
-            .post(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
+            .post(
+                `/voyages/teams/${teamId}/ideations/${ideationId}/ideation-votes`,
+            )
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(201)
             .expect("Content-Type", /json/)
@@ -243,7 +245,7 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/GET voyages/:teamId/ideations", async () => {
+    it("/GET voyages/teams/:teamId/ideations", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationCount: number = await prisma.projectIdea.count({
             where: {
@@ -254,7 +256,7 @@ describe("IdeationsController (e2e)", () => {
         });
 
         return request(app.getHttpServer())
-            .get(`/voyages/${teamId}/ideations`)
+            .get(`/voyages/teams/${teamId}/ideations`)
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(200)
             .expect("Content-Type", /json/)
@@ -274,7 +276,7 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/PATCH :teamId/ideations/:ideationId", async () => {
+    it("/PATCH /teams/:teamId/ideations/:ideationId", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
         const updateIdeationDto: UpdateIdeationDto = {
@@ -284,7 +286,7 @@ describe("IdeationsController (e2e)", () => {
         };
 
         return request(app.getHttpServer())
-            .patch(`/voyages/${teamId}/ideations/${ideationId}`)
+            .patch(`/voyages/teams/${teamId}/ideations/${ideationId}`)
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .send(updateIdeationDto)
             .expect(200)
@@ -298,12 +300,12 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/DELETE :teamId/ideations/:ideationId", async () => {
+    it("/DELETE /teams/:teamId/ideations/:ideationId", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
 
         return request(app.getHttpServer())
-            .delete(`/voyages/${teamId}/ideations/${ideationId}`)
+            .delete(`/voyages/teams/${teamId}/ideations/${ideationId}`)
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect((res) => {
                 expect(res.body).toEqual({
@@ -314,12 +316,14 @@ describe("IdeationsController (e2e)", () => {
             });
     });
 
-    it("/DELETE voyages/:teamId/ideations/:ideationId/ideation-votes", async () => {
+    it("/DELETE voyages/teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
         const teamId: number = newVoyageTeam.id;
         const ideationId: number = newIdeation.id;
 
         return request(app.getHttpServer())
-            .delete(`/voyages/${teamId}/ideations/${ideationId}/ideation-votes`)
+            .delete(
+                `/voyages/teams/${teamId}/ideations/${ideationId}/ideation-votes`,
+            )
             .set("Authorization", `Bearer ${newUserAccessToken}`)
             .expect(200)
             .expect("Content-Type", /json/)
