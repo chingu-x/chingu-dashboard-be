@@ -1,3 +1,6 @@
+-- DropIndex
+DROP INDEX "Response_questionId_responseGroupId_key";
+
 -- CreateTable
 CREATE TABLE "FormResponseCheckin" (
     "id" SERIAL NOT NULL,

@@ -50,4 +50,6 @@ export const seed = async () => {
     await populateChecklists();
     await populateCheckinFormResponse();
     console.log("===\n🌱 Database seeding completed.\n===");
+
+    prisma.$disconnect();
 };
