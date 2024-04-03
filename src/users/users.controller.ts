@@ -11,12 +11,7 @@ import {
     Request,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import {
-    ApiOperation,
-    ApiParam,
-    ApiResponse,
-    ApiTags,
-} from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
@@ -129,12 +124,12 @@ export class UsersController {
         description: "Given email is not in a valid email syntax.",
         type: BadRequestErrorResponse,
     })
-
     @Roles(AppRoles.Admin)
     @HttpCode(200)
     @Post("/lookup-by-email")
-    async getUserDetailsByEmail(@Body() userLookupByEmailDto: UserLookupByEmailDto) {
-
+    async getUserDetailsByEmail(
+        @Body() userLookupByEmailDto: UserLookupByEmailDto,
+    ) {
         const userDetails =
             await this.usersService.getUserDetailsByEmail(userLookupByEmailDto);
         if (!userDetails) {

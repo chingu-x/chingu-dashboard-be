@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { passedSampleFeedback } from "./data/text/solo-project-feedback";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 export const populateSoloProjects = async () => {
     // solo project status

@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
 // VoyageTeams, VoyageMembers, Tech Stack, sprints
+import { prisma } from "./prisma-client";
+
 export const populateTeamResourcesAndProjectIdeas = async () => {
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 

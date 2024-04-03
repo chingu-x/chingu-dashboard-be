@@ -41,18 +41,24 @@ export const loginAndGetTokens = async (
 };
 
 export const getNonAdminUser = async () => {
-    const adminRole = await prisma.role.findUnique({
-        where: {
-            name: "admin",
-        },
-    });
-    return prisma.user.findFirst({
-        where: {
-            roles: {
-                none: {
-                    roleId: adminRole.id,
+    try {
+        const adminRole = await prisma.role.findUnique({
+            where: {
+                name: "admin",
+            },
+        });
+        return prisma.user.findFirst({
+            where: {
+                roles: {
+                    none: {
+                        roleId: adminRole.id,
+                    },
                 },
             },
-        },
-    });
+        });
+    } catch (e) {
+        console.log(e);
+    } finally {
+        await prisma.$disconnect();
+    }
 };
