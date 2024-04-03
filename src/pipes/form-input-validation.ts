@@ -13,6 +13,11 @@ export class FormInputValidationPipe implements PipeTransform {
                         `'responses' is not an array`,
                     );
                 value[index].forEach((v: FormResponseDto) => {
+                    if (!v.questionId) {
+                        throw new BadRequestException(
+                            `Question id is missing for one of the responses.`,
+                        );
+                    }
                     if (
                         !v.text &&
                         !v.numeric &&

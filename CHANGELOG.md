@@ -23,7 +23,10 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for forms controller ([#107](https://github.com/chingu-x/chingu-dashboard-be/pull/107))
 - Add e2e tests for sprint controller ([#113](https://github.com/chingu-x/chingu-dashboard-be/pull/113))
 - Add new endpoint to revoke refresh token ([#116](https://github.com/chingu-x/chingu-dashboard-be/pull/116))
-- Add meetingId to sprints/teams endpoint (([#1169](https://github.com/chingu-x/chingu-dashboard-be/pull/119)))
+- Add meetingId to sprints/teams endpoint (([#119](https://github.com/chingu-x/chingu-dashboard-be/pull/119)))
+- Add new endpoint to select tech stack items ([#125](https://github.com/chingu-x/chingu-dashboard-be/pull/125))
+- Add check in form response table, seed data, POST endpoint for submitting check in form ([#126](https://github.com/chingu-x/chingu-dashboard-be/pull/126))
+- Add multiple device support ([#128](https://github.com/chingu-x/chingu-dashboard-be/pull/128))
 
 ### Changed
 
@@ -35,6 +38,8 @@ Another example [here](https://co-pilot.dev/changelog)
 -Update /forms /forms/id response to include subQuestions [#115](https://github.com/chingu-x/chingu-dashboard-be/pull/115)
 - Add role and permission guard to some existing routes (features, forms, ideations, teams) [#112](https://github.com/chingu-x/chingu-dashboard-be/pull/112)
 - Refactor voyages endpoint paths to follow API naming conversion [#123](https://github.com/chingu-x/chingu-dashboard-be/pull/123)
+- Refactor resources PATCH and DELETE URI [#127](https://github.com/chingu-x/chingu-dashboard-be/pull/127)
+- Modified response for GET voyages/teams/{teamId}/resources, adding user id value [#129](https://github.com/chingu-x/chingu-dashboard-be/pull/129)
 
 ### Fixed
 

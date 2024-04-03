@@ -147,3 +147,20 @@ export class MeetingFormResponse {
     @ApiProperty({ example: 5 })
     responseGroupId: number;
 }
+
+export class CheckinSubmissionResponse {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamMemberId: number;
+
+    @ApiProperty({ example: 1 })
+    sprintId: number;
+
+    @ApiProperty({ example: 1 })
+    responseGroupId: 5;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    createdAt: Date;
+}

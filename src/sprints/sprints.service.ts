@@ -9,44 +9,18 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
-import { CreateMeetingFormResponseDto } from "./dto/create-meeting-form-response.dto";
 import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
-import { FormResponseDto } from "../global/dtos/FormResponse.dto";
+import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class SprintsService {
     constructor(
         private prisma: PrismaService,
         private formServices: FormsService,
+        private globalServices: GlobalService,
     ) {}
-
-    private responseDtoToArray = (
-        responses: CreateMeetingFormResponseDto | UpdateMeetingFormResponseDto,
-    ) => {
-        const responsesArray = [];
-        const responseIndex = ["response", "responses"];
-        for (const index in responses) {
-            if (responseIndex.includes(index)) {
-                responses[index].forEach((v: FormResponseDto) => {
-                    responsesArray.push({
-                        questionId: v.questionId,
-                        ...(v.text ? { text: v.text } : { text: null }),
-                        ...(v.numeric
-                            ? { numeric: v.numeric }
-                            : { numeric: null }),
-                        ...(v.boolean
-                            ? { boolean: v.boolean }
-                            : { boolean: null }),
-                        ...(v.optionChoiceId
-                            ? { optionChoiceId: v.optionChoiceId }
-                            : { optionChoiceId: null }),
-                    });
-                });
-            }
-        }
-        return responsesArray;
-    };
 
     // this checks if the form with the given formId is of formType = "meeting"
     private isMeetingForm = async (formId) => {
@@ -517,47 +491,101 @@ export class SprintsService {
             );
         }
 
-        const responsesArray = this.responseDtoToArray(responses);
+        const responsesArray =
+            this.globalServices.responseDtoToArray(responses);
 
-        // Checks that questions submitted for update match the form questions
-        const form = await this.prisma.form.findUnique({
-            where: { id: formId },
-            select: {
-                questions: {
-                    select: {
-                        id: true,
-                    },
-                },
-            },
-        });
-
-        const questionIds = form.questions.flatMap((question) => question.id);
-
-        responsesArray.forEach((response) => {
-            if (questionIds.indexOf(response.questionId) === -1)
-                throw new BadRequestException(
-                    `Question Id ${response.questionId} is not in form ${formId}`,
-                );
-        });
+        await this.globalServices.checkQuestionsInFormById(
+            formId,
+            responsesArray,
+        );
 
         return this.prisma.$transaction(
-            responsesArray.map((response) => {
-                const { questionId, ...data } = response;
-                return this.prisma.response.upsert({
-                    where: {
-                        questionResponseGroup: {
-                            responseGroupId:
-                                formResponseMeeting.responseGroupId,
-                            questionId: response.questionId,
-                        },
-                    },
-                    update: data,
-                    create: {
-                        responseGroupId: formResponseMeeting.responseGroupId,
-                        ...response,
-                    },
-                });
-            }),
+            async (tx) =>
+                await Promise.all(
+                    responsesArray.map(async (response) => {
+                        const responseToUpdate = await tx.response.findFirst({
+                            where: {
+                                responseGroupId:
+                                    formResponseMeeting.responseGroupId,
+                                questionId: response.questionId,
+                            },
+                        });
+
+                        // if response does not already exist, update
+                        // (this happens for a fresh meeting form)
+                        // else create a new response
+                        if (!responseToUpdate) {
+                            return tx.response.create({
+                                data: {
+                                    responseGroupId:
+                                        formResponseMeeting.responseGroupId,
+                                    ...response,
+                                },
+                            });
+                        }
+                        return tx.response.update({
+                            where: {
+                                id: responseToUpdate.id,
+                            },
+                            data: {
+                                responseGroupId:
+                                    formResponseMeeting.responseGroupId,
+                                ...response,
+                            },
+                        });
+                    }),
+                ),
         );
+    }
+
+    async addCheckinFormResponse(createCheckinForm: CreateCheckinFormDto) {
+        const responsesArray =
+            this.globalServices.responseDtoToArray(createCheckinForm);
+
+        await this.globalServices.checkQuestionsInFormByTitle(
+            "Sprint Check-in",
+            responsesArray,
+        );
+
+        // TODO: do we need to check if sprintID is a reasonable sprint Id?
+
+        try {
+            const checkinSubmission = await this.prisma.$transaction(
+                async (tx) => {
+                    const responseGroup = await tx.responseGroup.create({
+                        data: {
+                            responses: {
+                                createMany: {
+                                    data: responsesArray,
+                                },
+                            },
+                        },
+                    });
+                    return tx.formResponseCheckin.create({
+                        data: {
+                            voyageTeamMemberId:
+                                createCheckinForm.voyageTeamMemberId,
+                            sprintId: createCheckinForm.sprintId,
+                            responseGroupId: responseGroup.id,
+                        },
+                    });
+                },
+            );
+            return {
+                id: checkinSubmission.id,
+                voyageTeamMemberId: checkinSubmission.voyageTeamMemberId,
+                sprintId: checkinSubmission.sprintId,
+                responseGroupId: checkinSubmission.responseGroupId,
+                createdAt: checkinSubmission.createdAt,
+            };
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `User ${createCheckinForm.voyageTeamMemberId} has already submitted a checkin form for sprint id ${createCheckinForm.sprintId}.`,
+                );
+            } else {
+                console.log(e);
+            }
+        }
     }
 }
