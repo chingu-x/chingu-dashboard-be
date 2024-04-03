@@ -51,7 +51,7 @@ model User {
   countryCode   String?
   timezone      String?
   comment       String?
-  refreshToken  String?
+  refreshToken  String[]
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
