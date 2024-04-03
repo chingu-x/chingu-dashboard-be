@@ -411,7 +411,9 @@ describe("AuthController e2e Tests", () => {
                     email: "jessica.williamson@gmail.com",
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: [],
+                    },
                 },
             });
 
@@ -437,7 +439,9 @@ describe("AuthController e2e Tests", () => {
                     email: "l.castro@outlook.com",
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: [],
+                    },
                 },
             });
 
@@ -459,11 +463,11 @@ describe("AuthController e2e Tests", () => {
                         refreshToken: true,
                     },
                 });
-                expect(updatedUser.refreshToken).toBeNull();
+                expect(updatedUser.refreshToken).toEqual([]);
             });
         });
 
-        it("should return 401 if email is invalid", async () => {
+        it("should return 404 if email is invalid", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
@@ -479,7 +483,7 @@ describe("AuthController e2e Tests", () => {
                 .expect(404);
         });
 
-        it("should return 403 if email and user id is provided", async () => {
+        it("should return 400 if email and user id is provided", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
