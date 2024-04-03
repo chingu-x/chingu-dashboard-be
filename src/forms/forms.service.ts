@@ -78,13 +78,13 @@ export class FormsService {
     constructor(private prisma: PrismaService) {}
 
     async getAllForms() {
-        const data = await this.prisma.form.findMany({
+        const forms = await this.prisma.form.findMany({
             select: formSelect,
         });
 
         const subQuestionsIds = [];
 
-        data.forEach((form) => {
+        forms.forEach((form) => {
             form.questions.forEach((question) => {
                 const currentQuestion = question as Question & {
                     subQuestions: Question[];
@@ -95,8 +95,8 @@ export class FormsService {
             });
         });
 
-        for (let i = 0; i < data.length; i++) {
-            const form = data[i];
+        for (let i = 0; i < forms.length; i++) {
+            const form = forms[i];
             const filteredQuestions = form.questions.filter(
                 (i) => !subQuestionsIds.includes(i.id),
             );
@@ -104,7 +104,7 @@ export class FormsService {
             form.questions = filteredQuestions;
         }
 
-        return data;
+        return forms;
     }
 
     async getFormById(formId: number) {
