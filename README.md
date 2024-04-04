@@ -176,6 +176,11 @@ $ yarn docker:down
 $ yarn docker:clean
 ```
 
+## Custom Pipes
+### FormInputValidationPipe
+For use with form responses, this pipe validates that the responses or response (array) values include a questionId and at least one input value of any type. 
+
+Example: `@Body(new FormInputValidationPipe())`
 
 ## Custom Decorators 
 

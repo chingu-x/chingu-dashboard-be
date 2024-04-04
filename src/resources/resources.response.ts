@@ -27,6 +27,9 @@ class MemberNameAndAvatar {
     @ApiProperty({ example: "Williamson" })
     lastName: string;
 
+    @ApiProperty({ example: "3c1daa59-6749-4cd0-9f2e-3d042f3a0f55" })
+    id: string;
+
     @ApiProperty({
         example:
             "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",

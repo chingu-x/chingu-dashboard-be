@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 
 export const formSelect = {
     id: true,
@@ -12,6 +13,9 @@ export const formSelect = {
     title: true,
     description: true,
     questions: {
+        orderBy: {
+            order: "asc",
+        },
         select: {
             id: true,
             order: true,
@@ -37,7 +41,7 @@ export const formSelect = {
             },
         },
     },
-};
+} as Prisma.FormSelect;
 
 @Injectable()
 export class FormsService {

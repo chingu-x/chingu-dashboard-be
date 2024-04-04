@@ -81,6 +81,7 @@ export class ResourcesService {
                             select: {
                                 firstName: true,
                                 lastName: true,
+                                id: true,
                                 avatar: true,
                             },
                         },

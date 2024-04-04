@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma-client";
 
 export const populateCheckinForm = async () => {
     // Sprint - checkin form
