@@ -2,6 +2,7 @@ import { populateCheckinForm } from "./checkinform";
 import { populateSoloProjectForm } from "./solo-project";
 import { populateVoyageApplicationForm } from "./voyage-app";
 import { prisma } from "../prisma-client";
+import { FormTitles } from "src/global/constants/formTitles";
 
 export const populateFormsAndResponses = async () => {
     // test option choices for Voyage Application form
@@ -105,7 +106,7 @@ export const populateFormsAndResponses = async () => {
                     name: "meeting",
                 },
             },
-            title: "Sprint Planning",
+            title: FormTitles.sprintPlanning,
             questions: {
                 create: [
                     {
