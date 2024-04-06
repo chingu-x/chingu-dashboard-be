@@ -20,6 +20,7 @@ import { FormInputValidationPipe } from "../pipes/form-input-validation";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import {
     AgendaResponse,
+    CheckinSubmissionResponse,
     MeetingFormResponse,
     MeetingResponse,
     MeetingResponseWithSprintAndAgenda,
@@ -29,8 +30,10 @@ import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
     NotFoundErrorResponse,
+    UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
+import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -416,6 +419,66 @@ export class SprintsController {
             meetingId,
             formId,
             updateMeetingFormResponse,
+        );
+    }
+
+    @ApiOperation({
+        summary: "Submit end of sprint check in form",
+        description:
+            "Inputs (choiceId, text, boolean, number are all optional), <br>" +
+            "depends on the question type, but AT LEAST ONE of them must be present, <br>" +
+            "questionId is required <br><br>" +
+            "responses example" +
+            "<code>" +
+            JSON.stringify([
+                {
+                    questionId: 1,
+                    text: "All",
+                },
+                {
+                    questionId: 2,
+                    optionChoiceId: 1,
+                },
+                {
+                    questionId: 3,
+                    boolean: true,
+                },
+                {
+                    questionId: 4,
+                    numeric: 352,
+                },
+            ]) +
+            "</code><br>",
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "The check in form has been successfully Submitted.",
+        type: CheckinSubmissionResponse,
+        isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description:
+            "request body data error, e.g. missing question id, missing response inputs",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "User has already submitted a check in for that sprint.",
+        type: ConflictErrorResponse,
+    })
+    @Post("check-in")
+    addCheckinFormResponse(
+        @Body(new FormInputValidationPipe())
+        createCheckinFormResponse: CreateCheckinFormDto,
+    ) {
+        return this.sprintsService.addCheckinFormResponse(
+            createCheckinFormResponse,
         );
     }
 }

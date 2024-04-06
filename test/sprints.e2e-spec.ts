@@ -4,32 +4,18 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { extractResCookieValueByKey } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
+import * as cookieParser from "cookie-parser";
+import { FormTitles } from "../src/global/constants/formTitles";
 
 expect.extend({ toBeOneOf });
 
 describe("Sprints Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userAccessToken: string;
-
-    async function loginUser() {
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: "jessica.williamson@gmail.com",
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                userAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
-    }
+    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -40,6 +26,7 @@ describe("Sprints Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.use(cookieParser());
         await app.init();
     });
 
@@ -49,14 +36,20 @@ describe("Sprints Controller (e2e)", () => {
     });
 
     beforeEach(async () => {
-        await loginUser();
+        await loginAndGetTokens(
+            "jessica.williamson@gmail.com",
+            "password",
+            app,
+        ).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     });
 
     describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
         it("should return 200 if fetching all voyage and sprints data", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -107,7 +100,7 @@ describe("Sprints Controller (e2e)", () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -136,7 +129,7 @@ describe("Sprints Controller (e2e)", () => {
             const teamId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -154,7 +147,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -235,7 +228,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -253,7 +246,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Test title",
                     dateTime: "2024-02-29T17:17:50.100Z",
@@ -297,7 +290,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -339,7 +332,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -356,7 +349,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -373,7 +366,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: 1, //bad request - title should be string
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -394,7 +387,7 @@ describe("Sprints Controller (e2e)", () => {
             };
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send(createAgendaDto)
                 .expect(201)
                 .expect((res) => {
@@ -426,7 +419,7 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = " ";
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Contribute to the agenda!",
                     description:
@@ -441,7 +434,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -477,7 +470,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -491,7 +484,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -520,7 +513,7 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
     });
@@ -531,7 +524,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(201)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -562,7 +555,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(409);
         });
 
@@ -571,7 +564,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
 
@@ -580,7 +573,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 999;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
     });
@@ -590,7 +583,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -628,7 +621,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -637,25 +630,22 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400);
         });
     });
     describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId - updates a meeting form", () => {
-        it("should return 200 if successfully update the meeting form with responses", async () => {
+        it("should return 200 if successfully create a meeting form response", async () => {
             const meetingId = 1;
             const formId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: [
                         {
                             questionId: 1,
-                            optionChoiceId: 1,
                             text: "Team member x landed a job this week.",
-                            boolean: true,
-                            number: 1,
                         },
                     ],
                 })
@@ -666,12 +656,6 @@ describe("Sprints Controller (e2e)", () => {
                             expect.objectContaining({
                                 id: expect.any(Number),
                                 questionId: expect.any(Number),
-                                optionChoiceId: expect.any(Number),
-                                numeric: expect.toBeOneOf([
-                                    null,
-                                    expect.any(Number),
-                                ]),
-                                boolean: expect.any(Boolean),
                                 text: expect.any(String),
                                 responseGroupId: expect.any(Number),
                                 createdAt: expect.any(String),
@@ -681,15 +665,54 @@ describe("Sprints Controller (e2e)", () => {
                     );
                 });
         });
-        it("- verify meeting response found in database", async () => {
+        it("- verify meeting response found in database (create)", async () => {
             const response = await prisma.response.findMany({
                 where: {
                     questionId: 1,
-                    optionChoiceId: 1,
                     text: "Team member x landed a job this week.",
-                    boolean: true,
                 },
             });
+            expect(response.length).toBe(1);
+            return expect(response[0].questionId).toEqual(1);
+        });
+        it("should return 200 if successfully update a meeting form response", async () => {
+            const meetingId = 1;
+            const formId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .set("Cookie", accessToken)
+                .send({
+                    responses: [
+                        {
+                            questionId: 1,
+                            text: "Update - Team member x landed a job this week.",
+                        },
+                    ],
+                })
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                questionId: expect.any(Number),
+                                text: expect.any(String),
+                                responseGroupId: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                            }),
+                        ]),
+                    );
+                });
+        });
+        it("- verify meeting response is updated database", async () => {
+            const response = await prisma.response.findMany({
+                where: {
+                    questionId: 1,
+                    text: "Update - Team member x landed a job this week.",
+                },
+            });
+            expect(response.length).toBe(1);
             return expect(response[0].questionId).toEqual(1);
         });
 
@@ -698,7 +721,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = "Bad request";
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: [
                         {
@@ -718,7 +741,7 @@ describe("Sprints Controller (e2e)", () => {
             const formId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     responses: {
                         questionId: 1,
@@ -729,6 +752,264 @@ describe("Sprints Controller (e2e)", () => {
                     },
                 })
                 .expect(400);
+        });
+    });
+
+    describe("POST /voyages/sprints/check-in - submit sprint check in form", () => {
+        const sprintCheckinUrl = "/voyages/sprints/check-in";
+        let checkinForm: any;
+        let questions: any;
+
+        beforeEach(async () => {
+            checkinForm = await prisma.form.findUnique({
+                where: {
+                    title: FormTitles.sprintCheckin,
+                },
+            });
+            questions = await prisma.question.findMany({
+                where: {
+                    formId: checkinForm.id,
+                },
+                select: {
+                    id: true,
+                },
+            });
+        });
+
+        it("should return 201 if successfully submitted a check in form", async () => {
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 2, // voyageTeamMemberId 1 is already in the seed
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                        {
+                            questionId: questions[1].id,
+                            boolean: true,
+                        },
+                        {
+                            questionId: questions[2].id,
+                            numeric: 12,
+                        },
+                        {
+                            questionId: questions[3].id,
+                            optionChoiceId: 1,
+                        },
+                    ],
+                })
+                .expect(201);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore + 4);
+            expect(responseGroupAfter).toEqual(responseGroupBefore + 1);
+            expect(checkinsAfter).toEqual(checkinsBefore + 1);
+        });
+        it("should return 400 for invalid inputs", async () => {
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+            // missing voyageTeamMemberId
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing sprintId"
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing responses
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                })
+                .expect(400);
+
+            // missing questionId in responses - response validation pipe
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // missing input in responses - response validation pipe
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // wrong response input types
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            numeric: "not a number",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            responseGroupId: "not an id",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            optionGroupId: "not an id",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            boolean: "not a boolean",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore);
+            expect(responseGroupAfter).toEqual(responseGroupBefore);
+            expect(checkinsAfter).toEqual(checkinsBefore);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(401);
+        });
+
+        it("should return 409 if user has already submitted the check in form for the same sprint", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                });
+            const responsesBefore = await prisma.response.count();
+            const responseGroupBefore = await prisma.responseGroup.count();
+            const checkinsBefore = await prisma.formResponseCheckin.count();
+
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 1,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(409);
+
+            const responsesAfter = await prisma.response.count();
+            const responseGroupAfter = await prisma.responseGroup.count();
+            const checkinsAfter = await prisma.formResponseCheckin.count();
+
+            expect(responsesAfter).toEqual(responsesBefore);
+            expect(responseGroupAfter).toEqual(responseGroupBefore);
+            expect(checkinsAfter).toEqual(checkinsBefore);
         });
     });
 });

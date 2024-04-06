@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { populateCheckinForm } from "./checkinform";
 import { populateSoloProjectForm } from "./solo-project";
 import { populateVoyageApplicationForm } from "./voyage-app";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma-client";
 
 export const populateFormsAndResponses = async () => {
     // test option choices for Voyage Application form

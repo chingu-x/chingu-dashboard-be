@@ -67,15 +67,53 @@ export class AuthService {
         return crypto.createHash("sha256").update(jwt).digest("hex");
     };
 
-    private updateRtHash = async (userId: string, rt: string) => {
-        await this.prisma.user.update({
+    private updateRtHash = async (
+        userId: string,
+        rt: string,
+        oldRtInCookies: string,
+    ) => {
+        const rtHash = this.hashJWT(rt);
+        const user = await this.prisma.user.findUnique({
             where: {
                 id: userId,
             },
-            data: {
-                refreshToken: this.hashJWT(rt),
-            },
         });
+
+        // find index of current RT from cookies to replace with new one
+        let existingTokenIndex = -1;
+        if (oldRtInCookies) {
+            existingTokenIndex = user.refreshToken.findIndex(
+                (token) => token === this.hashJWT(oldRtInCookies),
+            );
+        }
+
+        if (existingTokenIndex !== -1) {
+            // user has a refresh token to update, keep array same size
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    refreshToken: {
+                        set: user.refreshToken.map((token, index) =>
+                            index === existingTokenIndex ? rtHash : token,
+                        ),
+                    },
+                },
+            });
+        } else {
+            // no token found, grow array by one with new token
+            await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    refreshToken: {
+                        push: rtHash,
+                    },
+                },
+            });
+        }
     };
 
     /**
@@ -97,10 +135,10 @@ export class AuthService {
         return null;
     }
 
-    async login(user: any) {
+    async login(user: any, oldRtInCookies?: string) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
-        await this.updateRtHash(user.id, tokens.refresh_token);
+        await this.updateRtHash(user.id, tokens.refresh_token, oldRtInCookies);
         return tokens;
     }
 
@@ -110,20 +148,24 @@ export class AuthService {
                 id: user.userId,
             },
         });
-        if (!userInDb) throw new ForbiddenException();
+        if (!userInDb) {
+            throw new ForbiddenException();
+        }
 
-        const rtMatch =
-            this.hashJWT(user.refreshToken) === userInDb.refreshToken;
+        const rtHash = this.hashJWT(user.refreshToken);
+        const rtMatch = userInDb.refreshToken.some((token) => token === rtHash);
 
         // token not found, but token is a valid token: possibly stolen old token
-        // invalidate user refresh token in the database, and do not issue new tokens
+        // invalidate user refresh tokens in the database, and do not issue new tokens
         if (!rtMatch) {
             await this.prisma.user.update({
                 where: {
                     id: user.userId,
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: [],
+                    },
                 },
             });
             throw new ForbiddenException();
@@ -131,55 +173,46 @@ export class AuthService {
 
         const payload = { email: user.email, sub: user.userId };
         const tokens = await this.generateAtRtTokens(payload);
-        await this.updateRtHash(user.userId, tokens.refresh_token);
+        // user.refreshToken comes from cookies, not the DB
+        await this.updateRtHash(
+            user.userId,
+            tokens.refresh_token,
+            user.refreshToken,
+        );
         return tokens;
     }
 
     async revokeRefreshToken(body?: RevokeRTDto) {
         const { userId, email } = body;
-
-        if (userId && email)
+        if (userId && email) {
             throw new BadRequestException(
                 "Please provide either userId or email, not both",
             );
+        }
 
-        if (userId) {
-            try {
-                await this.prisma.user.update({
-                    where: {
-                        id: userId,
+        const userInDb = await this.prisma.user.findFirst({
+            where: {
+                OR: [{ email }, { id: userId }],
+            },
+        });
+        if (!userInDb) {
+            throw new NotFoundException("User not found");
+        }
+
+        try {
+            await this.prisma.user.update({
+                where: {
+                    id: userInDb.id,
+                },
+                data: {
+                    refreshToken: {
+                        set: [],
                     },
-                    data: {
-                        refreshToken: null,
-                    },
-                });
-            } catch (error) {
-                throw new NotFoundException({
-                    statusCode: 404,
-                    message: `User by '${userId}' cannot be found.`,
-                });
-            }
-        } else if (email) {
-            try {
-                await this.prisma.user.update({
-                    where: {
-                        email: email,
-                    },
-                    data: {
-                        refreshToken: null,
-                    },
-                });
-            } catch (error) {
-                throw new NotFoundException({
-                    statusCode: 404,
-                    message: `User by '${email}' cannot be found.`,
-                });
-            }
-        } else {
-            throw new NotFoundException({
-                statusCode: 404,
-                message: "User not found",
+                },
             });
+        } catch (e) {
+            this.logger.debug(`Revoke refresh token error: ${e.name}`);
+            throw e;
         }
     }
 
@@ -191,16 +224,22 @@ export class AuthService {
             if (!payload) {
                 throw new BadRequestException("refresh token error");
             }
+
+            const userInDb = await this.prisma.user.findFirst({
+                where: { id: payload.sub },
+                select: { refreshToken: true },
+            });
+            if (!userInDb) {
+                throw new NotFoundException("User not found");
+            }
+
+            const filteredTokens = userInDb.refreshToken.filter(
+                (token) => this.hashJWT(token) !== this.hashJWT(refreshToken),
+            );
+
             await this.prisma.user.update({
-                where: {
-                    id: payload.sub,
-                    refreshToken: {
-                        not: null,
-                    },
-                },
-                data: {
-                    refreshToken: null,
-                },
+                where: { id: payload.sub },
+                data: { refreshToken: { set: filteredTokens } },
             });
         } catch (e) {
             if (e.name === "JsonWebTokenError") {

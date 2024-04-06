@@ -1,6 +1,3 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
 import Genders from "./data/genders";
 import Tiers from "./data/tiers";
 import VoyageRoles from "./data/voyage-roles";
@@ -13,6 +10,7 @@ import FormTypes from "./data/form-types";
 import InputTypes from "./data/input-types";
 import OptionGroups from "./data/option-groups";
 import Roles from "./data/roles";
+import { prisma } from "./prisma-client";
 
 const populateTable = async (tableName: string, data) => {
     await prisma[tableName].createMany({

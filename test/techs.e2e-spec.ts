@@ -53,12 +53,13 @@ describe("Techs Controller (e2e)", () => {
     beforeEach(async () => {
         await loginUser();
     });
-    describe("voyages/:teamId/techs", () => {
-        it("GET - 200 returns array of tech categories, populated with techs and votes", async () => {
+
+    describe("GET voyages/teams/:teamId/techs - get data on all tech categories and items", () => {
+        it("should return 200 and array of tech categories, populated with techs and votes", async () => {
             const teamId: number = 2;
 
             return await request(app.getHttpServer())
-                .get(`/voyages/${teamId}/techs`)
+                .get(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -108,12 +109,13 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
-
-        it("POST - 201 adds new tech", async () => {
+    });
+    describe("POST voyages/teams/:teamId/techs - add new tech item", () => {
+        it("should return 201 if new tech item successfully added", async () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -134,7 +136,7 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("    verify that new tech is present in database", async () => {
+        it("- verify that new tech is present in database", async () => {
             const techStackItem = await prisma.teamTechStackItem.findMany({
                 where: {
                     name: newTechName,
@@ -144,11 +146,11 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackItem[0].name).toEqual(newTechName);
         });
 
-        it("POST - 401 not logged in, unauthorized", async () => {
+        it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
                     techName: newTechName,
@@ -166,11 +168,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("POST - 400 invalid teamId", async () => {
+        it("should return 400 if invalid teamId provided", async () => {
             const teamId: number = 9999999;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -189,11 +191,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("POST - 409 tech already exists in database", async () => {
+        it("should return 409 if tech already exists in database", async () => {
             const teamId: number = 2;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs`)
+                .post(`/voyages/teams/${teamId}/techs`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send({
                     techName: newTechName,
@@ -213,13 +215,13 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("voyages/:teamId/techs/:teamTechId", () => {
-        it("POST - 200 vote for tech", async () => {
+    describe("POST voyages/teams/:teamId/techs/:teamTechId - add user vote for tech item", () => {
+        it("should return 200 if vote successfully added", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -236,7 +238,7 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("    verify that new tech vote is present in database", async () => {
+        it("- verify that new tech vote is present in database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
                     teamTechId: 3,
@@ -246,12 +248,12 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackVote[0].teamMemberId).toEqual(8);
         });
 
-        it("POST - 401 not logged in, unauthorized", async () => {
+        it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -265,12 +267,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("POST - 400 invalid teamId", async () => {
+        it("should return 400 if invalid teamId provided", async () => {
             const teamId: number = 9999999;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400)
                 .expect("Content-Type", /json/)
@@ -285,12 +287,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("POST - 409 vote for tech already exists", async () => {
+        it("should return 409 if user vote for tech already exists", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/${teamId}/techs/${techId}`)
+                .post(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(409)
                 .expect("Content-Type", /json/)
@@ -306,13 +308,13 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("voyages/:teamId/techs/:teamTechId", () => {
-        it("DELETE - 200 tech vote deleted", async () => {
+    describe("DELETE voyages/teams/:teamId/techs/:teamTechId - delete user vote for tech", () => {
+        it("should return 200 if tech vote deleted", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -329,7 +331,7 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("    verify that new tech vote is deleted from database", async () => {
+        it("- verify that new tech vote is deleted from database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
                     teamTechId: 3,
@@ -339,12 +341,12 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackVote[0]).toEqual(undefined);
         });
 
-        it("DELETE - 401 not logged in, unauthorized", async () => {
+        it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -358,12 +360,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("DELETE - 400 invalid teamId", async () => {
+        it("should return 400 if invalid teamId provided", async () => {
             const teamId: number = 99999;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400)
                 .expect("Content-Type", /json/)
@@ -378,12 +380,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("DELETE - 404 vote to delete does not exist", async () => {
+        it("should return 404 if vote to delete does not exist", async () => {
             const teamId: number = 2;
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/${teamId}/techs/${techId}`)
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(404)
                 .expect("Content-Type", /json/)
@@ -396,6 +398,120 @@ describe("Techs Controller (e2e)", () => {
                         }),
                     );
                 });
+        });
+    });
+
+    describe("PATCH voyages/teams/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
+        it("should return 200 and an array of updated techs, if successful", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                categoryId: expect.any(Number),
+                                isSelected: expect.any(Boolean),
+                                name: expect.any(String),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("should return 400 if more than 3 selections in a category", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                                {
+                                    techId: 2,
+                                    isSelected: true,
+                                },
+                                {
+                                    techId: 3,
+                                    isSelected: true,
+                                },
+                                {
+                                    techId: 4,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(400);
+        });
+
+        it("should return 400 invalid team id provided", async () => {
+            const teamId: number = 3;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(400);
+        });
+
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(401);
         });
     });
 });
