@@ -28,6 +28,8 @@ import {
 import { AppPermissions } from "../auth/auth.permissions";
 import { Permissions } from "../global/decorators/permissions.decorator";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { Roles } from "../global/decorators/roles.decorator";
+import { AppRoles } from "../auth/auth.roles";
 
 @Controller()
 @ApiTags("Voyage - Ideations")
@@ -236,5 +238,73 @@ export class IdeationsController {
             teamId,
             ideationId,
         );
+    }
+
+    @ApiOperation({
+        summary: "Selects one ideation as team project for voyage.",
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "An ideation has already been selected.",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully selected ideation.",
+        type: IdeationVoteResponse,
+    })
+    @Permissions(AppPermissions.OWN_TEAM)
+    @Post("/:ideationId/select")
+    setIdeationSelection(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("ideationId", ParseIntPipe) ideationId: number,
+    ) {
+        return this.ideationsService.setIdeationSelection(
+            req,
+            teamId,
+            ideationId,
+        );
+    }
+
+    @ApiOperation({
+        summary: "Clears the current ideation selection for team.",
+        description: "Admin only allowed.",
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description:
+            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Ideation with given ID does not exist.",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully cleared ideation selection.",
+        type: IdeationVoteResponse,
+    })
+    @Permissions(AppPermissions.OWN_TEAM)
+    @Roles(AppRoles.Admin)
+    @Post("/reset-selection")
+    resetIdeationSelection(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.ideationsService.resetIdeationSelection(req, teamId);
     }
 }
