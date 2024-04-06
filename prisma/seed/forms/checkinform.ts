@@ -1,4 +1,5 @@
 import { prisma } from "../prisma-client";
+import { FormTitles } from "src/global/constants/formTitles";
 
 export const populateCheckinForm = async () => {
     // Sprint - checkin form
@@ -9,7 +10,7 @@ export const populateCheckinForm = async () => {
                     name: "voyage member",
                 },
             },
-            title: "Sprint Check-in",
+            title: FormTitles.sprintCheckin,
             description:
                 "The weekly Chingu Check-in is how we support you and your team. It is also how we identify teams and individuals who need help. So, please make sure you submit this every week.",
             questions: {
