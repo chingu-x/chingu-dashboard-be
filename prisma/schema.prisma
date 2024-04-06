@@ -543,11 +543,12 @@ model ResponseGroup {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responses           Response[]
-  soloProject         SoloProject?
-  voyageApplication   VoyageApplication?
-  formResponseMeeting FormResponseMeeting?
-  formResponseCheckin FormResponseCheckin?
+  responses                 Response[]
+  soloProject               SoloProject?
+  voyageApplication         VoyageApplication?
+  formResponseMeeting       FormResponseMeeting?
+  formResponseCheckin       FormResponseCheckin?
+  formResponseVoyageProject FormResponseVoyageProject?
 }
 
 model FormResponseMeeting {
