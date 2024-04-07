@@ -10,7 +10,7 @@ export const populateVoyageSubmissionForm = async () => {
                     name: "voyage team",
                 },
             },
-            title: FormTitles.voyageSubmission,
+            title: FormTitles.voyageProjectSubmission,
             description: "Submit and share your finished Chingu project!",
             questions: {
                 create: [
