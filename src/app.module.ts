@@ -18,6 +18,7 @@ import { RolesGuard } from "./auth/guards/roles.guard";
 import { PermissionsGuard } from "./auth/guards/permissions.guard";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TasksModule } from "./tasks/tasks.module";
+import { VoyagesModule } from "./voyages/voyages.module";
 
 @Module({
     imports: [
@@ -52,6 +53,7 @@ import { TasksModule } from "./tasks/tasks.module";
         GlobalModule,
         ScheduleModule.forRoot(),
         TasksModule,
+        VoyagesModule,
     ],
     controllers: [HealthCheckController],
     providers: [

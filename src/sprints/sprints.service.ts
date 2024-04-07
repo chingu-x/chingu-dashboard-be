@@ -585,6 +585,7 @@ export class SprintsService {
                 );
             } else {
                 console.log(e);
+                throw e;
             }
         }
     }
