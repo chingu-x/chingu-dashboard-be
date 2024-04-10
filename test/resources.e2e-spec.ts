@@ -79,6 +79,7 @@ describe("ResourcesController (e2e)", () => {
         avatar: expect.any(String),
         firstName: expect.any(String),
         lastName: expect.any(String),
+        id: expect.any(String),
     };
 
     const resourceShape = {
@@ -134,7 +135,7 @@ describe("ResourcesController (e2e)", () => {
             );
 
             await request(app.getHttpServer())
-                .post(`/voyages/${voyageTeamId}/resources`)
+                .post(`/voyages/teams/${voyageTeamId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(newResource)
                 .expect(201)
@@ -161,7 +162,7 @@ describe("ResourcesController (e2e)", () => {
             };
 
             await request(app.getHttpServer())
-                .post(`/voyages/${voyageTeamId}/resources`)
+                .post(`/voyages/teams/${voyageTeamId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(invalidResource)
                 .expect(400);
@@ -170,12 +171,12 @@ describe("ResourcesController (e2e)", () => {
         it("should return 404 for invalid teamId", async () => {
             const invalidTeamId = 999;
             const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux",
+                url: "http://www.github.com/chingux2",
                 title: "Chingu Github repo",
             };
 
             await request(app.getHttpServer())
-                .post(`/voyages/${invalidTeamId}/resources`)
+                .post(`/voyages/teams/${invalidTeamId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(newResource)
                 .expect(404);
@@ -206,7 +207,7 @@ describe("ResourcesController (e2e)", () => {
             });
 
             await request(app.getHttpServer())
-                .get(`/voyages/${voyageTeamId}/resources`)
+                .get(`/voyages/teams/${voyageTeamId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -229,7 +230,7 @@ describe("ResourcesController (e2e)", () => {
             const invalidTeamId = 999;
 
             await request(app.getHttpServer())
-                .get(`/voyages/${invalidTeamId}/resources`)
+                .get(`/voyages/teams/${invalidTeamId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(404);
         });
@@ -252,7 +253,7 @@ describe("ResourcesController (e2e)", () => {
             };
 
             await request(app.getHttpServer())
-                .patch(`/voyages/${voyageTeamId}/resources/${resourceId}`)
+                .patch(`/voyages/resources/${resourceId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(patchedResource)
                 .expect(200)
@@ -278,9 +279,7 @@ describe("ResourcesController (e2e)", () => {
             };
 
             await request(app.getHttpServer())
-                .patch(
-                    `/voyages/${voyageTeamId}/resources/${invalidResourceId}`,
-                )
+                .patch(`/voyages/resources/${invalidResourceId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(patchedResource)
                 .expect(404)
@@ -295,7 +294,7 @@ describe("ResourcesController (e2e)", () => {
             };
 
             await request(app.getHttpServer())
-                .patch(`/voyages/${voyageTeamId}/resources/${resourceId}`)
+                .patch(`/voyages/resources/${resourceId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(invalidResource)
                 .expect(400);
@@ -327,7 +326,7 @@ describe("ResourcesController (e2e)", () => {
             );
 
             await request(app.getHttpServer())
-                .delete(`/voyages/${voyageTeamId}/resources/${resourceId}`)
+                .delete(`/voyages/resources/${resourceId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(200)
                 .expect(async (res) => {
@@ -352,16 +351,14 @@ describe("ResourcesController (e2e)", () => {
             const invalidResourceId = 999;
 
             await request(app.getHttpServer())
-                .delete(
-                    `/voyages/${voyageTeamId}/resources/${invalidResourceId}`,
-                )
+                .delete(`/voyages/resources/${invalidResourceId}`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(404);
         });
 
         it("should return 400 for invalid request body", async () => {
             await request(app.getHttpServer())
-                .delete(`/voyages/${voyageTeamId}/resources/rm -rf`)
+                .delete(`/voyages/resources/rm -rf`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
