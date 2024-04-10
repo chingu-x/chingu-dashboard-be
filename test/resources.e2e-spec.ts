@@ -300,6 +300,21 @@ describe("ResourcesController (e2e)", () => {
                 .send(invalidResource)
                 .expect(400);
         });
+
+        it("should return 401 if a user tries to PATCH a resource created by someone else", async () => {
+            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const resourceId: number = resourceToPatch.id;
+            const patchedResource: UpdateResourceDto = {
+                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
+                title: "Chingu Github BE repo",
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/resources/${resourceId}`)
+                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .send(patchedResource)
+                .expect(401);
+        });
     });
 
     describe("/DELETE :teamId/resources/:resourceId", () => {
