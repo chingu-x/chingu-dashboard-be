@@ -70,9 +70,9 @@ describe("ResourcesController (e2e)", () => {
     const userEmail: string = "dan@random.com";
     let voyageTeamId: number;
     let userAccessToken: string;
-    // // user for testing access control
-    // const otherUserEmail: string = "JosoMadar@dayrep.com";
-    // let otherVoyageTeamId: number;
+    // user for testing access control
+    const otherUserEmail: string = "JosoMadar@dayrep.com";
+    let otherVoyageTeamId: number;
     // let otherUserAccessToken: string;
 
     const memberShape = {
@@ -90,12 +90,6 @@ describe("ResourcesController (e2e)", () => {
         updatedAt: expect.any(String),
     };
 
-    beforeEach(async () => {
-        // setup the main user for the tests
-        ({ voyageTeamId } = await findVoyageTeamId(userEmail, prisma));
-        userAccessToken = await loginUser(userEmail, "password", app);
-    });
-
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
@@ -107,6 +101,20 @@ describe("ResourcesController (e2e)", () => {
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
         await app.init();
+
+        // voyageTeamId of main user
+        ({ voyageTeamId } = await findVoyageTeamId(userEmail, prisma));
+        userAccessToken = await loginUser(userEmail, "password", app);
+
+        ({ voyageTeamId: otherVoyageTeamId } = await findVoyageTeamId(
+            otherUserEmail,
+            prisma,
+        ));
+        otherUserAccessToken = await loginUser(otherUserEmail, "password", app);
+
+        if (voyageTeamId === otherVoyageTeamId) {
+            throw new Error("Voyage team IDs should be different");
+        }
     });
 
     afterAll(async () => {
