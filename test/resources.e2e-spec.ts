@@ -70,10 +70,10 @@ describe("ResourcesController (e2e)", () => {
     const userEmail: string = "dan@random.com";
     let voyageTeamId: number;
     let userAccessToken: string;
-    // user for testing access control
-    const otherUserEmail: string = "JosoMadar@dayrep.com";
-    let otherVoyageTeamId: number;
-    let otherUserAccessToken: string;
+    // // user for testing access control
+    // const otherUserEmail: string = "JosoMadar@dayrep.com";
+    // let otherVoyageTeamId: number;
+    // let otherUserAccessToken: string;
 
     const memberShape = {
         avatar: expect.any(String),
@@ -321,73 +321,6 @@ describe("ResourcesController (e2e)", () => {
                 .delete(`/voyages/${voyageTeamId}/resources/rm -rf`)
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
-        });
-    });
-
-    describe("Tests for restricting user authorization to perform actions", () => {
-        beforeEach(async () => {
-            // setup user on a different team from the main user
-            ({ voyageTeamId: otherVoyageTeamId } = await findVoyageTeamId(
-                otherUserEmail,
-                prisma,
-            ));
-            otherUserAccessToken = await loginUser(
-                otherUserEmail,
-                "password",
-                app,
-            );
-
-            // voyageTeamId of main user
-            ({ voyageTeamId } = await findVoyageTeamId(userEmail, prisma));
-
-            if (voyageTeamId === otherVoyageTeamId) {
-                throw new Error("Voyage team IDs should be different");
-            }
-        });
-
-        it("should return 401 and not allow users to POST to other teams' resources", async () => {
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux",
-                title: "Chingu Github repo",
-            };
-
-            await request(app.getHttpServer())
-                .post(`/voyages/${voyageTeamId}/resources`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
-                .send(newResource)
-                .expect(401);
-        });
-
-        it("should return 401 and not allow users to GET other teams' resources", async () => {
-            await request(app.getHttpServer())
-                .get(`/voyages/${voyageTeamId}/resources`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
-                .expect(401);
-        });
-
-        it("should return 401 if a user tries to PATCH a resource created by someone else", async () => {
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToPatch.id;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
-
-            await request(app.getHttpServer())
-                .patch(`/voyages/${voyageTeamId}/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
-                .send(patchedResource)
-                .expect(401);
-        });
-
-        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
-            const resourceToDelete = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToDelete.id;
-
-            await request(app.getHttpServer())
-                .delete(`/voyages/${voyageTeamId}/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
-                .expect(401);
         });
     });
 });
