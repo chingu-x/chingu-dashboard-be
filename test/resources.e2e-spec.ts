@@ -233,6 +233,13 @@ describe("ResourcesController (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(404);
         });
+
+        it("should return 401 and not allow users to GET other teams' resources", async () => {
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${voyageTeamId}`)
+                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .expect(401);
+        });
     });
 
     describe("/PATCH :teamId/resources/:resourceId", () => {
