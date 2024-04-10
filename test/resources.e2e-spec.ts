@@ -365,5 +365,15 @@ describe("ResourcesController (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .expect(400);
         });
+
+        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
+            const resourceToDelete = await findOwnResource(userEmail, prisma);
+            const resourceId: number = resourceToDelete.id;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/resources/${resourceId}`)
+                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .expect(401);
+        });
     });
 });
