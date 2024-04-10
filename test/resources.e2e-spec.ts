@@ -73,7 +73,7 @@ describe("ResourcesController (e2e)", () => {
     // user for testing access control
     const otherUserEmail: string = "JosoMadar@dayrep.com";
     let otherVoyageTeamId: number;
-    // let otherUserAccessToken: string;
+    let otherUserAccessToken: string;
 
     const memberShape = {
         avatar: expect.any(String),
@@ -179,6 +179,19 @@ describe("ResourcesController (e2e)", () => {
                 .set("Authorization", `Bearer ${userAccessToken}`)
                 .send(newResource)
                 .expect(404);
+        });
+
+        it("should return 401 and not allow users to POST to other teams' resources", async () => {
+            const newResource: CreateResourceDto = {
+                url: "http://www.github.com/chingux3",
+                title: "Chingu Github repo",
+            };
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${voyageTeamId}`)
+                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .send(newResource)
+                .expect(401);
         });
     });
 
