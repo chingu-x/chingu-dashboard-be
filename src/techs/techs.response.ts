@@ -54,12 +54,12 @@ export class TeamTechResponse {
 
 export class TechItemResponse {
     @ApiProperty({ example: 10 })
-    id: number;
+    teamTechStackItemVoteId: number;
 
     @ApiProperty({ example: 11 })
     teamTechId: number;
 
-    @ApiProperty({ example: "Frontend" })
+    @ApiProperty({ example: 4 })
     teamMemberId: number;
 
     @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
