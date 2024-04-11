@@ -7,7 +7,7 @@ export const populateVoyageSubmissionForm = async () => {
         data: {
             formType: {
                 connect: {
-                    name: "voyage team",
+                    name: "team",
                 },
             },
             title: FormTitles.voyageProjectSubmission,
@@ -28,7 +28,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 2,
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "Please describe the project in a sentence or two.",
@@ -38,7 +38,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 3,
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "Please link your Github repo:",
@@ -48,7 +48,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 4,
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "Please link your deployed project:",
@@ -58,7 +58,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "If you have a project showcase video, please provide the public link:",
@@ -69,7 +69,7 @@ export const populateVoyageSubmissionForm = async () => {
 
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "What stood out as the most positive aspects of your experience:",
@@ -80,7 +80,7 @@ export const populateVoyageSubmissionForm = async () => {
 
                         inputType: {
                             connect: {
-                                name: "Text",
+                                name: "text",
                             },
                         },
                         text: "Is there anything else you'd like to share or comment on regarding your experience?",
