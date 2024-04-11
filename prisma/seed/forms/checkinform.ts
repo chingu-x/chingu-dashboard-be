@@ -1,5 +1,5 @@
 import { prisma } from "../prisma-client";
-import { FormTitles } from "src/global/constants/formTitles";
+import { FormTitles } from "../../../src/global/constants/formTitles";
 
 export const populateCheckinForm = async () => {
     // Sprint - checkin form
