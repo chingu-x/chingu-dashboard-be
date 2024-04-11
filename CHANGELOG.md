@@ -40,7 +40,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Refactor voyages endpoint paths to follow API naming conversion [#123](https://github.com/chingu-x/chingu-dashboard-be/pull/123)
 - Refactor resources PATCH and DELETE URI [#127](https://github.com/chingu-x/chingu-dashboard-be/pull/127)
 - Modified response for GET voyages/teams/{teamId}/resources, adding user id value [#129](https://github.com/chingu-x/chingu-dashboard-be/pull/129)
-
+-Update response Ids - POST voyages/teams/{teamId}/techs [#132](https://github.com/chingu-x/chingu-dashboard-be/pull/132)
 ### Fixed
 
 - Fix failed tests in app and ideation due to the change from jwt token response to http cookies ([#98](https://github.com/chingu-x/chingu-dashboard-be/pull/98))
