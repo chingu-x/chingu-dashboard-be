@@ -18,29 +18,6 @@ export class IdeationsService {
         private readonly globalService: GlobalService,
     ) {}
 
-    async getSelectedIdeation(teamId: number) {
-        //get all team member ids
-        const teamMemberIds = await this.prisma.voyageTeamMember.findMany({
-            where: {
-                voyageTeamId: teamId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        //extract ids into array
-        const idArray = teamMemberIds.map((member) => member.id);
-        //search all team member project ideas for isSelected === true
-        return await this.prisma.projectIdea.findFirst({
-            where: {
-                voyageTeamMemberId: {
-                    in: idArray,
-                },
-                isSelected: true,
-            },
-        });
-    }
-
     async createIdeation(
         req,
         teamId: number,
@@ -130,6 +107,7 @@ export class IdeationsService {
                                 title: true,
                                 description: true,
                                 vision: true,
+                                isSelected: true,
                                 createdAt: true,
                                 updatedAt: true,
                                 contributedBy: {
@@ -281,37 +259,44 @@ export class IdeationsService {
         }
     }
 
+    async getSelectedIdeation(teamId: number) {
+        //get all team member ids
+        const teamMemberIds = await this.prisma.voyageTeamMember.findMany({
+            where: {
+                voyageTeamId: teamId,
+            },
+            select: {
+                id: true,
+            },
+        });
+        //extract ids into array
+        const idArray = teamMemberIds.map((member) => member.id);
+        //search all team member project ideas for isSelected === true
+        return await this.prisma.projectIdea.findFirst({
+            where: {
+                voyageTeamMemberId: {
+                    in: idArray,
+                },
+                isSelected: true,
+            },
+        });
+    }
+
     async setIdeationSelection(
         req: CustomRequest,
         teamId: number,
         ideationId: number,
     ) {
-        // //get all team member ids
-        // const teamMemberIds = await this.prisma.voyageTeamMember.findMany({
-        //     where: {
-        //         voyageTeamId: teamId,
-        //     },
-        //     select: {
-        //         id: true,
-        //     },
-        // });
-        // //extract ids into array
-        // const idArray = teamMemberIds.map((member) => member.id);
-        // //search all team member project ideas for isSelected === true
-        // const teamSelection = await this.prisma.projectIdea.findFirst({
-        //     where: {
-        //         voyageTeamMemberId: {
-        //             in: idArray,
-        //         },
-        //         isSelected: true,
-        //     },
-        // });
-
+        let result: any;
         try {
             //find current selection, if any
             const selection = await this.getSelectedIdeation(teamId);
-            if (selection) return selection; //throw exception
-            await this.prisma.projectIdea.update({
+            if (selection) {
+                throw new ConflictException(
+                    `Ideation already selected for team ${teamId}`,
+                );
+            }
+            result = await this.prisma.projectIdea.update({
                 where: {
                     id: ideationId,
                 },
@@ -320,21 +305,21 @@ export class IdeationsService {
                 },
             });
         } catch (e) {
-            if (e.code === "P2002") {
-                throw new NotFoundException(
-                    `Ideation (id: ${ideationId}) does not exist.`,
-                );
+            if (e.code === "P2025") {
+                throw new NotFoundException(e.meta.cause);
             }
             throw e;
         }
+        return result;
     }
 
     async resetIdeationSelection(req: CustomRequest, teamId: number) {
         try {
-            //find current selection
+            //find current selection, if any
             const selection = await this.getSelectedIdeation(teamId);
+
             if (selection) {
-                await this.prisma.projectIdea.update({
+                return await this.prisma.projectIdea.update({
                     where: {
                         id: selection.id,
                     },
@@ -344,13 +329,10 @@ export class IdeationsService {
                 });
             }
         } catch (e) {
-            if (e.code === "P2002") {
-                throw new NotFoundException( //TODO: replace
-                    `error`,
-                );
-            }
             throw e;
         }
+        //default
+        throw new NotFoundException(`no ideation found for team ${teamId}`);
     }
 
     // TODO: this function seems to be unused but might be useful for making new permission guard

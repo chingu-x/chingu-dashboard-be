@@ -44,6 +44,7 @@ describe("IdeationsController (e2e)", () => {
         title: expect.any(String),
         description: expect.any(String),
         vision: expect.any(String),
+        isSelected: expect.any(Boolean),
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
     };
@@ -184,7 +185,7 @@ describe("IdeationsController (e2e)", () => {
     });
 
     afterAll(async () => {
-        await truncate();
+        await reseed();
 
         await prisma.$disconnect();
         await app.close();
@@ -330,5 +331,134 @@ describe("IdeationsController (e2e)", () => {
             .expect((res) => {
                 expect(res.body).toEqual(ideationVoteShape);
             });
+    });
+
+    describe("POST /voyages/teams/:teamId/ideations/:ideationId/select - selects project ideation for voyage", () => {
+        it("should return 201 if successfully selecting ideation", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(201);
+        });
+
+        it("should return 409 if an ideation is already selected", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            try {
+                await prisma.projectIdea.update({
+                    where: {
+                        id: ideationId,
+                    },
+                    data: {
+                        isSelected: true,
+                    },
+                });
+            } catch (e) {
+                throw e;
+            }
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(409);
+        });
+
+        it("should return 404 if ideation is not found", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 99;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(404);
+        });
+
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+    });
+
+    describe("POST /voyages/teams/:teamId/reset-selection - clears current team ideation selection", () => {
+        it("should return 201 if selection successfully cleared", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+            let change: any;
+            try {
+                change = await prisma.projectIdea.findFirst({
+                    where: {
+                        id: 1,
+                    },
+                    select: {
+                        id: true,
+                        description: true,
+                        vision: true,
+                        isSelected: true,
+                    },
+                });
+                const result = await prisma.projectIdea.update({
+                    where: {
+                        id: ideationId,
+                    },
+                    data: {
+                        isSelected: true,
+                    },
+                });
+                change = await prisma.projectIdea.findFirst({
+                    where: {
+                        id: 1,
+                    },
+                    select: {
+                        id: true,
+                        description: true,
+                        vision: true,
+                        isSelected: true,
+                    },
+                });
+            } catch (e) {
+                throw e;
+            }
+            return expect(change).toBe(6);
+            // return request(app.getHttpServer())
+            //     .post(`/voyages/teams/${teamId}/reset-selection`)
+            //     .set("Authorization", `Bearer ${newUserAccessToken}`)
+            //     .expect(201);
+        });
+
+        it("should return 404 if team id is not found", async () => {
+            const teamId: number = 99;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/reset-selection`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(404);
+        });
+
+        it("should return 404 if team ideation is not found", async () => {
+            const teamId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/reset-selection`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(404);
+        });
+
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/reset-selection`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
     });
 });

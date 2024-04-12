@@ -245,8 +245,7 @@ export class IdeationsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -260,7 +259,7 @@ export class IdeationsController {
         type: ConflictErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: "Successfully selected ideation.",
         type: IdeationVoteResponse,
     })
@@ -284,17 +283,16 @@ export class IdeationsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "User is not authorized to perform this action.",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
-        description: "Ideation with given ID does not exist.",
+        description: "Ideation for this team does not exist.",
         type: NotFoundErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: "Successfully cleared ideation selection.",
         type: IdeationVoteResponse,
     })
