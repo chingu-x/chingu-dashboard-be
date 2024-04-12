@@ -45,7 +45,7 @@ export class TechsService {
     getAllTechItemsByTeamId = async (teamId: number) => {
         this.validateTeamId(teamId);
 
-        return this.prisma.techStackCategory.findMany({
+        const data = await this.prisma.techStackCategory.findMany({
             select: {
                 id: true,
                 name: true,
@@ -77,6 +77,13 @@ export class TechsService {
                 },
             },
         });
+
+        const dataToReturn = data.map(({ id, ...elt }) => ({
+            ...elt,
+            teamTechStackItemVoteId: id,
+        }));
+
+        return dataToReturn;
     };
 
     async updateTechStackSelections(
