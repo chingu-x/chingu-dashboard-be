@@ -1,7 +1,9 @@
 import { populateCheckinForm } from "./checkinform";
 import { populateSoloProjectForm } from "./solo-project";
 import { populateVoyageApplicationForm } from "./voyage-app";
+import { populateVoyageSubmissionForm } from "./voyage-project-submission";
 import { prisma } from "../prisma-client";
+import { FormTitles } from "../../../src/global/constants/formTitles";
 
 export const populateFormsAndResponses = async () => {
     // test option choices for Voyage Application form
@@ -105,7 +107,7 @@ export const populateFormsAndResponses = async () => {
                     name: "meeting",
                 },
             },
-            title: "Sprint Planning",
+            title: FormTitles.sprintPlanning,
             questions: {
                 create: [
                     {
@@ -141,6 +143,7 @@ export const populateFormsAndResponses = async () => {
     await populateCheckinForm();
     await populateSoloProjectForm();
     await populateVoyageApplicationForm();
+    await populateVoyageSubmissionForm();
 
     console.log("Forms, Questions and Responses populated.");
 };

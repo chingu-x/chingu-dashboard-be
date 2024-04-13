@@ -4,5 +4,5 @@ export const FormTitles = {
     sprintCheckin: "Sprint Check-in",
     soloProjectSubmission: "Solo Project Submission Form",
     voyageApplication: "Voyage Application Form",
-    voyageSubmission: "Voyage Submission Form",
+    voyageProjectSubmission: "Voyage Project Submission Form",
 };
