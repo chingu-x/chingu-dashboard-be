@@ -9,7 +9,7 @@ import { populateMeetings } from "./meetings";
 import { populateSoloProjects } from "./solo-project";
 import { populateVoyageApplications } from "./voyage-app";
 import { populateChecklists } from "./checklist";
-import { populateCheckinFormResponse } from "./checkinform-responses";
+import { populateCheckinFormResponse } from "./responses/checkinform-responses";
 import { prisma } from "./prisma-client";
 
 export const deleteAllTables = async () => {
