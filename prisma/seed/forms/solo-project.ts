@@ -1,6 +1,6 @@
 // TODO: this is incomplete. just added some fields for testing
 import { prisma } from "../prisma-client";
-
+import { FormTitles } from "../../../src/global/constants/formTitles";
 export const populateSoloProjectForm = async () => {
     await prisma.form.create({
         data: {
@@ -9,7 +9,7 @@ export const populateSoloProjectForm = async () => {
                     name: "user",
                 },
             },
-            title: "Solo Project Submission Form",
+            title: FormTitles.soloProjectSubmission,
             questions: {
                 create: [
                     {

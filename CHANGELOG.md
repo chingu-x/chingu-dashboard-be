@@ -28,6 +28,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add new endpoint to select tech stack items ([#125](https://github.com/chingu-x/chingu-dashboard-be/pull/125))
 - Add check in form response table, seed data, POST endpoint for submitting check in form ([#126](https://github.com/chingu-x/chingu-dashboard-be/pull/126))
 - Add multiple device support ([#128](https://github.com/chingu-x/chingu-dashboard-be/pull/128))
+- Add voyage project submission form seed ([#131](https://github.com/chingu-x/chingu-dashboard-be/pull/131))
 
 ### Changed
 
