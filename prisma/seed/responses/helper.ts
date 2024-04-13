@@ -1,4 +1,5 @@
 import { prisma } from "../prisma-client";
+import { formSelect } from "../../../src/forms/forms.service";
 
 /*
 generates a random option IDs (in an array) given an option group id
@@ -186,4 +187,34 @@ export const populateQuestionResponses = async (
             throw new Error("Prisma seed: Unexpected question type");
         }
     }
+};
+
+export const getQuestionsByFormTitle = async (formTitle: string) => {
+    const checkinForm = await prisma.form.findUnique({
+        where: {
+            title: formTitle,
+        },
+        select: formSelect,
+    });
+
+    return prisma.question.findMany({
+        where: {
+            formId: checkinForm.id,
+            parentQuestionId: null,
+        },
+        select: {
+            id: true,
+            order: true,
+            inputType: {
+                select: {
+                    name: true,
+                },
+            },
+            optionGroupId: true,
+            parentQuestionId: true,
+        },
+        orderBy: {
+            order: "asc",
+        },
+    });
 };

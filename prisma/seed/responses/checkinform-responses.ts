@@ -1,6 +1,6 @@
-import { formSelect } from "../../../src/forms/forms.service";
 import { prisma } from "../prisma-client";
-import { populateQuestionResponses } from "./helper";
+import { getQuestionsByFormTitle, populateQuestionResponses } from "./helper";
+import { FormTitles } from "../../../src/global/constants/formTitles";
 
 export const populateCheckinFormResponse = async () => {
     const teamMemberId = 1;
@@ -23,33 +23,7 @@ export const populateCheckinFormResponse = async () => {
     });
 
     // get questions
-    const checkinForm = await prisma.form.findUnique({
-        where: {
-            title: "Sprint Check-in",
-        },
-        select: formSelect,
-    });
-
-    const questions = await prisma.question.findMany({
-        where: {
-            formId: checkinForm.id,
-            parentQuestionId: null,
-        },
-        select: {
-            id: true,
-            order: true,
-            inputType: {
-                select: {
-                    name: true,
-                },
-            },
-            optionGroupId: true,
-            parentQuestionId: true,
-        },
-        orderBy: {
-            order: "asc",
-        },
-    });
+    const questions = await getQuestionsByFormTitle(FormTitles.sprintCheckin);
 
     const responseGroup = await prisma.responseGroup.create({
         data: {},
