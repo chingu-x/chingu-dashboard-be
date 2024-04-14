@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     ConflictException,
     ForbiddenException,
     Injectable,
@@ -7,6 +8,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
 import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { FormTitles } from "../global/constants/formTitles";
 
 // import { FormTitles } from "../global/constants/formTitles";
 
@@ -25,13 +27,10 @@ export class VoyagesService {
             createVoyageProjectSubmission,
         );
 
-        // TODO: This won't work till form is populated, commenting out till the form population PR is merged
-        /*
         await this.globalServices.checkQuestionsInFormByTitle(
-            FormTitles.voyageSubmission,
-            responseArray
-        )
-         */
+            FormTitles.voyageProjectSubmission,
+            responseArray,
+        );
 
         // check if user is in the voyage team
         if (
@@ -74,6 +73,11 @@ export class VoyagesService {
             if (e.code === "P2002") {
                 throw new ConflictException(
                     `Team ${createVoyageProjectSubmission.voyageTeamId} has already submitted a voyage project.`,
+                );
+            }
+            if (e.name === "PrismaClientValidationError") {
+                throw new BadRequestException(
+                    `Bad request - type error in responses array`,
                 );
             } else {
                 console.log(e);

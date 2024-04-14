@@ -583,6 +583,11 @@ export class SprintsService {
                 throw new ConflictException(
                     `User ${createCheckinForm.voyageTeamMemberId} has already submitted a checkin form for sprint id ${createCheckinForm.sprintId}.`,
                 );
+            }
+            if (e.name === "PrismaClientValidationError") {
+                throw new BadRequestException(
+                    `Bad request - type error in responses array`,
+                );
             } else {
                 console.log(e);
                 throw e;

@@ -17,10 +17,6 @@ import { CustomRequest } from "../global/types/CustomRequest";
 export class VoyagesController {
     constructor(private readonly voyagesService: VoyagesService) {}
 
-    // 201
-    // 401
-    // 400
-    // 409
     @ApiOperation({
         summary: "Submit voyage project (end of voyage)",
         description:
