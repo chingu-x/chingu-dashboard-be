@@ -6,7 +6,7 @@ import { Type } from "class-transformer";
 export class CreateVoyageProjectSubmissionDto {
     @ApiProperty({
         description: "Voyage team Id",
-        example: 1,
+        example: 2,
     })
     @IsNumber()
     @IsNotEmpty()

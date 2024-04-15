@@ -20,6 +20,7 @@ export class VoyagesController {
     @ApiOperation({
         summary: "Submit voyage project (end of voyage)",
         description:
+            "-- Only one submission allowed per team. --<br><br>" +
             "Inputs (choiceId, text, boolean, number are all optional), <br>" +
             "depends on the question type, but AT LEAST ONE of them must be present, <br>" +
             "questionId is required <br><br>" +
