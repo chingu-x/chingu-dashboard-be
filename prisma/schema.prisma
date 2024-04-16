@@ -35,9 +35,9 @@ model Gender {
 }
 
 model User {
-  id            String  @id @default(uuid()) @db.Uuid
-  email         String  @unique
-  emailVerified Boolean @default(false)
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique
+  emailVerified Boolean  @default(false)
   password      String
   firstName     String?
   lastName      String?
@@ -46,7 +46,7 @@ model User {
   discordId     String?
   twitterId     String?
   linkedinId    String?
-  gender        Gender? @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  gender        Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   genderId      Int?
   countryCode   String?
   timezone      String?
@@ -342,6 +342,7 @@ model TeamMeeting {
   voyageTeamId Int
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
   title        String
+  description  String?
   dateTime     DateTime?
   meetingLink  String?
   notes        String?
