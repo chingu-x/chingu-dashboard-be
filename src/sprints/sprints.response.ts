@@ -72,6 +72,12 @@ export class MeetingResponseWithSprintAndAgenda {
     @ApiProperty({ example: "First sprint kickoff meeting" })
     title: string;
 
+    @ApiProperty({
+        example:
+            "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
+    })
+    description: string;
+
     @Optional()
     @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
     dateTime: Date;
@@ -97,6 +103,12 @@ export class MeetingResponse {
 
     @ApiProperty({ example: "Sprint Planning" })
     title: string;
+
+    @ApiProperty({
+        example:
+            "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
+    })
+    description: string;
 
     @Optional()
     @ApiProperty({ example: "2023-12-02T13:37:51.465Z" })
