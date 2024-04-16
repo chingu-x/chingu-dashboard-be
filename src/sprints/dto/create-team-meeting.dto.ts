@@ -10,6 +10,14 @@ export class CreateTeamMeetingDto {
     })
     title: string;
 
+    @IsString()
+    @ApiProperty({
+        description: "description of the meeting",
+        example:
+            "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
+    })
+    description: string;
+
     @IsOptional()
     @Type(() => Date)
     @IsDate()
