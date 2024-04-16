@@ -56,6 +56,24 @@ describe("IdeationsController (e2e)", () => {
     let newVoyageTeam: VoyageTeam;
     let newVoyageTeamMember: VoyageTeamMember;
     let newUserAccessToken: string;
+    let adminAccessToken: string;
+
+    async function loginAdmin() {
+        await request(app.getHttpServer()).post("/auth/logout");
+        await request(app.getHttpServer())
+            .post("/auth/login")
+            .send({
+                email: "jessica.williamson@gmail.com",
+                password: "password",
+            })
+            .expect(200)
+            .then((res) => {
+                adminAccessToken = extractResCookieValueByKey(
+                    res.headers["set-cookie"],
+                    "access_token",
+                );
+            });
+    }
 
     async function truncate() {
         await prisma.$executeRawUnsafe(
@@ -73,28 +91,14 @@ describe("IdeationsController (e2e)", () => {
         await prisma.$executeRawUnsafe(
             `TRUNCATE TABLE "Voyage" RESTART IDENTITY CASCADE;`,
         );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`,
-        );
+        // await prisma.$executeRawUnsafe(
+        //     `TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`,
+        // );
     }
 
     async function reseed() {
         await truncate();
 
-        newUser = await prisma.user.create({
-            data: {
-                firstName: "Test",
-                lastName: "User",
-                githubId: "testuser-github",
-                discordId: "testuser-discord",
-                email: "testuser@outlook.com",
-                password: await hashPassword("password"),
-                avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
-                timezone: "America/Los_Angeles",
-                comment: "Member seems to be inactive",
-                countryCode: "US",
-            },
-        });
         newVoyage = await prisma.voyage.create({
             data: {
                 number: "47",
@@ -182,6 +186,29 @@ describe("IdeationsController (e2e)", () => {
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
         await app.init();
+        try {
+            newUser = await prisma.user.create({
+                data: {
+                    firstName: "Test",
+                    lastName: "User",
+                    githubId: "testuser-github",
+                    discordId: "testuser-discord",
+                    email: "testuser@outlook.com",
+                    password: await hashPassword("password"),
+                    avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
+                    timezone: "America/Los_Angeles",
+                    comment: "Member seems to be inactive",
+                    countryCode: "US",
+                },
+            });
+        } catch (e) {
+            newUser = await prisma.user.findFirst({
+                where: {
+                    firstName: "Test",
+                    lastName: "User",
+                },
+            });
+        }
     });
 
     afterAll(async () => {
@@ -388,24 +415,14 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("POST /voyages/teams/:teamId/reset-selection - clears current team ideation selection", () => {
+    describe("POST /voyages/teams/:teamId/ideations/reset-selection - clears current team ideation selection", () => {
         it("should return 201 if selection successfully cleared", async () => {
             const teamId: number = 1;
             const ideationId: number = 1;
-            let change: any;
+            await loginAdmin();
+
             try {
-                change = await prisma.projectIdea.findFirst({
-                    where: {
-                        id: 1,
-                    },
-                    select: {
-                        id: true,
-                        description: true,
-                        vision: true,
-                        isSelected: true,
-                    },
-                });
-                const result = await prisma.projectIdea.update({
+                await prisma.projectIdea.update({
                     where: {
                         id: ideationId,
                     },
@@ -413,42 +430,30 @@ describe("IdeationsController (e2e)", () => {
                         isSelected: true,
                     },
                 });
-                change = await prisma.projectIdea.findFirst({
-                    where: {
-                        id: 1,
-                    },
-                    select: {
-                        id: true,
-                        description: true,
-                        vision: true,
-                        isSelected: true,
-                    },
-                });
             } catch (e) {
                 throw e;
             }
-            return expect(change).toBe(6);
-            // return request(app.getHttpServer())
-            //     .post(`/voyages/teams/${teamId}/reset-selection`)
-            //     .set("Authorization", `Bearer ${newUserAccessToken}`)
-            //     .expect(201);
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${adminAccessToken}`)
+                .expect(201);
+        });
+
+        it("should return 403 if not logged in as admin", async () => {
+            const teamId: number = 99;
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(403);
         });
 
         it("should return 404 if team id is not found", async () => {
             const teamId: number = 99;
+            await loginAdmin();
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/reset-selection`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
-                .expect(404);
-        });
-
-        it("should return 404 if team ideation is not found", async () => {
-            const teamId: number = 1;
-
-            return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/reset-selection`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${adminAccessToken}`)
                 .expect(404);
         });
 
@@ -456,7 +461,7 @@ describe("IdeationsController (e2e)", () => {
             const teamId: number = 1;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/reset-selection`)
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });

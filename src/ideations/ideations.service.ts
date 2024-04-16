@@ -287,7 +287,6 @@ export class IdeationsService {
         teamId: number,
         ideationId: number,
     ) {
-        let result: any;
         try {
             //find current selection, if any
             const selection = await this.getSelectedIdeation(teamId);
@@ -296,7 +295,7 @@ export class IdeationsService {
                     `Ideation already selected for team ${teamId}`,
                 );
             }
-            result = await this.prisma.projectIdea.update({
+            return await this.prisma.projectIdea.update({
                 where: {
                     id: ideationId,
                 },
@@ -310,7 +309,6 @@ export class IdeationsService {
             }
             throw e;
         }
-        return result;
     }
 
     async resetIdeationSelection(req: CustomRequest, teamId: number) {
