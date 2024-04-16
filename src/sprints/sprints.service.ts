@@ -152,6 +152,7 @@ export class SprintsService {
                     },
                 },
                 title: true,
+                description: true,
                 dateTime: true,
                 meetingLink: true,
                 notes: true,
@@ -211,7 +212,13 @@ export class SprintsService {
     async createTeamMeeting(
         teamId: number,
         sprintNumber: number,
-        { title, meetingLink, dateTime, notes }: CreateTeamMeetingDto,
+        {
+            title,
+            description,
+            meetingLink,
+            dateTime,
+            notes,
+        }: CreateTeamMeetingDto,
     ) {
         const sprintId = await this.findSprintIdBySprintNumber(
             teamId,
@@ -242,6 +249,7 @@ export class SprintsService {
                 sprintId,
                 voyageTeamId: teamId,
                 title,
+                description,
                 meetingLink,
                 dateTime,
                 notes,
@@ -251,7 +259,13 @@ export class SprintsService {
 
     async updateTeamMeeting(
         meetingId: number,
-        { title, meetingLink, dateTime, notes }: UpdateTeamMeetingDto,
+        {
+            title,
+            description,
+            meetingLink,
+            dateTime,
+            notes,
+        }: UpdateTeamMeetingDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.teamMeeting.update({
@@ -260,6 +274,7 @@ export class SprintsService {
                 },
                 data: {
                     title,
+                    description,
                     meetingLink,
                     dateTime,
                     notes,
