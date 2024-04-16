@@ -9,6 +9,8 @@ export const populateMeetings = async () => {
             voyageTeamId: voyageTeams[0].id,
             sprintId: await getSprintId(voyageTeams[0].voyageId, 1),
             title: "First sprint kickoff meeting",
+            description:
+                "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
             dateTime: await getRandomDateDuringSprint(
                 await getSprintId(voyageTeams[0].voyageId, 1),
             ),
@@ -117,6 +119,8 @@ export const populateMeetings = async () => {
             voyageTeamId: voyageTeams[0].id,
             sprintId: await getSprintId(voyageTeams[0].voyageId, 2),
             title: "Second sprint meeting",
+            description:
+                "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
             dateTime: await getRandomDateDuringSprint(
                 await getSprintId(voyageTeams[0].voyageId, 2),
             ),
@@ -130,6 +134,8 @@ export const populateMeetings = async () => {
             voyageTeamId: voyageTeams[0].id,
             sprintId: await getSprintId(voyageTeams[0].voyageId, 3),
             title: "Third sprint meeting",
+            description:
+                "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
             dateTime: await getRandomDateDuringSprint(
                 await getSprintId(voyageTeams[0].voyageId, 3),
             ),
