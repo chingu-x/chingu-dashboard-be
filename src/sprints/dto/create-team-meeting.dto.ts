@@ -10,6 +10,7 @@ export class CreateTeamMeetingDto {
     })
     title: string;
 
+    @IsOptional()
     @IsString()
     @ApiProperty({
         description: "description of the meeting",
