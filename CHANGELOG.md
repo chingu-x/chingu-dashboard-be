@@ -28,6 +28,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add check in form response table, seed data, POST endpoint for submitting check in form ([#126](https://github.com/chingu-x/chingu-dashboard-be/pull/126))
 - Add multiple device support ([#128](https://github.com/chingu-x/chingu-dashboard-be/pull/128))
 
+
+- Add new endpoints to select/reset team project ideation ([#136](https://github.com/chingu-x/chingu-dashboard-be/pull/136))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
