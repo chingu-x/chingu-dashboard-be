@@ -13,7 +13,7 @@ import {
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags, ApiParam } from "@nestjs/swagger";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
@@ -263,6 +263,20 @@ export class IdeationsController {
         description: "Successfully selected ideation.",
         type: IdeationVoteResponse,
     })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @ApiParam({
+        name: "ideationId",
+        description: "ideation Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @Permissions(AppPermissions.OWN_TEAM)
     @Post("/:ideationId/select")
     setIdeationSelection(
@@ -295,6 +309,13 @@ export class IdeationsController {
         status: HttpStatus.CREATED,
         description: "Successfully cleared ideation selection.",
         type: IdeationVoteResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @Permissions(AppPermissions.OWN_TEAM)
     @Roles(AppRoles.Admin)

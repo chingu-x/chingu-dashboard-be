@@ -288,9 +288,8 @@ export class IdeationsService {
         ideationId: number,
     ) {
         try {
-            //find current selection, if any
-            const selection = await this.getSelectedIdeation(teamId);
-            if (selection) {
+            const currentSelection = await this.getSelectedIdeation(teamId);
+            if (currentSelection) {
                 throw new ConflictException(
                     `Ideation already selected for team ${teamId}`,
                 );
@@ -315,7 +314,6 @@ export class IdeationsService {
         try {
             //find current selection, if any
             const selection = await this.getSelectedIdeation(teamId);
-
             if (selection) {
                 return await this.prisma.projectIdea.update({
                     where: {
