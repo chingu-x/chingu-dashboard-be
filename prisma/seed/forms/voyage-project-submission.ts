@@ -90,7 +90,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 8,
                         inputType: {
                             connect: {
-                                name: "radioGroup",
+                                name: "radio",
                             },
                         },
                         text: "On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",

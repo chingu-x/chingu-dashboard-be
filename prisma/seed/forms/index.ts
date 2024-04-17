@@ -4,9 +4,12 @@ import { populateVoyageApplicationForm } from "./voyage-app";
 import { populateVoyageSubmissionForm } from "./voyage-project-submission";
 import { prisma } from "../prisma-client";
 import { FormTitles } from "../../../src/global/constants/formTitles";
+import { populateCheckinFormResponse } from "../responses/checkinform-responses";
+import { populateVoyageProjectSubmissionFormResponses } from "../responses/voyage-project-form-response";
 
 export const populateFormsAndResponses = async () => {
     // test option choices for Voyage Application form
+    // TODO: maybe move these to somewhere else (I don't think these are currently in use)
     await prisma.optionChoice.create({
         data: {
             optionGroup: {
@@ -141,9 +144,11 @@ export const populateFormsAndResponses = async () => {
 
     // Sprints checkin form
     await populateCheckinForm();
+    await populateCheckinFormResponse();
     await populateSoloProjectForm();
     await populateVoyageApplicationForm();
     await populateVoyageSubmissionForm();
+    await populateVoyageProjectSubmissionFormResponses();
 
     console.log("Forms, Questions and Responses populated.");
 };
