@@ -197,9 +197,10 @@ model VoyageTeam {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  voyageTeamMembers  VoyageTeamMember[]
-  teamTechStackItems TeamTechStackItem[]
-  teamMeetings       TeamMeeting[]
+  voyageTeamMembers         VoyageTeamMember[]
+  teamTechStackItems        TeamTechStackItem[]
+  teamMeetings              TeamMeeting[]
+  FormResponseVoyageProject FormResponseVoyageProject?
 }
 
 model VoyageTeamMember {
@@ -543,11 +544,12 @@ model ResponseGroup {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  responses           Response[]
-  soloProject         SoloProject?
-  voyageApplication   VoyageApplication?
-  formResponseMeeting FormResponseMeeting?
-  formResponseCheckin FormResponseCheckin?
+  responses                 Response[]
+  soloProject               SoloProject?
+  voyageApplication         VoyageApplication?
+  formResponseMeeting       FormResponseMeeting?
+  formResponseCheckin       FormResponseCheckin?
+  formResponseVoyageProject FormResponseVoyageProject?
 }
 
 model FormResponseMeeting {
@@ -580,4 +582,15 @@ model FormResponseCheckin {
   updatedAt DateTime @updatedAt
 
   @@unique(fields: [voyageTeamMemberId, sprintId], name: "voyageTeamMemberSprintId")
+}
+
+model FormResponseVoyageProject {
+  id              Int           @id @default(autoincrement())
+  voyageTeamId    Int           @unique
+  voyageTeam      VoyageTeam    @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
+  responseGroupId Int           @unique
+  responseGroup   ResponseGroup @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 }
