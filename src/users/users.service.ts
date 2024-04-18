@@ -13,7 +13,7 @@ export class UsersService {
     private formatUser = (user) => {
         return {
             ...user,
-            roles: user.roles.flatMap((r) => r.role.name),
+            roles: user?.roles.flatMap((r) => r.role.name),
         };
     };
 
