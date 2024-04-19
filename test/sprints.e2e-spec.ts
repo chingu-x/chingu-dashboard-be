@@ -161,6 +161,7 @@ describe("Sprints Controller (e2e)", () => {
                                 endDate: expect.any(String),
                             }),
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -261,6 +262,7 @@ describe("Sprints Controller (e2e)", () => {
                             sprintId: expect.any(Number),
                             voyageTeamId: expect.any(Number),
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -293,6 +295,7 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
@@ -306,6 +309,7 @@ describe("Sprints Controller (e2e)", () => {
                             sprintId: 4,
                             voyageTeamId: 1,
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -335,6 +339,7 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
@@ -352,6 +357,7 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .send({
                     title: "Sprint Planning",
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
