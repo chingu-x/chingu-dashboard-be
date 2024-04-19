@@ -171,6 +171,8 @@ export class TechsService {
                 teamTechStackItemVoteId: teamMemberTechVote.id,
                 teamTechId,
                 teamMemberId: teamMemberTechVote.teamMemberId,
+                createdAt: teamMemberTechVote.createdAt,
+                updatedAt: teamMemberTechVote.updatedAt,
             };
         } catch (e) {
             if (e.code === "P2002") {
@@ -216,9 +218,11 @@ export class TechsService {
                 });
             } else {
                 return {
-                    teamTechStackItemVotedId: deletedVote.id,
+                    teamTechStackItemVoteId: deletedVote.id,
                     teamTechId,
                     teamMemberId: deletedVote.teamMemberId,
+                    createdAt: deletedVote.createdAt,
+                    updatedAt: deletedVote.updatedAt,
                 };
             }
         } catch (e) {

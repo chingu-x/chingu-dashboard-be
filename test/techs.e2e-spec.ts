@@ -228,7 +228,7 @@ describe("Techs Controller (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
-                            id: expect.any(Number),
+                            teamTechStackItemVoteId: expect.any(Number),
                             teamTechId: expect.any(Number),
                             teamMemberId: expect.any(Number),
                             createdAt: expect.any(String),
@@ -321,7 +321,7 @@ describe("Techs Controller (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
-                            id: expect.any(Number),
+                            teamTechStackItemVoteId: expect.any(Number),
                             teamTechId: expect.any(Number),
                             teamMemberId: expect.any(Number),
                             createdAt: expect.any(String),
