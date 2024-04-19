@@ -167,6 +167,7 @@ export class TechsService {
                         teamMemberId: voyageMemberId,
                     },
                 });
+            // If successful, it returns an object containing the details of the vote
             return {
                 teamTechStackItemVoteId: teamMemberTechVote.id,
                 teamTechId,
