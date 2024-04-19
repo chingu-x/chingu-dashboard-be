@@ -160,12 +160,18 @@ export class TechsService {
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
-            return await this.prisma.teamTechStackItemVote.create({
-                data: {
-                    teamTechId,
-                    teamMemberId: voyageMemberId,
-                },
-            });
+            const teamMemberTechVote =
+                await this.prisma.teamTechStackItemVote.create({
+                    data: {
+                        teamTechId,
+                        teamMemberId: voyageMemberId,
+                    },
+                });
+            return {
+                teamTechStackItemVoteId: teamMemberTechVote.id,
+                teamTechId,
+                teamMemberId: teamMemberTechVote.teamMemberId,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(
@@ -209,7 +215,11 @@ export class TechsService {
                     },
                 });
             } else {
-                return deletedVote;
+                return {
+                    teamTechStackItemVotedId: deletedVote.id,
+                    teamTechId,
+                    teamMemberId: deletedVote.teamMemberId,
+                };
             }
         } catch (e) {
             if (e.code === "P2025") {
