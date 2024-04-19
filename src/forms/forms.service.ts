@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma } from "@prisma/client";
+import { Prisma, Question } from "@prisma/client";
 
 export const formSelect = {
     id: true,
@@ -39,6 +39,36 @@ export const formSelect = {
                     },
                 },
             },
+            subQuestions: {
+                select: {
+                    id: true,
+                    order: true,
+                    inputType: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    text: true,
+                    description: true,
+                    answerRequired: true,
+                    multipleAllowed: true,
+                    optionGroup: {
+                        select: {
+                            optionChoices: {
+                                select: {
+                                    id: true,
+                                    text: true,
+                                },
+                            },
+                        },
+                    },
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            },
+            createdAt: true,
+            updatedAt: true,
         },
     },
 } as Prisma.FormSelect;
@@ -47,10 +77,34 @@ export const formSelect = {
 export class FormsService {
     constructor(private prisma: PrismaService) {}
 
-    getAllForms() {
-        return this.prisma.form.findMany({
+    async getAllForms() {
+        const forms = await this.prisma.form.findMany({
             select: formSelect,
         });
+
+        const subQuestionsIds = [];
+
+        forms.forEach((form) => {
+            form.questions.forEach((question) => {
+                const currentQuestion = question as Question & {
+                    subQuestions: Question[];
+                };
+                currentQuestion.subQuestions.forEach((subQuestion) => {
+                    subQuestionsIds.push(subQuestion.id);
+                });
+            });
+        });
+
+        for (let i = 0; i < forms.length; i++) {
+            const form = forms[i];
+            const filteredQuestions = form.questions.filter(
+                (i) => !subQuestionsIds.includes(i.id),
+            );
+
+            form.questions = filteredQuestions;
+        }
+
+        return forms;
     }
 
     async getFormById(formId: number) {
@@ -64,6 +118,23 @@ export class FormsService {
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
+        const subQuestionsIds = [];
+
+        form.questions.forEach((question) => {
+            const currentQuestion = question as Question & {
+                subQuestions: Question[];
+            };
+            currentQuestion.subQuestions.forEach((subQuestion) => {
+                subQuestionsIds.push(subQuestion.id);
+            });
+        });
+
+        const filteredQuestions = form.questions.filter(
+            (i) => !subQuestionsIds.includes(i.id),
+        );
+
+        form.questions = filteredQuestions;
+
         return form;
     }
 }
