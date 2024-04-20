@@ -119,14 +119,14 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
     @ApiParam({
         name: "teamTechId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
-        example: 11,
+        example: 6,
     })
     @Post("/:teamTechId")
     addExistingTechVote(
@@ -166,14 +166,14 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
     @ApiParam({
         name: "teamTechId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
-        example: 11,
+        example: 6,
     })
     @Delete("/:teamTechId")
     removeVote(
