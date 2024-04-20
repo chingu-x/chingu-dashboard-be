@@ -261,7 +261,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully selected ideation.",
-        type: IdeationVoteResponse,
+        type: IdeationResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -308,7 +308,7 @@ export class IdeationsController {
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully cleared ideation selection.",
-        type: IdeationVoteResponse,
+        type: IdeationResponse,
     })
     @ApiParam({
         name: "teamId",
