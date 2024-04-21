@@ -1,4 +1,11 @@
-import { Body, Controller, HttpStatus, Post, Request } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    HttpStatus,
+    Post,
+    Request,
+} from "@nestjs/common";
 import { VoyagesService } from "./voyages.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FormInputValidationPipe } from "../pipes/form-input-validation";
@@ -11,11 +18,19 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { CustomRequest } from "../global/types/CustomRequest";
+import {
+    AbilityFactory,
+    Action,
+} from "../ability/ability.factory/ability.factory";
+import { ForbiddenError } from "@casl/ability";
 
 @Controller("voyages")
 @ApiTags("voyages")
 export class VoyagesController {
-    constructor(private readonly voyagesService: VoyagesService) {}
+    constructor(
+        private readonly voyagesService: VoyagesService,
+        private abilityFactory: AbilityFactory,
+    ) {}
 
     @ApiOperation({
         summary: "Submit voyage project (end of voyage)",
@@ -83,5 +98,23 @@ export class VoyagesController {
             req,
             createVoyageProjectSubmission,
         );
+    }
+    // Test route
+    @Get("/projects")
+    async getAllVoyageProjects(@Request() req: CustomRequest) {
+        const ability = this.abilityFactory.defineAbility(req);
+        //const isAllowed = ability.can(Action.Create, "User");
+
+        //try {
+        ForbiddenError.from(ability)
+            .setMessage("Forbidden - Insufficient privilege (CASL)")
+            .throwUnlessCan(Action.Create, "User");
+        return this.voyagesService.getVoyageProject();
+        /*
+    } catch (error) {
+            if (error instanceof ForbiddenError) {
+                throw new ForbiddenException(error.message);
+            }
+        } */
     }
 }
