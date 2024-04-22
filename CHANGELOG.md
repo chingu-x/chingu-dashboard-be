@@ -44,7 +44,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Refactor resources PATCH and DELETE URI [#127](https://github.com/chingu-x/chingu-dashboard-be/pull/127)
 - Modified response for GET voyages/teams/{teamId}/resources, adding user id value [#129](https://github.com/chingu-x/chingu-dashboard-be/pull/129)
 - updated meeting model schema to include optional description field [#135](https://github.com/chingu-x/chingu-dashboard-be/pull/135)
-- Remove teamMeetings from response for getSprintDatesByTeamId [#138](https://github.com/chingu-x/chingu-dashboard-be/pull/138)
+- Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
 - 
 ### Fixed
 
