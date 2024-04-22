@@ -24,9 +24,9 @@ export class AbilityFactory {
         );
 
         if (user.roles.includes("admin")) {
-            can(Action.Manage, "User");
-        } else {
-            can(Action.Read, "User");
+            can(Action.Manage, "all");
+        } else if (user.roles.includes("voyager")) {
+            can(Action.Read, "Voyage");
         }
         return build();
     }

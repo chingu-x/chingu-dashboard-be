@@ -5,6 +5,7 @@ import {
     HttpStatus,
     Post,
     Request,
+    UseGuards,
 } from "@nestjs/common";
 import { VoyagesService } from "./voyages.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -22,7 +23,8 @@ import {
     AbilityFactory,
     Action,
 } from "../ability/ability.factory/ability.factory";
-import { ForbiddenError } from "@casl/ability";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { AbilitiesGuard } from "../auth/guards/abilities.guard";
 
 @Controller("voyages")
 @ApiTags("voyages")
@@ -99,22 +101,11 @@ export class VoyagesController {
             createVoyageProjectSubmission,
         );
     }
-    // Test route
-    @Get("/projects")
-    async getAllVoyageProjects(@Request() req: CustomRequest) {
-        const ability = this.abilityFactory.defineAbility(req);
-        //const isAllowed = ability.can(Action.Create, "User");
-
-        //try {
-        ForbiddenError.from(ability)
-            .setMessage("Forbidden - Insufficient privilege (CASL)")
-            .throwUnlessCan(Action.Create, "User");
+    // Test route for CASL - will actually need this in phase 2
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities({ action: Action.Create, subject: "Voyage" })
+    @Get("/project-submissions")
+    async getAllVoyageProjects() {
         return this.voyagesService.getVoyageProject();
-        /*
-    } catch (error) {
-            if (error instanceof ForbiddenError) {
-                throw new ForbiddenException(error.message);
-            }
-        } */
     }
 }
