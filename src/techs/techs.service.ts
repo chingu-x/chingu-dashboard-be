@@ -156,6 +156,14 @@ export class TechsService {
     }
 
     async addExistingTechVote(req, teamId, teamTechId) {
+        // check if team tech item exists
+        const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
+            where: {
+                id: teamTechId,
+            },
+        });
+        if (!teamTechItem)
+            throw new BadRequestException("Team Tech Item not found");
         const voyageMemberId = await this.findVoyageMemberId(req, teamId);
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
