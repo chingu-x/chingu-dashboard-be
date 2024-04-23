@@ -344,6 +344,7 @@ model TeamMeeting {
   voyageTeamId Int
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
   title        String
+  description  String?
   dateTime     DateTime?
   meetingLink  String?
   notes        String?
