@@ -31,6 +31,10 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { Roles } from "../global/decorators/roles.decorator";
 import { AppRoles } from "../auth/auth.roles";
 
+//
+//OWN_TEAM permission requires a :teamId param, but does not correctly enforce same team rule
+//:ideationId param is not currently used to check if user has permission to change it
+//
 @Controller()
 @ApiTags("Voyage - Ideations")
 export class IdeationsController {
