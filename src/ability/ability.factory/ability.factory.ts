@@ -10,6 +10,7 @@ export enum Action {
     Read = "read",
     Update = "update",
     Delete = "delete",
+    Submit = "submit",
 }
 
 type ExtendedSubjects = "all";
@@ -26,7 +27,7 @@ export class AbilityFactory {
         if (user.roles.includes("admin")) {
             can(Action.Manage, "all");
         } else if (user.roles.includes("voyager")) {
-            can(Action.Read, "Voyage");
+            can([Action.Submit], "Voyage");
         }
         return build();
     }

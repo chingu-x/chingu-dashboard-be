@@ -90,6 +90,8 @@ export class VoyagesController {
         description: "The team has already submitted the voyage project.",
         type: ConflictErrorResponse,
     })
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities({ action: Action.Submit, subject: "Voyage" })
     @Post("/submit-project")
     async submitVoyageProject(
         @Request() req: CustomRequest,
@@ -103,7 +105,7 @@ export class VoyagesController {
     }
     // Test route for CASL - will actually need this in phase 2
     @UseGuards(AbilitiesGuard)
-    @CheckAbilities({ action: Action.Create, subject: "Voyage" })
+    @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
     @Get("/project-submissions")
     async getAllVoyageProjects() {
         return this.voyagesService.getVoyageProject();
