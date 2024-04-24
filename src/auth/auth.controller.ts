@@ -37,8 +37,8 @@ import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
-import { Roles } from "../global/decorators/roles.decorator";
-import { AppRoles } from "./auth.roles";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -229,7 +229,7 @@ export class AuthController {
         type: ForbiddenErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
     @Delete("refresh/revoke")
     async revoke(@Body() body: RevokeRTDto, @Res() res) {
         await this.authService.revokeRefreshToken(body);

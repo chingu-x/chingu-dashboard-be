@@ -18,19 +18,14 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { CustomRequest } from "../global/types/CustomRequest";
-import {
-    AbilityFactory,
-    Action,
-} from "../ability/ability.factory/ability.factory";
+import { Action } from "../ability/ability.factory/ability.factory";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 
+@CheckAbilities({ action: Action.Manage, subject: "Voyage" })
 @Controller("voyages")
 @ApiTags("voyages")
 export class VoyagesController {
-    constructor(
-        private readonly voyagesService: VoyagesService,
-        private abilityFactory: AbilityFactory,
-    ) {}
+    constructor(private readonly voyagesService: VoyagesService) {}
 
     @ApiOperation({
         summary: "Submit voyage project (end of voyage)",
@@ -88,7 +83,7 @@ export class VoyagesController {
         description: "The team has already submitted the voyage project.",
         type: ConflictErrorResponse,
     })
-    @CheckAbilities({ action: Action.Submit, subject: "Voyage" })
+    // @CheckAbilities({ action: Action.Submit, subject: "Voyage" })
     @Post("/submit-project")
     async submitVoyageProject(
         @Request() req: CustomRequest,
@@ -101,7 +96,7 @@ export class VoyagesController {
         );
     }
     // Test route for CASL - will actually need this in phase 2
-    @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
+    // @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
     @Get("/project-submissions")
     async getAllVoyageProjects() {
         return this.voyagesService.getVoyageProject();

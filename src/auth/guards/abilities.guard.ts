@@ -23,10 +23,10 @@ export class AbilitiesGuard implements CanActivate {
         if (isPublic) return true;
 
         const rules =
-            this.reflector.get<RequiredRule[]>(
-                CHECK_ABILITY,
+            this.reflector.getAllAndMerge<RequiredRule[]>(CHECK_ABILITY, [
                 context.getHandler(),
-            ) || [];
+                context.getClass(),
+            ]) || [];
 
         const req = context.switchToHttp().getRequest();
         const ability = this.caslAbilityFactory.defineAbility(req);
