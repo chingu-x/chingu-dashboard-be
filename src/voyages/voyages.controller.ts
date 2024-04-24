@@ -5,7 +5,6 @@ import {
     HttpStatus,
     Post,
     Request,
-    UseGuards,
 } from "@nestjs/common";
 import { VoyagesService } from "./voyages.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -24,7 +23,6 @@ import {
     Action,
 } from "../ability/ability.factory/ability.factory";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { AbilitiesGuard } from "../auth/guards/abilities.guard";
 
 @Controller("voyages")
 @ApiTags("voyages")
@@ -90,7 +88,6 @@ export class VoyagesController {
         description: "The team has already submitted the voyage project.",
         type: ConflictErrorResponse,
     })
-    @UseGuards(AbilitiesGuard)
     @CheckAbilities({ action: Action.Submit, subject: "Voyage" })
     @Post("/submit-project")
     async submitVoyageProject(
@@ -104,7 +101,6 @@ export class VoyagesController {
         );
     }
     // Test route for CASL - will actually need this in phase 2
-    @UseGuards(AbilitiesGuard)
     @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
     @Get("/project-submissions")
     async getAllVoyageProjects() {

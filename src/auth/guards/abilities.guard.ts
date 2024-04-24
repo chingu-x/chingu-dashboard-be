@@ -15,6 +15,13 @@ export class AbilitiesGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
+        const isPublic = this.reflector.getAllAndOverride("isPublic", [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+
+        if (isPublic) return true;
+
         const rules =
             this.reflector.get<RequiredRule[]>(
                 CHECK_ABILITY,
@@ -30,6 +37,7 @@ export class AbilitiesGuard implements CanActivate {
                 rule.subject,
             ),
         );
+
         return true;
     }
 }
