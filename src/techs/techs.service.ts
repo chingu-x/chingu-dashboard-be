@@ -206,7 +206,7 @@ export class TechsService {
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
-            const deletedVote = await this.prisma.teamTechStackItemVote.delete({
+            await this.prisma.teamTechStackItemVote.delete({
                 where: {
                     userTeamStackVote: {
                         teamTechId,
