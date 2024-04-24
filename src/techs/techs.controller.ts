@@ -15,7 +15,11 @@ import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
-import { TeamTechResponse, TechItemResponse } from "./techs.response";
+import {
+    TeamTechResponse,
+    TechItemResponse,
+    TechItemDeleteResponse,
+} from "./techs.response";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
@@ -143,8 +147,8 @@ export class TechsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description:
-            "Successfully removed a vote for an existing tech stack item by a user",
-        type: TechItemResponse,
+            "Successfully removed a vote for an existing tech stack item by a user or removes the tech stack item if no votes left",
+        type: TechItemDeleteResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

@@ -139,12 +139,20 @@ export class TechsService {
                 },
             });
 
-            return this.prisma.teamTechStackItemVote.create({
-                data: {
-                    teamTechId: newTeamTechItem.id,
-                    teamMemberId: voyageMemberId,
-                },
-            });
+            const TeamTechItemFirstVote =
+                await this.prisma.teamTechStackItemVote.create({
+                    data: {
+                        teamTechId: newTeamTechItem.id,
+                        teamMemberId: voyageMemberId,
+                    },
+                });
+            return {
+                teamTechStackItemVoteId: TeamTechItemFirstVote.id,
+                teamTechId: newTeamTechItem.id,
+                teamMemberId: TeamTechItemFirstVote.teamMemberId,
+                createdAt: TeamTechItemFirstVote.createdAt,
+                updatedAt: TeamTechItemFirstVote.updatedAt,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(
@@ -218,20 +226,23 @@ export class TechsService {
                     },
                 },
             );
-
+            // Check if the teamTechStackItemVotes array is empty
             if (teamTechItem.teamTechStackItemVotes.length === 0) {
-                return this.prisma.teamTechStackItem.delete({
+                // If it's empty, delete the tech item from the database using Prisma ORM
+                await this.prisma.teamTechStackItem.delete({
                     where: {
                         id: teamTechId,
                     },
                 });
+
+                return {
+                    message: "The vote and tech stack item were deleted",
+                    statusCode: 200,
+                };
             } else {
                 return {
-                    teamTechStackItemVoteId: deletedVote.id,
-                    teamTechId,
-                    teamMemberId: deletedVote.teamMemberId,
-                    createdAt: deletedVote.createdAt,
-                    updatedAt: deletedVote.updatedAt,
+                    message: "This vote was deleted",
+                    statusCode: 200,
                 };
             }
         } catch (e) {

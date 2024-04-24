@@ -68,3 +68,11 @@ export class TechItemResponse {
     @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
     updatedAt: Date;
 }
+
+export class TechItemDeleteResponse {
+    @ApiProperty({ example: "The vote and tech stack item were deleted" })
+    message: string;
+
+    @ApiProperty({ example: 200 })
+    statusCode: number;
+}
