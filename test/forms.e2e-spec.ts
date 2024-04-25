@@ -6,9 +6,8 @@ import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { getNonAdminUser, loginAndGetTokens } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { AbilitiesGuard } from "../src/auth/guards/abilities.guard";
 import { AbilityFactory } from "../src/ability/ability.factory/ability.factory";
-import { Reflector } from "@nestjs/core";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 describe("FormController e2e Tests", () => {
     let app: INestApplication;
@@ -26,12 +25,8 @@ describe("FormController e2e Tests", () => {
         prisma = moduleFixture.get<PrismaService>(PrismaService);
 
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
 
-        const caslAbilityFactory =
-            moduleFixture.get<AbilityFactory>(AbilityFactory);
-        app.useGlobalGuards(
-            new AbilitiesGuard(new Reflector(), caslAbilityFactory),
-        );
         app.use(cookieParser());
         await app.init();
     });
@@ -61,7 +56,7 @@ describe("FormController e2e Tests", () => {
             await request(app.getHttpServer()).get("/forms").expect(401);
         });
 
-        fit("should return 403 when accessed by a user without the admin role", async () => {
+        it("should return 403 when accessed by a user without the admin role", async () => {
             const nonAdminUser = await getNonAdminUser();
             console.log("nonadminuser", nonAdminUser);
             const { access_token } = await loginAndGetTokens(
