@@ -20,10 +20,10 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { Roles } from "../global/decorators/roles.decorator";
 import { Permissions } from "../global/decorators/permissions.decorator";
-import { AppRoles } from "../auth/auth.roles";
 import { AppPermissions } from "../auth/auth.permissions";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -40,7 +40,7 @@ export class TeamsController {
         type: VoyageTeamResponse,
         isArray: true,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
     findAll() {
         return this.teamsService.findAll();
@@ -69,7 +69,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);
