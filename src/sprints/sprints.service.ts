@@ -162,6 +162,7 @@ export class SprintsService {
                         title: true,
                         description: true,
                         status: true,
+                        updatedAt: true,
                     },
                 },
                 formResponseMeeting: {

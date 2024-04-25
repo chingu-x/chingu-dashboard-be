@@ -60,6 +60,9 @@ class Agenda {
 
     @ApiProperty({ example: false })
     status: boolean;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    updatedAt: Date;
 }
 
 export class MeetingResponseWithSprintAndAgenda {
