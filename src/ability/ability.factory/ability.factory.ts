@@ -28,6 +28,7 @@ export class AbilityFactory {
             can(Action.Manage, "all");
         } else if (user.roles.includes("voyager")) {
             can([Action.Submit], "Voyage");
+            can([Action.Read], "Form");
         }
         return build();
     }

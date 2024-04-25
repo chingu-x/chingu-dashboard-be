@@ -1,10 +1,12 @@
-import { Action } from "../../ability/ability.factory/ability.factory";
-import { PrismaSubjects } from "../../ability/prisma-generated-types";
+import {
+    Action,
+    AppSubjects,
+} from "../../ability/ability.factory/ability.factory";
 import { SetMetadata } from "@nestjs/common";
 
 export interface RequiredRule {
     action: Action;
-    subject: PrismaSubjects;
+    subject: AppSubjects;
 }
 
 export const CHECK_ABILITY = "check_ability";

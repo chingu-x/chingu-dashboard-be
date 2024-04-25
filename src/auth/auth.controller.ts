@@ -229,7 +229,7 @@ export class AuthController {
         type: ForbiddenErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
-    @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Delete("refresh/revoke")
     async revoke(@Body() body: RevokeRTDto, @Res() res) {
         await this.authService.revokeRefreshToken(body);

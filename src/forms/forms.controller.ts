@@ -14,8 +14,8 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 
-import { AppRoles } from "../auth/auth.roles";
-import { Roles } from "../global/decorators/roles.decorator";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller("forms")
 @ApiTags("Forms")
@@ -45,7 +45,7 @@ export class FormsController {
         description: "forbidden - user does not have the required permission",
         type: ForbiddenErrorResponse,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     getAllForms() {
         return this.formsService.getAllForms();
     }
