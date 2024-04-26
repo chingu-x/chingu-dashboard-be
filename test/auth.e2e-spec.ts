@@ -7,10 +7,12 @@ import * as cookieParser from "cookie-parser";
 import {
     extractCookieByKey,
     extractResCookieValueByKey,
+    getNonAdminUser,
     loginAndGetTokens,
 } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { comparePassword } from "../src/utils/auth";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";
@@ -67,7 +69,10 @@ describe("AuthController e2e Tests", () => {
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+
         app.use(cookieParser());
         await app.init();
     });
@@ -488,8 +493,9 @@ describe("AuthController e2e Tests", () => {
         it("should return 403 if user is not permitted", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
+            const nonAdmin = await getNonAdminUser();
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "dan@random.com",
+                nonAdmin.email,
                 "password",
                 app,
             );
