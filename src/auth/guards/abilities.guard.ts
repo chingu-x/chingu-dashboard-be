@@ -28,8 +28,8 @@ export class AbilitiesGuard implements CanActivate {
                 context.getClass(),
             ]) || [];
 
-        const req = context.switchToHttp().getRequest();
-        const ability = this.caslAbilityFactory.defineAbility(req);
+        const { user } = context.switchToHttp().getRequest();
+        const ability = this.caslAbilityFactory.defineAbility(user);
 
         rules.forEach((rule) =>
             ForbiddenError.from(ability).throwUnlessCan(

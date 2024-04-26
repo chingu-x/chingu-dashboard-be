@@ -23,6 +23,7 @@ import { isUUID } from "class-validator";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller("users")
 @ApiTags("users")
@@ -65,7 +66,7 @@ export class UsersController {
         type: NotFoundErrorResponse,
     })
     @Get("me")
-    getProfile(@Request() req) {
+    getProfile(@Request() req: CustomRequest) {
         return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 

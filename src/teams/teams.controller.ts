@@ -95,7 +95,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Read, subject: "VoyageTeam" })
     @Get(":teamId")
     findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.teamsService.findTeamById(teamId);

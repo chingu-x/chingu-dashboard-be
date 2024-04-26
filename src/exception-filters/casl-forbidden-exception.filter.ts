@@ -17,8 +17,7 @@ export class CASLForbiddenExceptionFilter implements ExceptionFilter {
             const status = HttpStatus.FORBIDDEN;
             response.status(status).json({
                 statusCode: 403,
-                message:
-                    "Forbidden: You do not have the required permission to perform this action - CASL exception filter",
+                message: `Forbidden: You do not have the required permission to perform this action - CASL exception filter. Reason: ${exception.message}.`,
             });
         }
     }

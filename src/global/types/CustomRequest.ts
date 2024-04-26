@@ -5,7 +5,7 @@ type VoyageTeam = {
     memberId: number;
 };
 
-type UserReq = {
+export type UserReq = {
     userId: string;
     email: string;
     roles: string[];
