@@ -292,6 +292,7 @@ model ProjectIdea {
   title              String
   description        String
   vision             String
+  isSelected         Boolean            @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
