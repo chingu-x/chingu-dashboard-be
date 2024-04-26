@@ -32,6 +32,11 @@ export class AbilityFactory {
             can([Action.Manage], "VoyageTeam", {
                 id: { in: user.voyageTeams.map((vt) => vt.teamId) },
             });
+            can([Action.Manage], "Ideation", {
+                voyageTeamMemberId: {
+                    in: user.voyageTeams.map((vt) => vt.memberId),
+                },
+            });
         }
         return build({
             detectSubjectType: (object) => object.__caslSubjectType__,

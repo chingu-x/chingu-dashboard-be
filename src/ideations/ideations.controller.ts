@@ -25,9 +25,9 @@ import {
     IdeationVoteResponse,
     TeamIdeationsResponse,
 } from "./ideations.response";
-import { AppPermissions } from "../auth/auth.permissions";
-import { Permissions } from "../global/decorators/permissions.decorator";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Ideations")
@@ -55,7 +55,7 @@ export class IdeationsController {
         description: "Successfully created a new ideation and vote added.",
         type: IdeationResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Create, subject: "Ideation" })
     @Post()
     createIdeation(
         @Request() req: CustomRequest,
@@ -94,7 +94,7 @@ export class IdeationsController {
         description: "Successfully created a new ideation vote.",
         type: IdeationVoteResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Create, subject: "Ideation" })
     @Post("/:ideationId/ideation-votes")
     createIdeationVote(
         @Request() req: CustomRequest,
@@ -122,10 +122,13 @@ export class IdeationsController {
         isArray: true,
         type: TeamIdeationsResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Read, subject: "Ideation" })
     @Get()
-    getIdeationsByVoyageTeam(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.ideationsService.getIdeationsByVoyageTeam(teamId);
+    getIdeationsByVoyageTeam(
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Request() req: CustomRequest,
+    ) {
+        return this.ideationsService.getIdeationsByVoyageTeam(req, teamId);
     }
 
     @ApiOperation({
@@ -148,7 +151,7 @@ export class IdeationsController {
         description: "Successfully updated ideation.",
         type: IdeationResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Update, subject: "Ideation" })
     @Patch("/:ideationId")
     updateIdeation(
         @Request() req: CustomRequest,
@@ -194,7 +197,7 @@ export class IdeationsController {
         description: "Ideation cannot be deleted when any votes exist.",
         type: ConflictErrorResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Delete, subject: "Ideation" })
     @Delete("/:ideationId")
     deleteIdeation(
         @Request() req: CustomRequest,
@@ -224,7 +227,7 @@ export class IdeationsController {
         description: "Successfully deleted ideation vote.",
         type: IdeationVoteResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Delete, subject: "Ideation" })
     @Delete("/:ideationId/ideation-votes")
     deleteIdeationVote(
         @Request() req: CustomRequest,

@@ -15,6 +15,7 @@ import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
 import { CreateIdeationDto } from "src/ideations/dto/create-ideation.dto";
 import * as bcrypt from "bcrypt";
 import { extractResCookieValueByKey } from "./utils";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 const roundsOfHashing = 10;
 
@@ -179,7 +180,10 @@ describe("IdeationsController (e2e)", () => {
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+
         await app.init();
     });
 
