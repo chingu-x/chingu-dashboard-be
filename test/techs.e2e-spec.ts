@@ -338,6 +338,34 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackVote[0]).toEqual(undefined);
         });
 
+        it("should return 200 if tech last vote was deleted and team tech stack item is deleted", async () => {
+            const teamId: number = 2;
+            const techId: number = 9;
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message:
+                                "The vote and tech stack item were deleted",
+                            statusCode: 200,
+                        }),
+                    );
+                });
+        });
+
+        it("- verify that tech stack Item was deleted from database", async () => {
+            const techStackItem = await prisma.teamTechStackItem.findFirst({
+                where: {
+                    name: newTechName,
+                },
+            });
+            return expect(techStackItem).toBeNull();
+        });
+
         it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
             const techId: number = 3;
