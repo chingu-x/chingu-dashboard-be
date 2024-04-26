@@ -90,11 +90,6 @@ export class SprintsService {
                         number: true,
                         startDate: true,
                         endDate: true,
-                        teamMeetings: {
-                            select: {
-                                id: true,
-                            },
-                        },
                     },
                 },
             },
