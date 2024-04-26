@@ -31,6 +31,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add voyage project submission form seed ([#131](https://github.com/chingu-x/chingu-dashboard-be/pull/131))
 - Add voyage project submission controller, service, e2e tests, responses seed ([#133](https://github.com/chingu-x/chingu-dashboard-be/pull/133))
 
+
+- Add new endpoints to select/reset team project ideation ([#136](https://github.com/chingu-x/chingu-dashboard-be/pull/136))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
