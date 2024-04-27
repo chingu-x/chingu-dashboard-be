@@ -18,6 +18,20 @@ class Sprint {
     teamMeetings: number;
 }
 
+class SprintWithoutMeetings {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    number: number;
+
+    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    startDate: Date;
+
+    @ApiProperty({ example: "2024-01-14T00:00:00.000Z" })
+    endDate: Date;
+}
+
 export class VoyageResponse {
     @ApiProperty({ example: 1 })
     id: number;
@@ -43,6 +57,33 @@ export class VoyageResponse {
 
     @ApiProperty({ isArray: true })
     sprints: Sprint;
+}
+
+export class VoyageResponseWithoutMeetings {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: "47" })
+    number: string;
+
+    @ApiProperty({ example: "2023-12-31T00:00:00.000Z" })
+    soloProjectDeadline: Date;
+
+    @ApiProperty({ example: "2024-02-25T00:00:00.000Z" })
+    certificateIssueDate: Date;
+
+    @ApiProperty({ example: null })
+    @Optional()
+    showcasePublishDate: Date;
+
+    @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
+    startDate: Date;
+
+    @ApiProperty({ example: "2024-02-18T00:00:00.000Z" })
+    endDate: Date;
+
+    @ApiProperty({ isArray: true })
+    sprints: SprintWithoutMeetings;
 }
 
 class Agenda {

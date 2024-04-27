@@ -66,6 +66,9 @@ export class IdeationResponse {
     })
     vision: string;
 
+    @ApiProperty({ example: "true" })
+    isSelected: boolean;
+
     @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
     createdAt: Date;
 

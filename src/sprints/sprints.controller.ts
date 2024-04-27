@@ -25,6 +25,7 @@ import {
     MeetingResponse,
     MeetingResponseWithSprintAndAgenda,
     VoyageResponse,
+    VoyageResponseWithoutMeetings,
 } from "./sprints.response";
 import {
     BadRequestErrorResponse,
@@ -48,7 +49,7 @@ export class SprintsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "successfully gets all voyage and sprints data",
-        type: VoyageResponse,
+        type: VoyageResponseWithoutMeetings,
         isArray: true,
     })
     getVoyagesAndSprints() {
