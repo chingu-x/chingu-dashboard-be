@@ -58,7 +58,6 @@ describe("FormController e2e Tests", () => {
 
         it("should return 403 when accessed by a user without the admin role", async () => {
             const nonAdminUser = await getNonAdminUser();
-            console.log("nonadminuser", nonAdminUser);
             const { access_token } = await loginAndGetTokens(
                 nonAdminUser.email,
                 "password",

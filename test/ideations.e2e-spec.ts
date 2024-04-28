@@ -3,180 +3,22 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import {
-    ProjectIdea,
-    ProjectIdeaVote,
-    User,
-    Voyage,
-    VoyageTeam,
-    VoyageTeamMember,
-} from "@prisma/client";
-import { UpdateIdeationDto } from "src/ideations/dto/update-ideation.dto";
-import { CreateIdeationDto } from "src/ideations/dto/create-ideation.dto";
-import * as bcrypt from "bcrypt";
-import { extractResCookieValueByKey } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
-
-const roundsOfHashing = 10;
-
-const hashPassword = async (password: string) => {
-    return await bcrypt.hash(password, roundsOfHashing);
-};
+import { seed } from "../prisma/seed/seed";
+import * as cookieParser from "cookie-parser";
 
 describe("IdeationsController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-
-    const memberShape = {
-        id: expect.any(String),
-        avatar: expect.any(String),
-        firstName: expect.any(String),
-        lastName: expect.any(String),
-    };
-    const ideationVoteShape = {
-        id: expect.any(Number),
-        createdAt: expect.any(String),
-        voyageTeamMemberId: expect.any(Number),
-        projectIdeaId: expect.any(Number),
-        updatedAt: expect.any(String),
-    };
-    const ideationShape = {
-        id: expect.any(Number),
-        title: expect.any(String),
-        description: expect.any(String),
-        vision: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-    };
-
-    let newIdeation: ProjectIdea;
-    let newIdeationVote: ProjectIdeaVote;
-    let newUser: User;
-    let newVoyage: Voyage;
-    let newVoyageTeam: VoyageTeam;
-    let newVoyageTeamMember: VoyageTeamMember;
-    let newUserAccessToken: string;
-
-    async function truncate() {
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "ProjectIdeaVote" RESTART IDENTITY CASCADE;`,
-        );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "ProjectIdea" RESTART IDENTITY CASCADE;`,
-        );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "VoyageTeamMember" RESTART IDENTITY CASCADE;`,
-        );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "VoyageTeam" RESTART IDENTITY CASCADE;`,
-        );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "Voyage" RESTART IDENTITY CASCADE;`,
-        );
-        await prisma.$executeRawUnsafe(
-            `TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`,
-        );
-    }
-
-    async function reseed() {
-        await truncate();
-
-        newUser = await prisma.user.create({
-            data: {
-                firstName: "Test",
-                lastName: "User",
-                githubId: "testuser-github",
-                discordId: "testuser-discord",
-                email: "testuser@outlook.com",
-                password: await hashPassword("password"),
-                avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
-                timezone: "America/Los_Angeles",
-                comment: "Member seems to be inactive",
-                countryCode: "US",
-            },
-        });
-        newVoyage = await prisma.voyage.create({
-            data: {
-                number: "47",
-                startDate: new Date("2024-10-28"),
-                endDate: new Date("2024-11-09"),
-                soloProjectDeadline: new Date("2023-12-31"),
-                certificateIssueDate: new Date("2024-02-25"),
-            },
-        });
-        newVoyageTeam = await prisma.voyageTeam.create({
-            data: {
-                voyage: {
-                    connect: { number: newVoyage.number },
-                },
-                name: "v47-team-test",
-                repoUrl:
-                    "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
-                endDate: new Date("2024-11-09"),
-            },
-        });
-        newVoyageTeamMember = await prisma.voyageTeamMember.create({
-            data: {
-                member: {
-                    connect: {
-                        id: newUser.id,
-                    },
-                },
-                voyageTeam: {
-                    connect: {
-                        id: newVoyageTeam.id,
-                    },
-                },
-                hrPerSprint: 10.5,
-            },
-        });
-        newIdeation = await prisma.projectIdea.create({
-            data: {
-                title: "Ideation 1",
-                description: "Ideation 1 description",
-                vision: "Ideation 1 vision",
-                contributedBy: {
-                    connect: {
-                        id: newVoyageTeamMember.id,
-                        userId: newUser.id,
-                    },
-                },
-            },
-        });
-        newIdeationVote = await prisma.projectIdeaVote.create({
-            data: {
-                votedBy: {
-                    connect: {
-                        id: newVoyageTeamMember.id,
-                        userId: newUser.id,
-                    },
-                },
-                projectIdea: {
-                    connect: {
-                        id: newIdeation.id,
-                    },
-                },
-            },
-        });
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: newUser.email,
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                newUserAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
-    }
+    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
+
+        await seed();
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
@@ -184,155 +26,371 @@ describe("IdeationsController (e2e)", () => {
         app.useGlobalPipes(new ValidationPipe());
         app.useGlobalFilters(new CASLForbiddenExceptionFilter());
 
+        app.use(cookieParser());
         await app.init();
     });
 
     afterAll(async () => {
-        await truncate();
-
         await prisma.$disconnect();
         await app.close();
     });
 
     beforeEach(async () => {
-        await reseed();
+        await loginAndGetTokens(userEmail, "password", app).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     });
 
-    it("/POST voyages/teams/:teamId/ideations", async () => {
-        await prisma.projectIdea.delete({
-            where: {
-                id: newIdeation.id,
-            },
-        });
+    const userVoyageTeamId = 1;
+    const userEmail = "dan@random.com";
 
-        const teamId: number = newVoyageTeam.id;
-        const createIdeationDto: CreateIdeationDto = {
-            title: "Ideation 1",
-            description: "Ideation 1 description",
-            vision: "Ideation 1 vision",
-        };
+    describe("/POST voyages/teams/:teamId/ideations", () => {
+        const createIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations`;
 
-        return request(app.getHttpServer())
-            .post(`/voyages/teams/${teamId}/ideations`)
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .send(createIdeationDto)
-            .expect(201)
-            .expect("Content-Type", /json/)
-            .expect((res) => {
-                expect(res.body).toEqual({
-                    ...ideationShape,
-                    updatedAt: expect.any(String),
-                    voyageTeamMemberId: expect.any(Number),
+        it("should return 201 if ideation is created", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const data = {
+                title: "Fitness Tracker App",
+                description: "Use React app, node.js backend, and SQL",
+                vision: "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
+            };
+
+            await request(app.getHttpServer())
+                .post(createIdeationUrl)
+                .set("Cookie", accessToken)
+                .send(data)
+                .expect(201)
+                .expect((res) => {
+                    expect(res.body).toMatchObject({
+                        ...data,
+                        voyageTeamMemberId: userVoyageTeamId,
+                    });
                 });
-            });
-    });
 
-    it("/POST voyages/teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
-        await prisma.projectIdeaVote.delete({
-            where: {
-                id: newIdeationVote.id,
-            },
+            const ideationCountAfter = await prisma.projectIdea.count();
+            expect(ideationCountAfter).toEqual(ideationCountBefore + 1);
         });
 
-        const teamId: number = newVoyageTeam.id;
-        const ideationId: number = newIdeation.id;
+        it("should return 401 if user is not logged in", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            await request(app.getHttpServer())
+                .post(createIdeationUrl)
+                .send({
+                    title: "Fitness Tracker App",
+                    description: "Use React app, node.js backend, and SQL",
+                    vision: "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
+                })
+                .expect(401);
 
-        return request(app.getHttpServer())
-            .post(
-                `/voyages/teams/${teamId}/ideations/${ideationId}/ideation-votes`,
-            )
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .expect(201)
-            .expect("Content-Type", /json/)
-            .expect((res) => {
-                expect(res.body).toEqual(ideationVoteShape);
-            });
+            const ideationCountAfter = await prisma.projectIdea.count();
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+        });
+
+        it("should return 403 if teamId does not exist or user does not belong to teamId", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/100/ideations`)
+                .set("Cookie", accessToken)
+                .send({
+                    title: "Fitness Tracker App",
+                    description: "Use React app, node.js backend, and SQL",
+                    vision: "Lists workouts, video walkthroughs, calendar scheduling, and fitness diary.",
+                })
+                .expect(403);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+        });
     });
 
-    it("/GET voyages/teams/:teamId/ideations", async () => {
-        const teamId: number = newVoyageTeam.id;
-        const ideationCount: number = await prisma.projectIdea.count({
-            where: {
-                contributedBy: {
-                    voyageTeamId: teamId,
+    describe("/GET voyages/teams/:teamId/ideations", () => {
+        const getIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations`;
+        it("should return 200 when user's own teams' ideations are returned", async () => {
+            await request(app.getHttpServer())
+                .get(getIdeationUrl)
+                .set("Cookie", accessToken)
+                .expect(200);
+        });
+
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer()).get(getIdeationUrl).expect(401);
+        });
+
+        it("should return 403 when user try to access other teams ideations", async () => {
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/2/ideations`)
+                .set("Cookie", accessToken)
+                .expect(403);
+        });
+    });
+
+    describe("/POST voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+        const ideationId = 1;
+        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
+
+        it("should return 201 if an ideation vote is successfully created", async () => {
+            // login to another user in the same team to vote
+            const { access_token } = await loginAndGetTokens(
+                "leo.rowe@outlook.com",
+                "password",
+                app,
+            );
+
+            const voteCountBefore = await prisma.projectIdeaVote.count({
+                where: {
+                    projectIdeaId: 1,
                 },
-            },
+            });
+
+            await request(app.getHttpServer())
+                .post(ideationVoteUrl)
+                .set("Cookie", access_token)
+                .expect(201);
+
+            const voteCountAfter = await prisma.projectIdeaVote.count({
+                where: {
+                    projectIdeaId: 1,
+                },
+            });
+
+            expect(voteCountAfter).toEqual(voteCountBefore + 1);
         });
 
-        return request(app.getHttpServer())
-            .get(`/voyages/teams/${teamId}/ideations`)
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .expect(200)
-            .expect("Content-Type", /json/)
-            .expect((res) => {
-                expect(res.body).toEqual(
-                    expect.arrayContaining([
-                        {
-                            ...ideationShape,
-                            contributedBy: expect.objectContaining({
-                                member: memberShape,
-                            }),
-                            projectIdeaVotes: expect.any(Array),
-                        },
-                    ]),
-                );
-                expect(res.body).toHaveLength(ideationCount);
-            });
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .post(ideationVoteUrl)
+                .expect(401);
+        });
+
+        it("should return 403 when user is voting for another ideation which belongs to another team", async () => {
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/2/ideations/4/ideation-votes`)
+                .set("Cookie", accessToken)
+                .expect(403);
+        });
+
+        it("should return 404 when the ideation ID doesn't exist", async () => {
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/1/ideations/20/ideation-votes`)
+                .set("Cookie", accessToken)
+                .expect(404);
+        });
+
+        it("should return 409 if there's an existing vote", async () => {
+            await request(app.getHttpServer())
+                .post(ideationVoteUrl)
+                .set("Cookie", accessToken)
+                .expect(409);
+        });
     });
 
-    it("/PATCH /teams/:teamId/ideations/:ideationId", async () => {
-        const teamId: number = newVoyageTeam.id;
-        const ideationId: number = newIdeation.id;
-        const updateIdeationDto: UpdateIdeationDto = {
-            title: "Ideation 2",
-            description: "Ideation 2 description",
-            vision: "Ideation 2 vision",
-        };
+    describe("/DELETE voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+        const ideationId = 1;
+        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
 
-        return request(app.getHttpServer())
-            .patch(`/voyages/teams/${teamId}/ideations/${ideationId}`)
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .send(updateIdeationDto)
-            .expect(200)
-            .expect("Content-Type", /json/)
-            .expect((res) => {
-                expect(res.body).toEqual({
-                    ...ideationShape,
-                    voyageTeamMemberId: expect.any(Number),
-                    updatedAt: expect.any(String),
-                });
-            });
+        it("should return 200 when ideation vote is deleted", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const ideationVoteCountBefore =
+                await prisma.projectIdeaVote.count();
+
+            await request(app.getHttpServer())
+                .delete(ideationVoteUrl)
+                .set("Cookie", accessToken)
+                .expect(200);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            const ideationVoteCountAfter = await prisma.projectIdeaVote.count();
+
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+            expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore - 1);
+        });
+
+        it("should return 400 when removing ideation votes they didn't vote for", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const ideationVoteCountBefore =
+                await prisma.projectIdeaVote.count();
+            await request(app.getHttpServer())
+                .delete(
+                    `/voyages/teams/${userVoyageTeamId}/ideations/8/ideation-votes`,
+                )
+                .set("Cookie", accessToken)
+                .expect(400);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            const ideationVoteCountAfter = await prisma.projectIdeaVote.count();
+
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+            expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore);
+        });
+
+        // Note: this should be 404
+        it("should return 400 when ideation id does not exist", async () => {
+            await request(app.getHttpServer())
+                .delete(
+                    `/voyages/teams/${userVoyageTeamId}/ideations/100/ideation-votes`,
+                )
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
+        // Note: this should be 403
+        it("should return 400 when user is trying to delete a vote for an ideation not in their team", async () => {
+            // JosoMadar@dayrep.com is in team 2
+            const { access_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .delete(ideationVoteUrl)
+                .set("Cookie", access_token)
+                .expect(400);
+        });
+
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .delete(ideationVoteUrl)
+                .expect(401);
+        });
     });
 
-    it("/DELETE /teams/:teamId/ideations/:ideationId", async () => {
-        const teamId: number = newVoyageTeam.id;
-        const ideationId: number = newIdeation.id;
-
-        return request(app.getHttpServer())
-            .delete(`/voyages/teams/${teamId}/ideations/${ideationId}`)
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .expect((res) => {
-                expect(res.body).toEqual({
-                    ...ideationShape,
-                    voyageTeamMemberId: expect.any(Number),
-                    updatedAt: expect.any(String),
-                });
+    describe("/PATCH /teams/:teamId/ideations/:ideationId", () => {
+        const ideationId = 1;
+        const updateIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
+        it("should return 200 if update is successful", async () => {
+            const ideationToUpdate = await prisma.projectIdea.findUnique({
+                where: { id: ideationId },
             });
+            const data = { title: "updated title" };
+            await request(app.getHttpServer())
+                .patch(updateIdeationUrl)
+                .set("Cookie", accessToken)
+                .send(data)
+                .expect((res) => {
+                    expect(res.body).toMatchObject({
+                        ...data,
+                        id: ideationToUpdate.id,
+                        voyageTeamMemberId: ideationToUpdate.voyageTeamMemberId,
+                        description: ideationToUpdate.description,
+                        vision: ideationToUpdate.vision,
+                        createdAt: expect.any(String),
+                        updatedAt: expect.any(String),
+                    });
+                })
+                .expect(200);
+        });
+
+        it("should return 400 when teamId or Ideation Id is wrong", async () => {
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/200`)
+                .set("Cookie", accessToken)
+                .expect(400);
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/2/ideations/1`)
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
+        // Note: should be 403
+        it("should return 400 when user tries to delete someone else's ideation in the same team", async () => {
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/8`)
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .delete(updateIdeationUrl)
+                .expect(401);
+        });
     });
 
-    it("/DELETE voyages/teams/:teamId/ideations/:ideationId/ideation-votes", async () => {
-        const teamId: number = newVoyageTeam.id;
-        const ideationId: number = newIdeation.id;
+    describe("/DELETE /teams/:teamId/ideations/:ideationId", () => {
+        const ideationId = 1;
+        const deleteIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
 
-        return request(app.getHttpServer())
-            .delete(
-                `/voyages/teams/${teamId}/ideations/${ideationId}/ideation-votes`,
-            )
-            .set("Authorization", `Bearer ${newUserAccessToken}`)
-            .expect(200)
-            .expect("Content-Type", /json/)
-            .expect((res) => {
-                expect(res.body).toEqual(ideationVoteShape);
-            });
+        // user can only delete their own ideation when there is no votes except their own,
+        // this will also delete their own vote if exist
+        it("should return 200 if the user delete their own ideation without other votes", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const ideationVoteCountBefore =
+                await prisma.projectIdeaVote.count();
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/3`)
+                .set("Cookie", accessToken)
+                .expect(200);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            const ideationVoteCountAfter = await prisma.projectIdeaVote.count();
+
+            expect(ideationCountAfter).toEqual(ideationCountBefore - 1);
+            expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore - 1);
+        });
+
+        // user cannot delete someone else's ideation
+        // Note: should be 403
+        it("should return 400 if the user delete their own ideation with other votes", async () => {
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const ideationVoteCountBefore =
+                await prisma.projectIdeaVote.count();
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/7`)
+                .set("Cookie", accessToken)
+                .expect(400);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            const ideationVoteCountAfter = await prisma.projectIdeaVote.count();
+
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+            expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore);
+        });
+
+        it("should return 401 if the user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .delete(deleteIdeationUrl)
+                .expect(401);
+        });
+
+        // Should be 404
+        it("should return 400 if ideation Id does not exist", async () => {
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/200`)
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
+        // user cannot delete ideation with votes in it
+        it("should return 409 if the user delete their own ideation with other votes", async () => {
+            // add a vote by another team member
+            const { access_token } = await loginAndGetTokens(
+                "leo.rowe@outlook.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/1/ideations/2/ideation-votes`)
+                .set("Cookie", access_token)
+                .expect(201);
+
+            const ideationCountBefore = await prisma.projectIdea.count();
+            const ideationVoteCountBefore =
+                await prisma.projectIdeaVote.count();
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/2`)
+                .set("Cookie", accessToken)
+                .expect(409);
+
+            const ideationCountAfter = await prisma.projectIdea.count();
+            const ideationVoteCountAfter = await prisma.projectIdeaVote.count();
+
+            expect(ideationCountAfter).toEqual(ideationCountBefore);
+            expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore);
+        });
     });
 });

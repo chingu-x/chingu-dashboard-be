@@ -218,9 +218,7 @@ export class IdeationsService {
         }
         try {
             await this.deleteIdeationVote(req, teamId, ideationId);
-            console.log(req.user, teamId, ideationId);
             voteCount = await this.getIdeationVoteCount(ideationId);
-            console.log(voteCount);
             //only allow the user that created the idea to delete it and only if it has no votes
             if (voteCount === 0) {
                 const deleteIdeation = await this.prisma.projectIdea.delete({
@@ -248,7 +246,6 @@ export class IdeationsService {
             ideationId,
             voyageTeamMemberId,
         );
-        console.log(ideationVote);
         try {
             const deleteIdeationVote = await this.prisma.projectIdeaVote.delete(
                 {
