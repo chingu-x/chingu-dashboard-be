@@ -68,7 +68,6 @@ describe("IdeationsController", () => {
             teamId,
             createIdeationDto,
         );
-        console.log(ideation);
         expect(service.createIdeation).toHaveBeenCalled();
         expect(ideation).toBe(ideationOne);
     });

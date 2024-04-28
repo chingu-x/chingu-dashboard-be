@@ -133,7 +133,7 @@ describe("IdeationsService", () => {
                     },
                 ],
             },
-        };
+        } as CustomRequest;
         const createIdeationDto = {
             req,
             title: "Ideation 1",
@@ -175,8 +175,20 @@ describe("IdeationsService", () => {
 
     it("should get ideations by voyage team", async () => {
         const teamId = 1;
+        const userId = "00a10ade-7308-11ee-a962-0242ac120002";
+        const req = {
+            user: {
+                userId: userId,
+                voyageTeams: [
+                    {
+                        teamId: 1,
+                        memberId: 1,
+                    },
+                ],
+            },
+        } as CustomRequest;
 
-        const result = await service.getIdeationsByVoyageTeam(teamId);
+        const result = await service.getIdeationsByVoyageTeam(req, teamId);
         expect(result).toEqual(ideationArr);
     });
 
@@ -250,7 +262,6 @@ describe("IdeationsService", () => {
                 ],
             },
         } as CustomRequest;
-        console.log(req);
         const result = await service.deleteIdeation(req, teamId, ideationId);
         expect(result).toEqual(ideationOne);
     });
