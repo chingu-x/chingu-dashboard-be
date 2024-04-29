@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 import { seed } from "../prisma/seed/seed";
 import * as cookieParser from "cookie-parser";
@@ -12,24 +12,15 @@ describe("IdeationsController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     let accessToken: any;
-    let newUserAccessToken: string;
-    let adminAccessToken: string;
 
     async function loginAdmin() {
-        await request(app.getHttpServer()).post("/auth/logout");
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: "jessica.williamson@gmail.com",
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                adminAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
+        await loginAndGetTokens(
+            "jessica.williamson@gmail.com",
+            "password",
+            app,
+        ).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     }
 
     beforeAll(async () => {
@@ -299,30 +290,31 @@ describe("IdeationsController (e2e)", () => {
                 .expect(200);
         });
 
-        it("should return 400 when teamId or Ideation Id is wrong", async () => {
+        it("should return 400 when ideation Id is not in the specified team", async () => {
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/200`)
-                .set("Cookie", accessToken)
-                .expect(400);
-
-            await request(app.getHttpServer())
-                .delete(`/voyages/teams/2/ideations/1`)
-                .set("Cookie", accessToken)
-                .expect(400);
-        });
-
-        // Note: should be 403
-        it("should return 400 when user tries to delete someone else's ideation in the same team", async () => {
-            await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/8`)
+                .patch(`/voyages/teams/2/ideations/1`)
                 .set("Cookie", accessToken)
                 .expect(400);
         });
 
         it("should return 401 when user is not logged in", async () => {
             await request(app.getHttpServer())
-                .delete(updateIdeationUrl)
+                .patch(updateIdeationUrl)
                 .expect(401);
+        });
+
+        it("should return 403 when user tries to delete someone else's ideation in the same team", async () => {
+            await request(app.getHttpServer())
+                .patch(`/voyages/teams/${userVoyageTeamId}/ideations/8`)
+                .set("Cookie", accessToken)
+                .expect(403);
+        });
+
+        it("should return 404 when ideation Id does not exist", async () => {
+            await request(app.getHttpServer())
+                .patch(`/voyages/teams/1/ideations/100`)
+                .set("Cookie", accessToken)
+                .expect(404);
         });
     });
 
@@ -414,13 +406,24 @@ describe("IdeationsController (e2e)", () => {
     });
 
     describe("POST /voyages/teams/:teamId/ideations/:ideationId/select - selects project ideation for voyage", () => {
+        // put this test before 201 otherwise  it will get a 409 (team already has a selection)
+        it("should return 404 if ideation is not found", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 99;
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Cookie", accessToken)
+                .expect(404);
+        });
+
         it("should return 201 if successfully selecting ideation", async () => {
             const teamId: number = 1;
             const ideationId: number = 1;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(201);
         });
 
@@ -443,18 +446,8 @@ describe("IdeationsController (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(409);
-        });
-
-        it("should return 404 if ideation is not found", async () => {
-            const teamId: number = 1;
-            const ideationId: number = 99;
-
-            return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
-                .expect(404);
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
@@ -463,7 +456,6 @@ describe("IdeationsController (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
-                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
     });
@@ -488,7 +480,7 @@ describe("IdeationsController (e2e)", () => {
             }
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
-                .set("Authorization", `Bearer ${adminAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(201);
         });
 
@@ -496,7 +488,7 @@ describe("IdeationsController (e2e)", () => {
             const teamId: number = 99;
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
-                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(403);
         });
 
@@ -506,7 +498,7 @@ describe("IdeationsController (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
-                .set("Authorization", `Bearer ${adminAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404);
         });
 
@@ -515,7 +507,6 @@ describe("IdeationsController (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
-                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
     });

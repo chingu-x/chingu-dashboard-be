@@ -294,6 +294,7 @@ export class IdeationsService {
         teamId: number,
         ideationId: number,
     ) {
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
         try {
             const currentSelection = await this.getSelectedIdeation(teamId);
             if (currentSelection) {
@@ -336,23 +337,6 @@ export class IdeationsService {
         }
         //default
         throw new NotFoundException(`no ideation found for team ${teamId}`);
-    }
-
-    // TODO: this function seems to be unused but might be useful for making new permission guard
-    private async getTeamMemberIdByIdeation(ideationId: number) {
-        const voyageTeamMemberId = await this.prisma.projectIdea.findFirst({
-            where: {
-                id: ideationId,
-            },
-            select: {
-                voyageTeamMemberId: true,
-            },
-        });
-        if (!voyageTeamMemberId)
-            throw new NotFoundException(
-                `Ideation (id: ${ideationId}) does not exist`,
-            );
-        return voyageTeamMemberId;
     }
 
     private async hasIdeationVote(teamMemberId: number, ideationId: number) {
