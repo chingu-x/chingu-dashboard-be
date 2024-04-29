@@ -206,12 +206,12 @@ where the subjects are defined in `prisma-generated-types.ts`
 Examples: <br/>
 `@CheckAbilities({ action: Action.Manage, subject: "all" })` - when a route is marked with this, 
 only users with the ability to manage 'all' subjects are allowed to access to route,
-otherwise, they will get a 403 forbidden error.
+otherwise, a 403 forbidden error is returned.
 
-`@CheckAbilities({ action: Action.Read, subject: "VoyageTeam" })` - users with Read ability for `VoyageTeam` subject can access this route'
+`@CheckAbilities({ action: Action.Read, subject: "VoyageTeam" })` - users with Read ability for `VoyageTeam` subject can access this route.
 
 ## Custom Exception Filter
-A try-catch block is not required to catch these exceptions
+Note: A try-catch block is not required to catch these exceptions
 ### Prisma Client exception Filter (`prisma-client-exception.filter.ts`)
 This filter catches all prisma generated exceptions with type `PrismaClientKnownRequestError` and handle them
 
@@ -221,14 +221,14 @@ This filter catches all `ForbiddenError` from `@casl/ability`
 ## Global Guards
 These guards are applied to every route in the app
 ### JWT Auth Guard (JwtAuthGuard) - `jwt-auth.guard.ts`
-This guard checks user access based on passport strategy 'jwt-at', which extracts cookies from the request body, validates the user in the database and attaches additional user information in req.user
-This guard also checks if the `@public()` is applied to the route, if yes, user access check is bypassed
+This guard checks user access based on the passport strategy 'jwt-at', which extracts cookies from the request body, validates the user in the database and attaches additional user information in req.user
+It also checks if the `@public()` is applied to the route, if yes, user access check is bypassed
 ### CASL Abilities Guard (AbilitiesGuard)- `abilities.guard.ts`
-This guard defines and checks required permissions to access the route, it checks if the user has the required permission based on the user roles.
+This guard defines and checks required permissions to access the route, it checks if the user has the required permission based on user roles.
 Permissions based on roles are defined in the CASL ability factory (`ability.factory.ts`)
 
 ## Guards
 ### JWT Refresh Token Guard (JwtRefreshAuthGuard) - `jwt-rt-auth.guard.ts`
-This guard is only used for the refresh access token route, using passport 'jwt-refresh' strategy
+This guard is only used for the refresh access token route, `/refresh`, using passport 'jwt-refresh' strategy
 ### Local Auth guard (LocalAuthGuard) - `local-auth.guard.ts`
-This guard is only used for the /login, using the passport 'local' strategy
+This guard is only used for the `/login` route, using the passport 'local' strategy
