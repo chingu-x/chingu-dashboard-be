@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { loginAndGetTokens } from "./utils";
+import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 import { seed } from "../prisma/seed/seed";
 import * as cookieParser from "cookie-parser";
@@ -12,6 +12,25 @@ describe("IdeationsController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     let accessToken: any;
+    let newUserAccessToken: string;
+    let adminAccessToken: string;
+
+    async function loginAdmin() {
+        await request(app.getHttpServer()).post("/auth/logout");
+        await request(app.getHttpServer())
+            .post("/auth/login")
+            .send({
+                email: "jessica.williamson@gmail.com",
+                password: "password",
+            })
+            .expect(200)
+            .then((res) => {
+                adminAccessToken = extractResCookieValueByKey(
+                    res.headers["set-cookie"],
+                    "access_token",
+                );
+            });
+    }
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -391,6 +410,113 @@ describe("IdeationsController (e2e)", () => {
 
             expect(ideationCountAfter).toEqual(ideationCountBefore);
             expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore);
+        });
+    });
+
+    describe("POST /voyages/teams/:teamId/ideations/:ideationId/select - selects project ideation for voyage", () => {
+        it("should return 201 if successfully selecting ideation", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(201);
+        });
+
+        it("should return 409 if an ideation is already selected", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            try {
+                await prisma.projectIdea.update({
+                    where: {
+                        id: ideationId,
+                    },
+                    data: {
+                        isSelected: true,
+                    },
+                });
+            } catch (e) {
+                throw e;
+            }
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(409);
+        });
+
+        it("should return 404 if ideation is not found", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 99;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(404);
+        });
+
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+    });
+
+    describe("POST /voyages/teams/:teamId/ideations/reset-selection - clears current team ideation selection", () => {
+        it("should return 201 if selection successfully cleared", async () => {
+            const teamId: number = 1;
+            const ideationId: number = 1;
+            await loginAdmin();
+
+            try {
+                await prisma.projectIdea.update({
+                    where: {
+                        id: ideationId,
+                    },
+                    data: {
+                        isSelected: true,
+                    },
+                });
+            } catch (e) {
+                throw e;
+            }
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${adminAccessToken}`)
+                .expect(201);
+        });
+
+        it("should return 403 if not logged in as admin", async () => {
+            const teamId: number = 99;
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${newUserAccessToken}`)
+                .expect(403);
+        });
+
+        it("should return 404 if team id is not found", async () => {
+            const teamId: number = 99;
+            await loginAdmin();
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${adminAccessToken}`)
+                .expect(404);
+        });
+
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/ideations/reset-selection`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
         });
     });
 });

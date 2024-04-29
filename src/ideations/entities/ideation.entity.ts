@@ -20,6 +20,9 @@ export class Ideation implements ProjectIdea {
     })
     vision: string;
 
+    @ApiProperty({ example: "false" })
+    isSelected: boolean;
+
     @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
     createdAt: Date;
 

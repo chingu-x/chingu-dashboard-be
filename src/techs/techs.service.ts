@@ -139,12 +139,20 @@ export class TechsService {
                 },
             });
 
-            return this.prisma.teamTechStackItemVote.create({
-                data: {
-                    teamTechId: newTeamTechItem.id,
-                    teamMemberId: voyageMemberId,
-                },
-            });
+            const TeamTechItemFirstVote =
+                await this.prisma.teamTechStackItemVote.create({
+                    data: {
+                        teamTechId: newTeamTechItem.id,
+                        teamMemberId: voyageMemberId,
+                    },
+                });
+            return {
+                teamTechStackItemVoteId: TeamTechItemFirstVote.id,
+                teamTechId: newTeamTechItem.id,
+                teamMemberId: TeamTechItemFirstVote.teamMemberId,
+                createdAt: TeamTechItemFirstVote.createdAt,
+                updatedAt: TeamTechItemFirstVote.updatedAt,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(
@@ -156,16 +164,33 @@ export class TechsService {
     }
 
     async addExistingTechVote(req, teamId, teamTechId) {
+        // check if team tech item exists
+        const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
+            where: {
+                id: teamTechId,
+            },
+        });
+        if (!teamTechItem)
+            throw new BadRequestException("Team Tech Item not found");
         const voyageMemberId = await this.findVoyageMemberId(req, teamId);
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
-            return await this.prisma.teamTechStackItemVote.create({
-                data: {
-                    teamTechId,
-                    teamMemberId: voyageMemberId,
-                },
-            });
+            const teamMemberTechVote =
+                await this.prisma.teamTechStackItemVote.create({
+                    data: {
+                        teamTechId,
+                        teamMemberId: voyageMemberId,
+                    },
+                });
+            // If successful, it returns an object containing the details of the vote
+            return {
+                teamTechStackItemVoteId: teamMemberTechVote.id,
+                teamTechId,
+                teamMemberId: teamMemberTechVote.teamMemberId,
+                createdAt: teamMemberTechVote.createdAt,
+                updatedAt: teamMemberTechVote.updatedAt,
+            };
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(
@@ -181,7 +206,7 @@ export class TechsService {
         if (!voyageMemberId) throw new BadRequestException("Invalid User");
 
         try {
-            const deletedVote = await this.prisma.teamTechStackItemVote.delete({
+            await this.prisma.teamTechStackItemVote.delete({
                 where: {
                     userTeamStackVote: {
                         teamTechId,
@@ -201,15 +226,24 @@ export class TechsService {
                     },
                 },
             );
-
+            // Check if the teamTechStackItemVotes array is empty
             if (teamTechItem.teamTechStackItemVotes.length === 0) {
-                return this.prisma.teamTechStackItem.delete({
+                // If it's empty, delete the tech item from the database using Prisma ORM
+                await this.prisma.teamTechStackItem.delete({
                     where: {
                         id: teamTechId,
                     },
                 });
+
+                return {
+                    message: "The vote and tech stack item were deleted",
+                    statusCode: 200,
+                };
             } else {
-                return deletedVote;
+                return {
+                    message: "This vote was deleted",
+                    statusCode: 200,
+                };
             }
         } catch (e) {
             if (e.code === "P2025") {
