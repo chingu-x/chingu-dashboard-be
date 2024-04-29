@@ -103,6 +103,11 @@ class Agenda {
     status: boolean;
 }
 
+class AgendaMeetingResponse extends Agenda {
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    updatedAt: Date;
+}
+
 export class MeetingResponseWithSprintAndAgenda {
     @ApiProperty({ example: 1 })
     id: number;
@@ -132,7 +137,7 @@ export class MeetingResponseWithSprintAndAgenda {
     notes: string;
 
     @ApiProperty({ isArray: true })
-    agendas: Agenda;
+    agendas: AgendaMeetingResponse;
 }
 
 export class MeetingResponse {
