@@ -50,6 +50,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - updated meeting model schema to include optional description field [#135](https://github.com/chingu-x/chingu-dashboard-be/pull/135)
 - Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
 - Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
+- Update test github actions workflow with timeout [#143](https://github.com/chingu-x/chingu-dashboard-be/pull/143)
 
 ### Fixed
 
