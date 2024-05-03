@@ -31,6 +31,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add voyage project submission form seed ([#131](https://github.com/chingu-x/chingu-dashboard-be/pull/131))
 - Add voyage project submission controller, service, e2e tests, responses seed ([#133](https://github.com/chingu-x/chingu-dashboard-be/pull/133))
 
+
+- Add new endpoints to select/reset team project ideation ([#136](https://github.com/chingu-x/chingu-dashboard-be/pull/136))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
@@ -38,11 +41,15 @@ Another example [here](https://co-pilot.dev/changelog)
 - Update changelog ([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 - Update test.yml to run e2e tests on pull requests to the main branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
 - Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
--Update /forms /forms/id response to include subQuestions [#115](https://github.com/chingu-x/chingu-dashboard-be/pull/115)
+- Update /forms /forms/id response to include subQuestions [#115](https://github.com/chingu-x/chingu-dashboard-be/pull/115)
 - Add role and permission guard to some existing routes (features, forms, ideations, teams) [#112](https://github.com/chingu-x/chingu-dashboard-be/pull/112)
 - Refactor voyages endpoint paths to follow API naming conversion [#123](https://github.com/chingu-x/chingu-dashboard-be/pull/123)
 - Refactor resources PATCH and DELETE URI [#127](https://github.com/chingu-x/chingu-dashboard-be/pull/127)
 - Modified response for GET voyages/teams/{teamId}/resources, adding user id value [#129](https://github.com/chingu-x/chingu-dashboard-be/pull/129)
+- Modified response for POST /api/v1/voyages/teams/{teamId}/techs/{teamTechId} & DELETE /api/v1/voyages/teams/{teamId}/techs/{teamTechId}, refactor id as teamTechStackItemVoteId value [#138](https://github.com/chingu-x/chingu-dashboard-be/pull/138)
+- updated meeting model schema to include optional description field [#135](https://github.com/chingu-x/chingu-dashboard-be/pull/135)
+- Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
+- Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
 
 ### Fixed
 

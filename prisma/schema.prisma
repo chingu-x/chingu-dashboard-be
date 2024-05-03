@@ -292,6 +292,7 @@ model ProjectIdea {
   title              String
   description        String
   vision             String
+  isSelected         Boolean            @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -343,6 +344,7 @@ model TeamMeeting {
   voyageTeamId Int
   voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
   title        String
+  description  String?
   dateTime     DateTime?
   meetingLink  String?
   notes        String?
