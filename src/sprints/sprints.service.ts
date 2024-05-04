@@ -13,7 +13,7 @@ import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
-import { FormTitles } from "src/global/constants/formTitles";
+import { FormTitles } from "../global/constants/formTitles";
 
 @Injectable()
 export class SprintsService {
