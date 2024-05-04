@@ -1,3 +1,4 @@
+import { FormTitles } from "src/global/constants/formTitles";
 import { prisma } from "./prisma-client";
 
 export const populateVoyageApplications = async () => {
@@ -5,7 +6,7 @@ export const populateVoyageApplications = async () => {
 
     const voyageApplicationForm = await prisma.form.findUnique({
         where: {
-            title: "Voyage Application Form",
+            title: FormTitles.voyageApplication,
         },
         select: {
             id: true,

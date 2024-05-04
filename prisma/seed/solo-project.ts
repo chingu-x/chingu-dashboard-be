@@ -1,3 +1,4 @@
+import { FormTitles } from "src/global/constants/formTitles";
 import { passedSampleFeedback } from "./data/text/solo-project-feedback";
 import { prisma } from "./prisma-client";
 
@@ -18,7 +19,7 @@ export const populateSoloProjects = async () => {
 
     const soloProjectForm = await prisma.form.findUnique({
         where: {
-            title: "Solo Project Submission Form",
+            title: FormTitles.soloProjectSubmission,
         },
         select: {
             id: true,
