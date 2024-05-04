@@ -51,7 +51,7 @@ export const populateMeetings = async () => {
     //find question Ids from sprint planning form
     const sprintPlanningForm = await prisma.form.findUnique({
         where: {
-            title: "Sprint Planning",
+            title: FormTitles.sprintPlanning,
         },
         select: {
             questions: true,
@@ -62,7 +62,7 @@ export const populateMeetings = async () => {
         data: {
             form: {
                 connect: {
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                 },
             },
             meeting: {
