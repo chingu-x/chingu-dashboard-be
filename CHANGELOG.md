@@ -51,6 +51,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
 - Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
 - Update test github actions workflow with timeout [#143](https://github.com/chingu-x/chingu-dashboard-be/pull/143)
+- Update/Add more form input types [#146](https://github.com/chingu-x/chingu-dashboard-be/pull/146)
 
 ### Fixed
 
