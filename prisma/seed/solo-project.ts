@@ -1,4 +1,4 @@
-import { FormTitles } from "src/global/constants/formTitles";
+import { FormTitles } from "../../src/global/constants/formTitles";
 import { passedSampleFeedback } from "./data/text/solo-project-feedback";
 import { prisma } from "./prisma-client";
 

@@ -1,4 +1,4 @@
-import { FormTitles } from "src/global/constants/formTitles";
+import { FormTitles } from "../../src/global/constants/formTitles";
 import { prisma } from "./prisma-client";
 
 export const populateVoyageApplications = async () => {

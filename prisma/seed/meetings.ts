@@ -1,6 +1,6 @@
 import { getRandomDateDuringSprint, getSprintId } from "./utils";
 import { prisma } from "./prisma-client";
-import { FormTitles } from "src/global/constants/formTitles";
+import { FormTitles } from "../../src/global/constants/formTitles";
 
 export const populateMeetings = async () => {
     // connect teamMeetings and form id
