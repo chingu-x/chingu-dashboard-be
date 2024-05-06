@@ -85,7 +85,7 @@ export const populateCheckinForm = async () => {
                         order: 4,
                         inputType: {
                             connect: {
-                                name: "radio",
+                                name: "radioIcon",
                             },
                         },
                         text: "How would you rate your team's progress right now?",
@@ -97,13 +97,13 @@ export const populateCheckinForm = async () => {
                                     createMany: {
                                         data: [
                                             {
-                                                text: "We have had a good start!",
+                                                text: "{{greenRocket}} We have had a good start!",
                                             },
                                             {
-                                                text: "I'm nervous we won't finish",
+                                                text: "{{amberRocket}} I'm nervous we won't finish",
                                             },
                                             {
-                                                text: "It doesn't look good right now",
+                                                text: "{{redRocket}} It doesn't look good right now",
                                             },
                                         ],
                                     },
@@ -151,10 +151,10 @@ export const populateCheckinForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "yesNo",
+                                name: "boolean",
                             },
                         },
-                        text: "Did you deploy to Production at the end of this Sprint",
+                        text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint",
                         answerRequired: true,
                     },
                     {
