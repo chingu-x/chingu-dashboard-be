@@ -14,11 +14,11 @@ import { TechsModule } from "./techs/techs.module";
 import { FeaturesModule } from "./features/features.module";
 import { IdeationsModule } from "./ideations/ideations.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
-import { RolesGuard } from "./auth/guards/roles.guard";
-import { PermissionsGuard } from "./auth/guards/permissions.guard";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TasksModule } from "./tasks/tasks.module";
 import { VoyagesModule } from "./voyages/voyages.module";
+import { AbilityModule } from "./ability/ability.module";
+import { AbilitiesGuard } from "./auth/guards/abilities.guard";
 
 @Module({
     imports: [
@@ -54,13 +54,13 @@ import { VoyagesModule } from "./voyages/voyages.module";
         ScheduleModule.forRoot(),
         TasksModule,
         VoyagesModule,
+        AbilityModule,
     ],
     controllers: [HealthCheckController],
     providers: [
         HealthCheckService,
         { provide: APP_GUARD, useClass: JwtAuthGuard },
-        { provide: APP_GUARD, useClass: RolesGuard },
-        { provide: APP_GUARD, useClass: PermissionsGuard },
+        { provide: APP_GUARD, useClass: AbilitiesGuard },
     ],
 })
 export class AppModule {}
