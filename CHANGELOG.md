@@ -50,6 +50,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - updated meeting model schema to include optional description field [#135](https://github.com/chingu-x/chingu-dashboard-be/pull/135)
 - Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
 - Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
+- Updated response for route GET /sprints/teams/{teamId}  to include voyage start and end dates [#146](https://github.com/chingu-x/chingu-dashboard-be/pull/146)
 
 ### Fixed
 
