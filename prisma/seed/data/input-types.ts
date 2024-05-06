@@ -3,7 +3,16 @@ export default [
         name: "text",
     },
     {
+        name: "shortText",
+    },
+    {
+        name: "url",
+    },
+    {
         name: "radio",
+    },
+    {
+        name: "radioIcon",
     },
     {
         name: "radioGroup",
@@ -15,9 +24,12 @@ export default [
         name: "number",
     },
     {
-        name: "yesNo",
+        name: "boolean",
     },
     {
         name: "teamMembersCheckbox",
+    },
+    {
+        name: "scale",
     },
 ];
