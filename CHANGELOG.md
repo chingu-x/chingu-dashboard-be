@@ -52,6 +52,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
 - Update test github actions workflow with timeout [#143](https://github.com/chingu-x/chingu-dashboard-be/pull/143)
 - Refractor of all form title reference to use values from formTitle.ts [#145](https://github.com/chingu-x/chingu-dashboard-be/pull/145)
+- Update/Add more form input types [#146](https://github.com/chingu-x/chingu-dashboard-be/pull/146)
 
 ### Fixed
 
