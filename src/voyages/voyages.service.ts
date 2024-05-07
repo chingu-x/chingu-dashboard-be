@@ -85,4 +85,8 @@ export class VoyagesService {
             }
         }
     }
+
+    async getVoyageProject() {
+        return this.prisma.formResponseVoyageProject.findMany({});
+    }
 }

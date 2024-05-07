@@ -5,11 +5,13 @@ type VoyageTeam = {
     memberId: number;
 };
 
+export type UserReq = {
+    userId: string;
+    email: string;
+    roles: string[];
+    voyageTeams: VoyageTeam[];
+};
+
 export interface CustomRequest extends Request {
-    user: {
-        userId: string;
-        email: string;
-        roles: string[];
-        voyageTeams: VoyageTeam[];
-    };
+    user: UserReq;
 }

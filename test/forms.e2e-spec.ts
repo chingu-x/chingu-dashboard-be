@@ -6,6 +6,8 @@ import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { getNonAdminUser, loginAndGetTokens } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
+import { AbilityFactory } from "../src/ability/ability.factory/ability.factory";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 describe("FormController e2e Tests", () => {
     let app: INestApplication;
@@ -14,13 +16,17 @@ describe("FormController e2e Tests", () => {
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
+            providers: [AbilityFactory],
         }).compile();
 
         await seed();
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+
         app.use(cookieParser());
         await app.init();
     });

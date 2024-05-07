@@ -20,10 +20,9 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
-import { Roles } from "../global/decorators/roles.decorator";
-import { Permissions } from "../global/decorators/permissions.decorator";
-import { AppRoles } from "../auth/auth.roles";
-import { AppPermissions } from "../auth/auth.permissions";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller("teams")
 @ApiTags("teams")
@@ -40,7 +39,7 @@ export class TeamsController {
         type: VoyageTeamResponse,
         isArray: true,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
     findAll() {
         return this.teamsService.findAll();
@@ -69,7 +68,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "VoyageTeam" })
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);
@@ -95,10 +94,13 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    @CheckAbilities({ action: Action.Read, subject: "VoyageTeam" })
     @Get(":teamId")
-    findTeamById(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.teamsService.findTeamById(teamId);
+    findTeamById(
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Request() req: CustomRequest,
+    ) {
+        return this.teamsService.findTeamById(teamId, req.user);
     }
 
     @ApiOperation({
@@ -122,11 +124,11 @@ export class TeamsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "VoyageTeam" })
     @Patch(":teamId/members")
-    @Permissions(AppPermissions.OWN_TEAM)
     update(
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Request() req,
+        @Request() req: CustomRequest,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
         return this.teamsService.updateTeamMemberById(

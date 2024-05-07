@@ -1,9 +1,10 @@
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { PrismaClientExceptionFilter } from "./prisma-client-exception/prisma-client-exception.filter";
+import { PrismaClientExceptionFilter } from "./exception-filters/prisma-client-exception.filter";
 import { ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
+import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -42,6 +43,7 @@ async function bootstrap() {
 
     const { httpAdapter } = app.get(HttpAdapterHost);
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+    app.useGlobalFilters(new CASLForbiddenExceptionFilter());
     app.useGlobalPipes(
         new ValidationPipe({
             transform: true,

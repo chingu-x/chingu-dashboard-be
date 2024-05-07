@@ -90,10 +90,10 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 8,
                         inputType: {
                             connect: {
-                                name: "radio",
+                                name: "scale",
                             },
                         },
-                        text: "On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",
+                        text: "{{Not Likely,Extremely Likely}}On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",
                         answerRequired: true,
                         optionGroup: {
                             create: {

@@ -40,6 +40,8 @@
     "test:e2e:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest --config ./test/jest-e2e.json --runInBand"
   },
   "dependencies": {
+    "@casl/ability": "^6.7.1",
+    "@casl/prisma": "^1.4.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.1",
     "@nestjs/core": "^10.0.0",
