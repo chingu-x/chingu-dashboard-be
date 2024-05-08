@@ -64,6 +64,7 @@ model User {
   resetToken             ResetToken?
   emailVerificationToken EmailVerificationToken?
   roles                  UserRole[]
+  sprintCheckin          Int[]  @default([])
 }
 
 model Role {
