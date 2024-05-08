@@ -550,7 +550,10 @@ export class SprintsService {
         );
     }
 
-    async addCheckinFormResponse(createCheckinForm: CreateCheckinFormDto) {
+    async addCheckinFormResponse(
+        createCheckinForm: CreateCheckinFormDto,
+        userId: string,
+    ) {
         const responsesArray =
             this.globalServices.responseDtoToArray(createCheckinForm);
 
@@ -571,6 +574,32 @@ export class SprintsService {
                                     data: responsesArray,
                                 },
                             },
+                        },
+                    });
+
+                    // find the user and extract its current sprintCheckin Ids
+                    const checkinFormIds = await tx.user.findUnique({
+                        where: {
+                            id: userId,
+                        },
+                        select: {
+                            sprintCheckin: true,
+                        },
+                    });
+
+                    //updated array of sprintCheckin Ids
+                    const updatedCheckinFormIds: number[] = [
+                        ...checkinFormIds.sprintCheckin,
+                        createCheckinForm.sprintId,
+                    ];
+
+                    // update the user with the updated sprintCheckin Ids
+                    await tx.user.update({
+                        where: {
+                            id: userId,
+                        },
+                        data: {
+                            sprintCheckin: updatedCheckinFormIds,
                         },
                     });
                     return tx.formResponseCheckin.create({

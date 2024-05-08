@@ -9,6 +9,7 @@ import {
     Delete,
     ValidationPipe,
     HttpStatus,
+    Request,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -35,6 +36,7 @@ import {
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
+import { CustomRequest } from "../../src/global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -477,9 +479,11 @@ export class SprintsController {
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe())
         createCheckinFormResponse: CreateCheckinFormDto,
+        @Request() req: CustomRequest,
     ) {
         return this.sprintsService.addCheckinFormResponse(
             createCheckinFormResponse,
+            req.user.userId,
         );
     }
 }
