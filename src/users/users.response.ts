@@ -122,9 +122,6 @@ export class UserResponse {
     @ApiProperty({ isArray: true, example: ["admin", "voyager"] })
     roles: string;
 
-    @ApiProperty({ isArray: true, example: [1, 2] })
-    sprintCheckIn: number[];
-
     createdAt: Date;
     updatedAt: Date;
 }
@@ -148,4 +145,7 @@ export class PublicUserResponse extends OmitType(UserResponse, [
 export class FullUserResponse extends UserResponse {
     @ApiProperty({ isArray: true })
     voyageTeamMembers: VoyageTeamWithoutMember;
+
+    @ApiProperty({ isArray: true })
+    sprintCheckIn: number[];
 }
