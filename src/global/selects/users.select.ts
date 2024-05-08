@@ -55,6 +55,7 @@ export const fullUserDetailSelect = {
             hrPerSprint: true,
         },
     },
+    sprintCheckin: true,
 };
 
 export const privateUserDetailSelect = {
@@ -104,6 +105,7 @@ export const privateUserDetailSelect = {
             },
         },
     },
+    sprintCheckin: true,
 };
 
 export const publicUserDetailSelect = {

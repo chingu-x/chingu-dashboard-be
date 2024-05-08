@@ -122,6 +122,9 @@ export class UserResponse {
     @ApiProperty({ isArray: true, example: ["admin", "voyager"] })
     roles: string;
 
+    @ApiProperty({ isArray: true, example: [1, 2] })
+    sprintCheckIn: number[];
+
     createdAt: Date;
     updatedAt: Date;
 }
