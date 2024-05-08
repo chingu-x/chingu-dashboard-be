@@ -38,7 +38,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 3,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "Please link your Github repo:",
@@ -48,7 +48,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 4,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "Please link your deployed project:",
@@ -58,7 +58,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "If you have a project showcase video, please provide the public link:",
