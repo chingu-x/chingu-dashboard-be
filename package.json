@@ -27,8 +27,8 @@
     "studio:test:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public prisma studio",
     "seed": "prisma db seed",
     "lint": "eslint \"{prisma/*seed,src,test}/**/*.ts\" --fix",
-    "test": "dotenv -e ./.env.test jest",
-    "test:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest",
+    "test:unit": "dotenv -e ./.env.test jest",
+    "test:unit:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest",
     "test:watch": "dotenv -e ./.env.test jest --watch",
     "test:watch:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest --watch",
     "test:cov": "dotenv -e ./.env.test jest --coverage",
@@ -37,7 +37,9 @@
     "test:int": "dotenv -e ./.env.test -- jest -i --no-cache --verbose --config ./test/jest-int.json",
     "test:int:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest -i --no-cache --verbose --config ./test/jest-int.json",
     "test:e2e": "dotenv -e ./.env.test -- jest --config ./test/jest-e2e.json --runInBand",
-    "test:e2e:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest --config ./test/jest-e2e.json --runInBand"
+    "test:e2e:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public -- jest --config ./test/jest-e2e.json --runInBand",
+    "test:docker": "yarn test:e2e:docker --silent && yarn test:unit:docker --silent",
+    "test": "yarn test:e2e --silent && yarn test:unit --silent"
   },
   "dependencies": {
     "@casl/ability": "^6.7.1",
