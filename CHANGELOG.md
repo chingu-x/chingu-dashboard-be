@@ -32,6 +32,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add voyage project submission controller, service, e2e tests, responses seed ([#133](https://github.com/chingu-x/chingu-dashboard-be/pull/133))
 - Add new endpoints to select/reset team project ideation ([#136](https://github.com/chingu-x/chingu-dashboard-be/pull/136))
 - Add CASL ability for Access control ([#141](https://github.com/chingu-x/chingu-dashboard-be/pull/141))
+- Add sprint checkin form submission status for a user ([#149](https://github.com/chingu-x/chingu-dashboard-be/pull/149))
 
 ### Changed
 
