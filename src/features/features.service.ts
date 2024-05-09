@@ -369,6 +369,11 @@ export class FeaturesService {
             throw new NotFoundException(
                 `FeatureId (id: ${featureId}) does not exist.`,
             );
+        } else {
+            return {
+                message: "Feature deleted successfully",
+                status: 200,
+            };
         }
     }
 
