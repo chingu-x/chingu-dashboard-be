@@ -110,6 +110,9 @@ export class SprintsService {
                     select: {
                         id: true,
                         number: true,
+                        soloProjectDeadline: true,
+                        certificateIssueDate: true,
+                        showcasePublishDate: true,
                         startDate: true,
                         endDate: true,
                         sprints: {
@@ -135,7 +138,7 @@ export class SprintsService {
         //copy teamVoyage endDate to voyage object
         teamSprintDates.voyage.endDate = teamSprintDates.endDate;
         delete teamSprintDates.endDate;
-        return teamSprintDates;
+        return teamSprintDates.voyage;
     }
 
     async getMeetingById(meetingId: number) {
