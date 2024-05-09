@@ -15,32 +15,68 @@ export const populateSprints = async () => {
                         {
                             number: 1,
                             startDate: voyage.startDate,
-                            endDate: addDays(voyage.startDate, 6),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 6).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                         {
                             number: 2,
                             startDate: addDays(voyage.startDate, 7),
-                            endDate: addDays(voyage.startDate, 13),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 13).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                         {
                             number: 3,
                             startDate: addDays(voyage.startDate, 14),
-                            endDate: addDays(voyage.startDate, 20),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 20).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                         {
                             number: 4,
                             startDate: addDays(voyage.startDate, 21),
-                            endDate: addDays(voyage.startDate, 27),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 27).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                         {
                             number: 5,
                             startDate: addDays(voyage.startDate, 28),
-                            endDate: addDays(voyage.startDate, 34),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 34).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                         {
                             number: 6,
                             startDate: addDays(voyage.startDate, 35),
-                            endDate: addDays(voyage.startDate, 41),
+                            endDate: new Date(
+                                addDays(voyage.startDate, 41).setHours(
+                                    23,
+                                    59,
+                                    59,
+                                ),
+                            ),
                         },
                     ],
                 },

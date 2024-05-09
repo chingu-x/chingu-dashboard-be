@@ -1,6 +1,6 @@
 import { prisma } from "../prisma-client";
 
-export const addDays = (date, days) => {
+export const addDays = (date, days: number) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + days);
     return newDate;
