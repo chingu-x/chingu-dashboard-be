@@ -10,9 +10,9 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2023-11-06"),
-            endDate: new Date("2023-12-17"),
-            soloProjectDeadline: new Date("2023-11-04"),
-            certificateIssueDate: new Date("2023-12-31"),
+            endDate: new Date("2023-12-17T23:59:59.000Z"),
+            soloProjectDeadline: new Date("2023-11-04T23:59:59.000Z"),
+            certificateIssueDate: new Date("2023-12-31T23:59:59.000Z"),
         },
     });
 
@@ -25,9 +25,9 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2024-01-08"),
-            endDate: new Date("2024-02-18"),
-            soloProjectDeadline: new Date("2023-12-31"),
-            certificateIssueDate: new Date("2024-02-25"),
+            endDate: new Date("2024-02-18T23:59:59.000Z"),
+            soloProjectDeadline: new Date("2023-12-31T23:59:59.000Z"),
+            certificateIssueDate: new Date("2024-02-25T23:59:59.000Z"),
         },
     });
     await prisma.voyage.create({
@@ -39,9 +39,9 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2024-03-05"),
-            endDate: new Date("2024-04-14"),
-            soloProjectDeadline: new Date("2024-02-25"),
-            certificateIssueDate: new Date("2024-04-21"),
+            endDate: new Date("2024-04-14T23:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-02-25T23:59:59.000Z"),
+            certificateIssueDate: new Date("2024-04-21T23:59:59.000Z"),
         },
     });
     await prisma.voyage.create({
@@ -53,9 +53,9 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2024-05-06"),
-            endDate: new Date("2024-06-16"),
-            soloProjectDeadline: new Date("2024-04-28"),
-            certificateIssueDate: new Date("2024-06-23"),
+            endDate: new Date("2024-06-16T23:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-04-28T23:59:59.000Z"),
+            certificateIssueDate: new Date("2024-06-23T23:59:59.000Z"),
         },
     });
 };

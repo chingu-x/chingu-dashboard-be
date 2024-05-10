@@ -186,6 +186,15 @@ export const populateQuestionResponses = async (
             });
             break;
         }
+        case "url": {
+            await prisma.response.create({
+                data: {
+                    ...data,
+                    text: `https://www.randomUrl${question.id}.com`,
+                },
+            });
+            break;
+        }
         default: {
             throw new Error("Prisma seed: Unexpected question type");
         }
