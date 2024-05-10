@@ -53,6 +53,8 @@ Another example [here](https://co-pilot.dev/changelog)
 - Refractor of all form title reference to use values from formTitle.ts [#145](https://github.com/chingu-x/chingu-dashboard-be/pull/145)
 - Update/Add more form input types [#146](https://github.com/chingu-x/chingu-dashboard-be/pull/146)
 - Update seed files (include a time for sprint end dates, add url input type) [#151](https://github.com/chingu-x/chingu-dashboard-be/pull/151)
+- Update the deleteFeature method to use a DeleteFeatureResponse and return an object with a successful status and a message [#150](https://github.com/chingu-x/chingu-dashboard-be/pull/150)
+
 
 ### Fixed
 

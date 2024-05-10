@@ -33,6 +33,7 @@ import {
     FeatureCategoriesResponse,
     ExtendedFeaturesResponse,
     FeatureResponse,
+    DeleteFeatureResponse,
 } from "./features.response";
 import { CustomRequest } from "../global/types/CustomRequest";
 
@@ -256,6 +257,7 @@ export class FeaturesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully deleted feature.",
+        type: DeleteFeatureResponse,
     })
     //Can only delete if loggedIn userId mataches addedBy userId
     @Delete("/features/:featureId")

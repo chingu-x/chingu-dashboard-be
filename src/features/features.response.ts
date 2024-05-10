@@ -95,3 +95,11 @@ export class ExtendedFeaturesResponse {
     @ApiProperty()
     addedBy: AddedBY;
 }
+
+export class DeleteFeatureResponse {
+    @ApiProperty({ example: "The feature was deleted successfully" })
+    message: string;
+
+    @ApiProperty({ example: 200 })
+    statusCode: number;
+}
