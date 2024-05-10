@@ -50,11 +50,13 @@ Another example [here](https://co-pilot.dev/changelog)
 - updated meeting model schema to include optional description field [#135](https://github.com/chingu-x/chingu-dashboard-be/pull/135)
 - Remove teamMeetings from response for getSprintDatesByTeamId [#139](https://github.com/chingu-x/chingu-dashboard-be/pull/139)
 - Updated response for route GET sprints/meetings/{meetingId} to include updatedAt for agendas [#140](https://github.com/chingu-x/chingu-dashboard-be/pull/140)
+- Updated response for route GET /sprints/teams/{teamId}  to include voyage start and end dates [#147](https://github.com/chingu-x/chingu-dashboard-be/pull/147)
 - Update test github actions workflow with timeout [#143](https://github.com/chingu-x/chingu-dashboard-be/pull/143)
 - Refractor of all form title reference to use values from formTitle.ts [#145](https://github.com/chingu-x/chingu-dashboard-be/pull/145)
 - Update/Add more form input types [#146](https://github.com/chingu-x/chingu-dashboard-be/pull/146)
 - Update seed files (include a time for sprint end dates, add url input type) [#151](https://github.com/chingu-x/chingu-dashboard-be/pull/151)
 - Update the deleteFeature method to use a DeleteFeatureResponse and return an object with a successful status and a message [#150](https://github.com/chingu-x/chingu-dashboard-be/pull/150)
+
 
 
 ### Fixed

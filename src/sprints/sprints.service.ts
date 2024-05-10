@@ -105,10 +105,16 @@ export class SprintsService {
             select: {
                 id: true,
                 name: true,
+                endDate: true,
                 voyage: {
                     select: {
                         id: true,
                         number: true,
+                        soloProjectDeadline: true,
+                        certificateIssueDate: true,
+                        showcasePublishDate: true,
+                        startDate: true,
+                        endDate: true,
                         sprints: {
                             select: {
                                 id: true,
@@ -129,7 +135,10 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        return teamSprintDates;
+        //copy teamVoyage endDate to voyage object
+        teamSprintDates.voyage.endDate = teamSprintDates.endDate;
+        delete teamSprintDates.endDate;
+        return teamSprintDates.voyage;
     }
 
     async getMeetingById(meetingId: number) {
