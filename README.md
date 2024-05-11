@@ -81,8 +81,11 @@ $ yarn start:prod
 ## Test<a name="tests"></a>
 
 ```bash
+# all tests (unit and e2e for now)
+$ yarn test 
+
 # unit tests
-$ yarn test
+$ yarn test:unit
 
 # e2e tests
 $ yarn test:e2e
@@ -96,8 +99,11 @@ $ yarn test:cov
 
 If using the docker terminal the commands would be 
 ```bash
+# all tests (unit and e2e for now)
+$ yarn test:docker 
+
 # unit tests
-$ yarn test:docker
+$ yarn test:unit:docker
 
 # e2e tests
 $ yarn test:e2e:docker

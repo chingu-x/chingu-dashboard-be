@@ -107,19 +107,23 @@ describe("Sprints Controller (e2e)", () => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             id: expect.any(Number),
-                            name: expect.any(String),
-                            voyage: expect.objectContaining({
-                                id: expect.any(Number),
-                                number: expect.any(String),
-                                sprints: expect.arrayContaining([
-                                    expect.objectContaining({
-                                        id: expect.any(Number),
-                                        number: expect.any(Number),
-                                        startDate: expect.any(String),
-                                        endDate: expect.any(String),
-                                    }),
-                                ]),
-                            }),
+                            number: expect.any(String),
+                            soloProjectDeadline: expect.any(String),
+                            certificateIssueDate: expect.any(String),
+                            showcasePublishDate: expect.toBeOneOf([
+                                null,
+                                expect.any(String),
+                            ]),
+                            startDate: expect.any(String),
+                            endDate: expect.any(String),
+                            sprints: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.any(Number),
+                                    number: expect.any(Number),
+                                    startDate: expect.any(String),
+                                    endDate: expect.any(String),
+                                }),
+                            ]),
                         }),
                     );
                 });
