@@ -9,6 +9,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
+import { DeleteTeamTechDto } from "./dto/delete-tech.dto";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -170,11 +171,22 @@ export class TechsService {
     ) {
         // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
 
-        const { techId, voyageTeamMemberId, techName } = updateTeamTechDto;
+        const { techId, techName } = updateTeamTechDto;
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
             where: {
                 id: techId,
+            },
+            select: {
+                addedBy: {
+                    select: {
+                        member: {
+                            select: {
+                                id: true,
+                            },
+                        },
+                    },
+                },
             },
         });
         if (!teamTechItem)
@@ -184,7 +196,7 @@ export class TechsService {
 
         // check if the voyageTeamMemberId in request body  matches the voyageTeamMemberId that created this techStackItem
 
-        if (voyageTeamMemberId !== teamTechItem.voyageTeamMemberId) {
+        if (req.user.userId !== teamTechItem.addedBy.member.id) {
             throw new UnauthorizedException(
                 "[Tech Service]:  You can only update your own Tech Stack Item.",
             );
@@ -194,7 +206,6 @@ export class TechsService {
                 await this.prisma.teamTechStackItem.update({
                     where: {
                         id: techId,
-                        voyageTeamMemberId,
                     },
                     data: {
                         name: updateTeamTechDto.techName,
@@ -230,6 +241,58 @@ export class TechsService {
                     `[Tech Service]: ${techName} already exists in the available team tech stack.`,
                 );
             }
+            throw e;
+        }
+    }
+
+    async deleteTeamTech(
+        req,
+        teamId: number,
+        deleteTeamTechDto: DeleteTeamTechDto,
+    ) {
+        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
+        const { techId } = deleteTeamTechDto;
+        // check if team tech item exists
+        const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
+            where: {
+                id: techId,
+            },
+            select: {
+                addedBy: {
+                    select: {
+                        member: {
+                            select: {
+                                id: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        if (!teamTechItem)
+            throw new NotFoundException(
+                `[Tech Service]: Team Tech Stack Item with id:${techId} not found`,
+            );
+
+        // check if the logged in user is the one who added the tech stack item
+
+        if (req.user.userId !== teamTechItem.addedBy.member.id) {
+            throw new UnauthorizedException(
+                "[Tech Service]:  You can only delete your own Tech Stack Item.",
+            );
+        }
+        try {
+            await this.prisma.teamTechStackItem.delete({
+                where: {
+                    id: techId,
+                },
+            });
+            return {
+                message: "The vote and tech stack item were deleted",
+                statusCode: 200,
+            };
+        } catch (e) {
             throw e;
         }
     }

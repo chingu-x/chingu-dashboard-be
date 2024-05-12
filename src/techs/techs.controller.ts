@@ -28,6 +28,7 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
+import { DeleteTeamTechDto } from "./dto/delete-tech.dto";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -142,6 +143,46 @@ export class TechsController {
             teamId,
             updateTeamTechDto,
         );
+    }
+
+    @ApiOperation({
+        summary: "Delete a tech stack item of a team",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Tech stack item  was successfully deleted",
+        type: TechItemDeleteResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Tech stack item couldn't be deleted",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack item id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 2,
+    })
+    @Delete()
+    deleteTeamTech(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body(ValidationPipe) deleteTeamTechDto: DeleteTeamTechDto,
+    ) {
+        return this.techsService.deleteTeamTech(req, teamId, deleteTeamTechDto);
     }
 
     @ApiOperation({
