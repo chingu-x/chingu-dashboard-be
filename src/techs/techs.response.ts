@@ -69,6 +69,23 @@ export class TechItemResponse {
     updatedAt: Date;
 }
 
+export class TechItemUpdateResponse {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: "Typescript" })
+    name: string;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamMemberId: number;
+
+    @ApiProperty({ example: 2 })
+    voyageTeamId: number;
+
+    @ApiProperty({ isArray: true })
+    teamTechStackItemVotes: TeamTechStackItemVote;
+}
+
 export class TechItemDeleteResponse {
     @ApiProperty({ example: "The vote and tech stack item were deleted" })
     message: string;

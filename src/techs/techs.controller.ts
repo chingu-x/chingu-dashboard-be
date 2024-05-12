@@ -19,6 +19,7 @@ import {
     TeamTechResponse,
     TechItemResponse,
     TechItemDeleteResponse,
+    TechItemUpdateResponse,
 } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -26,6 +27,7 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
+import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -91,6 +93,55 @@ export class TechsController {
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
     ) {
         return this.techsService.addNewTeamTech(req, teamId, createTeamTechDto);
+    }
+
+    @ApiOperation({
+        summary: "Updates a existing tech stack item in the team",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully updated a tech stack item",
+        type: TechItemUpdateResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is unauthorized to perform this action",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Tech Stack Item couldn't be updated",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack item already exist for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack item id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "voyage team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Patch()
+    updateTeamTech(
+        @Request() req,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body(ValidationPipe) updateTeamTechDto: UpdateTeamTechDto,
+    ) {
+        return this.techsService.updateExistingTeamTech(
+            req,
+            teamId,
+            updateTeamTechDto,
+        );
     }
 
     @ApiOperation({

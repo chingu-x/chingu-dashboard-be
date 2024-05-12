@@ -3,10 +3,12 @@ import {
     ConflictException,
     Injectable,
     NotFoundException,
+    UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -126,7 +128,7 @@ export class TechsService {
         teamId: number,
         createTechVoteDto: CreateTeamTechDto,
     ) {
-        // Todo: To Check if this voyageTeamMemberId is in the voyageTeam
+        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
                 data: {
@@ -155,6 +157,77 @@ export class TechsService {
             if (e.code === "P2002") {
                 throw new ConflictException(
                     `${createTechVoteDto.techName} already exists in the available team tech stack.`,
+                );
+            }
+            throw e;
+        }
+    }
+
+    async updateExistingTeamTech(
+        req,
+        teamId: number,
+        updateTeamTechDto: UpdateTeamTechDto,
+    ) {
+        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
+
+        const { techId, voyageTeamMemberId, techName } = updateTeamTechDto;
+        // check if team tech item exists
+        const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
+            where: {
+                id: techId,
+            },
+        });
+        if (!teamTechItem)
+            throw new NotFoundException(
+                `[Tech Service]: Team Tech Stack Item with id:${techId} not found`,
+            );
+
+        // check if the voyageTeamMemberId in request body  matches the voyageTeamMemberId that created this techStackItem
+
+        if (voyageTeamMemberId !== teamTechItem.voyageTeamMemberId) {
+            throw new UnauthorizedException(
+                "[Tech Service]:  You can only update your own Tech Stack Item.",
+            );
+        }
+        try {
+            const updateTechStackItem =
+                await this.prisma.teamTechStackItem.update({
+                    where: {
+                        id: techId,
+                        voyageTeamMemberId,
+                    },
+                    data: {
+                        name: updateTeamTechDto.techName,
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        voyageTeamMemberId: true,
+                        voyageTeamId: true,
+                        teamTechStackItemVotes: {
+                            select: {
+                                votedBy: {
+                                    select: {
+                                        member: {
+                                            select: {
+                                                id: true,
+                                                firstName: true,
+                                                lastName: true,
+                                                avatar: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+
+            return updateTechStackItem;
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `[Tech Service]: ${techName} already exists in the available team tech stack.`,
                 );
             }
             throw e;
