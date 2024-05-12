@@ -194,7 +194,7 @@ export class TechsService {
                 `[Tech Service]: Team Tech Stack Item with id:${techId} not found`,
             );
 
-        // check if the voyageTeamMemberId in request body  matches the voyageTeamMemberId that created this techStackItem
+        // check if the logged in user is the one who added the tech stack item
 
         if (req.user.userId !== teamTechItem.addedBy.member.id) {
             throw new UnauthorizedException(
