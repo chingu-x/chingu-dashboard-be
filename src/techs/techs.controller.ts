@@ -100,7 +100,7 @@ export class TechsController {
         description: "Requires login",
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         description: "Successfully updated a tech stack item",
         type: TechItemUpdateResponse,
     })
