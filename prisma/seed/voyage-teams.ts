@@ -255,6 +255,11 @@ export const populateVoyageTeams = async () => {
                                 },
                             },
                         },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[0].id,
+                            },
+                        },
                     },
                 ],
             },
@@ -282,6 +287,11 @@ export const populateVoyageTeams = async () => {
                                         id: voyageTeamMembers[2].id,
                                     },
                                 },
+                            },
+                        },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[2].id,
                             },
                         },
                     },
@@ -313,6 +323,11 @@ export const populateVoyageTeams = async () => {
                                 },
                             },
                         },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[2].id,
+                            },
+                        },
                     },
                 ],
             },
@@ -340,6 +355,11 @@ export const populateVoyageTeams = async () => {
                                         id: voyageTeamMembers[1].id,
                                     },
                                 },
+                            },
+                        },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[1].id,
                             },
                         },
                     },
@@ -371,6 +391,11 @@ export const populateVoyageTeams = async () => {
                                 },
                             },
                         },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[0].id,
+                            },
+                        },
                     },
                 ],
             },
@@ -398,6 +423,11 @@ export const populateVoyageTeams = async () => {
                                         id: voyageTeamMembers[3].id,
                                     },
                                 },
+                            },
+                        },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[3].id,
                             },
                         },
                     },
@@ -429,6 +459,11 @@ export const populateVoyageTeams = async () => {
                                 },
                             },
                         },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[2].id,
+                            },
+                        },
                     },
                 ],
             },
@@ -456,6 +491,11 @@ export const populateVoyageTeams = async () => {
                                         id: voyageTeamMembers[3].id,
                                     },
                                 },
+                            },
+                        },
+                        addedBy: {
+                            connect: {
+                                id: voyageTeamMembers[3].id,
                             },
                         },
                     },
