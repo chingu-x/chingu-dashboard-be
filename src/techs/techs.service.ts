@@ -126,16 +126,14 @@ export class TechsService {
         teamId: number,
         createTechVoteDto: CreateTeamTechDto,
     ) {
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (!voyageMemberId)
-            throw new BadRequestException("Invalid User or Team Id");
-
+        // Todo: To Check if this voyageTeamMemberId is in the voyageTeam
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
                 data: {
                     name: createTechVoteDto.techName,
                     categoryId: createTechVoteDto.techCategoryId,
                     voyageTeamId: teamId,
+                    voyageTeamMemberId: createTechVoteDto.voyageTeamMemberId,
                 },
             });
 
@@ -143,7 +141,7 @@ export class TechsService {
                 await this.prisma.teamTechStackItemVote.create({
                     data: {
                         teamTechId: newTeamTechItem.id,
-                        teamMemberId: voyageMemberId,
+                        teamMemberId: createTechVoteDto.voyageTeamMemberId,
                     },
                 });
             return {
