@@ -130,6 +130,9 @@ export class TechsService {
         createTechVoteDto: CreateTeamTechDto,
     ) {
         // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
+
+        //check for valid teamId
+        await this.validateTeamId(teamId);
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
                 data: {
@@ -170,6 +173,8 @@ export class TechsService {
         updateTeamTechDto: UpdateTeamTechDto,
     ) {
         // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
+
+        await this.validateTeamId(teamId);
 
         const { techId, techName } = updateTeamTechDto;
         // check if team tech item exists
@@ -251,6 +256,8 @@ export class TechsService {
         deleteTeamTechDto: DeleteTeamTechDto,
     ) {
         // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
+
+        await this.validateTeamId(teamId);
         const { techId } = deleteTeamTechDto;
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({

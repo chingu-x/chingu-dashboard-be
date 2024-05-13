@@ -1,9 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsInt, IsNotEmpty, IsString } from "class-validator";
-import { PartialType } from "@nestjs/mapped-types";
-import { CreateTeamTechDto } from "./create-tech.dto";
 
-export class UpdateTeamTechDto extends PartialType(CreateTeamTechDto) {
+export class UpdateTeamTechDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({ example: "Typescipt" })

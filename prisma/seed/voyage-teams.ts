@@ -228,7 +228,9 @@ export const populateVoyageTeams = async () => {
         },
     });
 
-    const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
+    const voyageTeamMembers = (
+        await prisma.voyageTeamMember.findMany({})
+    ).reverse();
 
     // nested createMany is not supported, so creating one by one
     // https://github.com/prisma/prisma/issues/5455
