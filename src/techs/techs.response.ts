@@ -76,7 +76,7 @@ export class TechItemUpdateResponse {
     @ApiProperty({ example: "Typescript" })
     name: string;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 8 })
     voyageTeamMemberId: number;
 
     @ApiProperty({ example: 2 })

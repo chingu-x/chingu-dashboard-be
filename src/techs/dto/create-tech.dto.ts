@@ -14,6 +14,6 @@ export class CreateTeamTechDto {
 
     @IsInt()
     @IsNotEmpty()
-    @ApiProperty({ example: 4 })
+    @ApiProperty({ example: 8 })
     voyageTeamMemberId: number;
 }

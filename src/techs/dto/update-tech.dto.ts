@@ -9,7 +9,7 @@ export class UpdateTeamTechDto {
 
     @IsInt()
     @IsNotEmpty()
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 8 })
     voyageTeamMemberId: number;
 
     @IsInt()

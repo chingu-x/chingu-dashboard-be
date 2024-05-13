@@ -85,7 +85,7 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
     @Post()
     addNewTeamTech(
@@ -130,7 +130,7 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
     @Patch()
     updateTeamTech(

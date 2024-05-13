@@ -4,7 +4,7 @@ import { IsInt, IsNotEmpty } from "class-validator";
 export class DeleteTeamTechDto {
     @IsInt()
     @IsNotEmpty()
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 8 })
     voyageTeamMemberId: number;
 
     @IsInt()
