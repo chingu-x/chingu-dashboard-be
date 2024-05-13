@@ -296,7 +296,7 @@ export class TechsService {
                 },
             });
             return {
-                message: "The vote and tech stack item were deleted",
+                message: "The  tech stack item is deleted",
                 statusCode: 200,
             };
         } catch (e) {

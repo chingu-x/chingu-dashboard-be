@@ -350,7 +350,7 @@ describe("Techs Controller (e2e)", () => {
         });
         it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
-            const techId: number = 1;
+            const techId: number = 5;
             const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
@@ -358,6 +358,138 @@ describe("Techs Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
                     techName: updatedTechName,
+                    techId: techId,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(401);
+        });
+    });
+    describe("DELETE voyages/teams/:teamId/techs - delete tech stack item", () => {
+        it("should return 200 after deleting a tech stack item", async () => {
+            const teamId: number = 2;
+            const techId: number = 5;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    techId: techId,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(200)
+                .expect(async (res) => {
+                    const deletedTechStackItem =
+                        await prisma.teamTechStackItem.findFirst({
+                            where: {
+                                id: techId,
+                            },
+                        });
+                    expect(deletedTechStackItem).toBeNull();
+                });
+        });
+        it("should return 404 if invalid tech id provided", async () => {
+            const teamId: number = 2;
+            const techId: number = 9999999;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    techId: techId,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(404)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 404,
+                        }),
+                    );
+                });
+        });
+        it("should return 404 if invalid team id is provided", async () => {
+            const teamId: number = 9999999;
+            const techId: number = 1;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    techId: techId,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(404)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 404,
+                        }),
+                    );
+                });
+        });
+        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
+            const teamId: number = 2;
+            const techId: number = 3;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    techId: techId,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(401)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 401,
+                        }),
+                    );
+                });
+        });
+        it("should return 400 if invalid request body", async () => {
+            const teamId: number = 2;
+            const techId: number = 5;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    techId: techId,
+                })
+                .expect(400);
+        });
+        it("should return 400 if invalid request body", async () => {
+            const teamId: number = 2;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${userAccessToken}`)
+                .send({
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(400);
+        });
+        it("should return 401 if user is not logged in", async () => {
+            const teamId: number = 2;
+            const techId: number = 5;
+            const teamMemberId: number = 8;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
                 })
