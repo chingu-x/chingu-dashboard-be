@@ -9,6 +9,7 @@ export const manageOwnVoyageTeamWithIdParam = (
     user: UserReq,
     teamIdParam: number,
 ) => {
+    if (user.roles.includes("admin")) return;
     if (!user.voyageTeams.map((vt) => vt.teamId).includes(teamIdParam)) {
         throw new ForbiddenException(
             "VoyageTeam access control: You can only access data for your own voyage team.",
