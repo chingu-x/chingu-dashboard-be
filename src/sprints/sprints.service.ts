@@ -582,6 +582,7 @@ export class SprintsService {
                             },
                         },
                     });
+
                     return tx.formResponseCheckin.create({
                         data: {
                             voyageTeamMemberId:
