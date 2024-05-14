@@ -568,7 +568,7 @@ export class SprintsService {
             responsesArray,
         );
 
-        // TODO: do we need to check if sprintID is a reasonable sprint Id?
+        console.log(responsesArray);
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
