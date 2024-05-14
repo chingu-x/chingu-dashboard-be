@@ -165,7 +165,7 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "Is there anyone on your team who has not been active? If yes, please select the user. If no, move onto the next question.",
-                        answerRequired: true,
+                        answerRequired: false,
                     },
                     {
                         order: 7,
