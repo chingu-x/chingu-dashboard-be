@@ -378,7 +378,7 @@ describe("Techs Controller (e2e)", () => {
                     voyageTeamMemberId: teamMemberId,
                 })
                 .expect(200)
-                .expect(async (res) => {
+                .expect(async () => {
                     const deletedTechStackItem =
                         await prisma.teamTechStackItem.findFirst({
                             where: {
