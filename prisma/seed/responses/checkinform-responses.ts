@@ -19,6 +19,7 @@ export const populateCheckinFormResponse = async () => {
                     },
                 },
             },
+            userId: true,
         },
     });
 

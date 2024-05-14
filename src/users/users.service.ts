@@ -76,9 +76,42 @@ export class UsersService {
             },
             select: privateUserDetailSelect,
         });
+        // get voyageTeamMemberIds
+        const teamMemberId: number[] = (
+            await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    voyageTeamMembers: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+            })
+        ).voyageTeamMembers.map((teamMemberId) => teamMemberId.id);
+
+        // get sprint checkin  Ids
+        const sprintCheckInIds = (
+            await this.prisma.formResponseCheckin.findMany({
+                where: {
+                    voyageTeamMemberId: {
+                        in: teamMemberId,
+                    },
+                },
+                select: {
+                    sprintId: true,
+                },
+            })
+        ).map((sprintCheckInId) => sprintCheckInId.sprintId);
+
+        // update user object with sprintCheckInIds
+
+        const updatedUser = { ...user, sprintCheckIn: sprintCheckInIds };
 
         if (!user) throw new NotFoundException("User not found");
-        return this.formatUser(user);
+        return this.formatUser(updatedUser);
     }
 
     // full user detail, for dev purpose
