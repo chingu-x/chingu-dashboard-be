@@ -568,8 +568,6 @@ export class SprintsService {
             responsesArray,
         );
 
-        console.log(responsesArray);
-
         try {
             const checkinSubmission = await this.prisma.$transaction(
                 async (tx) => {
