@@ -955,7 +955,7 @@ export const populateVoyageTeams = async () => {
                     number: "51",
                 },
             },
-            name: "v50-tier3-team-30",
+            name: "v51-tier3-team-30",
             status: {
                 connect: {
                     name: "Active",
