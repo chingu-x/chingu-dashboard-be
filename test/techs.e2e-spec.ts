@@ -4,7 +4,8 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { extractResCookieValueByKey } from "./utils";
+import { loginAndGetTokens } from "./utils";
+import * as cookieParser from "cookie-parser";
 
 const newTechName = "anotherLayerJS";
 const updatedTechName = "updatedLayerJS";
@@ -17,23 +18,7 @@ const updatedTechName = "updatedLayerJS";
 describe("Techs Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userAccessToken: string;
-
-    async function loginUser() {
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: "jessica.williamson@gmail.com",
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                userAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
-    }
+    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -44,6 +29,7 @@ describe("Techs Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.use(cookieParser());
         await app.init();
     });
 
@@ -53,7 +39,13 @@ describe("Techs Controller (e2e)", () => {
     });
 
     beforeEach(async () => {
-        await loginUser();
+        await loginAndGetTokens(
+            "jessica.williamson@gmail.com",
+            "password",
+            app,
+        ).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     });
 
     describe("GET voyages/teams/:teamId/techs - get data on all tech categories and items", () => {
@@ -62,7 +54,7 @@ describe("Techs Controller (e2e)", () => {
 
             return await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -119,7 +111,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
@@ -180,7 +172,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
@@ -205,7 +197,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
@@ -233,7 +225,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
                     techId: techId,
@@ -275,7 +267,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
                     techId: techId,
@@ -300,7 +292,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
@@ -313,7 +305,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
                     voyageTeamMemberId: teamMemberId,
@@ -326,7 +318,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
                     techId: techId,
@@ -340,7 +332,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
                     techId: techId,
@@ -372,7 +364,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
@@ -395,7 +387,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
@@ -418,7 +410,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
@@ -441,7 +433,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
@@ -463,7 +455,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techId: techId,
                 })
@@ -475,7 +467,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     voyageTeamMemberId: teamMemberId,
                 })
@@ -504,7 +496,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(201)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -555,7 +547,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -575,7 +567,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(409)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -597,7 +589,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -625,7 +617,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 9;
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -673,7 +665,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(400)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -693,7 +685,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(404)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -714,7 +706,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
@@ -748,7 +740,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
@@ -782,7 +774,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
