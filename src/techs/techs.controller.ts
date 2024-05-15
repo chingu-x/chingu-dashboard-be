@@ -24,6 +24,7 @@ import {
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -106,9 +107,9 @@ export class TechsController {
         type: TechItemUpdateResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
+        status: HttpStatus.FORBIDDEN,
         description: "User is unauthorized to perform this action",
-        type: UnauthorizedErrorResponse,
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -155,9 +156,9 @@ export class TechsController {
         type: TechItemDeleteResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
+        status: HttpStatus.FORBIDDEN,
         description: "User is unauthorized to perform this action",
-        type: UnauthorizedErrorResponse,
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,

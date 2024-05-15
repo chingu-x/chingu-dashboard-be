@@ -325,7 +325,7 @@ describe("Techs Controller (e2e)", () => {
                 })
                 .expect(400);
         });
-        it("should return 401 if a user tries to PATCH a tech stack item created by someone else", async () => {
+        it("should return 403 if a user tries to PATCH a tech stack item created by someone else", async () => {
             const teamId: number = 2;
             const techId: number = 3;
             const teamMemberId: number = 8;
@@ -338,7 +338,7 @@ describe("Techs Controller (e2e)", () => {
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
                 })
-                .expect(401);
+                .expect(403);
         });
         it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
@@ -426,7 +426,7 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
-        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
+        it("should return 403 if a user tries to DELETE a resource created by someone else", async () => {
             const teamId: number = 2;
             const techId: number = 3;
             const teamMemberId: number = 8;
@@ -438,13 +438,13 @@ describe("Techs Controller (e2e)", () => {
                     techId: techId,
                     voyageTeamMemberId: teamMemberId,
                 })
-                .expect(401)
+                .expect(403)
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             message: expect.any(String),
                             error: expect.any(String),
-                            statusCode: 401,
+                            statusCode: 403,
                         }),
                     );
                 });

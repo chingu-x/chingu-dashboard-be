@@ -1,9 +1,9 @@
 import {
     BadRequestException,
     ConflictException,
+    ForbiddenException,
     Injectable,
     NotFoundException,
-    UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
@@ -202,7 +202,7 @@ export class TechsService {
         // check if the logged in user is the one who added the tech stack item
 
         if (req.user.userId !== teamTechItem.addedBy.member.id) {
-            throw new UnauthorizedException(
+            throw new ForbiddenException(
                 "[Tech Service]:  You can only update your own Tech Stack Item.",
             );
         }
@@ -285,7 +285,7 @@ export class TechsService {
         // check if the logged in user is the one who added the tech stack item
 
         if (req.user.userId !== teamTechItem.addedBy.member.id) {
-            throw new UnauthorizedException(
+            throw new ForbiddenException(
                 "[Tech Service]:  You can only delete your own Tech Stack Item.",
             );
         }
