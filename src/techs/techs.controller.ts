@@ -30,6 +30,7 @@ import {
 } from "../global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { DeleteTeamTechDto } from "./dto/delete-tech.dto";
+import { CustomRequest } from "src/global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -90,7 +91,7 @@ export class TechsController {
     })
     @Post()
     addNewTeamTech(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
     ) {
@@ -110,6 +111,11 @@ export class TechsController {
         status: HttpStatus.FORBIDDEN,
         description: "User is unauthorized to perform this action",
         type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -135,7 +141,7 @@ export class TechsController {
     })
     @Patch()
     updateTeamTech(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) updateTeamTechDto: UpdateTeamTechDto,
     ) {
@@ -161,6 +167,11 @@ export class TechsController {
         type: ForbiddenErrorResponse,
     })
     @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: "Bad Request - Tech stack item couldn't be deleted",
         type: BadRequestErrorResponse,
@@ -179,7 +190,7 @@ export class TechsController {
     })
     @Delete()
     deleteTeamTech(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) deleteTeamTechDto: DeleteTeamTechDto,
     ) {
