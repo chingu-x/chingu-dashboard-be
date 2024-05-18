@@ -38,7 +38,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 3,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "Please link your Github repo:",
@@ -48,7 +48,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 4,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "Please link your deployed project:",
@@ -58,7 +58,7 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "url",
                             },
                         },
                         text: "If you have a project showcase video, please provide the public link:",
@@ -90,10 +90,10 @@ export const populateVoyageSubmissionForm = async () => {
                         order: 8,
                         inputType: {
                             connect: {
-                                name: "radio",
+                                name: "scale",
                             },
                         },
-                        text: "On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",
+                        text: "{{Not Likely,Extremely Likely}}On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",
                         answerRequired: true,
                         optionGroup: {
                             create: {

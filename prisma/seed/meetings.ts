@@ -1,5 +1,6 @@
 import { getRandomDateDuringSprint, getSprintId } from "./utils";
 import { prisma } from "./prisma-client";
+import { FormTitles } from "../../src/global/constants/formTitles";
 
 export const populateMeetings = async () => {
     // connect teamMeetings and form id
@@ -50,7 +51,7 @@ export const populateMeetings = async () => {
     //find question Ids from sprint planning form
     const sprintPlanningForm = await prisma.form.findUnique({
         where: {
-            title: "Sprint Planning",
+            title: FormTitles.sprintPlanning,
         },
         select: {
             questions: true,
@@ -61,7 +62,7 @@ export const populateMeetings = async () => {
         data: {
             form: {
                 connect: {
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                 },
             },
             meeting: {
@@ -97,7 +98,7 @@ export const populateMeetings = async () => {
         data: {
             form: {
                 connect: {
-                    title: "Retrospective & Review",
+                    title: FormTitles.sprintRetroAndReview,
                 },
             },
             meeting: {

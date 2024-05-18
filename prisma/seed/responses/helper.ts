@@ -72,7 +72,8 @@ export const populateQuestionResponses = async (
         responseGroupId: responseGroupId,
     };
     switch (question.inputType.name) {
-        case "text": {
+        case "text":
+        case "shortText": {
             await prisma.response.create({
                 data: {
                     ...data,
@@ -81,6 +82,8 @@ export const populateQuestionResponses = async (
             });
             break;
         }
+        case "scale":
+        case "radioIcon":
         case "radio": {
             const radioChoices = await getRandomOptionId(
                 question.optionGroupId,
@@ -174,11 +177,20 @@ export const populateQuestionResponses = async (
             });
             break;
         }
-        case "yesNo": {
+        case "boolean": {
             await prisma.response.create({
                 data: {
                     ...data,
                     boolean: Math.random() > 0.5,
+                },
+            });
+            break;
+        }
+        case "url": {
+            await prisma.response.create({
+                data: {
+                    ...data,
+                    text: `https://www.randomUrl${question.id}.com`,
                 },
             });
             break;

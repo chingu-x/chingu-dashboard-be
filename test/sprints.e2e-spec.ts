@@ -107,19 +107,23 @@ describe("Sprints Controller (e2e)", () => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             id: expect.any(Number),
-                            name: expect.any(String),
-                            voyage: expect.objectContaining({
-                                id: expect.any(Number),
-                                number: expect.any(String),
-                                sprints: expect.arrayContaining([
-                                    expect.objectContaining({
-                                        id: expect.any(Number),
-                                        number: expect.any(Number),
-                                        startDate: expect.any(String),
-                                        endDate: expect.any(String),
-                                    }),
-                                ]),
-                            }),
+                            number: expect.any(String),
+                            soloProjectDeadline: expect.any(String),
+                            certificateIssueDate: expect.any(String),
+                            showcasePublishDate: expect.toBeOneOf([
+                                null,
+                                expect.any(String),
+                            ]),
+                            startDate: expect.any(String),
+                            endDate: expect.any(String),
+                            sprints: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.any(Number),
+                                    number: expect.any(Number),
+                                    startDate: expect.any(String),
+                                    endDate: expect.any(String),
+                                }),
+                            ]),
                         }),
                     );
                 });
@@ -294,7 +298,7 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
@@ -322,11 +326,11 @@ describe("Sprints Controller (e2e)", () => {
         it("- verify new sprint meeting found in database", async () => {
             const meeting = await prisma.teamMeeting.findFirst({
                 where: {
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                     notes: "Notes for the meeting",
                 },
             });
-            return expect(meeting.title).toEqual("Sprint Planning");
+            return expect(meeting.title).toEqual(FormTitles.sprintPlanning);
         });
 
         it("should return 409 if trying to create a meeting that already exists for sprint", async () => {
@@ -338,7 +342,7 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
@@ -356,7 +360,7 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",

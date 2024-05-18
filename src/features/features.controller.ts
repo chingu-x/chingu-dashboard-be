@@ -33,9 +33,8 @@ import {
     FeatureCategoriesResponse,
     ExtendedFeaturesResponse,
     FeatureResponse,
+    DeleteFeatureResponse,
 } from "./features.response";
-import { AppPermissions } from "../auth/auth.permissions";
-import { Permissions } from "../global/decorators/permissions.decorator";
 import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller()
@@ -67,7 +66,7 @@ export class FeaturesController {
         description: "Successfully created a new feature.",
         type: FeatureResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    // TODO: Add own_team permission here
     @Post("/teams/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(
@@ -119,7 +118,7 @@ export class FeaturesController {
             "Could not find features for project. Team with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
-    @Permissions(AppPermissions.OWN_TEAM)
+    // TODO: Add own_team permission here
     @Get("/teams/:teamId/features")
     findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.featuresService.findAllFeatures(teamId);
@@ -258,6 +257,7 @@ export class FeaturesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully deleted feature.",
+        type: DeleteFeatureResponse,
     })
     //Can only delete if loggedIn userId mataches addedBy userId
     @Delete("/features/:featureId")

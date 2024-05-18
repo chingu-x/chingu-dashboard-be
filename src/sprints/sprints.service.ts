@@ -13,6 +13,7 @@ import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
+import { FormTitles } from "../global/constants/formTitles";
 
 @Injectable()
 export class SprintsService {
@@ -104,10 +105,16 @@ export class SprintsService {
             select: {
                 id: true,
                 name: true,
+                endDate: true,
                 voyage: {
                     select: {
                         id: true,
                         number: true,
+                        soloProjectDeadline: true,
+                        certificateIssueDate: true,
+                        showcasePublishDate: true,
+                        startDate: true,
+                        endDate: true,
                         sprints: {
                             select: {
                                 id: true,
@@ -128,7 +135,10 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        return teamSprintDates;
+        //copy teamVoyage endDate to voyage object
+        teamSprintDates.voyage.endDate = teamSprintDates.endDate;
+        delete teamSprintDates.endDate;
+        return teamSprintDates.voyage;
     }
 
     async getMeetingById(meetingId: number) {
@@ -554,7 +564,7 @@ export class SprintsService {
             this.globalServices.responseDtoToArray(createCheckinForm);
 
         await this.globalServices.checkQuestionsInFormByTitle(
-            "Sprint Check-in",
+            FormTitles.sprintCheckin,
             responsesArray,
         );
 
@@ -572,6 +582,7 @@ export class SprintsService {
                             },
                         },
                     });
+
                     return tx.formResponseCheckin.create({
                         data: {
                             voyageTeamMemberId:

@@ -36,6 +36,7 @@ export const populateUsers = async () => {
             roleId: getRoleId(roles, "voyager"),
         },
     });
+
     await prisma.userRole.create({
         data: {
             userId: user.id,
@@ -78,8 +79,7 @@ export const populateUsers = async () => {
         },
     });
 
-    // user with no role
-    await prisma.user.create({
+    user = await prisma.user.create({
         data: {
             email: "leo.rowe@outlook.com",
             password: await hashPassword("password"),
@@ -97,6 +97,13 @@ export const populateUsers = async () => {
                     abbreviation: "NB",
                 },
             },
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
         },
     });
 
@@ -123,7 +130,7 @@ export const populateUsers = async () => {
         },
     });
 
-    await prisma.user.create({
+    user = await prisma.user.create({
         data: {
             email: "dan@random.com",
             password: await hashPassword("password"),
@@ -133,6 +140,28 @@ export const populateUsers = async () => {
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
             timezone: "America/Los_Angeles",
             comment: "No comment",
+            countryCode: "US",
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
+
+    await prisma.user.create({
+        data: {
+            email: "not_in_voyage@example.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
+            firstName: "Not in a voyage",
+            lastName: "Voyage",
+            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            timezone: "America/Los_Angeles",
+            comment:
+                "This user is not in a voyage - does not have the 'voyager' role",
             countryCode: "US",
         },
     });

@@ -59,7 +59,7 @@ export const populateFormsAndResponses = async () => {
                     name: "meeting",
                 },
             },
-            title: "Retrospective & Review",
+            title: FormTitles.sprintRetroAndReview,
             questions: {
                 create: [
                     {
