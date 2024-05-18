@@ -52,7 +52,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
-    @Get()
+    @Get("teams/:teamId/techs")
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.techsService.getAllTechItemsByTeamId(teamId);
     }
@@ -89,7 +89,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @Post()
+    @Post("teams/:teamId/techs")
     addNewTeamTech(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -139,7 +139,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @Patch()
+    @Patch("techs/:teamTechId")
     updateTeamTech(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -188,7 +188,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @Delete()
+    @Delete("techs/:teamTechId")
     deleteTeamTech(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -236,7 +236,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
-    @Post("/:teamTechId")
+    @Post("techs/:teamTechId/vote")
     addExistingTechVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -283,7 +283,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
-    @Delete("/:teamTechId")
+    @Delete("techs/:teamTechId/vote")
     removeVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
