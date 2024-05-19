@@ -352,7 +352,7 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if teamId not found", async () => {
-            const teamId = 5;
+            const teamId = 999;
             const sprintNumber = 5;
             return request(app.getHttpServer())
                 .post(

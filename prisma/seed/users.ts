@@ -54,7 +54,7 @@ export const populateUsers = async () => {
             githubId: "larryc-github",
             discordId: "larryc-discord",
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
-            timezone: "America/Los_Angeles",
+            timezone: "America/Chicago",
             comment: "Member seems to be inactive",
             countryCode: "US",
             gender: {
@@ -159,7 +159,7 @@ export const populateUsers = async () => {
             firstName: "Not in a voyage",
             lastName: "Voyage",
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
-            timezone: "America/Los_Angeles",
+            timezone: "America/New_York",
             comment:
                 "This user is not in a voyage - does not have the 'voyager' role",
             countryCode: "US",
