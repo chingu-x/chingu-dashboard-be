@@ -9,7 +9,6 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { DeleteTeamTechDto } from "./dto/delete-tech.dto";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -169,18 +168,14 @@ export class TechsService {
 
     async updateExistingTeamTech(
         req,
-        teamId: number,
         updateTeamTechDto: UpdateTeamTechDto,
+        teamTechItemId: number,
     ) {
-        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
-
-        await this.validateTeamId(teamId);
-
-        const { techId, techName } = updateTeamTechDto;
+        const { techName } = updateTeamTechDto;
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
             where: {
-                id: techId,
+                id: teamTechItemId,
             },
             select: {
                 addedBy: {
@@ -196,7 +191,7 @@ export class TechsService {
         });
         if (!teamTechItem)
             throw new NotFoundException(
-                `[Tech Service]: Team Tech Stack Item with id:${techId} not found`,
+                `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
             );
 
         // check if the logged in user is the one who added the tech stack item
@@ -210,7 +205,7 @@ export class TechsService {
             const updateTechStackItem =
                 await this.prisma.teamTechStackItem.update({
                     where: {
-                        id: techId,
+                        id: teamTechItemId,
                     },
                     data: {
                         name: updateTeamTechDto.techName,
@@ -250,19 +245,12 @@ export class TechsService {
         }
     }
 
-    async deleteTeamTech(
-        req,
-        teamId: number,
-        deleteTeamTechDto: DeleteTeamTechDto,
-    ) {
-        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
-
-        await this.validateTeamId(teamId);
-        const { techId } = deleteTeamTechDto;
+    async deleteTeamTech(req, teamTechItemId: number) {
         // check if team tech item exists
+
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
             where: {
-                id: techId,
+                id: teamTechItemId,
             },
             select: {
                 addedBy: {
@@ -279,7 +267,7 @@ export class TechsService {
 
         if (!teamTechItem)
             throw new NotFoundException(
-                `[Tech Service]: Team Tech Stack Item with id:${techId} not found`,
+                `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
             );
 
         // check if the logged in user is the one who added the tech stack item
@@ -292,7 +280,7 @@ export class TechsService {
         try {
             await this.prisma.teamTechStackItem.delete({
                 where: {
-                    id: techId,
+                    id: teamTechItemId,
                 },
             });
             return {

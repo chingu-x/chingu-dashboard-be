@@ -29,7 +29,6 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { DeleteTeamTechDto } from "./dto/delete-tech.dto";
 import { CustomRequest } from "src/global/types/CustomRequest";
 
 @Controller()
@@ -133,22 +132,22 @@ export class TechsController {
         type: NotFoundErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
+        name: "teamTechItemId",
+        description: "team tech stack item Id",
         type: "Integer",
         required: true,
-        example: 2,
+        example: 1,
     })
-    @Patch("techs/:teamTechId")
+    @Patch("techs/:teamTechItemId")
     updateTeamTech(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
         @Body(ValidationPipe) updateTeamTechDto: UpdateTeamTechDto,
     ) {
         return this.techsService.updateExistingTeamTech(
             req,
-            teamId,
             updateTeamTechDto,
+            teamTechItemId,
         );
     }
 
@@ -182,19 +181,18 @@ export class TechsController {
         type: NotFoundErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
+        name: "teamTechItemId",
+        description: "team tech stack item Id",
         type: "Integer",
         required: true,
-        example: 2,
+        example: 1,
     })
-    @Delete("techs/:teamTechId")
+    @Delete("techs/:teamTechItemId")
     deleteTeamTech(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) deleteTeamTechDto: DeleteTeamTechDto,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
-        return this.techsService.deleteTeamTech(req, teamId, deleteTeamTechDto);
+        return this.techsService.deleteTeamTech(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -223,20 +221,13 @@ export class TechsController {
         type: UnauthorizedErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
-    @ApiParam({
-        name: "teamTechId",
+        name: "teamTechItemId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
         example: 6,
     })
-    @Post("techs/:teamTechId/vote")
+    @Post("techs/:teamTechItemId/vote")
     addExistingTechVote(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -270,14 +261,7 @@ export class TechsController {
         type: UnauthorizedErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
-    @ApiParam({
-        name: "teamTechId",
+        name: "teamTechItemId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
