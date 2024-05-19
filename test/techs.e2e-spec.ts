@@ -370,13 +370,12 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("POST voyages/teams/:teamId/techs/:teamTechId - add user vote for tech item", () => {
-        it("should return 200 if vote successfully added", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+    describe("POST voyages/techs/:teamTechItemId/vote - add user vote for tech item", () => {
+        it("should return 201 if vote successfully added", async () => {
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
+                .post(`/voyages/techs/${techId}/vote`)
                 .set("Cookie", accessToken)
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -396,7 +395,7 @@ describe("Techs Controller (e2e)", () => {
         it("- verify that new tech vote is present in database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
-                    teamTechId: 3,
+                    teamTechId: 6,
                     teamMemberId: 8,
                 },
             });
@@ -404,11 +403,10 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
+                .post(`/voyages/techs/${techId}/vote`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -422,32 +420,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("should return 400 if invalid teamId provided", async () => {
-            const teamId: number = 9999999;
-            const techId: number = 3;
-
-            return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Cookie", accessToken)
-                .expect(400)
-                .expect("Content-Type", /json/)
-                .expect((res) => {
-                    expect(res.body).toEqual(
-                        expect.objectContaining({
-                            message: expect.any(String),
-                            error: expect.any(String),
-                            statusCode: 400,
-                        }),
-                    );
-                });
-        });
-
         it("should return 409 if user vote for tech already exists", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
+                .post(`/voyages/techs/${techId}/vote`)
                 .set("Cookie", accessToken)
                 .expect(409)
                 .expect("Content-Type", /json/)
@@ -463,13 +440,12 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("DELETE voyages/teams/:teamId/techs/:teamTechId - delete user vote for tech", () => {
+    describe("DELETE voyages/techs/:teamTechItemId/vote - delete user vote for tech", () => {
         it("should return 200 if tech vote deleted", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .delete(`/voyages/techs/${techId}/vote`)
                 .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -486,7 +462,7 @@ describe("Techs Controller (e2e)", () => {
         it("- verify that new tech vote is deleted from database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
-                    teamTechId: 3,
+                    teamTechId: 6,
                     teamMemberId: 8,
                 },
             });
@@ -494,10 +470,9 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 200 if tech last vote was deleted and team tech stack item is deleted", async () => {
-            const teamId: number = 2;
             const techId: number = 9;
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .delete(`/voyages/techs/${techId}/vote`)
                 .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -522,11 +497,10 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .delete(`/voyages/techs/${techId}/vote`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -540,32 +514,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("should return 400 if invalid teamId provided", async () => {
-            const teamId: number = 99999;
-            const techId: number = 3;
-
-            return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Cookie", accessToken)
-                .expect(400)
-                .expect("Content-Type", /json/)
-                .expect((res) => {
-                    expect(res.body).toEqual(
-                        expect.objectContaining({
-                            message: expect.any(String),
-                            error: "Bad Request",
-                            statusCode: 400,
-                        }),
-                    );
-                });
-        });
-
         it("should return 404 if vote to delete does not exist", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .delete(`/voyages/techs/${techId}/vote`)
                 .set("Cookie", accessToken)
                 .expect(404)
                 .expect("Content-Type", /json/)

@@ -338,7 +338,7 @@ export class TechsService {
             // If successful, it returns an object containing the details of the vote
             return {
                 teamTechStackItemVoteId: teamMemberTechVote.id,
-                teamTechItemId,
+                teamTechId: teamTechItemId,
                 teamMemberId: teamMemberTechVote.teamMemberId,
                 createdAt: teamMemberTechVote.createdAt,
                 updatedAt: teamMemberTechVote.updatedAt,
