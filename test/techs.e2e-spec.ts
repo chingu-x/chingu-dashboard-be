@@ -217,19 +217,15 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH voyages/teams/:teamId/techs - update tech stack item of the team", () => {
+    describe("PATCH voyages/techs/:teamTechItemId - update tech stack item of the team", () => {
         it("should return 200 and update a tech stack item", async () => {
-            const teamId: number = 2;
             const techId: number = 1;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
+                .patch(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -261,17 +257,13 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
         it("should return 404 for invalid tech Id", async () => {
-            const teamId: number = 2;
             const techId: number = 9999999;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
+                .patch(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(404)
                 .expect("Content-Type", /json/)
@@ -286,89 +278,43 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
         it("should return 400 for invalid request body", async () => {
-            const teamId: number = 2;
-            const techId: number = 1;
-            const teamMemberId: number = 8;
-
-            return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
-                .expect(400);
-        });
-        it("should return 400 for invalid request body", async () => {
-            const teamId: number = 2;
-            const teamMemberId: number = 8;
-
-            return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
-                .set("Cookie", accessToken)
-                .send({
-                    techName: updatedTechName,
-                    voyageTeamMemberId: teamMemberId,
-                })
-                .expect(400);
-        });
-        it("should return 400 for invalid request body", async () => {
-            const teamId: number = 2;
             const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
+                .patch(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
-                .send({
-                    techName: updatedTechName,
-                    techId: techId,
-                })
+                .send({})
                 .expect(400);
         });
         it("should return 403 if a user tries to PATCH a tech stack item created by someone else", async () => {
-            const teamId: number = 2;
             const techId: number = 3;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
+                .patch(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
                 .send({
                     techName: updatedTechName,
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(403);
         });
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
             const techId: number = 5;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs`)
+                .patch(`/voyages/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
                     techName: updatedTechName,
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(401);
         });
     });
-    describe("DELETE voyages/teams/:teamId/techs - delete tech stack item", () => {
+    describe("DELETE voyages/techs/:teamTechItemId - delete tech stack item", () => {
         it("should return 200 after deleting a tech stack item", async () => {
-            const teamId: number = 2;
             const techId: number = 5;
-            const teamMemberId: number = 8;
-
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
+                .delete(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
                 .expect(200)
                 .expect(async () => {
                     const deletedTechStackItem =
@@ -381,40 +327,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
         it("should return 404 if invalid tech id provided", async () => {
-            const teamId: number = 2;
             const techId: number = 9999999;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
+                .delete(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
-                .expect(404)
-                .expect((res) => {
-                    expect(res.body).toEqual(
-                        expect.objectContaining({
-                            message: expect.any(String),
-                            error: expect.any(String),
-                            statusCode: 404,
-                        }),
-                    );
-                });
-        });
-        it("should return 404 if invalid team id is provided", async () => {
-            const teamId: number = 9999999;
-            const techId: number = 1;
-            const teamMemberId: number = 8;
-
-            return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
                 .expect(404)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -427,17 +344,11 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
         it("should return 403 if a user tries to DELETE a resource created by someone else", async () => {
-            const teamId: number = 2;
             const techId: number = 3;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
+                .delete(`/voyages/techs/${techId}`)
                 .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
                 .expect(403)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -449,42 +360,12 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
-        it("should return 400 if invalid request body", async () => {
-            const teamId: number = 2;
-            const techId: number = 5;
-
-            return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Cookie", accessToken)
-                .send({
-                    techId: techId,
-                })
-                .expect(400);
-        });
-        it("should return 400 if invalid request body", async () => {
-            const teamId: number = 2;
-            const teamMemberId: number = 8;
-
-            return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
-                .set("Cookie", accessToken)
-                .send({
-                    voyageTeamMemberId: teamMemberId,
-                })
-                .expect(400);
-        });
         it("should return 401 if user is not logged in", async () => {
-            const teamId: number = 2;
             const techId: number = 5;
-            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs`)
+                .delete(`/voyages/techs/${techId}`)
                 .set("Authorization", `Bearer ${undefined}`)
-                .send({
-                    techId: techId,
-                    voyageTeamMemberId: teamMemberId,
-                })
                 .expect(401);
         });
     });
