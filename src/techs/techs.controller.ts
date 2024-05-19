@@ -229,11 +229,10 @@ export class TechsController {
     })
     @Post("techs/:teamTechItemId/vote")
     addExistingTechVote(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("teamTechId", ParseIntPipe) teamTechId: number,
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
-        return this.techsService.addExistingTechVote(req, teamId, teamTechId);
+        return this.techsService.addExistingTechVote(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -267,13 +266,12 @@ export class TechsController {
         required: true,
         example: 6,
     })
-    @Delete("techs/:teamTechId/vote")
+    @Delete("techs/:teamTechItemId/vote")
     removeVote(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("teamTechId", ParseIntPipe) teamTechId: number,
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
-        return this.techsService.removeVote(req, teamId, teamTechId);
+        return this.techsService.removeVote(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -304,7 +302,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @Patch("/selections")
+    @Patch("teams/:teamId/techs/selections")
     updateTechStackSelections(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
