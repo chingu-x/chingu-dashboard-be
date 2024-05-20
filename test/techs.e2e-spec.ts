@@ -142,6 +142,21 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackItem[0].name).toEqual(newTechName);
         });
 
+        it("should return 400 if invalid team member id provided", async () => {
+            const teamId: number = 2;
+            const teamMemberId: number = 4;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", accessToken)
+                .send({
+                    techName: newTechName,
+                    techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(400);
+        });
+
         it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
             const teamMemberId: number = 8;

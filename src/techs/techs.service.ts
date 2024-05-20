@@ -142,10 +142,17 @@ export class TechsService {
         teamId: number,
         createTechVoteDto: CreateTeamTechDto,
     ) {
-        // TODO: To Check if the voyageTeamMemberId in request body is in the voyageTeam
-
         //check for valid teamId
         await this.validateTeamId(teamId);
+
+        // To Check if the voyageTeamMemberId in request body is in the voyageTeam
+        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
+        if (
+            !voyageMemberId ||
+            voyageMemberId !== createTechVoteDto.voyageTeamMemberId
+        )
+            throw new BadRequestException("Invalid User or Team Id");
+
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
                 data: {
