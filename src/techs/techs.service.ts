@@ -208,6 +208,19 @@ export class TechsService {
                         },
                     },
                 },
+                teamTechStackItemVotes: {
+                    select: {
+                        votedBy: {
+                            select: {
+                                member: {
+                                    select: {
+                                        id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
         if (!teamTechItem)
@@ -222,6 +235,23 @@ export class TechsService {
                 "[Tech Service]:  You can only update your own Tech Stack Item.",
             );
         }
+        // check if the tech stack item has votes other than the user created it
+        if (teamTechItem.teamTechStackItemVotes.length > 1) {
+            throw new ConflictException(
+                `Tech Stack Item cannot be updated when others have voted for it.`,
+            );
+        } else {
+            // Here we check if it has 1 vote, and if it's the not of the same user who added the tech stack item
+            if (
+                teamTechItem.teamTechStackItemVotes[0].votedBy.member.id !==
+                teamTechItem.addedBy.member.id
+            ) {
+                throw new ConflictException(
+                    `Tech Stack Item cannot be updated when others have voted for it.`,
+                );
+            }
+        }
+
         try {
             const updateTechStackItem =
                 await this.prisma.teamTechStackItem.update({
@@ -285,6 +315,19 @@ export class TechsService {
                                 },
                             },
                         },
+                        teamTechStackItemVotes: {
+                            select: {
+                                votedBy: {
+                                    select: {
+                                        member: {
+                                            select: {
+                                                id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             );
@@ -300,6 +343,22 @@ export class TechsService {
                 throw new ForbiddenException(
                     "[Tech Service]:  You can only delete your own Tech Stack Item.",
                 );
+            }
+            // check if the tech stack item has votes other than the user created it
+            if (teamTechItem.teamTechStackItemVotes.length > 1) {
+                throw new ConflictException(
+                    `Tech Stack Item cannot be delete when others have voted for it.`,
+                );
+            } else {
+                // Here we check if it has 1 vote, and if it's the not of the same user who added the tech stack item
+                if (
+                    teamTechItem.teamTechStackItemVotes[0].votedBy.member.id !==
+                    teamTechItem.addedBy.member.id
+                ) {
+                    throw new ConflictException(
+                        `Tech Stack Item cannot be delete when others have voted for it.`,
+                    );
+                }
             }
 
             await this.prisma.teamTechStackItem.delete({
