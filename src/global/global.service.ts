@@ -60,7 +60,7 @@ export class GlobalService {
                         ...(v.numeric
                             ? { numeric: v.numeric }
                             : { numeric: null }),
-                        ...(v.boolean
+                        ...(v.boolean !== undefined
                             ? { boolean: v.boolean }
                             : { boolean: null }),
                         ...(v.optionChoiceId

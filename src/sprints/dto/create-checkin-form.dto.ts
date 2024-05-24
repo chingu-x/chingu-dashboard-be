@@ -1,6 +1,13 @@
 import { FormResponseDto } from "../../global/dtos/FormResponse.dto";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, ValidateNested } from "class-validator";
+import {
+    IsArray,
+    IsNotEmpty,
+    IsNumber,
+    Max,
+    Min,
+    ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateCheckinFormDto {
@@ -16,6 +23,9 @@ export class CreateCheckinFormDto {
         example: 1,
     })
     @IsNotEmpty()
+    @IsNumber()
+    @Min(1)
+    @Max(6)
     sprintId: number;
 
     @ApiProperty({
