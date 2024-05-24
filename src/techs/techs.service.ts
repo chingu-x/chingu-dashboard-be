@@ -228,28 +228,20 @@ export class TechsService {
                 `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
             );
 
-        // check if the logged in user is the one who added the tech stack item
-
-        if (req.user.userId !== teamTechItem.addedBy.member.id) {
-            throw new ForbiddenException(
-                "[Tech Service]:  You can only update your own Tech Stack Item.",
-            );
-        }
         // check if the tech stack item has votes other than the user created it
         if (teamTechItem.teamTechStackItemVotes.length > 1) {
             throw new ConflictException(
-                `Tech Stack Item cannot be updated when others have voted for it.`,
+                `[Tech Service]: Tech Stack Item cannot be updated when others have voted for it.`,
             );
-        } else {
-            // Here we check if it has 1 vote, and if it's the not of the same user who added the tech stack item
-            if (
-                teamTechItem.teamTechStackItemVotes[0].votedBy.member.id !==
-                teamTechItem.addedBy.member.id
-            ) {
-                throw new ConflictException(
-                    `Tech Stack Item cannot be updated when others have voted for it.`,
-                );
-            }
+        }
+        // The person having the last vote has the  ability to edit and delete the tech stack item
+        if (
+            req.user.userId !==
+            teamTechItem.teamTechStackItemVotes[0].votedBy.member.id
+        ) {
+            throw new ForbiddenException(
+                "[Tech Service]:  You cannot update this Tech Stack Item.",
+            );
         }
 
         try {
@@ -296,7 +288,7 @@ export class TechsService {
         }
     }
 
-    async deleteTeamTech(req, teamTechItemId: number) {
+    async deleteTeamTech(req: CustomRequest, teamTechItemId: number) {
         try {
             // check if team tech item exists
 
@@ -337,28 +329,20 @@ export class TechsService {
                     `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
                 );
 
-            // check if the logged in user is the one who added the tech stack item
-
-            if (req.user.userId !== teamTechItem.addedBy.member.id) {
-                throw new ForbiddenException(
-                    "[Tech Service]:  You can only delete your own Tech Stack Item.",
-                );
-            }
             // check if the tech stack item has votes other than the user created it
             if (teamTechItem.teamTechStackItemVotes.length > 1) {
                 throw new ConflictException(
-                    `Tech Stack Item cannot be delete when others have voted for it.`,
+                    `[Tech Service]: Tech Stack Item cannot be delete when others have voted for it.`,
                 );
-            } else {
-                // Here we check if it has 1 vote, and if it's the not of the same user who added the tech stack item
-                if (
-                    teamTechItem.teamTechStackItemVotes[0].votedBy.member.id !==
-                    teamTechItem.addedBy.member.id
-                ) {
-                    throw new ConflictException(
-                        `Tech Stack Item cannot be delete when others have voted for it.`,
-                    );
-                }
+            }
+            // The person having the last vote has the  ability to edit and delete the tech stack item
+            if (
+                req.user.userId !==
+                teamTechItem.teamTechStackItemVotes[0].votedBy.member.id
+            ) {
+                throw new ForbiddenException(
+                    "[Tech Service]:  You cannot delete this Tech Stack Item.",
+                );
             }
 
             await this.prisma.teamTechStackItem.delete({
