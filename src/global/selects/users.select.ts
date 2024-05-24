@@ -85,6 +85,7 @@ export const privateUserDetailSelect = {
             voyageTeam: {
                 select: {
                     name: true,
+                    projectSubmitted: false,
                     voyage: {
                         select: {
                             number: true,

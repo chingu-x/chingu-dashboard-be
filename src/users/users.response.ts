@@ -51,6 +51,9 @@ class VoyageTeam {
     @ApiProperty({ example: "v47-tier2-team-4" })
     name: string;
 
+    @ApiProperty({ example: false })
+    projectSubmitted: boolean;
+
     @ApiProperty()
     voyage: Voyage;
 }
