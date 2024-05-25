@@ -180,20 +180,19 @@ model VoyageRole {
 }
 
 model VoyageTeam {
-  id               Int           @id @default(autoincrement())
-  voyage           Voyage?       @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  voyageId         Int?
-  name             String        @unique
-  projectSubmitted Boolean?      @default(false)
-  status           VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  statusId         Int?
-  repoUrl          String
-  repoUrlBE        String?
-  deployedUrl      String?
-  deployedUrlBE    String?
-  tier             Tier?         @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  tierId           Int?
-  endDate          DateTime
+  id            Int           @id @default(autoincrement())
+  voyage        Voyage?       @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageId      Int?
+  name          String        @unique
+  status        VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId      Int?
+  repoUrl       String
+  repoUrlBE     String?
+  deployedUrl   String?
+  deployedUrlBE String?
+  tier          Tier?         @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  tierId        Int?
+  endDate       DateTime
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -293,7 +292,7 @@ model ProjectIdea {
   title              String
   description        String
   vision             String
-  isSelected         Boolean           @default(false)
+  isSelected         Boolean            @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt

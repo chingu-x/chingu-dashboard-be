@@ -12,9 +12,6 @@ export class VoyageTeamEntity implements VoyageTeam {
     name: string;
 
     @ApiProperty()
-    projectSubmitted: boolean;
-
-    @ApiProperty()
     statusId: number;
 
     @ApiProperty()

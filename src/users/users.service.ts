@@ -74,32 +74,30 @@ export class UsersService {
             where: {
                 id: userId,
             },
-            select: {
-                ...privateUserDetailSelect,
-                voyageTeamMembers: {
-                    select: {
-                        id: true,
-                        voyageTeamId: true,
-                        voyageTeam: true,
+            select: privateUserDetailSelect,
+        });
+        // get voyageTeamMemberIds
+        const teamMemberId: number[] = (
+            await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    voyageTeamMembers: {
+                        select: {
+                            id: true,
+                        },
                     },
                 },
-            },
-        });
-        if (!user) throw new NotFoundException("User not found");
-        // get voyageTeamMemberIds
-        const teamMemberIds: number[] = user.voyageTeamMembers.map(
-            (teamMemberId) => teamMemberId.id,
-        );
-        // get voyageTeamId
-        const teamIds: number[] = user.voyageTeamMembers.map(
-            (voyageTeamId) => voyageTeamId.voyageTeamId,
-        );
+            })
+        ).voyageTeamMembers.map((teamMemberId) => teamMemberId.id);
+
         // get sprint checkin  Ids
         const sprintCheckInIds = (
             await this.prisma.formResponseCheckin.findMany({
                 where: {
                     voyageTeamMemberId: {
-                        in: teamMemberIds,
+                        in: teamMemberId,
                     },
                 },
                 select: {
@@ -108,36 +106,11 @@ export class UsersService {
             })
         ).map((sprintCheckInId) => sprintCheckInId.sprintId);
 
-        const projectStatusTeamIds: number[] = (
-            await this.prisma.formResponseVoyageProject.findMany({
-                where: {
-                    voyageTeamId: {
-                        in: teamIds,
-                    },
-                },
-                select: {
-                    voyageTeamId: true,
-                },
-            })
-        ).map((projectStatusTeamId) => projectStatusTeamId.voyageTeamId);
-        // update user object with sprintCheckInIds and projectStatus
-        const updatedUser = {
-            ...user,
-            sprintCheckIn: sprintCheckInIds,
-            voyageTeamMembers: user.voyageTeamMembers.map((teamMember) => {
-                if (projectStatusTeamIds.includes(teamMember.voyageTeamId)) {
-                    return {
-                        ...teamMember,
-                        voyageTeam: {
-                            ...teamMember.voyageTeam,
-                            projectSubmitted: true,
-                        },
-                    };
-                }
-                return teamMember;
-            }),
-        };
+        // update user object with sprintCheckInIds
 
+        const updatedUser = { ...user, sprintCheckIn: sprintCheckInIds };
+
+        if (!user) throw new NotFoundException("User not found");
         return this.formatUser(updatedUser);
     }
 
