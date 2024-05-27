@@ -36,7 +36,9 @@ export class TechsService {
         // check if the teamId is in the teams array
         const voyageMember = teams.filter((team) => team.teamId === teamId);
         if (voyageMember.length === 0) {
-            throw new BadRequestException("Not a Valid user");
+            throw new BadRequestException(
+                "User is not in the specified team, check voyageTeamId or voyageTeamMemberId is correct.",
+            );
         }
 
         return voyageMember[0].memberId;
