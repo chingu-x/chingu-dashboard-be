@@ -76,7 +76,7 @@ export class UsersService {
             },
             select: privateUserDetailSelect,
         });
-        console.log("user", user);
+
         if (!user) throw new NotFoundException("User not found");
         // get voyageTeamMemberIds
         const teamMemberId: number[] = (
