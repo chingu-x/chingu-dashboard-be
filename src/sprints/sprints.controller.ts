@@ -35,6 +35,7 @@ import {
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
+import { VoyageTeamMemberValidationPipe } from "src/pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -475,7 +476,7 @@ export class SprintsController {
     })
     @Post("check-in")
     addCheckinFormResponse(
-        @Body(new FormInputValidationPipe())
+        @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(
