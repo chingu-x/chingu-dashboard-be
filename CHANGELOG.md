@@ -34,7 +34,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add CASL ability for Access control ([#141](https://github.com/chingu-x/chingu-dashboard-be/pull/141))
 - Add sprint checkin form submission status for a user ([#149](https://github.com/chingu-x/chingu-dashboard-be/pull/149))
 - new command to run both e2e and unit test ([#148](https://github.com/chingu-x/chingu-dashboard-be/pull/148))
+- allow edit and delete for tech stack item([#152](https://github.com/chingu-x/chingu-dashboard-be/pull/152))
 - Add voyage project submission status to `/me` endpoint ([#158](https://github.com/chingu-x/chingu-dashboard-be/pull/158))
+
 
 ### Changed
 
