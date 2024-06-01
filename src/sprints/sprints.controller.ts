@@ -53,6 +53,11 @@ export class SprintsController {
         type: VoyageResponseWithoutMeetings,
         isArray: true,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     getVoyagesAndSprints() {
         return this.sprintsService.getVoyagesAndSprints();
     }
@@ -71,6 +76,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid team Id. Record not found.",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -99,6 +109,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Meeting with the supplied Id not found",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -136,6 +151,11 @@ export class SprintsController {
         status: HttpStatus.CONFLICT,
         description: "A meeting already exist for this sprint.",
         type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "sprintNumber",
@@ -176,6 +196,11 @@ export class SprintsController {
         description: "Invalid Meeting ID (MeetingId does not exist)",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "meetingId",
         required: true,
@@ -206,6 +231,11 @@ export class SprintsController {
         status: HttpStatus.BAD_REQUEST,
         description: "Bad Request - Invalid Meeting ID",
         type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -238,6 +268,11 @@ export class SprintsController {
         description: "Invalid Agenda ID (AgendaId does not exist)",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "agendaId",
         required: true,
@@ -268,6 +303,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid Agenda ID (AgendaId does not exist)",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "agendaId",
@@ -304,6 +344,11 @@ export class SprintsController {
         status: HttpStatus.CONFLICT,
         description: `FormId and MeetingId combination should be unique. There's already an existing form of the given formId for this meeting Id`,
         type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -343,6 +388,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "invalid meetingId",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -399,6 +449,11 @@ export class SprintsController {
             "invalid meeting id, form id, question id(s) not found in form with a given formId, responses not an array",
         type: BadRequestErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "meetingId",
         required: true,
@@ -424,6 +479,7 @@ export class SprintsController {
         );
     }
 
+    @Post("check-in")
     @ApiOperation({
         summary: "Submit end of sprint check in form",
         description:
@@ -474,7 +530,6 @@ export class SprintsController {
         description: "User has already submitted a check in for that sprint.",
         type: ConflictErrorResponse,
     })
-    @Post("check-in")
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,

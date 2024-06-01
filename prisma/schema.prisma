@@ -224,6 +224,7 @@ model VoyageTeamMember {
   teamResources          TeamResource[]
   projectFeatures        ProjectFeature[]
   checkinForms           FormResponseCheckin[]
+  TeamTechStackItem      TeamTechStackItem[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
 }
@@ -242,13 +243,15 @@ model TechStackCategory {
 }
 
 model TeamTechStackItem {
-  id           Int                @id @default(autoincrement())
-  name         String             @db.Citext
-  category     TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  categoryId   Int?
-  voyageTeam   VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamId Int
-  isSelected   Boolean            @default(false)
+  id                 Int                @id @default(autoincrement())
+  name               String             @db.Citext
+  category           TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  categoryId         Int?
+  voyageTeam         VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamId       Int
+  isSelected         Boolean            @default(false)
+  addedBy      VoyageTeamMember?  @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageTeamMemberId Int?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -292,7 +295,7 @@ model ProjectIdea {
   title              String
   description        String
   vision             String
-  isSelected         Boolean            @default(false)
+  isSelected         Boolean           @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt

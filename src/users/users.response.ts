@@ -145,4 +145,7 @@ export class PublicUserResponse extends OmitType(UserResponse, [
 export class FullUserResponse extends UserResponse {
     @ApiProperty({ isArray: true })
     voyageTeamMembers: VoyageTeamWithoutMember;
+
+    @ApiProperty({ isArray: true })
+    sprintCheckIn: number[];
 }

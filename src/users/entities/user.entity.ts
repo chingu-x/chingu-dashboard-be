@@ -58,4 +58,7 @@ export class UserEntity implements User {
 
     @ApiProperty()
     updatedAt: Date;
+
+    @ApiProperty()
+    sprintCheckin: number[];
 }
