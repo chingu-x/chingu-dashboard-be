@@ -35,7 +35,7 @@ import {
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
-import { VoyageTeamMemberValidationPipe } from "src/pipes/voyage-team-member-validation";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
