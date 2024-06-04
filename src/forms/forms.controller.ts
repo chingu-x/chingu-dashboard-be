@@ -57,7 +57,7 @@ export class FormsController {
     @ApiOperation({
         summary: "Gets a form with questions given a form ID",
         description:
-            "[access]: user <br>" +
+            "[access]: user (user for type), voyager, admin <br>" +
             "Returns form details of a form, with questions. <br>" +
             "This is currently for development purpose, or admin in future",
     })
