@@ -31,7 +31,7 @@ export class TeamsController {
 
     @ApiOperation({
         summary: "[Roles: Admin] Gets all voyage teams.",
-        description: "For development/admin purpose",
+        description: "[access]: admin <br> For development/admin purpose",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -48,6 +48,7 @@ export class TeamsController {
     @ApiOperation({
         summary:
             "[Roles: Admin] Gets all teams for a voyage given a voyageId (int).",
+        description: "[access]: admin <br>",
     })
     // Will need to be fixed to be RESTful
     @ApiResponse({
