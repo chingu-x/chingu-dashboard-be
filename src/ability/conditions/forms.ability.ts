@@ -1,6 +1,6 @@
 import { UserReq } from "../../global/types/CustomRequest";
 import { abilityFactory } from "./shared.ability";
-import { Form, Prisma } from "@prisma/client";
+import { Form } from "@prisma/client";
 import { ForbiddenError } from "@casl/ability";
 import { Action } from "../ability.factory/ability.factory";
 

@@ -70,13 +70,13 @@ describe("FormController e2e Tests", () => {
         });
     });
     describe("GET /forms/:formId", () => {
+        const formId = 1;
         it("should return 200 when successfully retrieve a specific form by ID", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
                 app,
             );
-            const formId = 1;
             const expectedForm = await prisma.form.findUnique({
                 where: {
                     id: formId,
@@ -90,8 +90,57 @@ describe("FormController e2e Tests", () => {
             expect(response.body.id).toEqual(expectedForm.id);
         });
 
+        it("should return 200 when a voyager try to access voyage related forms", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .get(`/forms/${formId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200);
+        });
+
+        it("should return 200 when a user without role try to access a user type forms", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const form = await prisma.form.findFirst({
+                where: {
+                    formType: {
+                        name: "user",
+                    },
+                },
+            });
+
+            await request(app.getHttpServer())
+                .get(`/forms/${form.id}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200);
+        });
+
         it("should return 401 when user is not logged in", async () => {
-            await request(app.getHttpServer()).get("/forms/1").expect(401);
+            await request(app.getHttpServer())
+                .get(`/forms/${formId}`)
+                .expect(401);
+        });
+
+        it("should return 403 when a non voyager try to access a voyage related form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .get(`/forms/${formId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
 
         it("should return a 404 error for a non-existent form ID", async () => {

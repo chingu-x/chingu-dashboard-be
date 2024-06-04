@@ -37,9 +37,12 @@ export class AbilityFactory {
                     in: user.voyageTeams.map((vt) => vt.memberId),
                 },
             });
+            can([Action.Submit, Action.Read], "Form");
+        } else {
+            // all other users
             can([Action.Submit, Action.Read], "Form", {
                 formTypeId: {
-                    in: [formTypeId["team"], formTypeId["meeting"]],
+                    in: [formTypeId["user"]],
                 },
             });
         }
