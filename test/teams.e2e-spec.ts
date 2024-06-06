@@ -49,7 +49,10 @@ describe("Teams Controller (e2e)", () => {
                 .get("/teams")
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toBeArray;
+                });
         });
         it("should return 401 when user is not logged in", async () => {
             await request(app.getHttpServer())
@@ -75,7 +78,10 @@ describe("Teams Controller (e2e)", () => {
                 .get(`/teams/voyages/${voyageId}`)
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toBeArray;
+                });
         });
         it("should return 404 if voyage teams are not found given a voyage id", async () => {
             const voyageId: number = 999999;
