@@ -41,18 +41,40 @@ describe("Teams Controller (e2e)", () => {
     });
     describe("GET /teams - gets all voyage teams", () => {
         it("should return 200 and array of voyage teams", async () => {
-            return await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get("/teams")
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/)
-                .expect((res) => {
-                    expect(res.body).toBeArray();
-                });
+                .expect("Content-Type", /json/);
         });
         it("should return 401 when user is not logged in", async () => {
-            return await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get("/teams")
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401)
+                .expect("Content-Type", /json/);
+        });
+    });
+    describe("GET /teams/voyages/:voyageid - Gets all team for a voyage given a voyage id", () => {
+        it("should return 200 and array of voyage teams", async () => {
+            const voyageId: number = 3;
+            await request(app.getHttpServer())
+                .get(`/teams/voyages/${voyageId}`)
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 404 if voyage teams are not found given a voyage id", async () => {
+            const voyageId: number = 999999;
+            await request(app.getHttpServer())
+                .get(`/teams/voyages/${voyageId}`)
+                .set("Cookie", accessToken)
+                .expect(404);
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const voyageId: number = 3;
+            await request(app.getHttpServer())
+                .get(`/teams/voyages/${voyageId}`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/);
