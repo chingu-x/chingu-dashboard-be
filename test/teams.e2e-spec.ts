@@ -30,16 +30,16 @@ describe("Teams Controller (e2e)", () => {
         await app.close();
     });
 
-    beforeEach(async () => {
-        await loginAndGetTokens(
-            "jessica.williamson@gmail.com",
-            "password",
-            app,
-        ).then((tokens) => {
-            accessToken = tokens.access_token;
-        });
-    });
     describe("GET /teams - gets all voyage teams", () => {
+        beforeEach(async () => {
+            await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            ).then((tokens) => {
+                accessToken = tokens.access_token;
+            });
+        });
         it("should return 200 and array of voyage teams", async () => {
             await request(app.getHttpServer())
                 .get("/teams")
@@ -56,6 +56,15 @@ describe("Teams Controller (e2e)", () => {
         });
     });
     describe("GET /teams/voyages/:voyageid - Gets all team for a voyage given a voyage id", () => {
+        beforeEach(async () => {
+            await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            ).then((tokens) => {
+                accessToken = tokens.access_token;
+            });
+        });
         it("should return 200 and array of voyage teams", async () => {
             const voyageId: number = 3;
             await request(app.getHttpServer())
@@ -78,6 +87,45 @@ describe("Teams Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/);
+        });
+    });
+    describe("GET /teams/:teamid - Gets one team details given a team id", () => {
+        beforeEach(async () => {
+            await loginAndGetTokens("dan@random.com", "password", app).then(
+                (tokens) => {
+                    accessToken = tokens.access_token;
+                },
+            );
+        });
+        it("should return 200 and array of voyage teams", async () => {
+            const teamId: number = 4;
+            await request(app.getHttpServer())
+                .get(`/teams/${teamId}`)
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 404 if voyage team is not found given a team id", async () => {
+            const teamId: number = 999999;
+            await request(app.getHttpServer())
+                .get(`/teams/${teamId}`)
+                .set("Cookie", accessToken)
+                .expect(404);
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const teamId: number = 4;
+            await request(app.getHttpServer())
+                .get(`/teams/${teamId}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 403 when user tries to GET details of other team", async () => {
+            const teamId: number = 3;
+            await request(app.getHttpServer())
+                .get(`/teams/${teamId}`)
+                .set("Cookie", accessToken)
+                .expect(403);
         });
     });
 });
