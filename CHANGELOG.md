@@ -62,6 +62,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Update the deleteFeature method to use a DeleteFeatureResponse and return an object with a successful status and a message [#150](https://github.com/chingu-x/chingu-dashboard-be/pull/150)
 - Update seed data to include voyage 49-51 [#152](https://github.com/chingu-x/chingu-dashboard-be/pull/152)
 - Updated Sprints routes with 401 response when not logged in [#157](https://github.com/chingu-x/chingu-dashboard-be/pull/157)
+- Updated DELETE ideation-vote service to also delete ideation when no votes remain [#161](https://github.com/chingu-x/chingu-dashboard-be/pull/161)
 
 
 
