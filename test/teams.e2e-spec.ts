@@ -7,6 +7,10 @@ import { seed } from "../prisma/seed/seed";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 
+//Logged in user is Jessica Williamson for admin routes /teams and /teams/voyages/:voyageid
+//Logged in user is Dan ko for team member routes /teams/:teamid and /teams/:teamid/members
+//Dan Ko is part of the team with team id 4
+
 describe("Teams Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
