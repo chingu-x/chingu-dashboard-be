@@ -128,4 +128,52 @@ describe("Teams Controller (e2e)", () => {
                 .expect(403);
         });
     });
+    describe("PATCH /teams/:teamid/members - Updates team members hours per sprint", () => {
+        beforeEach(async () => {
+            await loginAndGetTokens("dan@random.com", "password", app).then(
+                (tokens) => {
+                    accessToken = tokens.access_token;
+                },
+            );
+        });
+        it("should return 200 and updated users sprints per hour", async () => {
+            const teamId: number = 4;
+            const hrPerSprint: number = 2;
+
+            await request(app.getHttpServer())
+                .patch(`/teams/${teamId}/members`)
+                .set("Cookie", accessToken)
+                .send({ hrPerSprint })
+                .expect(200);
+        });
+        it("should return 404 if voyage team is not found given a team id", async () => {
+            const teamId: number = 999999;
+            const hrPerSprint: number = 2;
+
+            await request(app.getHttpServer())
+                .patch(`/teams/${teamId}/members`)
+                .set("Cookie", accessToken)
+                .send({ hrPerSprint })
+                .expect(404);
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const teamId: number = 4;
+            const hrPerSprint: number = 2;
+            await request(app.getHttpServer())
+                .patch(`/teams/${teamId}/members`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send({ hrPerSprint })
+                .expect(401)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 403 when user tries to PATCH details of other team", async () => {
+            const teamId: number = 3;
+            const hrPerSprint: number = 2;
+            await request(app.getHttpServer())
+                .patch(`/teams/${teamId}/members`)
+                .set("Cookie", accessToken)
+                .send({ hrPerSprint })
+                .expect(403);
+        });
+    });
 });

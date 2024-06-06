@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { publicVoyageTeamUserSelect } from "../global/selects/teams.select";
-import { UserReq } from "../global/types/CustomRequest";
+import { CustomRequest, UserReq } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 @Injectable()
@@ -42,11 +42,14 @@ export class TeamsService {
 
     // Update voyage team member by id
     async updateTeamMemberById(
-        teamId,
-        req,
+        teamId: number,
+        req: CustomRequest,
         updateTeamMemberDto: UpdateTeamMemberDto,
     ) {
         const uuid = req.user.userId;
+
+        //check for valid team id
+        await this.findTeamById(teamId, req.user);
 
         return this.prisma.voyageTeamMember.update({
             where: {
