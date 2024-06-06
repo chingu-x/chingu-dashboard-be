@@ -209,7 +209,7 @@ export class IdeationsService {
     }
 
     async deleteIdeation(req: CustomRequest, teamId, ideationId: number) {
-        let voteCount: number;
+        //let voteCount: number;
 
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
@@ -218,17 +218,8 @@ export class IdeationsService {
             );
         }
         try {
-            await this.deleteIdeationVote(req, teamId, ideationId);
-            voteCount = await this.getIdeationVoteCount(ideationId);
-            //only allow the user that created the idea to delete it and only if it has no votes
-            if (voteCount === 0) {
-                const deleteIdeation = await this.prisma.projectIdea.delete({
-                    where: {
-                        id: ideationId,
-                    },
-                });
-                return deleteIdeation;
-            }
+            //delete vote - this will also delete the ideation, since no more votes remain
+            return await this.deleteIdeationVote(req, teamId, ideationId);
         } catch (e) {
             throw e;
         }
@@ -255,6 +246,15 @@ export class IdeationsService {
                     },
                 },
             );
+            //delete ideation if no remaining votes
+            const voteCount = await this.getIdeationVoteCount(ideationId);
+            if (voteCount === 0) {
+                return await this.prisma.projectIdea.delete({
+                    where: {
+                        id: ideationId,
+                    },
+                });
+            }
             return deleteIdeationVote;
         } catch (e) {
             if (e.code === "P2002") {
