@@ -37,6 +37,7 @@ import {
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -534,7 +535,7 @@ export class SprintsController {
         type: ConflictErrorResponse,
     })
     addCheckinFormResponse(
-        @Body(new FormInputValidationPipe())
+        @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(
