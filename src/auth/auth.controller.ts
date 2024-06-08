@@ -39,6 +39,8 @@ import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { Response } from "express";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -48,7 +50,8 @@ export class AuthController {
     @ApiOperation({
         summary: "Public Route: Signup, and send a verification email",
         description:
-            "Please use a 'real' email if you want to receive a verification email.",
+            "[access]: public" +
+            "<br>Note: Please use a 'real' email if you want to receive a verification email.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -71,8 +74,9 @@ export class AuthController {
     @ApiOperation({
         summary: "Resend the verification email",
         description:
-            "Please use a 'real' email if you want to receive a verification email.<br/>" +
-            "response will always be 200, due to privacy reason",
+            "[access]: unverified user, user, voyage, admin" +
+            "<br>Please use a 'real' email if you want to receive a verification email." +
+            "<br>response will always be 200, due to privacy reason",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -92,7 +96,9 @@ export class AuthController {
 
     @ApiOperation({
         summary: "Verifies the users email",
-        description: "Using a token sent to their email when sign up",
+        description:
+            "[access]: unverified user, user, voyager, admin" +
+            "<br>Using a token sent to their email when sign up",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -115,6 +121,7 @@ export class AuthController {
     @ApiOperation({
         summary:
             "Public Route: When a user logs in, sets access token and refresh token (http cookies).",
+        description: "<br>[access]: public",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -140,8 +147,8 @@ export class AuthController {
     @Post("login")
     async login(
         @Body() body: LoginDto,
-        @Request() req,
-        @Res({ passthrough: true }) res,
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
     ) {
         const { access_token, refresh_token } = await this.authService.login(
             req.user,
@@ -163,6 +170,7 @@ export class AuthController {
     @ApiOperation({
         summary:
             "Bypass access token jwt guard. Refresh an access token, with a valid refresh token in cookies",
+        description: "<br>[access]: public",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -184,7 +192,10 @@ export class AuthController {
     @Public()
     @UseGuards(JwtRefreshAuthGuard)
     @Post("refresh")
-    async refresh(@Request() req, @Res({ passthrough: true }) res) {
+    async refresh(
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
+    ) {
         const { access_token, refresh_token } = await this.authService.refresh(
             req.user,
         );
@@ -206,7 +217,8 @@ export class AuthController {
         summary:
             "[Admin only]: Revokes user's refresh token, with a valid user id or email",
         description:
-            "using the user's id or email, removes user's refresh token",
+            "[access]: admin" +
+            "<br>using the user's id or email, removes user's refresh token",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -231,7 +243,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Delete("refresh/revoke")
-    async revoke(@Body() body: RevokeRTDto, @Res() res) {
+    async revoke(@Body() body: RevokeRTDto, @Res() res: Response) {
         await this.authService.revokeRefreshToken(body);
         res.status(HttpStatus.OK).json({
             message: "User Refresh token Successfully revoke.",
@@ -242,6 +254,7 @@ export class AuthController {
     @ApiOperation({
         summary:
             "When a user logs out, access and refresh tokens are cleared from cookies, refresh token is set to null in the database.",
+        description: "[access]: user, voyager, admin",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -261,7 +274,10 @@ export class AuthController {
     })
     @UseGuards(JwtAuthGuard)
     @Post("logout")
-    async logout(@Request() req, @Res({ passthrough: true }) res) {
+    async logout(
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
+    ) {
         const cookies = req.cookies;
 
         if (!cookies?.refresh_token)
@@ -279,7 +295,8 @@ export class AuthController {
         summary:
             "Public route: Request a password reset - email with password reset link (if the account exists)",
         description:
-            "Please use a 'real' email if you want to receive a password reset email.",
+            "[access]: unverified user, user, voyager, admin" +
+            "<br>Please use a 'real' email if you want to receive a password reset email.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -299,7 +316,8 @@ export class AuthController {
     @ApiOperation({
         summary: "Public route: Reset user password",
         description:
-            "The reset token is emailed to them when the request a password reset.",
+            "[access]: public" +
+            "<br>The reset token is emailed to them when the request a password reset.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
