@@ -3,6 +3,7 @@ import { AbilityBuilder, PureAbility } from "@casl/ability";
 import { PrismaSubjects } from "../prisma-generated-types";
 import { createPrismaAbility, PrismaQuery } from "@casl/prisma";
 import { UserReq } from "../../global/types/CustomRequest";
+import { formTypeId } from "../../global/constants/formTypeId";
 
 export enum Action {
     Manage = "manage",
@@ -28,13 +29,20 @@ export class AbilityFactory {
             can(Action.Manage, "all");
         } else if (user.roles.includes("voyager")) {
             can([Action.Submit], "Voyage");
-            can([Action.Read], "Form");
             can([Action.Manage], "VoyageTeam", {
                 id: { in: user.voyageTeams.map((vt) => vt.teamId) },
             });
             can([Action.Manage], "Ideation", {
                 voyageTeamMemberId: {
                     in: user.voyageTeams.map((vt) => vt.memberId),
+                },
+            });
+            can([Action.Submit, Action.Read], "Form");
+        } else {
+            // all other users
+            can([Action.Submit, Action.Read], "Form", {
+                formTypeId: {
+                    in: [formTypeId["user"]],
                 },
             });
         }

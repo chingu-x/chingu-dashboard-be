@@ -4,6 +4,7 @@ import {
     HttpStatus,
     Param,
     ParseIntPipe,
+    Request,
 } from "@nestjs/common";
 import { FormsService } from "./forms.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
@@ -16,6 +17,7 @@ import {
 
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller("forms")
 @ApiTags("Forms")
@@ -26,6 +28,7 @@ export class FormsController {
     @ApiOperation({
         summary: "[Roles: admin] gets all forms from the database",
         description:
+            "[access]: admin <br>" +
             "Returns all forms details with questions. <br>" +
             "This is currently for development purpose, or admin in future",
     })
@@ -54,6 +57,7 @@ export class FormsController {
     @ApiOperation({
         summary: "Gets a form with questions given a form ID",
         description:
+            "[access]: user (user for type), voyager, admin <br>" +
             "Returns form details of a form, with questions. <br>" +
             "This is currently for development purpose, or admin in future",
     })
@@ -79,7 +83,10 @@ export class FormsController {
         description: "form ID",
         example: 1,
     })
-    getFormById(@Param("formId", ParseIntPipe) formId: number) {
-        return this.formsService.getFormById(formId);
+    getFormById(
+        @Request() req: CustomRequest,
+        @Param("formId", ParseIntPipe) formId: number,
+    ) {
+        return this.formsService.getFormById(formId, req);
     }
 }
