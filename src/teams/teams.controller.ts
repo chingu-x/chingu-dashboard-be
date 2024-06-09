@@ -19,6 +19,7 @@ import {
 import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
+    ForbiddenErrorResponse,
 } from "../global/responses/errors";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
@@ -31,13 +32,23 @@ export class TeamsController {
 
     @ApiOperation({
         summary: "[Roles: Admin] Gets all voyage teams.",
-        description: "[access]: admin <br> For development/admin purpose",
+        description: "For development/admin purpose",
     })
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully gets all voyage teams",
         type: VoyageTeamResponse,
         isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
@@ -48,7 +59,6 @@ export class TeamsController {
     @ApiOperation({
         summary:
             "[Roles: Admin] Gets all teams for a voyage given a voyageId (int).",
-        description: "[access]: admin <br>",
     })
     // Will need to be fixed to be RESTful
     @ApiResponse({
@@ -62,6 +72,16 @@ export class TeamsController {
         description: "Voyage with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
     @ApiParam({
         name: "voyageId",
         description: "voyage id from the voyage table",
@@ -69,7 +89,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @CheckAbilities({ action: Action.Manage, subject: "VoyageTeam" })
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);
