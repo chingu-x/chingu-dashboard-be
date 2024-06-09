@@ -208,9 +208,41 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(req: CustomRequest, teamId, ideationId: number) {
-        //let voteCount: number;
+    async removeIdeation(ideationId: number) {
+        return await this.prisma.projectIdea.delete({
+            where: {
+                id: ideationId,
+            },
+        });
+    }
 
+    async removeVote(req: CustomRequest, teamId: number, ideationId: number) {
+        let ideationVote: any;
+        try {
+            const voyageTeamMemberId = this.globalService.getVoyageTeamMemberId(
+                req,
+                teamId,
+            );
+            ideationVote = await this.getIdeationVote(
+                ideationId,
+                voyageTeamMemberId,
+            );
+            return await this.prisma.projectIdeaVote.delete({
+                where: {
+                    id: ideationVote.id,
+                },
+            });
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new NotFoundException(
+                    `IdeationVote (id: ${ideationVote.id}) does not exist.`,
+                );
+            }
+            throw e;
+        }
+    }
+
+    async deleteIdeation(req: CustomRequest, teamId, ideationId: number) {
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
             throw new ConflictException(
@@ -218,8 +250,8 @@ export class IdeationsService {
             );
         }
         try {
-            //delete vote - this will also delete the ideation, since no more votes remain
-            return await this.deleteIdeationVote(req, teamId, ideationId);
+            await this.removeVote(req, teamId, ideationId);
+            return await this.removeIdeation(ideationId);
         } catch (e) {
             throw e;
         }
@@ -230,38 +262,25 @@ export class IdeationsService {
         teamId: number,
         ideationId: number,
     ) {
-        const voyageTeamMemberId = this.globalService.getVoyageTeamMemberId(
-            req,
-            teamId,
-        );
-        const ideationVote = await this.getIdeationVote(
-            ideationId,
-            voyageTeamMemberId,
-        );
         try {
-            const deleteIdeationVote = await this.prisma.projectIdeaVote.delete(
-                {
-                    where: {
-                        id: ideationVote.id,
-                    },
-                },
+            const deleteIdeationVote = await this.removeVote(
+                req,
+                teamId,
+                ideationId,
             );
             //delete ideation if no remaining votes
             const voteCount = await this.getIdeationVoteCount(ideationId);
             if (voteCount === 0) {
-                return await this.prisma.projectIdea.delete({
-                    where: {
-                        id: ideationId,
-                    },
-                });
+                await this.removeIdeation(ideationId);
             }
+
             return deleteIdeationVote;
         } catch (e) {
-            if (e.code === "P2002") {
-                throw new NotFoundException(
-                    `IdeationVote (id: ${ideationVote.id}) does not exist.`,
-                );
-            }
+            // if (e.code === "P2002") {
+            //     throw new NotFoundException(
+            //         `IdeationVote (id: ${ideationVote.id}) does not exist.`,
+            //     );
+            // }
             throw e;
         }
     }
