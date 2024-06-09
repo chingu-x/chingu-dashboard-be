@@ -19,6 +19,7 @@ import {
 import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
+    ForbiddenErrorResponse,
 } from "../global/responses/errors";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
@@ -38,6 +39,16 @@ export class TeamsController {
         description: "Successfully gets all voyage teams",
         type: VoyageTeamResponse,
         isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
@@ -60,6 +71,16 @@ export class TeamsController {
         status: HttpStatus.NOT_FOUND,
         description: "Voyage with given ID does not exist.",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "voyageId",
