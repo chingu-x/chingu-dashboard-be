@@ -4,8 +4,9 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { loginAndGetTokens } from "./utils";
+import { getNonAdminUser, loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
+import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
 
 //Logged in user is Jessica Williamson for admin routes /teams and /teams/voyages/:voyageid
 //Logged in user is Dan ko for team member routes /teams/:teamid and /teams/:teamid/members
@@ -14,7 +15,7 @@ import * as cookieParser from "cookie-parser";
 describe("Teams Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let accessToken: any;
+    let accessToken: string;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -25,6 +26,7 @@ describe("Teams Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
         app.use(cookieParser());
         await app.init();
     });
@@ -35,19 +37,15 @@ describe("Teams Controller (e2e)", () => {
     });
 
     describe("GET /teams - gets all voyage teams", () => {
-        beforeEach(async () => {
-            await loginAndGetTokens(
+        it("should return 200 and array of voyage teams", async () => {
+            const { access_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
                 app,
-            ).then((tokens) => {
-                accessToken = tokens.access_token;
-            });
-        });
-        it("should return 200 and array of voyage teams", async () => {
+            );
             await request(app.getHttpServer())
                 .get("/teams")
-                .set("Cookie", accessToken)
+                .set("Cookie", access_token)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -61,22 +59,29 @@ describe("Teams Controller (e2e)", () => {
                 .expect(401)
                 .expect("Content-Type", /json/);
         });
+        it("should return 403 when non admin users try to access it", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .get("/teams")
+                .set("Cookie", access_token)
+                .expect(403);
+        });
     });
     describe("GET /teams/voyages/:voyageid - Gets all team for a voyage given a voyage id", () => {
-        beforeEach(async () => {
-            await loginAndGetTokens(
+        it("should return 200 and array of voyage teams", async () => {
+            const voyageId: number = 3;
+            const { access_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
                 app,
-            ).then((tokens) => {
-                accessToken = tokens.access_token;
-            });
-        });
-        it("should return 200 and array of voyage teams", async () => {
-            const voyageId: number = 3;
+            );
             await request(app.getHttpServer())
                 .get(`/teams/voyages/${voyageId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", access_token)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -85,9 +90,14 @@ describe("Teams Controller (e2e)", () => {
         });
         it("should return 404 if voyage teams are not found given a voyage id", async () => {
             const voyageId: number = 999999;
+            const { access_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .get(`/teams/voyages/${voyageId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", access_token)
                 .expect(404);
         });
         it("should return 401 when user is not logged in", async () => {
@@ -98,14 +108,27 @@ describe("Teams Controller (e2e)", () => {
                 .expect(401)
                 .expect("Content-Type", /json/);
         });
+        it("should return 403 when non admin users try to access it", async () => {
+            const voyageId: number = 3;
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .get(`/teams/voyages/${voyageId}`)
+                .set("Cookie", access_token)
+                .expect(403);
+        });
     });
     describe("GET /teams/:teamid - Gets one team details given a team id", () => {
         beforeEach(async () => {
-            await loginAndGetTokens("dan@random.com", "password", app).then(
-                (tokens) => {
-                    accessToken = tokens.access_token;
-                },
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
             );
+            accessToken = access_token;
         });
         it("should return 200 and array of voyage teams", async () => {
             const teamId: number = 4;
@@ -140,11 +163,12 @@ describe("Teams Controller (e2e)", () => {
     });
     describe("PATCH /teams/:teamid/members - Updates team members hours per sprint", () => {
         beforeEach(async () => {
-            await loginAndGetTokens("dan@random.com", "password", app).then(
-                (tokens) => {
-                    accessToken = tokens.access_token;
-                },
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
             );
+            accessToken = access_token;
         });
         it("should return 200 and updated users sprints per hour", async () => {
             const teamId: number = 4;

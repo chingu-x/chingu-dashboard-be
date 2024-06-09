@@ -68,7 +68,7 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @CheckAbilities({ action: Action.Manage, subject: "VoyageTeam" })
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);
