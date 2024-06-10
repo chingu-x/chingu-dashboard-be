@@ -36,6 +36,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - new command to run both e2e and unit test ([#148](https://github.com/chingu-x/chingu-dashboard-be/pull/148))
 - allow edit and delete for tech stack item([#152](https://github.com/chingu-x/chingu-dashboard-be/pull/152))
 - Add voyage project submission status to `/me` endpoint ([#158](https://github.com/chingu-x/chingu-dashboard-be/pull/158))
+- Add swagger access info, add forms authorization and e2e tests ([#160](https://github.com/chingu-x/chingu-dashboard-be/pull/160))
 
 
 ### Changed
@@ -73,6 +74,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Fix unit tests where mocked req doesn't match new CustomRequest type ([#122](https://github.com/chingu-x/chingu-dashboard-be/pull/122))
 - Fix bug with reading roles after reseeding causes the db to not recognize the tokens stored by the user's browser ([#134](https://github.com/chingu-x/chingu-dashboard-be/pull/134))
 - Fix form responses giving error and not inserting values when the boolean value is false ([#156](https://github.com/chingu-x/chingu-dashboard-be/pull/156))
+- Fix a bug for check on voyageTeamMemberId ([#159](https://github.com/chingu-x/chingu-dashboard-be/pull/159))
 
 ### Removed
 

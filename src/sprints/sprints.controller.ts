@@ -9,6 +9,7 @@ import {
     Delete,
     ValidationPipe,
     HttpStatus,
+    Request,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -35,6 +36,8 @@ import {
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -408,10 +411,12 @@ export class SprintsController {
     getMeetingFormQuestionsWithResponses(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
+        @Request() req: CustomRequest,
     ) {
         return this.sprintsService.getMeetingFormQuestionsWithResponses(
             meetingId,
             formId,
+            req,
         );
     }
 
@@ -530,7 +535,7 @@ export class SprintsController {
         type: ConflictErrorResponse,
     })
     addCheckinFormResponse(
-        @Body(new FormInputValidationPipe())
+        @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(

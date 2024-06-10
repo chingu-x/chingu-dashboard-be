@@ -855,7 +855,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 2, // voyageTeamMemberId 1 is already in the seed
+                    voyageTeamMemberId: 4, // voyageTeamMemberId 1 is already in the seed
                     sprintId: 1,
                     responses: [
                         {
@@ -1045,7 +1045,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 1,
+                    voyageTeamMemberId: 4,
                     sprintId: 1,
                     responses: [
                         {
@@ -1062,7 +1062,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 1,
+                    voyageTeamMemberId: 4,
                     sprintId: 1,
                     responses: [
                         {
@@ -1080,6 +1080,22 @@ describe("Sprints Controller (e2e)", () => {
             expect(responsesAfter).toEqual(responsesBefore);
             expect(responseGroupAfter).toEqual(responseGroupBefore);
             expect(checkinsAfter).toEqual(checkinsBefore);
+        });
+        it("should return 400 if the user doesnot belong to the voyage team", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 5,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
         });
     });
 });
