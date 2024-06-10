@@ -132,6 +132,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         } as CustomRequest;
         const createIdeationDto = {
@@ -162,6 +163,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         };
 
@@ -185,6 +187,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         } as CustomRequest;
 
@@ -205,6 +208,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         } as CustomRequest;
         const updateIdeationDto = {
@@ -236,6 +240,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         } as CustomRequest;
 
@@ -260,6 +265,7 @@ describe("IdeationsService", () => {
                         memberId: 1,
                     },
                 ],
+                roles: ["voyager"],
             },
         } as CustomRequest;
         const result = await service.deleteIdeation(req, teamId, ideationId);

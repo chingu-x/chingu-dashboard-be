@@ -11,4 +11,9 @@ export class CreateTeamTechDto {
     @IsNotEmpty()
     @ApiProperty({ example: 1 })
     techCategoryId: number;
+
+    @IsInt()
+    @IsNotEmpty()
+    @ApiProperty({ example: 8 })
+    voyageTeamMemberId: number;
 }
