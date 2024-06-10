@@ -86,7 +86,7 @@ export class VoyagesService {
         }
     }
 
-    async getVoyageProject() {
+    async getVoyageProjects() {
         return this.prisma.formResponseVoyageProject.findMany({});
     }
 }

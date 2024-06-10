@@ -98,6 +98,6 @@ export class VoyagesController {
     @CheckAbilities({ action: Action.Manage, subject: "Voyage" })
     @Get("/project-submissions")
     async getAllVoyageProjects() {
-        return this.voyagesService.getVoyageProject();
+        return this.voyagesService.getVoyageProjects();
     }
 }
