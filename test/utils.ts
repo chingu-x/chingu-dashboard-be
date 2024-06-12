@@ -62,3 +62,18 @@ export const getNonAdminUser = async () => {
         await prisma.$disconnect();
     }
 };
+export const getUseridFromEmail = async (email: string): Promise<string> => {
+    try {
+        const userId = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+            },
+        });
+        return userId.id;
+    } catch (e) {
+        console.log(e);
+    }
+};
