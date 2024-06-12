@@ -16,6 +16,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
     BadRequestErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -39,6 +40,16 @@ export class UsersController {
         description: "Successfully gets all users in the database",
         isArray: true,
         type: FullUserResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
