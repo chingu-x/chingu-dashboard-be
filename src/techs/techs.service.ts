@@ -3,6 +3,7 @@ import {
     ConflictException,
     ForbiddenException,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
@@ -47,7 +48,7 @@ export class TechsService {
     findVoyageMemberId = async (
         req,
         teamId: number,
-    ): Promise<number> | null => {
+    ): Promise<number | null> => {
         const uuid = req.user.userId;
         const voyageMember = await this.prisma.voyageTeamMember.findUnique({
             where: {
@@ -239,7 +240,7 @@ export class TechsService {
         // The person having the last vote has the  ability to edit and delete the tech stack item
         if (
             req.user.userId !==
-            teamTechItem.teamTechStackItemVotes[0].votedBy.member.id
+            teamTechItem.teamTechStackItemVotes[0].votedBy?.member.id
         ) {
             throw new ForbiddenException(
                 "[Tech Service]:  You cannot update this Tech Stack Item.",
@@ -340,7 +341,7 @@ export class TechsService {
             // The person having the last vote has the  ability to edit and delete the tech stack item
             if (
                 req.user.userId !==
-                teamTechItem.teamTechStackItemVotes[0].votedBy.member.id
+                teamTechItem.teamTechStackItemVotes[0].votedBy?.member.id
             ) {
                 throw new ForbiddenException(
                     "[Tech Service]:  You cannot delete this Tech Stack Item.",
@@ -444,6 +445,10 @@ export class TechsService {
                     },
                 },
             );
+            if (!teamTechItem)
+                throw new InternalServerErrorException(
+                    `techs.service.ts: teamTechItem not found for teamTechItemId=${teamTechItemId}`,
+                );
             // Check if the teamTechStackItemVotes array is empty
             if (teamTechItem.teamTechStackItemVotes.length === 0) {
                 // If it's empty, delete the tech item from the database using Prisma ORM
