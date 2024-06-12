@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ConflictException,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
 } from "@nestjs/common";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -53,7 +54,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number> | null => {
+    ): Promise<number | null> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -71,9 +72,16 @@ export class SprintsService {
                 },
             },
         });
-        return sprintsByTeamId?.voyage?.sprints?.filter(
+
+        const sprintId = sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
         )[0]?.id;
+
+        if (!sprintId)
+            throw new InternalServerErrorException(
+                `sprints.service.ts: no sprintId found for sprint number ${sprintNumber}`,
+            );
+        return sprintId;
     };
 
     async getVoyagesAndSprints() {
@@ -136,10 +144,11 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        //copy teamVoyage endDate to voyage object
-        teamSprintDates.voyage.endDate = teamSprintDates.endDate;
-        delete teamSprintDates.endDate;
-        return teamSprintDates.voyage;
+
+        const newTeamSprintDatesVoyage: Partial<typeof teamSprintDates.voyage> =
+            Object.assign({}, teamSprintDates.voyage);
+        delete newTeamSprintDatesVoyage.endDate;
+        return newTeamSprintDatesVoyage;
     }
 
     async getMeetingById(meetingId: number) {
@@ -426,6 +435,11 @@ export class SprintsService {
                     },
                 },
             });
+
+        if (!formResponseMeeting)
+            throw new InternalServerErrorException(
+                `sprints.service.ts: form response not found for meetingId=${meetingId} and formId=${formId}}`,
+            );
 
         // this will also check if formId exist in getFormById
         if (!formResponseMeeting && (await this.isMeetingForm(formId)))
