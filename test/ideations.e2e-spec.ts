@@ -8,7 +8,7 @@ import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forb
 import { seed } from "../prisma/seed/seed";
 import * as cookieParser from "cookie-parser";
 
-xdescribe("IdeationsController (e2e)", () => {
+describe("IdeationsController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     let accessToken: any;
@@ -279,10 +279,11 @@ xdescribe("IdeationsController (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toMatchObject({
                         ...data,
-                        id: ideationToUpdate.id,
-                        voyageTeamMemberId: ideationToUpdate.voyageTeamMemberId,
-                        description: ideationToUpdate.description,
-                        vision: ideationToUpdate.vision,
+                        id: ideationToUpdate?.id,
+                        voyageTeamMemberId:
+                            ideationToUpdate?.voyageTeamMemberId,
+                        description: ideationToUpdate?.description,
+                        vision: ideationToUpdate?.vision,
                         createdAt: expect.any(String),
                         updatedAt: expect.any(String),
                     });

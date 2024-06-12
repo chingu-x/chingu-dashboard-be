@@ -41,30 +41,29 @@ export const loginAndGetTokens = async (
 };
 
 export const getNonAdminUser = async () => {
-    try {
-        const adminRole = await prisma.role.findUnique({
-            where: {
-                name: "admin",
-            },
-        });
+    const adminRole = await prisma.role.findUnique({
+        where: {
+            name: "admin",
+        },
+    });
 
-        if (!adminRole)
-            throw new InternalServerErrorException(
-                "test/utils.ts: admin role not found in the database",
-            );
+    if (!adminRole)
+        throw new InternalServerErrorException(
+            "test/utils.ts: admin role not found in the database",
+        );
 
-        return prisma.user.findFirst({
-            where: {
-                roles: {
-                    none: {
-                        roleId: adminRole.id,
-                    },
+    const adminUser = prisma.user.findFirst({
+        where: {
+            roles: {
+                none: {
+                    roleId: adminRole.id,
                 },
             },
-        });
-    } catch (e) {
-        console.log(e);
-    } finally {
-        await prisma.$disconnect();
-    }
+        },
+    });
+    if (!adminUser)
+        throw new InternalServerErrorException(
+            "test/utils.ts: admin user not found",
+        );
+    return adminUser;
 };

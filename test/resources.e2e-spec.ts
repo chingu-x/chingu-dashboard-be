@@ -104,13 +104,12 @@ describe("ResourcesController (e2e)", () => {
         await app.init();
 
         // voyageTeamId of main user
-        ({ voyageTeamId } = await findVoyageTeamId(userEmail, prisma));
+        const voyageTeam = await findVoyageTeamId(userEmail, prisma);
+        voyageTeamId = voyageTeam!.voyageTeamId;
         userAccessToken = await loginUser(userEmail, "password", app);
 
-        ({ voyageTeamId: otherVoyageTeamId } = await findVoyageTeamId(
-            otherUserEmail,
-            prisma,
-        ));
+        const otherVoyageTeam = await findVoyageTeamId(otherUserEmail, prisma);
+        otherVoyageTeamId = otherVoyageTeam!.voyageTeamId;
         otherUserAccessToken = await loginUser(otherUserEmail, "password", app);
 
         if (voyageTeamId === otherVoyageTeamId) {
@@ -246,7 +245,7 @@ describe("ResourcesController (e2e)", () => {
     describe("/PATCH :teamId/resources/:resourceId", () => {
         it("should return 200 and update a resource", async () => {
             const resourceToPatch = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToPatch.id;
+            const resourceId: number = resourceToPatch!.id;
             const patchedResource: UpdateResourceDto = {
                 url: "http://www.github.com/chingu-x/chingu-dashboard-be",
                 title: "Chingu Github BE repo",
@@ -266,8 +265,8 @@ describe("ResourcesController (e2e)", () => {
                         await prisma.teamResource.findUnique({
                             where: { id: resourceId },
                         });
-                    expect(updatedResource.url).toBe(patchedResource.url);
-                    expect(updatedResource.title).toBe(patchedResource.title);
+                    expect(updatedResource?.url).toBe(patchedResource.url);
+                    expect(updatedResource?.title).toBe(patchedResource.title);
                 });
         });
 
@@ -288,7 +287,7 @@ describe("ResourcesController (e2e)", () => {
 
         it("should return 400 for invalid request body", async () => {
             const resourceToPatch = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToPatch.id;
+            const resourceId: number = resourceToPatch!.id;
             const invalidResource = {
                 url: "Chingu Github repo",
             };
@@ -302,7 +301,7 @@ describe("ResourcesController (e2e)", () => {
 
         it("should return 401 if a user tries to PATCH a resource created by someone else", async () => {
             const resourceToPatch = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToPatch.id;
+            const resourceId: number = resourceToPatch!.id;
             const patchedResource: UpdateResourceDto = {
                 url: "http://www.github.com/chingu-x/chingu-dashboard-be",
                 title: "Chingu Github BE repo",
@@ -319,7 +318,7 @@ describe("ResourcesController (e2e)", () => {
     describe("/DELETE :teamId/resources/:resourceId", () => {
         it("should return 200 after deleting a resource", async () => {
             const resourceToDelete = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToDelete.id;
+            const resourceId: number = resourceToDelete!.id;
             const initialResourceCount = await countResources(
                 voyageTeamId,
                 prisma,
@@ -365,7 +364,7 @@ describe("ResourcesController (e2e)", () => {
 
         it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
             const resourceToDelete = await findOwnResource(userEmail, prisma);
-            const resourceId: number = resourceToDelete.id;
+            const resourceId: number = resourceToDelete!.id;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${resourceId}`)
