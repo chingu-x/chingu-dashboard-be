@@ -8,7 +8,6 @@ import { toBeArray } from "jest-extended";
 expect.extend({ toBeArray });
 
 describe("VoyagesController", () => {
-    // eslint-disable-line no-unused-vars
     let controller: VoyagesController;
 
     const requestMock = {} as unknown as CustomRequest;
