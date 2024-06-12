@@ -25,6 +25,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
         ) {
             return req.cookies.access_token;
         }
+        return null;
     }
 
     async validate(payload: any) {
