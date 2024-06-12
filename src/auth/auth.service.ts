@@ -71,7 +71,7 @@ export class AuthService {
     private updateRtHash = async (
         userId: string,
         rt: string,
-        oldRtInCookies: string,
+        oldRtInCookies?: string,
     ) => {
         const rtHash = this.hashJWT(rt);
         const user = await this.prisma.user.findUnique({
@@ -144,13 +144,9 @@ export class AuthService {
     async login(user: any, oldRtInCookies?: string) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
-        if (oldRtInCookies) {
-            await this.updateRtHash(
-                user.id,
-                tokens.refresh_token,
-                oldRtInCookies,
-            );
-        }
+
+        await this.updateRtHash(user.id, tokens.refresh_token, oldRtInCookies);
+
         return tokens;
     }
 

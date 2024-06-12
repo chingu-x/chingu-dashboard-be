@@ -187,7 +187,7 @@ export class FeaturesController {
             );
         }
 
-        if (feature.addedBy.member.id === req.user.userId) {
+        if (feature.addedBy?.member.id === req.user.userId) {
             const updatedFeature = await this.featuresService.updateFeature(
                 featureId,
                 updateFeatureDto,
@@ -273,13 +273,13 @@ export class FeaturesController {
             );
         }
 
-        if (feature.addedBy.member.id === req.user.userId) {
+        if (feature.addedBy?.member.id === req.user.userId) {
             const deletedFeature =
                 await this.featuresService.deleteFeature(featureId);
             return deletedFeature;
         } else {
             throw new UnauthorizedException(
-                `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy.member.id}`,
+                `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy?.member.id}`,
             );
         }
     }

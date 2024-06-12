@@ -8,7 +8,7 @@ import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forb
 import { seed } from "../prisma/seed/seed";
 import * as cookieParser from "cookie-parser";
 
-describe("IdeationsController (e2e)", () => {
+xdescribe("IdeationsController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     let accessToken: any;

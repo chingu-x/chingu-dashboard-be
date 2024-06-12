@@ -38,8 +38,8 @@ export const populateCheckinFormResponse = async () => {
 
     await prisma.formResponseCheckin.create({
         data: {
-            voyageTeamMemberId: teamMember.id,
-            sprintId: teamMember.voyageTeam.voyage.sprints[0].id,
+            voyageTeamMemberId: teamMember!.id,
+            sprintId: teamMember!.voyageTeam.voyage!.sprints[0].id,
             responseGroupId: responseGroup.id,
         },
     });

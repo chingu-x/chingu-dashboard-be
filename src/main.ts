@@ -52,7 +52,7 @@ async function bootstrap() {
         }),
     );
 
-    const port = parseInt(process.env.PORT);
+    const port = parseInt(process.env.PORT as string);
     await app.listen(port);
 }
 
