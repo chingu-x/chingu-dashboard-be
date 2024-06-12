@@ -17,9 +17,9 @@ import {
     VoyageTeamResponse,
 } from "./teams.response";
 import {
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-    ForbiddenErrorResponse,
 } from "../global/responses/errors";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
@@ -88,6 +88,16 @@ export class TeamsController {
         type: "Integer",
         required: true,
         example: 1,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("voyages/:voyageId")

@@ -59,7 +59,7 @@ describe("Teams Controller (e2e)", () => {
                 .expect(401)
                 .expect("Content-Type", /json/);
         });
-        it("should return 403 when non admin users try to access it", async () => {
+        it("should return 403 when non-admin user tries to access it", async () => {
             const { access_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
@@ -68,7 +68,8 @@ describe("Teams Controller (e2e)", () => {
             await request(app.getHttpServer())
                 .get("/teams")
                 .set("Cookie", access_token)
-                .expect(403);
+                .expect(403)
+                .expect("Content-Type", /json/);
         });
     });
     describe("GET /teams/voyages/:voyageid - Gets all team for a voyage given a voyage id", () => {
@@ -108,7 +109,7 @@ describe("Teams Controller (e2e)", () => {
                 .expect(401)
                 .expect("Content-Type", /json/);
         });
-        it("should return 403 when non admin users try to access it", async () => {
+        it("should return 403 when non-admin user tries to access it", async () => {
             const voyageId: number = 3;
             const { access_token } = await loginAndGetTokens(
                 "dan@random.com",
@@ -118,17 +119,18 @@ describe("Teams Controller (e2e)", () => {
             await request(app.getHttpServer())
                 .get(`/teams/voyages/${voyageId}`)
                 .set("Cookie", access_token)
-                .expect(403);
+                .expect(403)
+                .expect("Content-Type", /json/);
         });
     });
     describe("GET /teams/:teamid - Gets one team details given a team id", () => {
         beforeEach(async () => {
-            const { access_token } = await loginAndGetTokens(
+            const tokens = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
-            accessToken = access_token;
+            accessToken = tokens.access_token;
         });
         it("should return 200 and array of voyage teams", async () => {
             const teamId: number = 4;
@@ -163,12 +165,12 @@ describe("Teams Controller (e2e)", () => {
     });
     describe("PATCH /teams/:teamid/members - Updates team members hours per sprint", () => {
         beforeEach(async () => {
-            const { access_token } = await loginAndGetTokens(
+            const tokens = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
-            accessToken = access_token;
+            accessToken = tokens.access_token;
         });
         it("should return 200 and updated users sprints per hour", async () => {
             const teamId: number = 4;
