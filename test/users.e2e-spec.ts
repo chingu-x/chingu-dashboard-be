@@ -67,4 +67,28 @@ describe("Users Controller (e2e)", () => {
                 .expect("Content-Type", /json/);
         });
     });
+    describe("GET /users/me - get logged in users own details", () => {
+        it("should return 200 and array of users", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .get("/users/me")
+                .set("Cookie", access_token)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toBeObject;
+                });
+        });
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .get("/users/me")
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401)
+                .expect("Content-Type", /json/);
+        });
+    });
 });
