@@ -2,7 +2,6 @@ import {
     BadRequestException,
     ConflictException,
     Injectable,
-    InternalServerErrorException,
     NotFoundException,
 } from "@nestjs/common";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
@@ -54,7 +53,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number | null> => {
+    ): Promise<number | null | undefined> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -77,10 +76,6 @@ export class SprintsService {
             (s) => s.number === sprintNumber,
         )[0]?.id;
 
-        if (!sprintId)
-            throw new InternalServerErrorException(
-                `sprints.service.ts: no sprintId found for sprint number ${sprintNumber}`,
-            );
         return sprintId;
     };
 
@@ -145,10 +140,7 @@ export class SprintsService {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
 
-        const newTeamSprintDatesVoyage: Partial<typeof teamSprintDates.voyage> =
-            Object.assign({}, teamSprintDates.voyage);
-        delete newTeamSprintDatesVoyage.endDate;
-        return newTeamSprintDatesVoyage;
+        return teamSprintDates.voyage;
     }
 
     async getMeetingById(meetingId: number) {
@@ -436,11 +428,6 @@ export class SprintsService {
                 },
             });
 
-        if (!formResponseMeeting)
-            throw new InternalServerErrorException(
-                `sprints.service.ts: form response not found for meetingId=${meetingId} and formId=${formId}}`,
-            );
-
         // this will also check if formId exist in getFormById
         if (!formResponseMeeting && (await this.isMeetingForm(formId)))
             return this.formServices.getFormById(formId, req);
@@ -486,7 +473,7 @@ export class SprintsService {
                         responses: {
                             where: {
                                 responseGroupId:
-                                    formResponseMeeting.responseGroupId,
+                                    formResponseMeeting?.responseGroupId,
                             },
                             select: {
                                 optionChoice: true,

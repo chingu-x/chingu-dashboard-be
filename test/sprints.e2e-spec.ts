@@ -281,7 +281,7 @@ describe("Sprints Controller (e2e)", () => {
                     notes: "Test notes",
                 },
             });
-            return expect(meeting.title).toEqual("Test title");
+            return expect(meeting?.title).toEqual("Test title");
         });
 
         it("should return 401 if user is not logged in", async () => {
@@ -334,7 +334,7 @@ describe("Sprints Controller (e2e)", () => {
                     notes: "Notes for the meeting",
                 },
             });
-            return expect(meeting.title).toEqual(FormTitles.sprintPlanning);
+            return expect(meeting?.title).toEqual(FormTitles.sprintPlanning);
         });
 
         it("should return 409 if trying to create a meeting that already exists for sprint", async () => {
@@ -436,7 +436,7 @@ describe("Sprints Controller (e2e)", () => {
                     description: "See if it works...",
                 },
             });
-            return expect(agenda.title).toEqual("Test agenda 3");
+            return expect(agenda?.title).toEqual("Test agenda 3");
         });
 
         it("should return 400 if meetingId is String", async () => {
@@ -494,7 +494,7 @@ describe("Sprints Controller (e2e)", () => {
                     description: "New agenda",
                 },
             });
-            return expect(agenda.title).toEqual("Title updated");
+            return expect(agenda?.title).toEqual("Title updated");
         });
 
         it("should return 404 if agendaId is not found", async () => {
@@ -592,7 +592,7 @@ describe("Sprints Controller (e2e)", () => {
                     meetingId: 2,
                 },
             });
-            return expect(responseMeeting.formId).toEqual(1);
+            return expect(responseMeeting?.formId).toEqual(1);
         });
 
         it("should return 409 if form already exists for this meeting", async () => {
