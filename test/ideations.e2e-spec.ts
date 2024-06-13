@@ -215,6 +215,29 @@ describe("IdeationsController (e2e)", () => {
             expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore - 1);
         });
 
+        it("should return 200 when last ideation vote, and ideation, are deleted", async () => {
+            // login to another user in the same team to vote
+            const { access_token } = await loginAndGetTokens(
+                "leo.rowe@outlook.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .delete(ideationVoteUrl)
+                .set("Cookie", access_token)
+                .expect(200);
+        });
+
+        it("- verify that deleting the last vote also deletes ideation", async () => {
+            const ideation = await prisma.projectIdea.findUnique({
+                where: {
+                    id: 1,
+                },
+            });
+            return expect(ideation).toEqual(null);
+        });
+
         it("should return 400 when removing ideation votes they didn't vote for", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
             const ideationVoteCountBefore =
@@ -265,7 +288,7 @@ describe("IdeationsController (e2e)", () => {
     });
 
     describe("/PATCH /teams/:teamId/ideations/:ideationId", () => {
-        const ideationId = 1;
+        const ideationId = 2;
         const updateIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
         it("should return 200 if update is successful", async () => {
             const ideationToUpdate = await prisma.projectIdea.findUnique({
@@ -420,7 +443,7 @@ describe("IdeationsController (e2e)", () => {
 
         it("should return 201 if successfully selecting ideation", async () => {
             const teamId: number = 1;
-            const ideationId: number = 1;
+            const ideationId: number = 2;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/ideations/${ideationId}/select`)
@@ -430,7 +453,7 @@ describe("IdeationsController (e2e)", () => {
 
         it("should return 409 if an ideation is already selected", async () => {
             const teamId: number = 1;
-            const ideationId: number = 1;
+            const ideationId: number = 2;
 
             try {
                 await prisma.projectIdea.update({
@@ -464,7 +487,7 @@ describe("IdeationsController (e2e)", () => {
     describe("POST /voyages/teams/:teamId/ideations/reset-selection - clears current team ideation selection", () => {
         it("should return 201 if selection successfully cleared", async () => {
             const teamId: number = 1;
-            const ideationId: number = 1;
+            const ideationId: number = 2;
             await loginAdmin();
 
             try {
