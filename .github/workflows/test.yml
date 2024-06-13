@@ -31,10 +31,10 @@ jobs:
       - name: Run Eslint
         run: yarn lint
 
-      - name: Run Jest tests
+      - name: Run unit tests
         run: |
           if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
-            yarn test
+            yarn test:unit
           fi       
 
       - name: Push latest schema to the test database
