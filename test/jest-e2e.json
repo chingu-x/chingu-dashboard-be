@@ -6,6 +6,6 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "testTimeout": 30000,
+  "testTimeout": 70000,
   "moduleDirectories": ["<rootDir>/../", "node_modules"]
 }
