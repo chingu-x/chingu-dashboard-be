@@ -76,6 +76,8 @@ export class UsersService {
             },
             select: privateUserDetailSelect,
         });
+
+        if (!user) throw new NotFoundException("User not found");
         // get voyageTeamMemberIds
         const teamMemberId: number[] = (
             await this.prisma.user.findUnique({
@@ -107,10 +109,30 @@ export class UsersService {
         ).map((sprintCheckInId) => sprintCheckInId.sprintId);
 
         // update user object with sprintCheckInIds
+        const updatedUser = {
+            ...user,
+            sprintCheckIn: sprintCheckInIds,
+            voyageTeamMembers: user.voyageTeamMembers.map((teamMember) => {
+                if (teamMember.voyageTeam.FormResponseVoyageProject) {
+                    return {
+                        ...teamMember,
+                        voyageTeam: {
+                            ...teamMember.voyageTeam,
+                            projectSubmitted: true,
+                        },
+                    };
+                } else {
+                    return {
+                        ...teamMember,
+                        voyageTeam: {
+                            ...teamMember.voyageTeam,
+                            projectSubmitted: false,
+                        },
+                    };
+                }
+            }),
+        };
 
-        const updatedUser = { ...user, sprintCheckIn: sprintCheckInIds };
-
-        if (!user) throw new NotFoundException("User not found");
         return this.formatUser(updatedUser);
     }
 

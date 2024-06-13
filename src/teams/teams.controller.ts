@@ -17,6 +17,7 @@ import {
     VoyageTeamResponse,
 } from "./teams.response";
 import {
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -31,13 +32,23 @@ export class TeamsController {
 
     @ApiOperation({
         summary: "[Roles: Admin] Gets all voyage teams.",
-        description: "For development/admin purpose",
+        description: "[access]: admin <br> For development/admin purpose",
     })
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully gets all voyage teams",
         type: VoyageTeamResponse,
         isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
@@ -48,6 +59,7 @@ export class TeamsController {
     @ApiOperation({
         summary:
             "[Roles: Admin] Gets all teams for a voyage given a voyageId (int).",
+        description: "[access]: admin <br>",
     })
     // Will need to be fixed to be RESTful
     @ApiResponse({
@@ -68,7 +80,17 @@ export class TeamsController {
         required: true,
         example: 1,
     })
-    @CheckAbilities({ action: Action.Manage, subject: "VoyageTeam" })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("voyages/:voyageId")
     findTeamsByVoyageId(@Param("voyageId", ParseIntPipe) voyageId: number) {
         return this.teamsService.findTeamsByVoyageId(voyageId);

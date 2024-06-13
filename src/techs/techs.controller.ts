@@ -19,13 +19,17 @@ import {
     TeamTechResponse,
     TechItemResponse,
     TechItemDeleteResponse,
+    TechItemUpdateResponse,
 } from "./techs.response";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
+import { UpdateTeamTechDto } from "./dto/update-tech.dto";
+import { CustomRequest } from "src/global/types/CustomRequest";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -47,7 +51,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
-    @Get()
+    @Get("teams/:teamId/techs")
     getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
         return this.techsService.getAllTechItemsByTeamId(teamId);
     }
@@ -82,15 +86,113 @@ export class TechsController {
         description: "voyage team Id",
         type: "Integer",
         required: true,
-        example: 1,
+        example: 2,
     })
-    @Post()
+    @Post("teams/:teamId/techs")
     addNewTeamTech(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
     ) {
         return this.techsService.addNewTeamTech(req, teamId, createTeamTechDto);
+    }
+
+    @ApiOperation({
+        summary: "Updates a existing tech stack item in the team",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated a tech stack item",
+        type: TechItemUpdateResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "User is unauthorized to perform this action",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Tech Stack Item couldn't be updated",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack item already exist for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack item id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamTechItemId",
+        description: "team tech stack item Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Patch("techs/:teamTechItemId")
+    updateTeamTech(
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
+        @Body(ValidationPipe) updateTeamTechDto: UpdateTeamTechDto,
+    ) {
+        return this.techsService.updateExistingTeamTech(
+            req,
+            updateTeamTechDto,
+            teamTechItemId,
+        );
+    }
+
+    @ApiOperation({
+        summary: "Delete a tech stack item of a team",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Tech stack item  was successfully deleted",
+        type: TechItemDeleteResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "User is unauthorized to perform this action",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - Tech stack item couldn't be deleted",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack item id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "teamTechItemId",
+        description: "team tech stack item Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
+    @Delete("techs/:teamTechItemId")
+    deleteTeamTech(
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
+    ) {
+        return this.techsService.deleteTeamTech(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -119,26 +221,18 @@ export class TechsController {
         type: UnauthorizedErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
-    @ApiParam({
-        name: "teamTechId",
+        name: "teamTechItemId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
         example: 6,
     })
-    @Post("/:teamTechId")
+    @Post("techs/:teamTechItemId/vote")
     addExistingTechVote(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("teamTechId", ParseIntPipe) teamTechId: number,
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
-        return this.techsService.addExistingTechVote(req, teamId, teamTechId);
+        return this.techsService.addExistingTechVote(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -166,26 +260,18 @@ export class TechsController {
         type: UnauthorizedErrorResponse,
     })
     @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
-    @ApiParam({
-        name: "teamTechId",
+        name: "teamTechItemId",
         description: "techId of a tech the team has select (TeamTechStackItem)",
         type: "Integer",
         required: true,
         example: 6,
     })
-    @Delete("/:teamTechId")
+    @Delete("techs/:teamTechItemId/vote")
     removeVote(
-        @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("teamTechId", ParseIntPipe) teamTechId: number,
+        @Request() req: CustomRequest,
+        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
-        return this.techsService.removeVote(req, teamId, teamTechId);
+        return this.techsService.removeVote(req, teamTechItemId);
     }
 
     @ApiOperation({
@@ -216,7 +302,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @Patch("/selections")
+    @Patch("teams/:teamId/techs/selections")
     updateTechStackSelections(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,

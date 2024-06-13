@@ -14,6 +14,7 @@ import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Injectable()
 export class SprintsService {
@@ -403,6 +404,7 @@ export class SprintsService {
     async getMeetingFormQuestionsWithResponses(
         meetingId: number,
         formId: number,
+        req: CustomRequest,
     ) {
         const meeting = await this.prisma.teamMeeting.findUnique({
             where: {
@@ -427,7 +429,7 @@ export class SprintsService {
 
         // this will also check if formId exist in getFormById
         if (!formResponseMeeting && (await this.isMeetingForm(formId)))
-            return this.formServices.getFormById(formId);
+            return this.formServices.getFormById(formId, req);
 
         return this.prisma.form.findUnique({
             where: {
@@ -567,8 +569,6 @@ export class SprintsService {
             FormTitles.sprintCheckin,
             responsesArray,
         );
-
-        // TODO: do we need to check if sprintID is a reasonable sprint Id?
 
         try {
             const checkinSubmission = await this.prisma.$transaction(

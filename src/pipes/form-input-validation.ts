@@ -21,7 +21,7 @@ export class FormInputValidationPipe implements PipeTransform {
                     if (
                         !v.text &&
                         !v.numeric &&
-                        !v.boolean &&
+                        v.boolean === undefined &&
                         !v.optionChoiceId
                     )
                         throw new BadRequestException(

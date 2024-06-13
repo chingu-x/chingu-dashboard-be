@@ -4,8 +4,11 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { extractResCookieValueByKey } from "./utils";
+import { loginAndGetTokens } from "./utils";
+import * as cookieParser from "cookie-parser";
+
 const newTechName = "anotherLayerJS";
+const updatedTechName = "updatedLayerJS";
 
 //Tests require the following state and seed data to execute successfully:
 //Logged in as user Jessica Williamson, member of voyage team 2, as team member 8
@@ -15,23 +18,7 @@ const newTechName = "anotherLayerJS";
 describe("Techs Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userAccessToken: string;
-
-    async function loginUser() {
-        await request(app.getHttpServer())
-            .post("/auth/login")
-            .send({
-                email: "jessica.williamson@gmail.com",
-                password: "password",
-            })
-            .expect(200)
-            .then((res) => {
-                userAccessToken = extractResCookieValueByKey(
-                    res.headers["set-cookie"],
-                    "access_token",
-                );
-            });
-    }
+    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -42,6 +29,7 @@ describe("Techs Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.use(cookieParser());
         await app.init();
     });
 
@@ -51,7 +39,13 @@ describe("Techs Controller (e2e)", () => {
     });
 
     beforeEach(async () => {
-        await loginUser();
+        await loginAndGetTokens(
+            "jessica.williamson@gmail.com",
+            "password",
+            app,
+        ).then((tokens) => {
+            accessToken = tokens.access_token;
+        });
     });
 
     describe("GET voyages/teams/:teamId/techs - get data on all tech categories and items", () => {
@@ -60,7 +54,7 @@ describe("Techs Controller (e2e)", () => {
 
             return await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -113,13 +107,15 @@ describe("Techs Controller (e2e)", () => {
     describe("POST voyages/teams/:teamId/techs - add new tech item", () => {
         it("should return 201 if new tech item successfully added", async () => {
             const teamId: number = 2;
+            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -146,8 +142,24 @@ describe("Techs Controller (e2e)", () => {
             return expect(techStackItem[0].name).toEqual(newTechName);
         });
 
+        it("should return 400 if invalid team member id provided", async () => {
+            const teamId: number = 2;
+            const teamMemberId: number = 4;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", accessToken)
+                .send({
+                    techName: newTechName,
+                    techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(400);
+        });
+
         it("should return 401 unauthorized if not logged in", async () => {
             const teamId: number = 2;
+            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
@@ -155,6 +167,7 @@ describe("Techs Controller (e2e)", () => {
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -168,24 +181,26 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("should return 400 if invalid teamId provided", async () => {
+        it("should return 404 if invalid teamId provided", async () => {
             const teamId: number = 9999999;
+            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
                 })
-                .expect(400)
+                .expect(404)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             message: expect.any(String),
                             error: expect.any(String),
-                            statusCode: 400,
+                            statusCode: 404,
                         }),
                     );
                 });
@@ -193,13 +208,15 @@ describe("Techs Controller (e2e)", () => {
 
         it("should return 409 if tech already exists in database", async () => {
             const teamId: number = 2;
+            const teamMemberId: number = 8;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
                 })
                 .expect(409)
                 .expect("Content-Type", /json/)
@@ -215,14 +232,166 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("POST voyages/teams/:teamId/techs/:teamTechId - add user vote for tech item", () => {
-        it("should return 200 if vote successfully added", async () => {
-            const teamId: number = 2;
+    describe("PATCH voyages/techs/:teamTechItemId - update tech stack item of the team", () => {
+        it("should return 200 and update a tech stack item", async () => {
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .send({
+                    techName: updatedTechName,
+                })
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            name: expect.any(String),
+                            voyageTeamMemberId: expect.any(Number),
+                            voyageTeamId: expect.any(Number),
+                            teamTechStackItemVotes: expect.any(Array),
+                        }),
+                    );
+                    expect(res.body.teamTechStackItemVotes).toEqual(
+                        expect.arrayContaining([
+                            {
+                                votedBy: {
+                                    member: {
+                                        id: expect.any(String),
+                                        firstName: expect.any(String),
+                                        lastName: expect.any(String),
+                                        avatar: expect.any(String),
+                                    },
+                                },
+                            },
+                        ]),
+                    );
+                    expect(res.body.name).toEqual(updatedTechName);
+                });
+        });
+        it("should return 404 for invalid tech Id", async () => {
+            const techId: number = 9999999;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .send({
+                    techName: updatedTechName,
+                })
+                .expect(404)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 404,
+                        }),
+                    );
+                });
+        });
+        it("should return 400 for invalid request body", async () => {
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .send({})
+                .expect(400);
+        });
+        it("should return 403 if a user tries to PATCH a tech stack item created by someone else", async () => {
             const techId: number = 3;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .patch(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .send({
+                    techName: updatedTechName,
+                })
+                .expect(403);
+        });
+        it("should return 401 unauthorized if not logged in", async () => {
+            const techId: number = 5;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/techs/${techId}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send({
+                    techName: updatedTechName,
+                })
+                .expect(401);
+        });
+    });
+    describe("DELETE voyages/techs/:teamTechItemId - delete tech stack item", () => {
+        it("should return 200 after deleting a tech stack item", async () => {
+            const techId: number = 5;
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect(async () => {
+                    const deletedTechStackItem =
+                        await prisma.teamTechStackItem.findFirst({
+                            where: {
+                                id: techId,
+                            },
+                        });
+                    expect(deletedTechStackItem).toBeNull();
+                });
+        });
+        it("should return 404 if invalid tech id provided", async () => {
+            const techId: number = 9999999;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .expect(404)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 404,
+                        }),
+                    );
+                });
+        });
+        it("should return 403 if a user tries to DELETE a resource created by someone else", async () => {
+            const techId: number = 3;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}`)
+                .set("Cookie", accessToken)
+                .expect(403)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.objectContaining({
+                            message: expect.any(String),
+                            error: expect.any(String),
+                            statusCode: 403,
+                        }),
+                    );
+                });
+        });
+        it("should return 401 if user is not logged in", async () => {
+            const techId: number = 5;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+    });
+
+    describe("POST voyages/techs/:teamTechItemId/vote - add user vote for tech item", () => {
+        it("should return 201 if vote successfully added", async () => {
+            const techId: number = 6;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
                 .expect(201)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -241,7 +410,7 @@ describe("Techs Controller (e2e)", () => {
         it("- verify that new tech vote is present in database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
-                    teamTechId: 3,
+                    teamTechId: 6,
                     teamMemberId: 8,
                 },
             });
@@ -249,11 +418,10 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
+                .post(`/voyages/techs/${techId}/vote`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -267,33 +435,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("should return 400 if invalid teamId provided", async () => {
-            const teamId: number = 9999999;
-            const techId: number = 3;
-
-            return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
-                .expect(400)
-                .expect("Content-Type", /json/)
-                .expect((res) => {
-                    expect(res.body).toEqual(
-                        expect.objectContaining({
-                            message: expect.any(String),
-                            error: expect.any(String),
-                            statusCode: 400,
-                        }),
-                    );
-                });
-        });
-
         it("should return 409 if user vote for tech already exists", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .post(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .post(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
                 .expect(409)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -308,14 +455,13 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("DELETE voyages/teams/:teamId/techs/:teamTechId - delete user vote for tech", () => {
+    describe("DELETE voyages/techs/:teamTechItemId/vote - delete user vote for tech", () => {
         it("should return 200 if tech vote deleted", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .delete(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -331,7 +477,7 @@ describe("Techs Controller (e2e)", () => {
         it("- verify that new tech vote is deleted from database", async () => {
             const techStackVote = await prisma.teamTechStackItemVote.findMany({
                 where: {
-                    teamTechId: 3,
+                    teamTechId: 6,
                     teamMemberId: 8,
                 },
             });
@@ -339,11 +485,10 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 200 if tech last vote was deleted and team tech stack item is deleted", async () => {
-            const teamId: number = 2;
             const techId: number = 9;
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .delete(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -367,11 +512,10 @@ describe("Techs Controller (e2e)", () => {
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
+                .delete(`/voyages/techs/${techId}/vote`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401)
                 .expect("Content-Type", /json/)
@@ -385,33 +529,12 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
-        it("should return 400 if invalid teamId provided", async () => {
-            const teamId: number = 99999;
-            const techId: number = 3;
-
-            return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
-                .expect(400)
-                .expect("Content-Type", /json/)
-                .expect((res) => {
-                    expect(res.body).toEqual(
-                        expect.objectContaining({
-                            message: expect.any(String),
-                            error: "Bad Request",
-                            statusCode: 400,
-                        }),
-                    );
-                });
-        });
-
         it("should return 404 if vote to delete does not exist", async () => {
-            const teamId: number = 2;
-            const techId: number = 3;
+            const techId: number = 6;
 
             return request(app.getHttpServer())
-                .delete(`/voyages/teams/${teamId}/techs/${techId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .delete(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
                 .expect(404)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -432,7 +555,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
@@ -466,7 +589,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
@@ -500,7 +623,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", accessToken)
                 .send({
                     categories: [
                         {
