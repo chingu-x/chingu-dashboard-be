@@ -53,7 +53,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number | null | undefined> => {
+    ): Promise<number | undefined> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -72,11 +72,9 @@ export class SprintsService {
             },
         });
 
-        const sprintId = sprintsByTeamId?.voyage?.sprints?.filter(
+        return sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
         )[0]?.id;
-
-        return sprintId;
     };
 
     async getVoyagesAndSprints() {
