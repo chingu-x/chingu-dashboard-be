@@ -15,7 +15,7 @@ export const getSprintId = async (teamVoyageId, sprintNumber) => {
             },
         },
     });
-    return sprint.id;
+    return sprint?.id;
 };
 
 export const getRandomDateDuringSprint = async (sprintId) => {
@@ -24,5 +24,5 @@ export const getRandomDateDuringSprint = async (sprintId) => {
             id: sprintId,
         },
     });
-    return addDays(sprint.startDate, Math.floor(Math.random() * 6));
+    return addDays(sprint?.startDate, Math.floor(Math.random() * 6));
 };

@@ -11,7 +11,7 @@ const getRandomOptionId = async (
     optionGroupId: number,
     numberOfChoices: number,
 ) => {
-    const choicesArray = [];
+    const choicesArray: number[] = [];
     const choices = await prisma.optionChoice.findMany({
         where: {
             optionGroupId,
@@ -51,7 +51,7 @@ const getTeamMembers = async (teamMemberId: number) => {
             },
         },
     });
-    return team.voyageTeamMembers.map((m) => m.member.discordId);
+    return team!.voyageTeamMembers.map((m) => m.member.discordId);
 };
 
 /*
@@ -211,7 +211,7 @@ export const getQuestionsByFormTitle = async (formTitle: string) => {
 
     return prisma.question.findMany({
         where: {
-            formId: checkinForm.id,
+            formId: checkinForm!.id,
             parentQuestionId: null,
         },
         select: {

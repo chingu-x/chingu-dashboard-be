@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ForbiddenException,
     Injectable,
+    InternalServerErrorException,
     Logger,
     NotFoundException,
     UnauthorizedException,
@@ -70,7 +71,7 @@ export class AuthService {
     private updateRtHash = async (
         userId: string,
         rt: string,
-        oldRtInCookies: string,
+        oldRtInCookies?: string,
     ) => {
         const rtHash = this.hashJWT(rt);
         const user = await this.prisma.user.findUnique({
@@ -78,6 +79,11 @@ export class AuthService {
                 id: userId,
             },
         });
+
+        if (!user)
+            throw new InternalServerErrorException(
+                `user with id=${userId} not found`,
+            );
 
         // find index of current RT from cookies to replace with new one
         let existingTokenIndex = -1;
@@ -138,7 +144,9 @@ export class AuthService {
     async login(user: any, oldRtInCookies?: string) {
         const payload = { email: user.email, sub: user.id };
         const tokens = await this.generateAtRtTokens(payload);
+
         await this.updateRtHash(user.id, tokens.refresh_token, oldRtInCookies);
+
         return tokens;
     }
 
@@ -182,7 +190,7 @@ export class AuthService {
         return tokens;
     }
 
-    async revokeRefreshToken(body?: RevokeRTDto) {
+    async revokeRefreshToken(body: RevokeRTDto) {
         const { userId, email } = body;
         if (userId && email) {
             throw new BadRequestException(
@@ -278,6 +286,11 @@ export class AuthService {
                 const user = await this.prisma.user.findUnique({
                     where: { email: signupDto.email },
                 });
+                // user should be found as P2002 means the user exist, but throw an error anyway
+                if (!user)
+                    throw new InternalServerErrorException(
+                        "auth.service.ts: P2002 error error finding user.",
+                    );
                 // if user account is not activated - send another email (replace old token), also update the password
                 if (!user.emailVerified) {
                     const token = this.generateToken(user.id);

@@ -49,7 +49,7 @@ export class GlobalService {
     // pass in any form response DTO, this will extract responses from the DTO,
     // and parse it into and array for prisma bulk insert/update
     public responseDtoToArray = (responses: any) => {
-        const responsesArray = [];
+        const responsesArray: any = [];
         const responseIndex = ["response", "responses"];
         for (const index in responses) {
             if (responseIndex.includes(index)) {
@@ -91,6 +91,9 @@ export class GlobalService {
             },
         });
 
+        if (!form)
+            throw new BadRequestException(`No form with form id= ${formId}`);
+
         const questionIds = form.questions.flatMap((question) => question.id);
 
         responsesArray.forEach((response) => {
@@ -118,6 +121,9 @@ export class GlobalService {
                 },
             },
         });
+
+        if (!form)
+            throw new BadRequestException(`No form with form title = ${title}`);
 
         const questionIds = form.questions.flatMap((question) => question.id);
 

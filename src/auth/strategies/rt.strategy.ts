@@ -25,6 +25,7 @@ export class RtStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
         ) {
             return req.cookies.refresh_token;
         }
+        return null;
     }
 
     async validate(req: Request, payload: any) {

@@ -272,28 +272,28 @@ export const populateCheckinForm = async () => {
                     data: [
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 1,
                             text: "Pair programming",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 2,
                             text: "On my own",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 3,
                             text: "Learning & research",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 4,
                             text: "Team activities (e.g. meetings, debugging, etc.)",
                             answerRequired: true,

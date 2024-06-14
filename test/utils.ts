@@ -67,9 +67,11 @@ export const getNonAdminUser = async () => {
         );
     return adminUser;
 };
-export const getUseridFromEmail = async (email: string): Promise<string> => {
+export const getUseridFromEmail = async (
+    email: string,
+): Promise<string | undefined> => {
     try {
-        const userId = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 email,
             },
@@ -77,7 +79,12 @@ export const getUseridFromEmail = async (email: string): Promise<string> => {
                 id: true,
             },
         });
-        return userId.id;
+        if (!user) {
+            throw new InternalServerErrorException(
+                "test/utils.ts: user not found",
+            );
+        }
+        return user.id;
     } catch (e) {
         console.log(e);
     }
