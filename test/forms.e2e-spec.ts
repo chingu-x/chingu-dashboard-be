@@ -59,7 +59,7 @@ describe("FormController e2e Tests", () => {
         it("should return 403 when accessed by a user without the admin role", async () => {
             const nonAdminUser = await getNonAdminUser();
             const { access_token } = await loginAndGetTokens(
-                nonAdminUser.email,
+                nonAdminUser!.email,
                 "password",
                 app,
             );
@@ -87,7 +87,7 @@ describe("FormController e2e Tests", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
 
-            expect(response.body.id).toEqual(expectedForm.id);
+            expect(response.body.id).toEqual(expectedForm?.id);
         });
 
         it("should return 200 when a voyager try to access voyage related forms", async () => {
@@ -119,7 +119,7 @@ describe("FormController e2e Tests", () => {
             });
 
             await request(app.getHttpServer())
-                .get(`/forms/${form.id}`)
+                .get(`/forms/${form?.id}`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(200);
         });

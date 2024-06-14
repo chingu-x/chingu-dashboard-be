@@ -84,7 +84,7 @@ export class FormsService {
             select: formSelect,
         });
 
-        const subQuestionsIds = [];
+        const subQuestionsIds: number[] = [];
 
         forms.forEach((form) => {
             form.questions.forEach((question) => {
@@ -127,7 +127,7 @@ export class FormsService {
             formTypeId: form.formType.id,
         });
 
-        const subQuestionsIds = [];
+        const subQuestionsIds: number[] = [];
 
         form.questions.forEach((question) => {
             const currentQuestion = question as Question & {

@@ -37,11 +37,11 @@ export const populateSoloProjects = async () => {
                 createMany: {
                     data: [
                         {
-                            questionId: soloProjectForm.questions[0].id,
+                            questionId: soloProjectForm!.questions[0].id,
                             text: "www.github.com/repo",
                         },
                         {
-                            questionId: soloProjectForm.questions[1].id,
+                            questionId: soloProjectForm!.questions[1].id,
                             text: "www.vercel.com",
                         },
                     ],
@@ -57,14 +57,12 @@ export const populateSoloProjects = async () => {
             adminComments: "This is a tier 3 project, not tier 2",
             evaluatorUserId: users[1].id,
             evaluatorFeedback: passedSampleFeedback,
-            statusId: (
-                await prisma.soloProjectStatus.findUnique({
-                    where: {
-                        status: "Waiting Evaluation",
-                    },
-                })
-            ).id,
-            formId: soloProjectForm.id,
+            statusId: (await prisma.soloProjectStatus.findUnique({
+                where: {
+                    status: "Waiting Evaluation",
+                },
+            }))!.id,
+            formId: soloProjectForm!.id,
             responseGroupId: responseGroup.id,
         },
     });

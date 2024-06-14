@@ -149,7 +149,7 @@ export class ResourcesService {
                 `Resource (id: ${resourceId}) doesn't exist`,
             );
 
-        if (resourceToModify.addedBy.member.id !== uuid)
+        if (resourceToModify.addedBy?.member.id !== uuid)
             throw new UnauthorizedException();
     }
 

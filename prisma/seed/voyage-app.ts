@@ -34,15 +34,15 @@ export const populateVoyageApplications = async () => {
                 createMany: {
                     data: [
                         {
-                            questionId: voyageApplicationForm.questions[0].id,
+                            questionId: voyageApplicationForm!.questions[0].id,
                             optionChoiceId:
-                                voyageApplicationForm.questions[0].optionGroup
+                                voyageApplicationForm!.questions[0].optionGroup!
                                     .optionChoices[0].id,
                         },
                         {
-                            questionId: voyageApplicationForm.questions[1].id,
+                            questionId: voyageApplicationForm!.questions[1].id,
                             optionChoiceId:
-                                voyageApplicationForm.questions[1].optionGroup
+                                voyageApplicationForm!.questions[1].optionGroup!
                                     .optionChoices[0].id,
                         },
                     ],
@@ -55,14 +55,12 @@ export const populateVoyageApplications = async () => {
     await prisma.voyageApplication.create({
         data: {
             userId: users[0].id,
-            voyageId: (
-                await prisma.voyage.findUnique({
-                    where: {
-                        number: "49",
-                    },
-                })
-            ).id,
-            formId: voyageApplicationForm.id,
+            voyageId: (await prisma.voyage.findUnique({
+                where: {
+                    number: "49",
+                },
+            }))!.id,
+            formId: voyageApplicationForm!.id,
             responseGroupId: responseGroup.id,
         },
     });
