@@ -14,6 +14,7 @@ import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Injectable()
 export class SprintsService {
@@ -52,7 +53,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number> | null => {
+    ): Promise<number | undefined> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -70,6 +71,7 @@ export class SprintsService {
                 },
             },
         });
+
         return sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
         )[0]?.id;
@@ -135,9 +137,7 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        //copy teamVoyage endDate to voyage object
-        teamSprintDates.voyage.endDate = teamSprintDates.endDate;
-        delete teamSprintDates.endDate;
+
         return teamSprintDates.voyage;
     }
 
@@ -403,6 +403,7 @@ export class SprintsService {
     async getMeetingFormQuestionsWithResponses(
         meetingId: number,
         formId: number,
+        req: CustomRequest,
     ) {
         const meeting = await this.prisma.teamMeeting.findUnique({
             where: {
@@ -427,7 +428,7 @@ export class SprintsService {
 
         // this will also check if formId exist in getFormById
         if (!formResponseMeeting && (await this.isMeetingForm(formId)))
-            return this.formServices.getFormById(formId);
+            return this.formServices.getFormById(formId, req);
 
         return this.prisma.form.findUnique({
             where: {
@@ -470,7 +471,7 @@ export class SprintsService {
                         responses: {
                             where: {
                                 responseGroupId:
-                                    formResponseMeeting.responseGroupId,
+                                    formResponseMeeting?.responseGroupId,
                             },
                             select: {
                                 optionChoice: true,

@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma, Question } from "@prisma/client";
+import { canReadAndSubmitForms } from "../ability/conditions/forms.ability";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 export const formSelect = {
     id: true,
@@ -82,7 +84,7 @@ export class FormsService {
             select: formSelect,
         });
 
-        const subQuestionsIds = [];
+        const subQuestionsIds: number[] = [];
 
         forms.forEach((form) => {
             form.questions.forEach((question) => {
@@ -107,18 +109,25 @@ export class FormsService {
         return forms;
     }
 
-    async getFormById(formId: number) {
+    async getFormById(formId: number, req: CustomRequest) {
         const form = await this.prisma.form.findUnique({
             where: {
                 id: formId,
             },
             select: formSelect,
         });
+
         if (!form)
             throw new NotFoundException(
                 `Invalid formId: Form (id:${formId}) does not exist.`,
             );
-        const subQuestionsIds = [];
+
+        canReadAndSubmitForms(req.user, {
+            ...form,
+            formTypeId: form.formType.id,
+        });
+
+        const subQuestionsIds: number[] = [];
 
         form.questions.forEach((question) => {
             const currentQuestion = question as Question & {

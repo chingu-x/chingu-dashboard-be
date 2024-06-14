@@ -18,13 +18,15 @@ export const manageOwnVoyageTeamWithIdParam = (
 };
 
 /***
- For future reference, this works, but it has to be of voyageTeamType without a special select statement
+ For future reference, this works, but it has to be of voyageTeamType *** without a special select statement ***
  So it should be used for cases when a team Id is not supplied (this would be an extra database query in most cases)
  but for cases when teamId is supplied as a parameter or in the req body, we can use that instead as there would
  less database query
+
+ edit 1: non basic select type seems to work for the forms endpoint, please check this
  ***/
 export const manageOwnVoyageTeam = (user: UserReq, voyageTeam: VoyageTeam) => {
-    // mockUser for testing only
+    // mockUser for testing only, normally we would get this from user
     const mockUser = {
         voyageTeams: [{ teamId: 2, memberId: 1 }],
         userId: "userId",

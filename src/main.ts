@@ -26,7 +26,9 @@ async function bootstrap() {
     if (process.env.NODE_ENV !== "production") {
         const config = new DocumentBuilder()
             .setTitle("Chingu Dashboard Project")
-            .setDescription("The api for chingu dashboard")
+            .setDescription(
+                "Chingu Dashboard API<br> default access: logged in (user)",
+            )
             .setVersion("1.0")
             .addBearerAuth()
             .addOAuth2()
@@ -50,7 +52,7 @@ async function bootstrap() {
         }),
     );
 
-    const port = parseInt(process.env.PORT);
+    const port = parseInt(process.env.PORT as string);
     await app.listen(port);
 }
 
