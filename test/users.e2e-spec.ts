@@ -15,7 +15,6 @@ describe("Users Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
     let userId: string | undefined;
-    let accessToken: string | undefined;
 
     const userEmail: string = "leo.rowe@outlook.com";
 
@@ -38,20 +37,16 @@ describe("Users Controller (e2e)", () => {
         await app.close();
     });
 
-    beforeEach(async () => {
-        const tokens = await loginAndGetTokens(
-            "jessica.williamson@gmail.com",
-            "password",
-            app,
-        );
-        accessToken = tokens.access_token;
-    });
-
     describe("GET /users - [ role - Admin ] - gets all users", () => {
         it("should return 200 and array of users", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .get("/users")
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -66,23 +61,28 @@ describe("Users Controller (e2e)", () => {
                 .expect("Content-Type", /json/);
         });
         it("should return 403 when non-admin user tries to access it", async () => {
-            const { access_token } = await loginAndGetTokens(
+            const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
             await request(app.getHttpServer())
                 .get("/users")
-                .set("Cookie", access_token)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(403)
                 .expect("Content-Type", /json/);
         });
     });
     describe("GET /users/me - get logged in users own details", () => {
         it("should return 200 and array of users", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .get("/users/me")
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -99,10 +99,15 @@ describe("Users Controller (e2e)", () => {
     });
     describe("GET /users/:userId - [ role - Admin ] - gets a user with full deatils given a user id", () => {
         it("should return 200 and a object containing user details", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             userId = await getUseridFromEmail("leo.rowe@outlook.com");
             await request(app.getHttpServer())
                 .get(`/users/${userId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -111,9 +116,14 @@ describe("Users Controller (e2e)", () => {
         });
         it("should return 400 for a invalid UUID", async () => {
             const invalidUUID = "dd7851f9-12aa-e098a9df380c";
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .get(`/users/${invalidUUID}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(400)
                 .expect("Content-Type", /json/);
         });
@@ -125,31 +135,41 @@ describe("Users Controller (e2e)", () => {
                 .expect("Content-Type", /json/);
         });
         it("should return 403 when non-admin user tries to access it", async () => {
-            const { access_token } = await loginAndGetTokens(
+            const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
             await request(app.getHttpServer())
                 .get(`/users/${userId}`)
-                .set("Cookie", access_token)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(403)
                 .expect("Content-Type", /json/);
         });
         it("should return 404 if a user is not found for a given user id", async () => {
             const invalidUUID = "dd7851f9-12aa-47c9-a06f-e098a9df380c";
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .get(`/users/${invalidUUID}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404)
                 .expect("Content-Type", /json/);
         });
     });
     describe("GET /users/lookup-by-email - [ role - Admin ] - gets a user with full deatils given a user email", () => {
         it("should return 200 and a object containing the user details", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .post("/users/lookup-by-email")
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({ email: userEmail })
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -159,18 +179,28 @@ describe("Users Controller (e2e)", () => {
         });
         it("should return 404 if the is not found for the given email id", async () => {
             const notFoundEmail: string = "notfound@gmail.com";
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .post("/users/lookup-by-email")
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({ email: notFoundEmail })
                 .expect(404)
                 .expect("Content-Type", /json/);
         });
         it("should return 400 if invalid email syntax is provided", async () => {
             const invalidEmail = "invalid.com";
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .post("/users/lookup-by-email")
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({ email: invalidEmail })
                 .expect(400)
                 .expect("Content-Type", /json/);
@@ -184,14 +214,14 @@ describe("Users Controller (e2e)", () => {
                 .expect("Content-Type", /json/);
         });
         it("should return 403 when non-admin user tries to access it", async () => {
-            const { access_token } = await loginAndGetTokens(
+            const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
             await request(app.getHttpServer())
                 .post("/users/lookup-by-email")
-                .set("Cookie", access_token)
+                .set("Cookie", [access_token, refresh_token])
                 .send({ email: userEmail })
                 .expect(403)
                 .expect("Content-Type", /json/);
