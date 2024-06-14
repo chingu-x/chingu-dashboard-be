@@ -9,13 +9,13 @@ import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
 
 //Logged in user is Jessica Williamson for admin routes
-//Logged in user is Dan ko for team member routes
+//Logged in user is Dan ko for non admin routes
 
 describe("Users Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userId: string;
-    let accessToken: string;
+    let userId: string | undefined;
+    let accessToken: string | undefined;
 
     const userEmail: string = "leo.rowe@outlook.com";
 
@@ -38,7 +38,7 @@ describe("Users Controller (e2e)", () => {
         await app.close();
     });
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const tokens = await loginAndGetTokens(
             "jessica.williamson@gmail.com",
             "password",

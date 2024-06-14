@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, InternalServerErrorException } from "@nestjs/common";
 import * as request from "supertest";
 
 const prisma = new PrismaClient();
@@ -41,26 +41,31 @@ export const loginAndGetTokens = async (
 };
 
 export const getNonAdminUser = async () => {
-    try {
-        const adminRole = await prisma.role.findUnique({
-            where: {
-                name: "admin",
-            },
-        });
-        return prisma.user.findFirst({
-            where: {
-                roles: {
-                    none: {
-                        roleId: adminRole.id,
-                    },
+    const adminRole = await prisma.role.findUnique({
+        where: {
+            name: "admin",
+        },
+    });
+
+    if (!adminRole)
+        throw new InternalServerErrorException(
+            "test/utils.ts: admin role not found in the database",
+        );
+
+    const adminUser = prisma.user.findFirst({
+        where: {
+            roles: {
+                none: {
+                    roleId: adminRole.id,
                 },
             },
-        });
-    } catch (e) {
-        console.log(e);
-    } finally {
-        await prisma.$disconnect();
-    }
+        },
+    });
+    if (!adminUser)
+        throw new InternalServerErrorException(
+            "test/utils.ts: admin user not found",
+        );
+    return adminUser;
 };
 export const getUseridFromEmail = async (email: string): Promise<string> => {
     try {
