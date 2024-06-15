@@ -111,7 +111,7 @@ describe("Users Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body.email).toEqual("leo.rowe@outlook.com");
                 });
         });
         it("should return 400 for a invalid UUID", async () => {
@@ -174,7 +174,7 @@ describe("Users Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body.email).toEqual("leo.rowe@outlook.com");
                 });
         });
         it("should return 404 if the is not found for the given email id", async () => {
