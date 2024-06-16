@@ -1026,6 +1026,15 @@ describe("Sprints Controller (e2e)", () => {
             });
         });
 
-        console.log(sprintCheckinUrl);
+        it("should return 200 if voyageNumber key's value successfully returns a check in form", async () => {
+            const key = "voyageNumber";
+            const val = "46";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
     });
 });
