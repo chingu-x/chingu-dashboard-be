@@ -1099,5 +1099,15 @@ describe("Sprints Controller (e2e)", () => {
                 .get(sprintCheckinUrl)
                 .expect(401);
         });
+
+        it("should return 404 if check in form not found", async () => {
+            const key = "teamId";
+            const val = "9999";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(404);
+        });
     });
 });
