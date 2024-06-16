@@ -13,6 +13,7 @@ import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
+import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 
 @Injectable()
 export class SprintsService {
@@ -587,5 +588,9 @@ export class SprintsService {
                 console.log(e);
             }
         }
+    }
+
+    async getCheckinFormResponse(query: CheckinQueryDto) {
+        query;
     }
 }
