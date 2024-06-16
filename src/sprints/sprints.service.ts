@@ -617,9 +617,12 @@ export class SprintsService {
         }
     }
 
-    async getCheckinFormResponse(query: CheckinQueryDto) {
-        const { teamId, sprintNumber, voyageNumber, userId } = query;
-
+    async getCheckinFormResponse({
+        teamId,
+        sprintNumber,
+        voyageNumber,
+        userId,
+    }: CheckinQueryDto) {
         let checkinFormResponse;
         let key, val;
 
