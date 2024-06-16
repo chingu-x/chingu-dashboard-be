@@ -1012,4 +1012,20 @@ describe("Sprints Controller (e2e)", () => {
             expect(checkinsAfter).toEqual(checkinsBefore);
         });
     });
+
+    describe("GET /voyages/sprints/check-in - returns sprint check in form", () => {
+        const sprintCheckinUrl = "/voyages/sprints/check-in";
+
+        beforeEach(async () => {
+            await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            ).then((tokens) => {
+                accessToken = tokens.access_token;
+            });
+        });
+
+        console.log(sprintCheckinUrl);
+    });
 });
