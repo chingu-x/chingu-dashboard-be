@@ -1035,7 +1035,29 @@ describe("Sprints Controller (e2e)", () => {
                 .query({ [key]: val })
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
         });
 
         it("should return 200 if teamId key's value successfully returns a check in form", async () => {
@@ -1047,7 +1069,26 @@ describe("Sprints Controller (e2e)", () => {
                 .query({ [key]: val })
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
         });
 
         it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
@@ -1059,7 +1100,29 @@ describe("Sprints Controller (e2e)", () => {
                 .query({ [key]: val })
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
         });
 
         it("should return 200 if userId key's value successfully returns a check in form", async () => {
@@ -1081,7 +1144,29 @@ describe("Sprints Controller (e2e)", () => {
                 .query({ [key]: val })
                 .set("Cookie", accessToken)
                 .expect(200)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
         });
 
         it("should return 400 if query params are invalid", async () => {
