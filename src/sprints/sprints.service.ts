@@ -672,7 +672,20 @@ export class SprintsService {
             });
         } else
             throw new BadRequestException(`${key} did not match any keywords`);
-        console.log(val);
+
+        // make responses uniform
+        checkinFormResponse = checkinFormResponse.flatMap(
+            (item) => item.checkinForms || [item],
+        );
+        checkinFormResponse = checkinFormResponse.filter(
+            (item) => Object.keys(item).length > 0,
+        );
+
+        if (checkinFormResponse.length < 1) {
+            throw new NotFoundException(
+                `${key} ${val} did not match any check in form responses`,
+            );
+        }
 
         return checkinFormResponse;
     }
