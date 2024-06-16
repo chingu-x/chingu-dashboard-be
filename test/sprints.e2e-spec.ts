@@ -1048,5 +1048,16 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/);
         });
+
+        it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
+            const key = "sprintNumber";
+            const val = 1;
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
     });
 });
