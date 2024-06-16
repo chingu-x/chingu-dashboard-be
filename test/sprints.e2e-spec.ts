@@ -1093,5 +1093,11 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .expect(400);
         });
+
+        it("should return 401 if user is not logged in or admin", async () => {
+            await request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .expect(401);
+        });
     });
 });
