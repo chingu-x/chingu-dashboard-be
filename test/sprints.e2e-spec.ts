@@ -25,7 +25,7 @@ describe("Sprints Controller (e2e)", () => {
         await seed();
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
-        app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalPipes(new ValidationPipe({ transform: true }));
         app.use(cookieParser());
         await app.init();
     });
@@ -1223,7 +1223,7 @@ describe("Sprints Controller (e2e)", () => {
                     userId: true,
                 },
             });
-            const val = { user: user?.userId };
+            const val = user?.userId;
 
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
