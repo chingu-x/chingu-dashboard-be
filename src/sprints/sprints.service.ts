@@ -595,14 +595,85 @@ export class SprintsService {
 
         let checkinFormResponse;
         let key, val;
-        console.log(
-            teamId,
-            sprintNumber,
-            voyageNumber,
-            userId,
-            checkinFormResponse,
-            key,
-            val,
-        );
+
+        if (teamId) {
+            key = "teamId";
+            val = teamId;
+            checkinFormResponse = await this.prisma.voyageTeamMember.findMany({
+                where: {
+                    voyageTeamId: teamId,
+                },
+                include: {
+                    checkinForms: true,
+                },
+            });
+        } else if (sprintNumber) {
+            key = "sprintNumber";
+            val = sprintNumber;
+
+            checkinFormResponse =
+                await this.prisma.formResponseCheckin.findMany({
+                    where: {
+                        sprintId: sprintNumber,
+                    },
+                    include: {
+                        voyageTeamMember: {
+                            select: {
+                                voyageTeamId: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        voyageTeamMember: {
+                            voyageTeamId: "asc",
+                        },
+                    },
+                });
+        } else if (voyageNumber) {
+            key = "voyageNumber";
+            val = voyageNumber;
+
+            checkinFormResponse = await this.prisma.sprint.findMany({
+                where: {
+                    voyage: {
+                        number: voyageNumber,
+                    },
+                },
+                include: {
+                    checkinForms: {
+                        include: {
+                            voyageTeamMember: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        } else if (userId) {
+            key = "userId";
+            val = userId;
+            checkinFormResponse = await this.prisma.voyageTeamMember.findMany({
+                where: {
+                    userId: userId,
+                },
+                include: {
+                    checkinForms: {
+                        include: {
+                            voyageTeamMember: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        } else
+            throw new BadRequestException(`${key} did not match any keywords`);
+        console.log(val);
+
+        return checkinFormResponse;
     }
 }
