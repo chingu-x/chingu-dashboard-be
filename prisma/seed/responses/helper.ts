@@ -1,14 +1,17 @@
-import { PrismaClient } from "@prisma/client";
-import { formSelect } from "../../src/forms/forms.service";
+import { prisma } from "../prisma-client";
+import { formSelect } from "../../../src/forms/forms.service";
 
-const prisma = new PrismaClient();
+/*
+generates a random option IDs (in an array) given an option group id
 
-// TODO: move these to a  helper function file
+params:
+numberOfChoices - size of the returned array
+ */
 const getRandomOptionId = async (
     optionGroupId: number,
     numberOfChoices: number,
 ) => {
-    const choicesArray = [];
+    const choicesArray: number[] = [];
     const choices = await prisma.optionChoice.findMany({
         where: {
             optionGroupId,
@@ -23,6 +26,10 @@ const getRandomOptionId = async (
     return choicesArray;
 };
 
+/*
+gets all members in the voyage member with the given teamMemberId
+this is used for input type "TeamMemberCheckboxes"
+*/
 const getTeamMembers = async (teamMemberId: number) => {
     const team = await prisma.voyageTeam.findFirst({
         where: {
@@ -44,20 +51,29 @@ const getTeamMembers = async (teamMemberId: number) => {
             },
         },
     });
-    return team.voyageTeamMembers.map((m) => m.member.discordId);
+    return team!.voyageTeamMembers.map((m) => m.member.discordId);
 };
 
-const populateQuestionResponses = async (
+/*
+populates responses for a given question
+
+params:
+question - question (which includes id, inputType, etc)
+responseGroupId - this is the group where all the responses for this particular submission are linked to
+teamMemberId - optional, defaulted to 0, only used for teamMember inputType
+*/
+export const populateQuestionResponses = async (
     question: any,
-    teamMemberId: number,
     responseGroupId: number,
+    teamMemberId: number = 0, // this is only used if it's a teamMember type input
 ) => {
     const data: any = {
         questionId: question.id,
         responseGroupId: responseGroupId,
     };
     switch (question.inputType.name) {
-        case "text": {
+        case "text":
+        case "shortText": {
             await prisma.response.create({
                 data: {
                     ...data,
@@ -66,6 +82,8 @@ const populateQuestionResponses = async (
             });
             break;
         }
+        case "scale":
+        case "radioIcon":
         case "radio": {
             const radioChoices = await getRandomOptionId(
                 question.optionGroupId,
@@ -95,7 +113,7 @@ const populateQuestionResponses = async (
                     optionGroupId: true,
                 },
             });
-            // popuate all subquestions
+            // populate all subquestions
             await Promise.all(
                 subQuestions.map((subq) => {
                     // assign subquestion optionGroupId to be same as parent, as it's null for subquestions
@@ -132,6 +150,13 @@ const populateQuestionResponses = async (
             break;
         }
         case "teamMembersCheckbox": {
+            if (teamMemberId === 0) {
+                console.log(question);
+                throw new Error(
+                    `teamMemberId required for input type ${question.inputType.name} (question id:${question.id}).`,
+                );
+            }
+
             const selectedTeamMembers = await getTeamMembers(teamMemberId);
             await prisma.response.create({
                 data: {
@@ -152,11 +177,20 @@ const populateQuestionResponses = async (
             });
             break;
         }
-        case "yesNo": {
+        case "boolean": {
             await prisma.response.create({
                 data: {
                     ...data,
                     boolean: Math.random() > 0.5,
+                },
+            });
+            break;
+        }
+        case "url": {
+            await prisma.response.create({
+                data: {
+                    ...data,
+                    text: `https://www.randomUrl${question.id}.com`,
                 },
             });
             break;
@@ -167,37 +201,17 @@ const populateQuestionResponses = async (
     }
 };
 
-export const populateCheckinFormResponse = async () => {
-    const teamMemberId = 1;
-    const teamMember = await prisma.voyageTeamMember.findUnique({
-        where: {
-            id: teamMemberId,
-        },
-        select: {
-            id: true,
-            voyageTeam: {
-                select: {
-                    voyage: {
-                        select: {
-                            sprints: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    // get questions
+export const getQuestionsByFormTitle = async (formTitle: string) => {
     const checkinForm = await prisma.form.findUnique({
         where: {
-            title: "Sprint Check-in",
+            title: formTitle,
         },
         select: formSelect,
     });
 
-    const questions = await prisma.question.findMany({
+    return prisma.question.findMany({
         where: {
-            formId: checkinForm.id,
+            formId: checkinForm!.id,
             parentQuestionId: null,
         },
         select: {
@@ -213,24 +227,6 @@ export const populateCheckinFormResponse = async () => {
         },
         orderBy: {
             order: "asc",
-        },
-    });
-
-    const responseGroup = await prisma.responseGroup.create({
-        data: {},
-    });
-
-    await Promise.all(
-        questions.map((question) => {
-            populateQuestionResponses(question, teamMemberId, responseGroup.id);
-        }),
-    );
-
-    await prisma.formResponseCheckin.create({
-        data: {
-            voyageTeamMemberId: teamMember.id,
-            sprintId: teamMember.voyageTeam.voyage.sprints[0].id,
-            responseGroupId: responseGroup.id,
         },
     });
 };

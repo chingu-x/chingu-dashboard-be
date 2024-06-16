@@ -60,7 +60,7 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
-    @Post()
+    @Post("/teams/:teamId")
     createNewResource(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -98,7 +98,7 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
-    @Get()
+    @Get("/teams/:teamId")
     findAllResources(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -136,7 +136,7 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
-    @Patch("/:resourceId")
+    @Patch("resources/:resourceId")
     updateResource(
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,
@@ -179,7 +179,7 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
-    @Delete("/:resourceId")
+    @Delete("resources/:resourceId")
     removeResource(
         @Request() req,
         @Param("resourceId", ParseIntPipe) resourceId: number,

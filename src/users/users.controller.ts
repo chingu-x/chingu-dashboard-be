@@ -20,9 +20,10 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { isUUID } from "class-validator";
-import { Roles } from "../global/decorators/roles.decorator";
-import { AppRoles } from "../auth/auth.roles";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Controller("users")
 @ApiTags("users")
@@ -39,7 +40,7 @@ export class UsersController {
         isArray: true,
         type: FullUserResponse,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
     findAll() {
         return this.usersService.findAll();
@@ -65,7 +66,7 @@ export class UsersController {
         type: NotFoundErrorResponse,
     })
     @Get("me")
-    getProfile(@Request() req) {
+    getProfile(@Request() req: CustomRequest) {
         return this.usersService.getPrivateUserProfile(req.user.userId);
     }
 
@@ -96,7 +97,7 @@ export class UsersController {
         description: "userId (uuid)",
         example: "6bd33861-04c0-4270-8e96-62d4fb587527",
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get("/:userId")
     getUserDetailsById(@Param("userId") userId: string) {
         if (!isUUID(userId))
@@ -124,7 +125,7 @@ export class UsersController {
         description: "Given email is not in a valid email syntax.",
         type: BadRequestErrorResponse,
     })
-    @Roles(AppRoles.Admin)
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @HttpCode(200)
     @Post("/lookup-by-email")
     async getUserDetailsByEmail(

@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { FormTitles } from "../../src/global/constants/formTitles";
 import { passedSampleFeedback } from "./data/text/solo-project-feedback";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma-client";
 
 export const populateSoloProjects = async () => {
     // solo project status
@@ -20,7 +19,7 @@ export const populateSoloProjects = async () => {
 
     const soloProjectForm = await prisma.form.findUnique({
         where: {
-            title: "Solo Project Submission Form",
+            title: FormTitles.soloProjectSubmission,
         },
         select: {
             id: true,
@@ -38,11 +37,11 @@ export const populateSoloProjects = async () => {
                 createMany: {
                     data: [
                         {
-                            questionId: soloProjectForm.questions[0].id,
+                            questionId: soloProjectForm!.questions[0].id,
                             text: "www.github.com/repo",
                         },
                         {
-                            questionId: soloProjectForm.questions[1].id,
+                            questionId: soloProjectForm!.questions[1].id,
                             text: "www.vercel.com",
                         },
                     ],
@@ -58,14 +57,12 @@ export const populateSoloProjects = async () => {
             adminComments: "This is a tier 3 project, not tier 2",
             evaluatorUserId: users[1].id,
             evaluatorFeedback: passedSampleFeedback,
-            statusId: (
-                await prisma.soloProjectStatus.findUnique({
-                    where: {
-                        status: "Waiting Evaluation",
-                    },
-                })
-            ).id,
-            formId: soloProjectForm.id,
+            statusId: (await prisma.soloProjectStatus.findUnique({
+                where: {
+                    status: "Waiting Evaluation",
+                },
+            }))!.id,
+            formId: soloProjectForm!.id,
             responseGroupId: responseGroup.id,
         },
     });

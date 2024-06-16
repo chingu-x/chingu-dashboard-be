@@ -13,6 +13,8 @@ import { FormsService } from "../forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
+import { FormTitles } from "../global/constants/formTitles";
+import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 
 @Injectable()
@@ -52,7 +54,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number> | null => {
+    ): Promise<number | undefined> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -70,6 +72,7 @@ export class SprintsService {
                 },
             },
         });
+
         return sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
         )[0]?.id;
@@ -91,11 +94,6 @@ export class SprintsService {
                         number: true,
                         startDate: true,
                         endDate: true,
-                        teamMeetings: {
-                            select: {
-                                id: true,
-                            },
-                        },
                     },
                 },
             },
@@ -110,10 +108,16 @@ export class SprintsService {
             select: {
                 id: true,
                 name: true,
+                endDate: true,
                 voyage: {
                     select: {
                         id: true,
                         number: true,
+                        soloProjectDeadline: true,
+                        certificateIssueDate: true,
+                        showcasePublishDate: true,
+                        startDate: true,
+                        endDate: true,
                         sprints: {
                             select: {
                                 id: true,
@@ -134,7 +138,8 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        return teamSprintDates;
+
+        return teamSprintDates.voyage;
     }
 
     async getMeetingById(meetingId: number) {
@@ -153,6 +158,7 @@ export class SprintsService {
                     },
                 },
                 title: true,
+                description: true,
                 dateTime: true,
                 meetingLink: true,
                 notes: true,
@@ -162,6 +168,7 @@ export class SprintsService {
                         title: true,
                         description: true,
                         status: true,
+                        updatedAt: true,
                     },
                 },
                 formResponseMeeting: {
@@ -212,7 +219,13 @@ export class SprintsService {
     async createTeamMeeting(
         teamId: number,
         sprintNumber: number,
-        { title, meetingLink, dateTime, notes }: CreateTeamMeetingDto,
+        {
+            title,
+            description,
+            meetingLink,
+            dateTime,
+            notes,
+        }: CreateTeamMeetingDto,
     ) {
         const sprintId = await this.findSprintIdBySprintNumber(
             teamId,
@@ -243,6 +256,7 @@ export class SprintsService {
                 sprintId,
                 voyageTeamId: teamId,
                 title,
+                description,
                 meetingLink,
                 dateTime,
                 notes,
@@ -252,7 +266,13 @@ export class SprintsService {
 
     async updateTeamMeeting(
         meetingId: number,
-        { title, meetingLink, dateTime, notes }: UpdateTeamMeetingDto,
+        {
+            title,
+            description,
+            meetingLink,
+            dateTime,
+            notes,
+        }: UpdateTeamMeetingDto,
     ) {
         try {
             const updatedMeeting = await this.prisma.teamMeeting.update({
@@ -261,6 +281,7 @@ export class SprintsService {
                 },
                 data: {
                     title,
+                    description,
                     meetingLink,
                     dateTime,
                     notes,
@@ -383,6 +404,7 @@ export class SprintsService {
     async getMeetingFormQuestionsWithResponses(
         meetingId: number,
         formId: number,
+        req: CustomRequest,
     ) {
         const meeting = await this.prisma.teamMeeting.findUnique({
             where: {
@@ -407,7 +429,7 @@ export class SprintsService {
 
         // this will also check if formId exist in getFormById
         if (!formResponseMeeting && (await this.isMeetingForm(formId)))
-            return this.formServices.getFormById(formId);
+            return this.formServices.getFormById(formId, req);
 
         return this.prisma.form.findUnique({
             where: {
@@ -450,7 +472,7 @@ export class SprintsService {
                         responses: {
                             where: {
                                 responseGroupId:
-                                    formResponseMeeting.responseGroupId,
+                                    formResponseMeeting?.responseGroupId,
                             },
                             select: {
                                 optionChoice: true,
@@ -544,11 +566,9 @@ export class SprintsService {
             this.globalServices.responseDtoToArray(createCheckinForm);
 
         await this.globalServices.checkQuestionsInFormByTitle(
-            "Sprint Check-in",
+            FormTitles.sprintCheckin,
             responsesArray,
         );
-
-        // TODO: do we need to check if sprintID is a reasonable sprint Id?
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
@@ -562,6 +582,7 @@ export class SprintsService {
                             },
                         },
                     });
+
                     return tx.formResponseCheckin.create({
                         data: {
                             voyageTeamMemberId:
@@ -584,8 +605,14 @@ export class SprintsService {
                 throw new ConflictException(
                     `User ${createCheckinForm.voyageTeamMemberId} has already submitted a checkin form for sprint id ${createCheckinForm.sprintId}.`,
                 );
+            }
+            if (e.name === "PrismaClientValidationError") {
+                throw new BadRequestException(
+                    `Bad request - type error in responses array`,
+                );
             } else {
                 console.log(e);
+                throw e;
             }
         }
     }

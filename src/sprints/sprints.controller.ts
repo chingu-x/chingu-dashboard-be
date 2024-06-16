@@ -9,6 +9,7 @@ import {
     Delete,
     ValidationPipe,
     HttpStatus,
+    Request,
     Query,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
@@ -32,6 +33,7 @@ import {
     MeetingResponse,
     MeetingResponseWithSprintAndAgenda,
     VoyageResponse,
+    VoyageResponseWithoutMeetings,
 } from "./sprints.response";
 import {
     BadRequestErrorResponse,
@@ -41,6 +43,8 @@ import {
 } from "../global/responses/errors";
 import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { Action } from "src/ability/ability.factory/ability.factory";
 import { CheckAbilities } from "src/global/decorators/abilities.decorator";
@@ -58,8 +62,13 @@ export class SprintsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "successfully gets all voyage and sprints data",
-        type: VoyageResponse,
+        type: VoyageResponseWithoutMeetings,
         isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     getVoyagesAndSprints() {
         return this.sprintsService.getVoyagesAndSprints();
@@ -79,6 +88,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid team Id. Record not found.",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -107,6 +121,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Meeting with the supplied Id not found",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -144,6 +163,11 @@ export class SprintsController {
         status: HttpStatus.CONFLICT,
         description: "A meeting already exist for this sprint.",
         type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "sprintNumber",
@@ -184,6 +208,11 @@ export class SprintsController {
         description: "Invalid Meeting ID (MeetingId does not exist)",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "meetingId",
         required: true,
@@ -214,6 +243,11 @@ export class SprintsController {
         status: HttpStatus.BAD_REQUEST,
         description: "Bad Request - Invalid Meeting ID",
         type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -246,6 +280,11 @@ export class SprintsController {
         description: "Invalid Agenda ID (AgendaId does not exist)",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "agendaId",
         required: true,
@@ -276,6 +315,11 @@ export class SprintsController {
         status: HttpStatus.NOT_FOUND,
         description: "Invalid Agenda ID (AgendaId does not exist)",
         type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "agendaId",
@@ -312,6 +356,11 @@ export class SprintsController {
         status: HttpStatus.CONFLICT,
         description: `FormId and MeetingId combination should be unique. There's already an existing form of the given formId for this meeting Id`,
         type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -352,6 +401,11 @@ export class SprintsController {
         description: "invalid meetingId",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "meetingId",
         required: true,
@@ -367,10 +421,12 @@ export class SprintsController {
     getMeetingFormQuestionsWithResponses(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
+        @Request() req: CustomRequest,
     ) {
         return this.sprintsService.getMeetingFormQuestionsWithResponses(
             meetingId,
             formId,
+            req,
         );
     }
 
@@ -407,6 +463,11 @@ export class SprintsController {
             "invalid meeting id, form id, question id(s) not found in form with a given formId, responses not an array",
         type: BadRequestErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @ApiParam({
         name: "meetingId",
         required: true,
@@ -432,6 +493,7 @@ export class SprintsController {
         );
     }
 
+    @Post("check-in")
     @ApiOperation({
         summary: "Submit end of sprint check in form",
         description:
@@ -482,9 +544,8 @@ export class SprintsController {
         description: "User has already submitted a check in for that sprint.",
         type: ConflictErrorResponse,
     })
-    @Post("check-in")
     addCheckinFormResponse(
-        @Body(new FormInputValidationPipe())
+        @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(

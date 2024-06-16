@@ -81,6 +81,7 @@ export class ResourcesService {
                             select: {
                                 firstName: true,
                                 lastName: true,
+                                id: true,
                                 avatar: true,
                             },
                         },
@@ -148,7 +149,7 @@ export class ResourcesService {
                 `Resource (id: ${resourceId}) doesn't exist`,
             );
 
-        if (resourceToModify.addedBy.member.id !== uuid)
+        if (resourceToModify.addedBy?.member.id !== uuid)
             throw new UnauthorizedException();
     }
 

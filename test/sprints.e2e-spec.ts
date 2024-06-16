@@ -87,10 +87,9 @@ describe("Sprints Controller (e2e)", () => {
                 });
         });
 
-        it("should return 401 if authorized token isn't present", async () => {
+        it("should return 401 if user is not logged in", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
-                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
     });
@@ -107,19 +106,23 @@ describe("Sprints Controller (e2e)", () => {
                     expect(res.body).toEqual(
                         expect.objectContaining({
                             id: expect.any(Number),
-                            name: expect.any(String),
-                            voyage: expect.objectContaining({
-                                id: expect.any(Number),
-                                number: expect.any(String),
-                                sprints: expect.arrayContaining([
-                                    expect.objectContaining({
-                                        id: expect.any(Number),
-                                        number: expect.any(Number),
-                                        startDate: expect.any(String),
-                                        endDate: expect.any(String),
-                                    }),
-                                ]),
-                            }),
+                            number: expect.any(String),
+                            soloProjectDeadline: expect.any(String),
+                            certificateIssueDate: expect.any(String),
+                            showcasePublishDate: expect.toBeOneOf([
+                                null,
+                                expect.any(String),
+                            ]),
+                            startDate: expect.any(String),
+                            endDate: expect.any(String),
+                            sprints: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.any(Number),
+                                    number: expect.any(Number),
+                                    startDate: expect.any(String),
+                                    endDate: expect.any(String),
+                                }),
+                            ]),
                         }),
                     );
                 });
@@ -133,11 +136,10 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("should return 401 if authorization token is not present", async () => {
+        it("should return 401 if user is not logged in", async () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
     });
@@ -161,6 +163,7 @@ describe("Sprints Controller (e2e)", () => {
                                 endDate: expect.any(String),
                             }),
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -232,11 +235,10 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(404);
         });
 
-        it("should return 401 if authorization token is not present", async () => {
+        it("should return 401 if user is not logged in", async () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
     });
@@ -261,6 +263,7 @@ describe("Sprints Controller (e2e)", () => {
                             sprintId: expect.any(Number),
                             voyageTeamId: expect.any(Number),
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -278,7 +281,14 @@ describe("Sprints Controller (e2e)", () => {
                     notes: "Test notes",
                 },
             });
-            return expect(meeting.title).toEqual("Test title");
+            return expect(meeting?.title).toEqual("Test title");
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .expect(401);
         });
     });
 
@@ -292,7 +302,8 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
@@ -306,6 +317,7 @@ describe("Sprints Controller (e2e)", () => {
                             sprintId: 4,
                             voyageTeamId: 1,
                             title: expect.any(String),
+                            description: expect.any(String),
                             dateTime: expect.any(String),
                             meetingLink: expect.any(String),
                             notes: expect.any(String),
@@ -318,11 +330,11 @@ describe("Sprints Controller (e2e)", () => {
         it("- verify new sprint meeting found in database", async () => {
             const meeting = await prisma.teamMeeting.findFirst({
                 where: {
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
                     notes: "Notes for the meeting",
                 },
             });
-            return expect(meeting.title).toEqual("Sprint Planning");
+            return expect(meeting?.title).toEqual(FormTitles.sprintPlanning);
         });
 
         it("should return 409 if trying to create a meeting that already exists for sprint", async () => {
@@ -334,7 +346,8 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
@@ -343,7 +356,7 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if teamId not found", async () => {
-            const teamId = 5;
+            const teamId = 999;
             const sprintNumber = 5;
             return request(app.getHttpServer())
                 .post(
@@ -351,7 +364,8 @@ describe("Sprints Controller (e2e)", () => {
                 )
                 .set("Cookie", accessToken)
                 .send({
-                    title: "Sprint Planning",
+                    title: FormTitles.sprintPlanning,
+                    description: "This is a meeting description.",
                     dateTime: "2024-03-01T23:11:20.271Z",
                     meetingLink: "samplelink.com/meeting1234",
                     notes: "Notes for the meeting",
@@ -374,6 +388,16 @@ describe("Sprints Controller (e2e)", () => {
                     notes: "Notes for the meeting",
                 })
                 .expect(400);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            const teamId = 1;
+            const sprintNumber = 5;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .expect(401);
         });
     });
 
@@ -412,7 +436,7 @@ describe("Sprints Controller (e2e)", () => {
                     description: "See if it works...",
                 },
             });
-            return expect(agenda.title).toEqual("Test agenda 3");
+            return expect(agenda?.title).toEqual("Test agenda 3");
         });
 
         it("should return 400 if meetingId is String", async () => {
@@ -426,6 +450,13 @@ describe("Sprints Controller (e2e)", () => {
                         "To get started, click the Add Topic button...",
                 })
                 .expect(400);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .expect(401);
         });
     });
 
@@ -463,7 +494,7 @@ describe("Sprints Controller (e2e)", () => {
                     description: "New agenda",
                 },
             });
-            return expect(agenda.title).toEqual("Title updated");
+            return expect(agenda?.title).toEqual("Title updated");
         });
 
         it("should return 404 if agendaId is not found", async () => {
@@ -477,6 +508,13 @@ describe("Sprints Controller (e2e)", () => {
                     status: true,
                 })
                 .expect(404);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .expect(401);
         });
     });
     describe("DELETE /voyages/sprints/agendas/:agendaId - deletes specified agenda", () => {
@@ -516,6 +554,13 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .expect(404);
         });
+
+        it("should return 401 if user is not logged in", async () => {
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .expect(401);
+        });
     });
 
     describe("POST /voyages/sprints/meetings/:meetingId/forms/:formId - creates new meeting form", () => {
@@ -547,7 +592,7 @@ describe("Sprints Controller (e2e)", () => {
                     meetingId: 2,
                 },
             });
-            return expect(responseMeeting.formId).toEqual(1);
+            return expect(responseMeeting?.formId).toEqual(1);
         });
 
         it("should return 409 if form already exists for this meeting", async () => {
@@ -575,6 +620,14 @@ describe("Sprints Controller (e2e)", () => {
                 .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
                 .set("Cookie", accessToken)
                 .expect(400);
+        });
+
+        it("should return 401 if user is not logged in", async () => {
+            const meetingId = 1;
+            const formId = 999;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .expect(401);
         });
     });
     describe("GET /voyages/sprints/meetings/:meetingId/forms/:formId - gets meeting form", () => {
@@ -633,7 +686,16 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", accessToken)
                 .expect(400);
         });
+
+        it("should return 401 if user is not logged in", async () => {
+            const meetingId = 1;
+            const formId = 999;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .expect(401);
+        });
     });
+
     describe("PATCH /voyages/sprints/meetings/:meetingId/forms/:formId - updates a meeting form", () => {
         it("should return 200 if successfully create a meeting form response", async () => {
             const meetingId = 1;
@@ -753,6 +815,14 @@ describe("Sprints Controller (e2e)", () => {
                 })
                 .expect(400);
         });
+
+        it("should return 401 if user is not logged in", async () => {
+            const meetingId = 1;
+            const formId = 999;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}/forms/${formId}`)
+                .expect(401);
+        });
     });
 
     describe("POST /voyages/sprints/check-in - submit sprint check in form", () => {
@@ -785,7 +855,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 2, // voyageTeamMemberId 1 is already in the seed
+                    voyageTeamMemberId: 4, // voyageTeamMemberId 1 is already in the seed
                     sprintId: 1,
                     responses: [
                         {
@@ -975,7 +1045,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 1,
+                    voyageTeamMemberId: 4,
                     sprintId: 1,
                     responses: [
                         {
@@ -992,7 +1062,7 @@ describe("Sprints Controller (e2e)", () => {
                 .post(sprintCheckinUrl)
                 .set("Cookie", accessToken)
                 .send({
-                    voyageTeamMemberId: 1,
+                    voyageTeamMemberId: 4,
                     sprintId: 1,
                     responses: [
                         {
@@ -1010,6 +1080,22 @@ describe("Sprints Controller (e2e)", () => {
             expect(responsesAfter).toEqual(responsesBefore);
             expect(responseGroupAfter).toEqual(responseGroupBefore);
             expect(checkinsAfter).toEqual(checkinsBefore);
+        });
+        it("should return 400 if the user doesnot belong to the voyage team", async () => {
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    voyageTeamMemberId: 5,
+                    sprintId: 1,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
         });
     });
 

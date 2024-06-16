@@ -25,6 +25,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
         ) {
             return req.cookies.access_token;
         }
+        return null;
     }
 
     async validate(payload: any) {
@@ -35,7 +36,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
             userId: payload.sub,
             email: payload.email,
             roles: userInDb.roles,
-            voyageTeams: userInDb.voyageTeamMembers.map((t) => {
+            voyageTeams: userInDb.voyageTeamMembers?.map((t) => {
                 return {
                     teamId: t.voyageTeamId,
                     memberId: t.id,

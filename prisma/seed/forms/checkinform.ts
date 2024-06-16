@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma-client";
+import { FormTitles } from "../../../src/global/constants/formTitles";
 
 export const populateCheckinForm = async () => {
     // Sprint - checkin form
@@ -11,7 +10,7 @@ export const populateCheckinForm = async () => {
                     name: "voyage member",
                 },
             },
-            title: "Sprint Check-in",
+            title: FormTitles.sprintCheckin,
             description:
                 "The weekly Chingu Check-in is how we support you and your team. It is also how we identify teams and individuals who need help. So, please make sure you submit this every week.",
             questions: {
@@ -86,7 +85,7 @@ export const populateCheckinForm = async () => {
                         order: 4,
                         inputType: {
                             connect: {
-                                name: "radio",
+                                name: "radioIcon",
                             },
                         },
                         text: "How would you rate your team's progress right now?",
@@ -98,13 +97,13 @@ export const populateCheckinForm = async () => {
                                     createMany: {
                                         data: [
                                             {
-                                                text: "We have had a good start!",
+                                                text: "{{greenRocket}} We have had a good start!",
                                             },
                                             {
-                                                text: "I'm nervous we won't finish",
+                                                text: "{{amberRocket}} I'm nervous we won't finish",
                                             },
                                             {
-                                                text: "It doesn't look good right now",
+                                                text: "{{redRocket}} It doesn't look good right now",
                                             },
                                         ],
                                     },
@@ -152,10 +151,10 @@ export const populateCheckinForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "yesNo",
+                                name: "boolean",
                             },
                         },
-                        text: "Did you deploy to Production at the end of this Sprint",
+                        text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint",
                         answerRequired: true,
                     },
                     {
@@ -166,7 +165,7 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "Is there anyone on your team who has not been active? If yes, please select the user. If no, move onto the next question.",
-                        answerRequired: true,
+                        answerRequired: false,
                     },
                     {
                         order: 7,
@@ -273,28 +272,28 @@ export const populateCheckinForm = async () => {
                     data: [
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 1,
                             text: "Pair programming",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 2,
                             text: "On my own",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 3,
                             text: "Learning & research",
                             answerRequired: true,
                         },
                         {
                             formId: checkinForm.id,
-                            inputTypeId: radioInput.id,
+                            inputTypeId: radioInput!.id,
                             order: 4,
                             text: "Team activities (e.g. meetings, debugging, etc.)",
                             answerRequired: true,

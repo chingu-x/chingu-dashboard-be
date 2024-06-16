@@ -14,10 +14,11 @@ import { TechsModule } from "./techs/techs.module";
 import { FeaturesModule } from "./features/features.module";
 import { IdeationsModule } from "./ideations/ideations.module";
 import { JwtAuthGuard } from "./auth/guards/jwt-auth.guard";
-import { RolesGuard } from "./auth/guards/roles.guard";
-import { PermissionsGuard } from "./auth/guards/permissions.guard";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TasksModule } from "./tasks/tasks.module";
+import { VoyagesModule } from "./voyages/voyages.module";
+import { AbilityModule } from "./ability/ability.module";
+import { AbilitiesGuard } from "./auth/guards/abilities.guard";
 
 @Module({
     imports: [
@@ -26,10 +27,10 @@ import { TasksModule } from "./tasks/tasks.module";
                 path: "voyages",
                 children: [
                     {
-                        path: "teams/:teamId/resources",
+                        path: "/",
                         module: ResourcesModule,
                     },
-                    { path: "teams/:teamId/techs", module: TechsModule },
+                    { path: "/", module: TechsModule },
                     { path: "/", module: FeaturesModule },
                     {
                         path: "teams/:teamId/ideations",
@@ -52,13 +53,14 @@ import { TasksModule } from "./tasks/tasks.module";
         GlobalModule,
         ScheduleModule.forRoot(),
         TasksModule,
+        VoyagesModule,
+        AbilityModule,
     ],
     controllers: [HealthCheckController],
     providers: [
         HealthCheckService,
         { provide: APP_GUARD, useClass: JwtAuthGuard },
-        { provide: APP_GUARD, useClass: RolesGuard },
-        { provide: APP_GUARD, useClass: PermissionsGuard },
+        { provide: APP_GUARD, useClass: AbilitiesGuard },
     ],
 })
 export class AppModule {}

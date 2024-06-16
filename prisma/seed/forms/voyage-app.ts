@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
 // TODO: this is incomplete. just added some fields for testing
+import { prisma } from "../prisma-client";
+import { FormTitles } from "../../../src/global/constants/formTitles";
 export const populateVoyageApplicationForm = async () => {
     await prisma.form.create({
         data: {
@@ -11,7 +9,7 @@ export const populateVoyageApplicationForm = async () => {
                     name: "user",
                 },
             },
-            title: "Voyage Application Form",
+            title: FormTitles.voyageApplication,
             questions: {
                 create: [
                     {

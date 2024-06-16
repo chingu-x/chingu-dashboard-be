@@ -1,16 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class FormResponseDto {
     @ApiProperty({
         description: "question id",
     })
+    @IsNumber()
     questionId: number;
 
     @ApiProperty({
         description: "choiceId, if it's a multiple choice questions",
     })
     @IsOptional()
+    @IsNumber()
     optionChoiceId?: number;
 
     @ApiProperty({
@@ -18,6 +20,7 @@ export class FormResponseDto {
         example: "Team member x landed a job this week.",
     })
     @IsOptional()
+    @IsString()
     text?: string;
 
     @ApiProperty({
@@ -25,11 +28,13 @@ export class FormResponseDto {
         example: true,
     })
     @IsOptional()
+    @IsBoolean()
     boolean?: boolean;
 
     @ApiProperty({
         description: "for numerical responses",
     })
+    @IsNumber()
     @IsOptional()
     numeric?: number;
 }

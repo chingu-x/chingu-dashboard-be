@@ -68,7 +68,6 @@ describe("IdeationsController", () => {
             teamId,
             createIdeationDto,
         );
-        console.log(ideation);
         expect(service.createIdeation).toHaveBeenCalled();
         expect(ideation).toBe(ideationOne);
     });
@@ -94,7 +93,17 @@ describe("IdeationsController", () => {
 
     it("should get ideations by voyage team", async () => {
         const teamId = 1;
-        const ideations = await controller.getIdeationsByVoyageTeam(teamId);
+        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+        const req = {
+            user: {
+                userId,
+                voyageTeams: [{ teamId, memberId: 1 }],
+            },
+        } as CustomRequest;
+        const ideations = await controller.getIdeationsByVoyageTeam(
+            teamId,
+            req,
+        );
 
         expect(service.getIdeationsByVoyageTeam).toHaveBeenCalled();
         expect(ideations).toBe(ideationArr);
@@ -120,7 +129,6 @@ describe("IdeationsController", () => {
             teamId,
             updateIdeationDto,
         );
-        console.log(ideation);
         expect(service.updateIdeation).toHaveBeenCalled();
         expect(ideation).toEqual(ideationOne);
     });

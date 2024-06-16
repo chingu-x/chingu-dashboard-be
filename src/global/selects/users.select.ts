@@ -95,6 +95,7 @@ export const privateUserDetailSelect = {
                             },
                         },
                     },
+                    FormResponseVoyageProject: true,
                 },
             },
             voyageRole: {

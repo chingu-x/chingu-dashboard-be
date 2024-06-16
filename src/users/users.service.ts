@@ -13,7 +13,7 @@ export class UsersService {
     private formatUser = (user) => {
         return {
             ...user,
-            roles: user.roles.flatMap((r) => r.role.name),
+            roles: user?.roles.flatMap((r) => r.role.name),
         };
     };
 
@@ -78,7 +78,51 @@ export class UsersService {
         });
 
         if (!user) throw new NotFoundException("User not found");
-        return this.formatUser(user);
+
+        const teamMemberId: number[] = user.voyageTeamMembers.map(
+            (teamMemberId) => teamMemberId.id,
+        );
+
+        // get sprint checkin  Ids
+        const sprintCheckInIds = (
+            await this.prisma.formResponseCheckin.findMany({
+                where: {
+                    voyageTeamMemberId: {
+                        in: teamMemberId,
+                    },
+                },
+                select: {
+                    sprintId: true,
+                },
+            })
+        ).map((sprintCheckInId) => sprintCheckInId.sprintId);
+
+        // update user object with sprintCheckInIds
+        const updatedUser = {
+            ...user,
+            sprintCheckIn: sprintCheckInIds,
+            voyageTeamMembers: user.voyageTeamMembers.map((teamMember) => {
+                if (teamMember.voyageTeam.FormResponseVoyageProject) {
+                    return {
+                        ...teamMember,
+                        voyageTeam: {
+                            ...teamMember.voyageTeam,
+                            projectSubmitted: true,
+                        },
+                    };
+                } else {
+                    return {
+                        ...teamMember,
+                        voyageTeam: {
+                            ...teamMember.voyageTeam,
+                            projectSubmitted: false,
+                        },
+                    };
+                }
+            }),
+        };
+
+        return this.formatUser(updatedUser);
     }
 
     // full user detail, for dev purpose

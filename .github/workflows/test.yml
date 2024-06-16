@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env: 
       MJ_APIKEY_PUBLIC: ${{ secrets.MJ_APIKEY_PUBLIC }}
       MJ_APIKEY_PRIVATE: ${{ secrets.MJ_APIKEY_PRIVATE }}
@@ -30,10 +31,10 @@ jobs:
       - name: Run Eslint
         run: yarn lint
 
-      - name: Run Jest tests
+      - name: Run unit tests
         run: |
           if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
-            yarn test
+            yarn test:unit
           fi       
 
       - name: Push latest schema to the test database

@@ -7,10 +7,12 @@ import * as cookieParser from "cookie-parser";
 import {
     extractCookieByKey,
     extractResCookieValueByKey,
+    getNonAdminUser,
     loginAndGetTokens,
 } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { comparePassword } from "../src/utils/auth";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";
@@ -31,7 +33,7 @@ const getUserIdByEmail = async (email: string, prisma: PrismaService) => {
         },
     });
 
-    return user.id;
+    return user?.id;
 };
 
 const requestAndGetResetToken = async (
@@ -50,7 +52,7 @@ const requestAndGetResetToken = async (
             resetToken: true,
         },
     });
-    return userInDb.resetToken.token;
+    return userInDb?.resetToken?.token;
 };
 
 describe("AuthController e2e Tests", () => {
@@ -67,7 +69,10 @@ describe("AuthController e2e Tests", () => {
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+
         app.use(cookieParser());
         await app.init();
     });
@@ -225,7 +230,7 @@ describe("AuthController e2e Tests", () => {
                 .post(verifyUrl)
                 .set("Cookie", access_token)
                 .send({
-                    token: userInDb.emailVerificationToken.token,
+                    token: userInDb?.emailVerificationToken?.token,
                 })
                 .expect(200);
 
@@ -239,8 +244,8 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify.emailVerified).toBe(true);
-            expect(userAfterVerify.emailVerificationToken).toBe(null);
+            expect(userAfterVerify?.emailVerified).toBe(true);
+            expect(userAfterVerify?.emailVerificationToken).toBe(null);
         });
 
         it("should return 401 if token mismatch, emailVerified = false, token still in database", async () => {
@@ -275,8 +280,8 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify.emailVerified).toBe(false);
-            expect(userAfterVerify.emailVerificationToken).toBeDefined();
+            expect(userAfterVerify?.emailVerified).toBe(false);
+            expect(userAfterVerify?.emailVerificationToken).toBeDefined();
         });
 
         it("should return 401 if the user is not logged in", async () => {
@@ -394,7 +399,9 @@ describe("AuthController e2e Tests", () => {
                     email: "jessica.williamson@gmail.com",
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: [],
+                    },
                 },
             });
 
@@ -420,7 +427,9 @@ describe("AuthController e2e Tests", () => {
                     email: "l.castro@outlook.com",
                 },
                 data: {
-                    refreshToken: null,
+                    refreshToken: {
+                        set: [],
+                    },
                 },
             });
 
@@ -442,11 +451,11 @@ describe("AuthController e2e Tests", () => {
                         refreshToken: true,
                     },
                 });
-                expect(updatedUser.refreshToken).toBeNull();
+                expect(updatedUser?.refreshToken).toEqual([]);
             });
         });
 
-        it("should return 401 if email is invalid", async () => {
+        it("should return 404 if email is invalid", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
@@ -462,7 +471,7 @@ describe("AuthController e2e Tests", () => {
                 .expect(404);
         });
 
-        it("should return 403 if email and user id is provided", async () => {
+        it("should return 400 if email and user id is provided", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
             const { access_token, refresh_token } = await loginAndGetTokens(
@@ -484,8 +493,9 @@ describe("AuthController e2e Tests", () => {
         it("should return 403 if user is not permitted", async () => {
             await loginAndGetTokens("l.castro@outlook.com", "password", app);
 
+            const nonAdmin = await getNonAdminUser();
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "dan@random.com",
+                nonAdmin!.email,
                 "password",
                 app,
             );
@@ -571,7 +581,7 @@ describe("AuthController e2e Tests", () => {
             });
 
             expect(
-                await comparePassword(newPassword, userInDb.password),
+                await comparePassword(newPassword, userInDb?.password),
             ).toBeTruthy();
         });
         it("should return 401 if token is expired", async () => {
