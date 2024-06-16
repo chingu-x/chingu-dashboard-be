@@ -39,6 +39,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for teams controller ([#162](https://github.com/chingu-x/chingu-dashboard-be/pull/162))
 - Add swagger access info, add forms authorization and e2e tests ([#160](https://github.com/chingu-x/chingu-dashboard-be/pull/160))
 - Add voyages unit test, also had to update all files (seed, tests, services) to meet strict null rule due to prismaMock requirements ([#163](https://github.com/chingu-x/chingu-dashboard-be/pull/163))
+- Add GET endpoint for checkin form responses ([#166](https://github.com/chingu-x/chingu-dashboard-be/pull/166))
 
 
 ### Changed
