@@ -1083,5 +1083,15 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/);
         });
+
+        it("should return 400 if query params are invalid", async () => {
+            const key = "teamsId";
+            const val = "1";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
     });
 });
