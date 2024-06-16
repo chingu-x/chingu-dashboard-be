@@ -1029,6 +1029,7 @@ describe("Sprints Controller (e2e)", () => {
         it("should return 200 if voyageNumber key's value successfully returns a check in form", async () => {
             const key = "voyageNumber";
             const val = "46";
+
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
@@ -1052,6 +1053,29 @@ describe("Sprints Controller (e2e)", () => {
         it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
             const key = "sprintNumber";
             const val = 1;
+
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
+
+        it("should return 200 if userId key's value successfully returns a check in form", async () => {
+            const key = "userId";
+            const user = await prisma.voyageTeamMember.findFirst({
+                where: {
+                    checkinForms: {
+                        some: {},
+                    },
+                },
+                select: {
+                    userId: true,
+                },
+            });
+            const val = { user: user?.userId };
+
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
