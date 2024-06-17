@@ -617,93 +617,98 @@ export class SprintsService {
         }
     }
 
-    async getCheckinFormResponse({
-        teamId,
-        sprintNumber,
-        voyageNumber,
-        userId,
-    }: CheckinQueryDto) {
+    async getCheckinFormResponse(query: CheckinQueryDto) {
+        // convert query's key/val pair into strings for error handling
+        const queryObjectStringified = Object.entries(query).filter(
+            ([_, v]) => v,
+        );
+        // just grab the first key if there are multiple provided by accident
+        const [key, val] = queryObjectStringified[0] || [];
+
+        if (!key) {
+            throw new BadRequestException("No query provided");
+        }
+
         let checkinFormResponse;
-        let key, val;
 
-        if (teamId) {
-            key = "teamId";
-            val = teamId;
-            checkinFormResponse = await this.prisma.voyageTeamMember.findMany({
-                where: {
-                    voyageTeamId: teamId,
-                },
-                include: {
-                    checkinForms: true,
-                },
-            });
-        } else if (sprintNumber) {
-            key = "sprintNumber";
-            val = sprintNumber;
-
-            checkinFormResponse =
-                await this.prisma.formResponseCheckin.findMany({
-                    where: {
-                        sprintId: sprintNumber,
-                    },
-                    include: {
-                        voyageTeamMember: {
-                            select: {
-                                voyageTeamId: true,
+        switch (key) {
+            case "teamId":
+                checkinFormResponse =
+                    await this.prisma.voyageTeamMember.findMany({
+                        where: {
+                            voyageTeamId: val,
+                        },
+                        include: {
+                            checkinForms: true,
+                        },
+                    });
+                break;
+            case "sprintNumber":
+                checkinFormResponse =
+                    await this.prisma.formResponseCheckin.findMany({
+                        where: {
+                            sprintId: val,
+                        },
+                        include: {
+                            voyageTeamMember: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
                             },
                         },
+                        orderBy: {
+                            voyageTeamMember: {
+                                voyageTeamId: "asc",
+                            },
+                        },
+                    });
+                break;
+            case "voyageNumber":
+                checkinFormResponse = await this.prisma.sprint.findMany({
+                    where: {
+                        voyage: {
+                            number: val,
+                        },
                     },
-                    orderBy: {
-                        voyageTeamMember: {
-                            voyageTeamId: "asc",
+                    include: {
+                        checkinForms: {
+                            include: {
+                                voyageTeamMember: {
+                                    select: {
+                                        voyageTeamId: true,
+                                    },
+                                },
+                            },
                         },
                     },
                 });
-        } else if (voyageNumber) {
-            key = "voyageNumber";
-            val = voyageNumber;
-
-            checkinFormResponse = await this.prisma.sprint.findMany({
-                where: {
-                    voyage: {
-                        number: voyageNumber,
-                    },
-                },
-                include: {
-                    checkinForms: {
+                break;
+            case "userId":
+                checkinFormResponse =
+                    await this.prisma.voyageTeamMember.findMany({
+                        where: {
+                            userId: val,
+                        },
                         include: {
-                            voyageTeamMember: {
-                                select: {
-                                    voyageTeamId: true,
+                            checkinForms: {
+                                include: {
+                                    voyageTeamMember: {
+                                        select: {
+                                            voyageTeamId: true,
+                                        },
+                                    },
                                 },
                             },
                         },
-                    },
-                },
-            });
-        } else if (userId) {
-            key = "userId";
-            val = userId;
-            checkinFormResponse = await this.prisma.voyageTeamMember.findMany({
-                where: {
-                    userId: userId,
-                },
-                include: {
-                    checkinForms: {
-                        include: {
-                            voyageTeamMember: {
-                                select: {
-                                    voyageTeamId: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-        } else
-            throw new BadRequestException(`${key} did not match any keywords`);
+                    });
+                break;
+            default:
+                throw new BadRequestException(
+                    `Query ${key} did not match any keywords`,
+                );
+        }
 
-        // make responses uniform
+        // make responses uniform and get rid of empty arrays
         checkinFormResponse = checkinFormResponse.flatMap(
             (item) => item.checkinForms || [item],
         );
@@ -713,7 +718,7 @@ export class SprintsService {
 
         if (checkinFormResponse.length < 1) {
             throw new NotFoundException(
-                `${key} ${val} did not match any check in form responses`,
+                `Query ${key} with value ${val} did not match any check-in form responses`,
             );
         }
 
