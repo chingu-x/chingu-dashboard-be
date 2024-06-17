@@ -73,6 +73,16 @@ export class TeamsController {
         description: "Voyage with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
     @ApiParam({
         name: "voyageId",
         description: "voyage id from the voyage table",

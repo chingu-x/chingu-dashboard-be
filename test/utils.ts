@@ -67,3 +67,25 @@ export const getNonAdminUser = async () => {
         );
     return adminUser;
 };
+export const getUseridFromEmail = async (
+    email: string,
+): Promise<string | undefined> => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+            },
+        });
+        if (!user) {
+            throw new InternalServerErrorException(
+                "test/utils.ts: user not found",
+            );
+        }
+        return user.id;
+    } catch (e) {
+        console.log(e);
+    }
+};
