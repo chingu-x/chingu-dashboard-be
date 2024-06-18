@@ -3,8 +3,7 @@ import { FormTitles } from "../../../src/global/constants/formTitles";
 
 export const populateCheckinFormPO = async () => {
     // Sprint - checkin form (Product owner)
-
-    const checkinFormPO = await prisma.form.create({
+    await prisma.form.create({
         data: {
             formType: {
                 connect: {
@@ -12,7 +11,8 @@ export const populateCheckinFormPO = async () => {
                 },
             },
             title: FormTitles.sprintCheckinPO,
-            description: "PO Feedback from Team members",
+            description:
+                "Agile/Scrum is an important part of a Voyage and we'd like some feedback on how you are following ir and how your Product Owner and Scrum Master are helping your team.",
             questions: {
                 create: [
                     {
