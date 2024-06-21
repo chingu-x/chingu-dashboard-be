@@ -144,4 +144,28 @@ describe("Features Controller (e2e)", () => {
                 .expect(404);
         });
     });
+    describe("GET /voyages/features/feature-categories - Gets all feature categories", () => {
+        it("should return 200 and an array of feature categories", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .get(`/voyages/features/feature-categories`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body.length).toEqual(3);
+                });
+        });
+        it("should return 401 when user is not logged in", async () => {
+            await request(app.getHttpServer())
+                .get(`/voyages/features/feature-categories`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+    });
 });

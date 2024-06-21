@@ -91,6 +91,11 @@ export class FeaturesController {
         isArray: true,
         type: FeatureCategoriesResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
     @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
