@@ -9,6 +9,7 @@ import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import { GlobalService } from "../global/global.service";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 @Injectable()
 export class FeaturesService {
@@ -18,7 +19,7 @@ export class FeaturesService {
     ) {}
 
     async createFeature(
-        req,
+        req: CustomRequest,
         teamId: number,
         createFeatureDto: CreateFeatureDto,
     ) {
