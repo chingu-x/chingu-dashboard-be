@@ -19,6 +19,36 @@ export const populateCheckinFormSM = async () => {
                         order: 1,
                         inputType: {
                             connect: {
+                                name: "radio",
+                            },
+                        },
+                        text: "Does your team have a Scrum Master?",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-form-sm-assigned",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "Yes",
+                                            },
+                                            {
+                                                text: "No",
+                                            },
+                                            {
+                                                text: "I'm the Scrum Master",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        order: 2,
+                        inputType: {
+                            connect: {
                                 name: "boolean",
                             },
                         },
