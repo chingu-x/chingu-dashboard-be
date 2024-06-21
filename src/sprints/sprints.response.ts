@@ -236,13 +236,13 @@ export class CheckinFormResponse {
     @ApiProperty({ example: 1 })
     sprintId: number;
 
-    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    @ApiProperty({ example: "Great job!" })
     adminComments: string;
 
-    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    @ApiProperty({ example: true })
     feedbackSent: boolean;
 
-    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    @ApiProperty({ example: 1 })
     responseGroupId: number;
 
     @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
