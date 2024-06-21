@@ -210,4 +210,125 @@ describe("Features Controller (e2e)", () => {
                 .expect(404);
         });
     });
+    describe("PATCH /voyages/features/:featureId - [Permission: own_team] - Updates a feature for a featureId (int)", () => {
+        it("should return 200 and the updated feature object", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId = 1;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body.description).toEqual(
+                        updatedFeature.description,
+                    );
+                });
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const featureId = 1;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .send(updatedFeature)
+                .expect(401);
+        });
+        it("should return 404 when feature does not exist", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId = 999999;
+
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404);
+        });
+
+        it("should return 400 when feature description is empty", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId = 1;
+            const updatedFeature = {
+                description: "",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(400);
+        });
+        it("should return 400 when teamMemberId is not provided", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId = 1;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(400);
+        });
+        it("should return 403 when trying to patch a feature created by other member", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId = 4;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+    });
 });

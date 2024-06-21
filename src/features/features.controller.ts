@@ -26,6 +26,7 @@ import {
 import { Feature } from "./entities/feature.entity";
 import {
     BadRequestErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -164,8 +165,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "user is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -201,7 +207,7 @@ export class FeaturesController {
         } else {
             throw new HttpException(
                 "user is unauthorized to perform this action",
-                HttpStatus.UNAUTHORIZED,
+                HttpStatus.FORBIDDEN,
             );
         }
     }
