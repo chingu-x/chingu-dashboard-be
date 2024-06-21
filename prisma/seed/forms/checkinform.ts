@@ -19,6 +19,78 @@ export const populateCheckinForm = async () => {
                         order: 1,
                         inputType: {
                             connect: {
+                                name: "checkbox",
+                            },
+                        },
+                        text: "Which Scrum events did your team hold in the prior sprint? Please answer 'yes' to any you did even if they were combined in another meeting.",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-form-events",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "Project Kickoff (Sprint 1 only)",
+                                            },
+                                            {
+                                                text: "Sprint Planning",
+                                            },
+                                            {
+                                                text: "Sprint Review",
+                                            },
+                                            {
+                                                text: "Sprint Retrospective",
+                                            },
+                                            {
+                                                text: "Daily Standup",
+                                            },
+                                            {
+                                                text: "Backlog Planning/Refinement",
+                                            },
+                                            {
+                                                text: "Team did not hold any Scrum events",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        order: 2,
+                        inputType: {
+                            connect: {
+                                name: "radioIcon",
+                            },
+                        },
+                        text: "How would you rate your team's progress right now?",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-form-team-progress",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "{{greenRocket}} We have had a good start!",
+                                            },
+                                            {
+                                                text: "{{amberRocket}} I'm nervous we won't finish",
+                                            },
+                                            {
+                                                text: "{{redRocket}} It doesn't look good right now",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        order: 3,
+                        inputType: {
+                            connect: {
                                 name: "radio",
                             },
                         },
@@ -26,7 +98,7 @@ export const populateCheckinForm = async () => {
                         answerRequired: true,
                         optionGroup: {
                             create: {
-                                name: "checkin-form-communicate-how",
+                                name: "checkin-form-team-communication",
                                 optionChoices: {
                                     createMany: {
                                         data: [
@@ -49,13 +121,13 @@ export const populateCheckinForm = async () => {
                         },
                     },
                     {
-                        order: 2,
+                        order: 4,
                         inputType: {
                             connect: {
                                 name: "radio",
                             },
                         },
-                        text: "Did you contribute to the project for your team this past week?",
+                        text: "Did you contribute to the project this past week by designing, coding, or testing your teams app?",
                         answerRequired: true,
                         optionGroup: {
                             create: {
@@ -70,9 +142,6 @@ export const populateCheckinForm = async () => {
                                                 text: "Yes, worked with another teammate",
                                             },
                                             {
-                                                text: "Yes, worked on my own + with another teammate",
-                                            },
-                                            {
                                                 text: "No, I didn't work on the project this past week",
                                             },
                                         ],
@@ -82,90 +151,14 @@ export const populateCheckinForm = async () => {
                         },
                     },
                     {
-                        order: 4,
-                        inputType: {
-                            connect: {
-                                name: "radioIcon",
-                            },
-                        },
-                        text: "How would you rate your team's progress right now?",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "checkin-form-progress",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "{{greenRocket}} We have had a good start!",
-                                            },
-                                            {
-                                                text: "{{amberRocket}} I'm nervous we won't finish",
-                                            },
-                                            {
-                                                text: "{{redRocket}} It doesn't look good right now",
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    {
-                        order: 5,
-                        inputType: {
-                            connect: {
-                                name: "checkbox",
-                            },
-                        },
-                        text: "What topics did your meetings cover this week? (Select all that apply)",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "checkin-meeting-topics",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "We didn't meet",
-                                            },
-                                            {
-                                                text: "Sprint Review",
-                                            },
-                                            {
-                                                text: "Sprint Retrospective",
-                                            },
-                                            {
-                                                text: "Sprint Planning",
-                                            },
-                                            {
-                                                text: "Other",
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    {
-                        order: 5,
+                        order: 6,
                         inputType: {
                             connect: {
                                 name: "boolean",
                             },
                         },
-                        text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint",
+                        text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint?",
                         answerRequired: true,
-                    },
-                    {
-                        order: 6,
-                        inputType: {
-                            connect: {
-                                name: "teamMembersCheckbox",
-                            },
-                        },
-                        text: "Is there anyone on your team who has not been active? If yes, please select the user. If no, move onto the next question.",
-                        answerRequired: false,
                     },
                     {
                         order: 7,
@@ -174,18 +167,19 @@ export const populateCheckinForm = async () => {
                                 name: "text",
                             },
                         },
-                        text: "Please share any personal or team achievements this week here. (ex. held a meeting, teammate got a job, had a pair programming session, learned a valuable team lesson, solved a challenging problem).",
-                        answerRequired: true,
+                        text: "Is there anyone on your team who has not been active? If so, please add his/her Discord username here:",
+                        answerRequired: false,
                     },
+
                     {
                         order: 8,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "teamMembersCheckbox",
                             },
                         },
-                        text: "If a Product Owner has been assigned to your team do you have feed back to share with us about how that's working?",
-                        answerRequired: true,
+                        text: "Is there anyone on your team who has not been super helpful, kind, hard-working, etc. and deserves a shout-out in the Chingu Weekly? If so, please add his/her Discord username here:",
+                        answerRequired: false,
                     },
                     {
                         order: 9,
@@ -194,18 +188,44 @@ export const populateCheckinForm = async () => {
                                 name: "text",
                             },
                         },
-                        text: "If a Voyage Guide has been assigned to your team do you have feed back to share with us about how that's working?",
-                        answerRequired: true,
+                        text: "Please share any personal or team achievements this week here. (ex. held a meeting, teammate got a job, had a pair programming session, learned a valuable team lesson, solved a challenging problem).",
+                        answerRequired: false,
                     },
                     {
                         order: 10,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "radio",
                             },
                         },
-                        text: "Do you have any personal projects you've built that we can showcase in the Weekly Update? (these can be from anytime in your coding history! We want to showcase it!)",
+                        text: "If a Voyage Guide has been assigned to your team do you have feed back to share with us about how that's working?",
                         answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-form-guide-feedback",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "My team doesn't have a Voyage Guide",
+                                            },
+                                            {
+                                                text: "I don't know if my team has a Voyage Guide",
+                                            },
+                                            {
+                                                text: "It has been helpful",
+                                            },
+                                            {
+                                                text: "It hasn't been helpful",
+                                            },
+                                            {
+                                                text: "Our team didn't reach out to our Voyage Guide",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
                     },
                     {
                         order: 11,
@@ -214,8 +234,57 @@ export const populateCheckinForm = async () => {
                                 name: "text",
                             },
                         },
-                        text: "Please provide any extra other comments, concerns, lessons learned, something you want to learn, etc. here. The more the better since this helps us find ways to support teams & improve the process. Thanks!",
+                        text: "Is there anything else you'd like to tell us about your Voyage Guide?",
                         answerRequired: true,
+                    },
+                    {
+                        order: 12,
+                        inputType: {
+                            connect: {
+                                name: "radio",
+                            },
+                        },
+                        text: "What is your role in your team?",
+                        answerRequired: true,
+                        optionGroup: {
+                            create: {
+                                name: "checkin-form-role",
+                                optionChoices: {
+                                    createMany: {
+                                        data: [
+                                            {
+                                                text: "Product Owner",
+                                            },
+                                            {
+                                                text: "Scrum Master",
+                                            },
+                                            {
+                                                text: "Web Developer",
+                                            },
+                                            {
+                                                text: "UI/UX Designer",
+                                            },
+                                            {
+                                                text: "Data Scientist",
+                                            },
+                                            {
+                                                text: "Voyage Guide",
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        order: 13,
+                        inputType: {
+                            connect: {
+                                name: "text",
+                            },
+                        },
+                        text: "Please provide any extra other comments, concerns, lessons learned, team achievements, or any additional information you would like to let us know here. ",
+                        answerRequired: false,
                     },
                 ],
             },
@@ -236,7 +305,7 @@ export const populateCheckinForm = async () => {
                     id: checkinForm.id,
                 },
             },
-            order: 3,
+            order: 5,
             inputType: {
                 connect: {
                     name: "radioGroup",
