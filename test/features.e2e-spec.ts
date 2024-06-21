@@ -331,4 +331,55 @@ describe("Features Controller (e2e)", () => {
                 .expect(403);
         });
     });
+
+    describe("DELETE /voyages/features/:featureId - [Permission: own_team] - Deletes a feature for a featureId (int)", () => {
+        it("should return 200 when feature is deleted", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId = 1;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200);
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const featureId = 1;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/features/${featureId}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+        it("should return 404 when feature does not exist", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId = 999999;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404);
+        });
+        it("should return 403 when trying to delete a feature created by other member", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId = 4;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+    });
 });

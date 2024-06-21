@@ -11,7 +11,7 @@ import {
     HttpException,
     HttpStatus,
     NotFoundException,
-    UnauthorizedException,
+    ForbiddenException,
 } from "@nestjs/common";
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -262,8 +262,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "user is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -289,7 +294,7 @@ export class FeaturesController {
                 await this.featuresService.deleteFeature(featureId);
             return deletedFeature;
         } else {
-            throw new UnauthorizedException(
+            throw new ForbiddenException(
                 `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy?.member.id}`,
             );
         }
