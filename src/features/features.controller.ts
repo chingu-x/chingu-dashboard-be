@@ -53,7 +53,7 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not authorized to perform this action.",
+        description: "Unauthorized when user is not logged in",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({

@@ -82,6 +82,18 @@ export class FeaturesService {
 
     async findAllFeatures(teamId: number) {
         try {
+            //check for valid teamId
+            const team = await this.prisma.voyageTeam.findFirst({
+                where: {
+                    id: teamId,
+                },
+            });
+
+            if (!team) {
+                throw new NotFoundException(
+                    `TeamId (id: ${teamId}) does not exist.`,
+                );
+            }
             const allTeamFeatures = await this.prisma.projectFeature.findMany({
                 where: {
                     addedBy: {
@@ -116,12 +128,6 @@ export class FeaturesService {
                 },
                 orderBy: [{ category: { id: "asc" } }, { order: "asc" }],
             });
-
-            if (!allTeamFeatures) {
-                throw new NotFoundException(
-                    `TeamId (id: ${teamId}) does not exist.`,
-                );
-            }
 
             return allTeamFeatures;
         } catch (e) {

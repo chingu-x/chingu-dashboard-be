@@ -31,7 +31,7 @@ describe("Features Controller (e2e)", () => {
         await app.close();
     });
 
-    describe("POST /voyages/teams/:teamId/features - [Permission: own_team] - Adds a new feature for a team given a teamId (int) and that the user is logged in.", () => {
+    describe("POST /voyages/teams/:teamId/features - [Permission: own_team] - Adds a new feature for a team given a teamId (int)", () => {
         it("should return 201 and the created feature", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
@@ -63,6 +63,7 @@ describe("Features Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/features`)
+                .set("Authorization", `Bearer ${undefined}`)
                 .send(featureData)
                 .expect(401);
         });
@@ -99,6 +100,46 @@ describe("Features Controller (e2e)", () => {
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/features`)
                 .send(featureData)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404);
+        });
+    });
+    describe("GET /voyages/teams/:teamId/features - [Permission: own_team] - Gets all features for a team given a teamId (int)", () => {
+        it("should return 200 and an array of features", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const teamId = 1;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/features`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body.length).toBeGreaterThan(0);
+                });
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const teamId = 1;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/features`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+        it("should return 404 for invalid team id", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const teamId = 999999;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/features`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
