@@ -46,8 +46,8 @@ import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
-import { Action } from "src/ability/ability.factory/ability.factory";
-import { CheckAbilities } from "src/global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
