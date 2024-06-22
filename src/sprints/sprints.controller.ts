@@ -10,11 +10,18 @@ import {
     ValidationPipe,
     HttpStatus,
     Request,
+    Query,
 } from "@nestjs/common";
 import { SprintsService } from "./sprints.service";
 import { UpdateTeamMeetingDto } from "./dto/update-team-meeting.dto";
 import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+    ApiOperation,
+    ApiParam,
+    ApiQuery,
+    ApiResponse,
+    ApiTags,
+} from "@nestjs/swagger";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
 import { FormInputValidationPipe } from "../pipes/form-input-validation";
@@ -38,6 +45,9 @@ import { FormResponse, ResponseResponse } from "../forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
+import { CheckinQueryDto } from "./dto/get-checkin-form-response";
+import { Action } from "../ability/ability.factory/ability.factory";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
 
 @Controller()
 @ApiTags("Voyage - Sprints")
@@ -541,5 +551,57 @@ export class SprintsController {
         return this.sprintsService.addCheckinFormResponse(
             createCheckinFormResponse,
         );
+    }
+
+    @ApiOperation({
+        summary:
+            "[Admin only]: gets checkin forms given a sprintNumber, voyageId, userId, or teamId",
+        description:
+            "Takes any 1 of 4 keys: sprintNumber, voyageId, userId, or teamId",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "successfully gets checkin form responses",
+        type: CheckinSubmissionResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "no matching checkin form response found",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "invalid key",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in or doesn't have admin access",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiQuery({
+        name: "teamId",
+        required: false,
+        description: "Example: 1",
+    })
+    @ApiQuery({
+        name: "sprintNumber",
+        required: false,
+        description: "Example: 1",
+    })
+    @ApiQuery({
+        name: "voyageNumber",
+        required: false,
+        description: "Example: 46",
+    })
+    @ApiQuery({
+        name: "userId",
+        required: false,
+        description: "Example: 6bd33861-04c0-4270-8e96-62d4fb587527",
+    })
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
+    @Get("check-in")
+    getCheckinFormResponse(@Query() query: CheckinQueryDto) {
+        return this.sprintsService.getCheckinFormResponse(query);
     }
 }

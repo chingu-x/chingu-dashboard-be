@@ -25,7 +25,7 @@ describe("Sprints Controller (e2e)", () => {
         await seed();
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
-        app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalPipes(new ValidationPipe({ transform: true }));
         app.use(cookieParser());
         await app.init();
     });
@@ -1096,6 +1096,189 @@ describe("Sprints Controller (e2e)", () => {
                     ],
                 })
                 .expect(400);
+        });
+    });
+
+    describe("GET /voyages/sprints/check-in - returns sprint check in form", () => {
+        const sprintCheckinUrl = "/voyages/sprints/check-in";
+
+        beforeEach(async () => {
+            await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            ).then((tokens) => {
+                accessToken = tokens.access_token;
+            });
+        });
+
+        it("should return 200 if voyageNumber key's value successfully returns a check in form", async () => {
+            const key = "voyageNumber";
+            const val = "46";
+
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("should return 200 if teamId key's value successfully returns a check in form", async () => {
+            const key = "teamId";
+            const val = "1";
+
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
+            const key = "sprintNumber";
+            const val = 1;
+
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("should return 200 if userId key's value successfully returns a check in form", async () => {
+            const key = "userId";
+            const user = await prisma.voyageTeamMember.findFirst({
+                where: {
+                    checkinForms: {
+                        some: {},
+                    },
+                },
+                select: {
+                    userId: true,
+                },
+            });
+            const val = user?.userId;
+
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    expect(res.body).toEqual(
+                        expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                createdAt: expect.any(String),
+                                updatedAt: expect.any(String),
+                                adminComments: expect.toBeOneOf([
+                                    null,
+                                    expect.any(String),
+                                ]),
+                                feedbackSent: expect.any(Boolean),
+                                responseGroupId: expect.any(Number),
+                                sprintId: expect.any(Number),
+                                voyageTeamMember: expect.objectContaining({
+                                    voyageTeamId: expect.any(Number),
+                                }),
+                                voyageTeamMemberId: expect.any(Number),
+                            }),
+                        ]),
+                    );
+                });
+        });
+
+        it("should return 400 if query params are invalid", async () => {
+            const key = "teamsId";
+            const val = "1";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
+        it("should return 401 if user is not logged in or admin", async () => {
+            await request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .expect(401);
+        });
+
+        it("should return 404 if check in form not found", async () => {
+            const key = "teamId";
+            const val = "9999";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(404);
         });
     });
 });

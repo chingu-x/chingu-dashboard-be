@@ -222,3 +222,32 @@ export class CheckinSubmissionResponse {
     @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
     createdAt: Date;
 }
+
+export class CheckinFormResponse {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamMemberId: number;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamId: number;
+
+    @ApiProperty({ example: 1 })
+    sprintId: number;
+
+    @ApiProperty({ example: "Great job!" })
+    adminComments: string;
+
+    @ApiProperty({ example: true })
+    feedbackSent: boolean;
+
+    @ApiProperty({ example: 1 })
+    responseGroupId: number;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    createdAt: Date;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    updatedAt: Date;
+}
