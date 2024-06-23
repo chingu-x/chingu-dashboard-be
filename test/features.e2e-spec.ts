@@ -73,7 +73,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId = 2;
+            const teamId: number = 2;
             const featureData = {
                 featureCategoryId: 1,
                 description: "This is a must have feature",
@@ -91,7 +91,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId = 1;
+            const teamId: number = 1;
             const featureData = {
                 featureCategoryId: 4,
                 description: "This is a not a valid feature",
@@ -111,7 +111,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId = 1;
+            const teamId: number = 1;
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/features`)
@@ -123,7 +123,7 @@ describe("Features Controller (e2e)", () => {
                 });
         });
         it("should return 401 when user is not logged in", async () => {
-            const teamId = 1;
+            const teamId: number = 1;
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/features`)
@@ -136,7 +136,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId = 999999;
+            const teamId: number = 999999;
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/features`)
@@ -176,7 +176,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 1;
+            const featureId: number = 1;
 
             await request(app.getHttpServer())
                 .get(`/voyages/features/${featureId}`)
@@ -188,7 +188,7 @@ describe("Features Controller (e2e)", () => {
                 });
         });
         it("should return 401 when user is not logged in", async () => {
-            const featureId = 1;
+            const featureId: number = 1;
 
             await request(app.getHttpServer())
                 .get(`/voyages/features/${featureId}`)
@@ -202,7 +202,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 999999;
+            const featureId: number = 999999;
 
             await request(app.getHttpServer())
                 .get(`/voyages/features/${featureId}`)
@@ -218,7 +218,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 1;
+            const featureId: number = 1;
             const updatedFeature = {
                 description:
                     "This is a updated description of must have feature",
@@ -238,7 +238,7 @@ describe("Features Controller (e2e)", () => {
                 });
         });
         it("should return 401 when user is not logged in", async () => {
-            const featureId = 1;
+            const featureId: number = 1;
             const updatedFeature = {
                 description:
                     "This is a updated description of must have feature",
@@ -258,7 +258,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 999999;
+            const featureId: number = 999999;
 
             const updatedFeature = {
                 description:
@@ -280,7 +280,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 1;
+            const featureId: number = 1;
             const updatedFeature = {
                 description: "",
                 teamMemberId: 1,
@@ -299,7 +299,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 1;
+            const featureId: number = 1;
             const updatedFeature = {
                 description:
                     "This is a updated description of must have feature",
@@ -317,7 +317,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const featureId = 4;
+            const featureId: number = 4;
             const updatedFeature = {
                 description:
                     "This is a updated description of must have feature",
@@ -339,7 +339,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const featureId = 1;
+            const featureId: number = 1;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/features/${featureId}`)
@@ -347,7 +347,7 @@ describe("Features Controller (e2e)", () => {
                 .expect(200);
         });
         it("should return 401 when user is not logged in", async () => {
-            const featureId = 1;
+            const featureId: number = 1;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/features/${featureId}`)
@@ -361,7 +361,7 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
 
-            const featureId = 999999;
+            const featureId: number = 999999;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/features/${featureId}`)
@@ -374,7 +374,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const featureId = 4;
+            const featureId: number = 4;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/features/${featureId}`)
