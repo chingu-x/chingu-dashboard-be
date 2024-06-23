@@ -19,36 +19,6 @@ export const populateCheckinFormPO = async () => {
                         order: 1,
                         inputType: {
                             connect: {
-                                name: "radio",
-                            },
-                        },
-                        text: "Has a Product Owner been assigned to your team? You can find the roles assigned to your teammates at the top of your voyage Team Channel",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "checkin-form-po-assigned",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "Yes",
-                                            },
-                                            {
-                                                text: "No",
-                                            },
-                                            {
-                                                text: "I'm the Product Owner",
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    {
-                        order: 2,
-                        inputType: {
-                            connect: {
                                 name: "checkbox",
                             },
                         },
@@ -103,7 +73,7 @@ export const populateCheckinFormPO = async () => {
                         },
                     },
                     {
-                        order: 3,
+                        order: 2,
                         inputType: {
                             connect: {
                                 name: "text",
