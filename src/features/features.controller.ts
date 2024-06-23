@@ -240,7 +240,7 @@ export class FeaturesController {
     })
     @Patch("/features/:featureId/reorder")
     async updateFeatureOrderAndCategory(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
         @Body() updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
     ) {

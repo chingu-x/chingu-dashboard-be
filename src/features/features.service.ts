@@ -202,7 +202,7 @@ export class FeaturesService {
     }
 
     async updateFeatureOrderAndCategory(
-        req,
+        req: CustomRequest,
         featureId: number,
         updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
     ) {

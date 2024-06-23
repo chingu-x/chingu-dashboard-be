@@ -38,7 +38,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId = 1;
+            const teamId: number = 1;
             const featureData = {
                 featureCategoryId: 1,
                 description: "This is a must have feature",
@@ -55,7 +55,7 @@ describe("Features Controller (e2e)", () => {
                 });
         });
         it("should return 401 when user is not logged in", async () => {
-            const teamId = 1;
+            const teamId: number = 1;
             const featureData = {
                 featureCategoryId: 1,
                 description: "This is a must have feature",
@@ -380,6 +380,95 @@ describe("Features Controller (e2e)", () => {
                 .delete(`/voyages/features/${featureId}`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(403);
+        });
+    });
+    describe("PATCH /voyages/features/:featureId/reorder - [Permission: own_team] - updates the order or category of features given a featureId (int), featureCategoryId (int) and order (int)", () => {
+        it("should return 200 and update the ordering of features", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId: number = 2;
+            const featureCategoryId: number = 2;
+            const order: number = 3;
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}/reorder`)
+                .send({ featureCategoryId, order })
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200)
+                .expect("Content-Type", /json/)
+                .expect((res) => {
+                    const feature = res.body.find(
+                        (feature) => feature.id === featureId,
+                    );
+                    expect(feature).toMatchObject({
+                        id: featureId,
+                        description: expect.any(String),
+                        order: order,
+                        createdAt: expect.any(String),
+                        updatedAt: expect.any(String),
+                        teamMemberId: expect.any(Number),
+                        category: {
+                            id: featureCategoryId,
+                            name: expect.any(String),
+                        },
+                        addedBy: {
+                            member: {
+                                id: expect.any(String),
+                                firstName: expect.any(String),
+                                lastName: expect.any(String),
+                                avatar: expect.any(String),
+                            },
+                        },
+                    });
+                });
+        });
+        it("should return 400 for a invalid featureCategoryId", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId: number = 2;
+            const featureCategoryId: number = 4;
+            const order: number = 3;
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}/reorder`)
+                .send({ featureCategoryId, order })
+                .set("Cookie", [access_token, refresh_token])
+                .expect(400)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 404 for a invalid featureId", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId: number = 999999;
+            const featureCategoryId: number = 2;
+            const order: number = 3;
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}/reorder`)
+                .send({ featureCategoryId, order })
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 401 when user is not logged in", async () => {
+            const featureId: number = 2;
+            const featureCategoryId: number = 2;
+            const order: number = 3;
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}/reorder`)
+                .send({ featureCategoryId, order })
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
         });
     });
 });
