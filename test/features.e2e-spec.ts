@@ -8,6 +8,10 @@ import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
 
+// Logged in user is dan@random.com
+// Dan is a member of teamId 1 and teamMemberId 1
+// Dan is the creator of features having featureId 1 , 2 and 3
+
 describe("Features Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
@@ -34,7 +38,7 @@ describe("Features Controller (e2e)", () => {
     describe("POST /voyages/teams/:teamId/features - [Permission: own_team] - Adds a new feature for a team given a teamId (int)", () => {
         it("should return 201 and the created feature", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
+                "dan@random.com",
                 "password",
                 app,
             );
@@ -87,7 +91,7 @@ describe("Features Controller (e2e)", () => {
         });
         it("should return 404 when feature category does not exist", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
+                "dan@random.com",
                 "password",
                 app,
             );
@@ -107,7 +111,7 @@ describe("Features Controller (e2e)", () => {
     describe("GET /voyages/teams/:teamId/features - [Permission: own_team] - Gets all features for a team given a teamId (int)", () => {
         it("should return 200 and an array of features", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
+                "dan@random.com",
                 "password",
                 app,
             );
@@ -132,7 +136,7 @@ describe("Features Controller (e2e)", () => {
         });
         it("should return 404 for invalid team id", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
+                "dan@random.com",
                 "password",
                 app,
             );
@@ -147,7 +151,7 @@ describe("Features Controller (e2e)", () => {
     describe("GET /voyages/features/feature-categories - Gets all feature categories", () => {
         it("should return 200 and an array of feature categories", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "jessica.williamson@gmail.com",
+                "dan@random.com",
                 "password",
                 app,
             );
