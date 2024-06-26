@@ -8,10 +8,9 @@ import {
     Delete,
     ParseIntPipe,
     Request,
-    HttpException,
     HttpStatus,
     NotFoundException,
-    UnauthorizedException,
+    ForbiddenException,
 } from "@nestjs/common";
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -26,6 +25,7 @@ import {
 import { Feature } from "./entities/feature.entity";
 import {
     BadRequestErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -53,7 +53,7 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not authorized to perform this action.",
+        description: "Unauthorized when user is not logged in",
         type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
@@ -90,6 +90,11 @@ export class FeaturesController {
         description: "Successfully got all feature categories.",
         isArray: true,
         type: FeatureCategoriesResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized when user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @Get("/features/feature-categories")
     findFeatureCategory() {
@@ -159,8 +164,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "user is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -194,9 +204,8 @@ export class FeaturesController {
             );
             return updatedFeature;
         } else {
-            throw new HttpException(
-                "user is unauthorized to perform this action",
-                HttpStatus.UNAUTHORIZED,
+            throw new ForbiddenException(
+                "Access denied: You do not have sufficient permissions to perform this action",
             );
         }
     }
@@ -229,7 +238,7 @@ export class FeaturesController {
     })
     @Patch("/features/:featureId/reorder")
     async updateFeatureOrderAndCategory(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
         @Body() updateOrderAndCategoryDto: UpdateFeatureOrderAndCategoryDto,
     ) {
@@ -251,8 +260,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "user is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -278,7 +292,7 @@ export class FeaturesController {
                 await this.featuresService.deleteFeature(featureId);
             return deletedFeature;
         } else {
-            throw new UnauthorizedException(
+            throw new ForbiddenException(
                 `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy?.member.id}`,
             );
         }
