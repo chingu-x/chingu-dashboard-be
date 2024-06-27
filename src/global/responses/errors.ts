@@ -96,3 +96,19 @@ export class ServerErrorResponse {
     @ApiProperty({ example: 500 })
     statusCode: number;
 }
+
+export class UnprocessableEntityErrorResponse {
+    @ApiProperty({
+        example:
+            "This endpoint can only be used in the development environment.",
+    })
+    message: string;
+
+    @ApiPropertyOptional({
+        example: "Unprocessable Entity",
+    })
+    error: string;
+
+    @ApiProperty({ example: 422 })
+    statusCode: number;
+}

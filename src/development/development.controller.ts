@@ -6,6 +6,7 @@ import { ReSeedSuccessResponse } from "./development.response";
 import {
     ServerErrorResponse,
     UnauthorizedErrorResponse,
+    UnprocessableEntityErrorResponse,
 } from "../global/responses/errors";
 
 @Controller("development")
@@ -16,7 +17,7 @@ export class DevelopmentController {
     @ApiOperation({
         summary: "Reseed the database",
         description:
-            "It will take a while, maybe minutes). Then you'll be logged out.",
+            "It will take a while, maybe minutes. Then you'll be logged out.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -27,6 +28,11 @@ export class DevelopmentController {
         status: HttpStatus.UNAUTHORIZED,
         description: "unauthorized access - not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        description: "using this endpoint in non development environment.",
+        type: UnprocessableEntityErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.INTERNAL_SERVER_ERROR,

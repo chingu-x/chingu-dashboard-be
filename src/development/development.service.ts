@@ -1,11 +1,21 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import {
+    HttpStatus,
+    Injectable,
+    InternalServerErrorException,
+    UnprocessableEntityException,
+} from "@nestjs/common";
 import { seed } from "../../prisma/seed/seed";
+import * as process from "node:process";
 
 @Injectable()
 export class DevelopmentService {
     async reseedDatabase(res) {
+        if (process.env.NODE_ENV !== "development") {
+            throw new UnprocessableEntityException(
+                "Reseed failed. This endpoint can only be used in the development environment.",
+            );
+        }
         try {
-            // TODO: add check to allow this only in development mode
             await seed();
             // logs the user out,
             // otherwise there will be errors since logged in user will have a new uuid
@@ -18,9 +28,9 @@ export class DevelopmentService {
                         "Database reseed successful. You are logged out. Please log in again.",
                 });
         } catch (e) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: `Database reseed failed: ${e.message}.`,
-            });
+            throw new InternalServerErrorException(
+                `Database reseed failed: ${e.message}.`,
+            );
         }
     }
 }
