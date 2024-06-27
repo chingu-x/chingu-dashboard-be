@@ -22,13 +22,21 @@ export class AbilitiesGuard implements CanActivate {
 
         if (isPublic) return true;
 
+        const isUnverified = this.reflector.getAllAndOverride("isUnverified", [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+
+        const { user } = context.switchToHttp().getRequest();
+
+        if (!isUnverified && user.isVerified === false) return false;
+
         const rules =
             this.reflector.getAllAndMerge<RequiredRule[]>(CHECK_ABILITY, [
                 context.getHandler(),
                 context.getClass(),
             ]) || [];
 
-        const { user } = context.switchToHttp().getRequest();
         const ability = this.caslAbilityFactory.defineAbility(user);
 
         rules.forEach((rule) =>
