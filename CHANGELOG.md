@@ -41,6 +41,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add voyages unit test, also had to update all files (seed, tests, services) to meet strict null rule due to prismaMock requirements ([#163](https://github.com/chingu-x/chingu-dashboard-be/pull/163))
 - Add e2e tests for users controller ([#165](https://github.com/chingu-x/chingu-dashboard-be/pull/165))
 - Add weekly sprint checkin forms for product owner and scrum master ([#167](https://github.com/chingu-x/chingu-dashboard-be/pull/167))
+- Add e2e test for features controller ([#168](https://github.com/chingu-x/chingu-dashboard-be/pull/168))
 
 ### Changed
 
