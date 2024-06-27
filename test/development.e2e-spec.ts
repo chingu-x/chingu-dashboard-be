@@ -12,7 +12,7 @@ describe("Development Controller (e2e)", () => {
 
     beforeAll(async () => {
         jest.resetModules();
-        // @ts-ignore
+        // @ts-expect-error: "Cannot assign to env because it is a read-only property". But you really can.
         process.env = { ...OLD_ENV };
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
@@ -24,7 +24,7 @@ describe("Development Controller (e2e)", () => {
     });
 
     afterAll(async () => {
-        // @ts-ignore
+        // @ts-expect-error: "Cannot assign to env because it is a read-only property". But you really can.
         process.env = OLD_ENV;
         await app.close();
     });

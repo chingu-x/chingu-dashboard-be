@@ -1,8 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DevelopmentController } from "./development.controller";
 import { DevelopmentService } from "./development.service";
-import * as process from "node:process";
-import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
 
 describe("DevelopmentController", () => {
