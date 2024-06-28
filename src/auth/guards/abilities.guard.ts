@@ -22,14 +22,14 @@ export class AbilitiesGuard implements CanActivate {
 
         if (isPublic) return true;
 
-        const isUnverified = this.reflector.getAllAndOverride("isUnverified", [
-            context.getHandler(),
-            context.getClass(),
-        ]);
+        const unverifiedRoute = this.reflector.getAllAndOverride(
+            "unverifiedRoute",
+            [context.getHandler(), context.getClass()],
+        );
 
         const { user } = context.switchToHttp().getRequest();
 
-        if (!isUnverified && user.isVerified === false) return false;
+        if (!unverifiedRoute && user.isVerified === false) return false;
 
         const rules =
             this.reflector.getAllAndMerge<RequiredRule[]>(CHECK_ABILITY, [
