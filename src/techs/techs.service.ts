@@ -11,6 +11,7 @@ import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest } from "src/global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "src/ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -61,9 +62,10 @@ export class TechsService {
         return voyageMember ? voyageMember.id : null;
     };
 
-    getAllTechItemsByTeamId = async (teamId: number) => {
-        this.validateTeamId(teamId);
+    getAllTechItemsByTeamId = async (teamId: number, req: CustomRequest) => {
+        await this.validateTeamId(teamId);
 
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
         return this.prisma.techStackCategory.findMany({
             select: {
                 id: true,
@@ -141,7 +143,7 @@ export class TechsService {
     }
 
     async addNewTeamTech(
-        req,
+        req: CustomRequest,
         teamId: number,
         createTechVoteDto: CreateTeamTechDto,
     ) {

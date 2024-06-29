@@ -29,7 +29,9 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "src/global/types/CustomRequest";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -52,8 +54,12 @@ export class TechsController {
         example: 1,
     })
     @Get("teams/:teamId/techs")
-    getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.techsService.getAllTechItemsByTeamId(teamId);
+    @CheckAbilities({ action: Action.Read, subject: "TeamTechStackItem" })
+    getAllTechItemsByTeamId(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.techsService.getAllTechItemsByTeamId(teamId, req);
     }
 
     @ApiOperation({
@@ -88,6 +94,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
+    @CheckAbilities({ action: Action.Read, subject: "TeamTechStackItem" })
     @Post("teams/:teamId/techs")
     addNewTeamTech(
         @Request() req: CustomRequest,
