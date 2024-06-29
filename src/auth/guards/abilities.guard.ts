@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+    CanActivate,
+    ExecutionContext,
+    Injectable,
+    ForbiddenException,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AbilityFactory } from "../../ability/ability.factory/ability.factory";
 import {
@@ -29,7 +34,9 @@ export class AbilitiesGuard implements CanActivate {
 
         const { user } = context.switchToHttp().getRequest();
 
-        if (!unverifiedRoute && user.isVerified === false) return false;
+        if (!unverifiedRoute && user.isVerified === false) {
+            throw new ForbiddenException("Email/account is not verified");
+        }
 
         const rules =
             this.reflector.getAllAndMerge<RequiredRule[]>(CHECK_ABILITY, [
