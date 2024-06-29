@@ -32,6 +32,7 @@ import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -94,12 +95,13 @@ export class TechsController {
         required: true,
         example: 2,
     })
-    @CheckAbilities({ action: Action.Read, subject: "TeamTechStackItem" })
+    @CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
     @Post("teams/:teamId/techs")
     addNewTeamTech(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
+        @Body(ValidationPipe, VoyageTeamMemberValidationPipe)
+        createTeamTechDto: CreateTeamTechDto,
     ) {
         return this.techsService.addNewTeamTech(req, teamId, createTeamTechDto);
     }

@@ -144,7 +144,7 @@ describe("Techs Controller (e2e)", () => {
 
         it("should return 400 if invalid team member id provided", async () => {
             const teamId: number = 2;
-            const teamMemberId: number = 4;
+            const teamMemberId: number = 5;
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
