@@ -42,6 +42,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for users controller ([#165](https://github.com/chingu-x/chingu-dashboard-be/pull/165))
 - Add e2e test for features controller ([#168](https://github.com/chingu-x/chingu-dashboard-be/pull/168))
 
+
+- Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))

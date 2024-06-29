@@ -4,7 +4,7 @@ import * as request from "supertest";
 import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
-import { getUseridFromEmail, loginAndGetTokens } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
 
@@ -13,7 +13,6 @@ import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidd
 describe("Unverified user routes (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let userId: string | undefined;
 
     const userEmail: string = "yoshi@gmail.com";
 
