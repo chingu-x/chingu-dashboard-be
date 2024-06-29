@@ -8,7 +8,7 @@ export const populateMeetings = async () => {
     const meeting1 = await prisma.teamMeeting.create({
         data: {
             voyageTeamId: voyageTeams[0].id,
-            sprintId: await getSprintId(voyageTeams[0].voyageId, 1),
+            sprintId: (await getSprintId(voyageTeams[0].voyageId, 1)) as number,
             title: "First sprint kickoff meeting",
             description:
                 "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
@@ -77,12 +77,12 @@ export const populateMeetings = async () => {
                             data: [
                                 {
                                     questionId:
-                                        sprintPlanningForm.questions[0].id,
+                                        sprintPlanningForm!.questions[0].id,
                                     text: "There are a lot of goals we want to achieve",
                                 },
                                 {
                                     questionId:
-                                        sprintPlanningForm.questions[1].id,
+                                        sprintPlanningForm!.questions[1].id,
                                     text: "Deploy the app",
                                 },
                             ],
@@ -118,7 +118,7 @@ export const populateMeetings = async () => {
     await prisma.teamMeeting.create({
         data: {
             voyageTeamId: voyageTeams[0].id,
-            sprintId: await getSprintId(voyageTeams[0].voyageId, 2),
+            sprintId: (await getSprintId(voyageTeams[0].voyageId, 2)) as number,
             title: "Second sprint meeting",
             description:
                 "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",
@@ -133,7 +133,7 @@ export const populateMeetings = async () => {
     await prisma.teamMeeting.create({
         data: {
             voyageTeamId: voyageTeams[0].id,
-            sprintId: await getSprintId(voyageTeams[0].voyageId, 3),
+            sprintId: (await getSprintId(voyageTeams[0].voyageId, 3)) as number,
             title: "Third sprint meeting",
             description:
                 "Lorem ipsum dolor sit amet consectetur adipiscing elit magna praesent, nunc metus egestas nam libero quisque senectus facilisis, dis nec gravida sodales sagittis duis risus parturient. Eu scelerisque gravida posuere blandit interdum iaculis venenatis rhoncus taciti, tempus nullam cras eros quisque himenaeos condimentum auctor cursus, leo neque montes mollis litora imperdiet luctus purus.",

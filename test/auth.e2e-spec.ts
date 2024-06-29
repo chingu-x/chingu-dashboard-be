@@ -33,7 +33,7 @@ const getUserIdByEmail = async (email: string, prisma: PrismaService) => {
         },
     });
 
-    return user.id;
+    return user?.id;
 };
 
 const requestAndGetResetToken = async (
@@ -52,7 +52,7 @@ const requestAndGetResetToken = async (
             resetToken: true,
         },
     });
-    return userInDb.resetToken.token;
+    return userInDb?.resetToken?.token;
 };
 
 describe("AuthController e2e Tests", () => {
@@ -230,7 +230,7 @@ describe("AuthController e2e Tests", () => {
                 .post(verifyUrl)
                 .set("Cookie", access_token)
                 .send({
-                    token: userInDb.emailVerificationToken.token,
+                    token: userInDb?.emailVerificationToken?.token,
                 })
                 .expect(200);
 
@@ -244,8 +244,8 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify.emailVerified).toBe(true);
-            expect(userAfterVerify.emailVerificationToken).toBe(null);
+            expect(userAfterVerify?.emailVerified).toBe(true);
+            expect(userAfterVerify?.emailVerificationToken).toBe(null);
         });
 
         it("should return 401 if token mismatch, emailVerified = false, token still in database", async () => {
@@ -280,8 +280,8 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify.emailVerified).toBe(false);
-            expect(userAfterVerify.emailVerificationToken).toBeDefined();
+            expect(userAfterVerify?.emailVerified).toBe(false);
+            expect(userAfterVerify?.emailVerificationToken).toBeDefined();
         });
 
         it("should return 401 if the user is not logged in", async () => {
@@ -451,7 +451,7 @@ describe("AuthController e2e Tests", () => {
                         refreshToken: true,
                     },
                 });
-                expect(updatedUser.refreshToken).toEqual([]);
+                expect(updatedUser?.refreshToken).toEqual([]);
             });
         });
 
@@ -495,7 +495,7 @@ describe("AuthController e2e Tests", () => {
 
             const nonAdmin = await getNonAdminUser();
             const { access_token, refresh_token } = await loginAndGetTokens(
-                nonAdmin.email,
+                nonAdmin!.email,
                 "password",
                 app,
             );
@@ -581,7 +581,7 @@ describe("AuthController e2e Tests", () => {
             });
 
             expect(
-                await comparePassword(newPassword, userInDb.password),
+                await comparePassword(newPassword, userInDb?.password),
             ).toBeTruthy();
         });
         it("should return 401 if token is expired", async () => {

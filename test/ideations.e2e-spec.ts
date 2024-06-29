@@ -302,10 +302,11 @@ describe("IdeationsController (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toMatchObject({
                         ...data,
-                        id: ideationToUpdate.id,
-                        voyageTeamMemberId: ideationToUpdate.voyageTeamMemberId,
-                        description: ideationToUpdate.description,
-                        vision: ideationToUpdate.vision,
+                        id: ideationToUpdate?.id,
+                        voyageTeamMemberId:
+                            ideationToUpdate?.voyageTeamMemberId,
+                        description: ideationToUpdate?.description,
+                        vision: ideationToUpdate?.vision,
                         createdAt: expect.any(String),
                         updatedAt: expect.any(String),
                     });

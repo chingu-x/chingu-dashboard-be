@@ -53,7 +53,7 @@ export class SprintsService {
     findSprintIdBySprintNumber = async (
         teamId: number,
         sprintNumber: number,
-    ): Promise<number> | null => {
+    ): Promise<number | undefined> => {
         const sprintsByTeamId = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -71,6 +71,7 @@ export class SprintsService {
                 },
             },
         });
+
         return sprintsByTeamId?.voyage?.sprints?.filter(
             (s) => s.number === sprintNumber,
         )[0]?.id;
@@ -136,9 +137,7 @@ export class SprintsService {
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
-        //copy teamVoyage endDate to voyage object
-        teamSprintDates.voyage.endDate = teamSprintDates.endDate;
-        delete teamSprintDates.endDate;
+
         return teamSprintDates.voyage;
     }
 
@@ -472,7 +471,7 @@ export class SprintsService {
                         responses: {
                             where: {
                                 responseGroupId:
-                                    formResponseMeeting.responseGroupId,
+                                    formResponseMeeting?.responseGroupId,
                             },
                             select: {
                                 optionChoice: true,
