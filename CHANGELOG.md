@@ -42,6 +42,8 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add e2e tests for users controller ([#165](https://github.com/chingu-x/chingu-dashboard-be/pull/165))
 - Add weekly sprint checkin forms for product owner and scrum master ([#167](https://github.com/chingu-x/chingu-dashboard-be/pull/167))
 - Add e2e test for features controller ([#168](https://github.com/chingu-x/chingu-dashboard-be/pull/168))
+- Add endpoint to reseed the database ([#170](https://github.com/chingu-x/chingu-dashboard-be/pull/170))
+
 
 ### Changed
 
