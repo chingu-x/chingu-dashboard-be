@@ -150,13 +150,7 @@ export class TechsService {
         //check for valid teamId
         await this.validateTeamId(teamId);
 
-        // To Check if the voyageTeamMemberId in request body is in the voyageTeam
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (
-            !voyageMemberId ||
-            voyageMemberId !== createTechVoteDto.voyageTeamMemberId
-        )
-            throw new BadRequestException("Invalid User or Team Id");
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
@@ -204,15 +198,7 @@ export class TechsService {
                 id: teamTechItemId,
             },
             select: {
-                addedBy: {
-                    select: {
-                        member: {
-                            select: {
-                                id: true,
-                            },
-                        },
-                    },
-                },
+                voyageTeamId: true,
                 teamTechStackItemVotes: {
                     select: {
                         votedBy: {
@@ -233,6 +219,7 @@ export class TechsService {
                 `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
             );
 
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
         // check if the tech stack item has votes other than the user created it
         if (teamTechItem.teamTechStackItemVotes.length > 1) {
             throw new ConflictException(

@@ -147,6 +147,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("techs/:teamTechItemId")
     updateTeamTech(
         @Request() req: CustomRequest,
