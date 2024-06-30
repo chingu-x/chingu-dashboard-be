@@ -45,6 +45,9 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add endpoint to reseed the database ([#170](https://github.com/chingu-x/chingu-dashboard-be/pull/170))
 
 
+
+- Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))

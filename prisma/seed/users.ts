@@ -166,5 +166,26 @@ export const populateUsers = async () => {
         },
     });
 
+    user = await prisma.user.create({
+        data: {
+            email: "yoshi@gmail.com",
+            password: await hashPassword("password"),
+            emailVerified: false,
+            firstName: "Yoshi",
+            lastName: "Amano",
+            githubId: "yoshi-github",
+            discordId: "yoshi-discord",
+            twitterId: "yoshi-twitter",
+            linkedinId: "yoshi-linkedin",
+            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
+            timezone: "Australia/Melbourne",
+            countryCode: "AU",
+            gender: {
+                connect: {
+                    abbreviation: "M",
+                },
+            },
+        },
+    });
     console.log("Users Populated");
 };

@@ -35,6 +35,7 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
+import { Unverified } from "../global/decorators/unverified.decorator";
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
@@ -89,6 +90,7 @@ export class AuthController {
         type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Unverified()
     @Post("resend-email")
     async resendVerificationEmail(@Body() resendEmailDto: ResendEmailDto) {
         return this.authService.resendEmail(resendEmailDto);
@@ -113,6 +115,7 @@ export class AuthController {
         type: UnauthorizedErrorResponse,
     })
     @HttpCode(HttpStatus.OK)
+    @Unverified()
     @Post("verify-email")
     async verifyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
         return this.authService.verifyEmail(verifyEmailDto);
@@ -273,6 +276,7 @@ export class AuthController {
         type: UnauthorizedErrorResponse,
     })
     @UseGuards(JwtAuthGuard)
+    @Unverified()
     @Post("logout")
     async logout(
         @Request() req: CustomRequest,

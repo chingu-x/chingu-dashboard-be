@@ -197,6 +197,10 @@ Marks the route as public, bypassing the JWT auth guard (`jwtAuthGuard`)
 Examples: <br/>
 `@Public()` 
 
+### @Unverified()
+
+Marks the route as accessible to users that have not verified thier account by email
+
 ### @CheckAbilities()
 This accepts 2 arguments - 
 <br/>

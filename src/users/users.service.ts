@@ -55,6 +55,7 @@ export class UsersService {
                             voyageTeamId: true,
                         },
                     },
+                    emailVerified: true,
                 },
             }),
         );
