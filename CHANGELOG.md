@@ -40,7 +40,10 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add swagger access info, add forms authorization and e2e tests ([#160](https://github.com/chingu-x/chingu-dashboard-be/pull/160))
 - Add voyages unit test, also had to update all files (seed, tests, services) to meet strict null rule due to prismaMock requirements ([#163](https://github.com/chingu-x/chingu-dashboard-be/pull/163))
 - Add e2e tests for users controller ([#165](https://github.com/chingu-x/chingu-dashboard-be/pull/165))
+- Add weekly sprint checkin forms for product owner and scrum master ([#167](https://github.com/chingu-x/chingu-dashboard-be/pull/167))
 - Add e2e test for features controller ([#168](https://github.com/chingu-x/chingu-dashboard-be/pull/168))
+- Add endpoint to reseed the database ([#170](https://github.com/chingu-x/chingu-dashboard-be/pull/170))
+
 
 
 - Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))

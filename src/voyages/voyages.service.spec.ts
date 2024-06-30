@@ -49,7 +49,6 @@ describe("VoyagesService", () => {
                     provide: PrismaService,
                     useValue: prismaMock,
                 },
-                GlobalService,
                 {
                     provide: GlobalService,
                     useValue: mockGlobalService,
