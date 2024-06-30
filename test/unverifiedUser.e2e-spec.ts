@@ -9,6 +9,9 @@ import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
 
 //Logged in user is Yoshi Amano
+//Tests are for routes that are accessible to unverified users
+// - route /auth/resend-email is not tested, since this case is already covered in existing e2e test
+// - route /features/feature-categories is included to test access forbidden response
 
 describe("Unverified user routes (e2e)", () => {
     let app: INestApplication;
@@ -36,7 +39,7 @@ describe("Unverified user routes (e2e)", () => {
     });
 
     describe("GET /users/me - get logged in users own details", () => {
-        it("should return 200 and ..., when logged in as unverified user.", async () => {
+        it("should return 200 and array of user's data when logged in as unverified user", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 userEmail,
                 "password",
@@ -54,7 +57,7 @@ describe("Unverified user routes (e2e)", () => {
     });
 
     describe("POST /auth/logout - logout current user", () => {
-        it("should return 200 when logged out unverified user.", async () => {
+        it("should return 200 when logged out unverified user", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 userEmail,
                 "password",
@@ -87,6 +90,20 @@ describe("Unverified user routes (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toBeObject;
                 });
+        });
+    });
+
+    describe("GET /features/feature-categories - get features", () => {
+        it("should return 403 when accessed by unverified user", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                userEmail,
+                "password",
+                app,
+            );
+            await request(app.getHttpServer())
+                .get("/voyages/features/feature-categories")
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 });
