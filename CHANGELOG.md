@@ -70,6 +70,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Update seed data to include voyage 49-51 [#152](https://github.com/chingu-x/chingu-dashboard-be/pull/152)
 - Updated Sprints routes with 401 response when not logged in [#157](https://github.com/chingu-x/chingu-dashboard-be/pull/157)
 - Updated DELETE ideation-vote service to also delete ideation when no votes remain [#161](https://github.com/chingu-x/chingu-dashboard-be/pull/161)
+- Refactored the prisma models to be grouped by domain type [#172](https://github.com/chingu-x/chingu-dashboard-be/pull/172)
 
 
 
