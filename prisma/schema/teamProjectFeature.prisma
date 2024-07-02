@@ -1,0 +1,23 @@
+model FeatureCategory {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  projectFeatures ProjectFeature[]
+}
+
+model ProjectFeature {
+  id                Int               @id @default(autoincrement())
+  addedBy           VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: SetNull)
+  teamMemberId      Int?
+  category          FeatureCategory?  @relation(fields: [featureCategoryId], references: [id], onDelete: SetNull)
+  featureCategoryId Int?
+  description       String
+  order             Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}
