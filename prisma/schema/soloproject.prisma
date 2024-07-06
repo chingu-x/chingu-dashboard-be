@@ -1,0 +1,29 @@
+// === Solo Projects ===
+model SoloProjectStatus {
+  id     Int    @id @default(autoincrement())
+  status String @unique
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  soloProjects SoloProject[]
+}
+
+model SoloProject {
+  id                Int                @id @default(autoincrement())
+  userId            String             @db.Uuid()
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluatorUserId   String?            @db.Uuid()
+  evaluator         User?              @relation(fields: [evaluatorUserId], references: [id], name: "evaluators", onDelete: SetNull)
+  evaluatorFeedback String?
+  adminComments     String?
+  statusId          Int?
+  status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  formId            Int?
+  form              Form?              @relation(fields: [formId], references: [id], onDelete: SetNull)
+  responseGroupId   Int?               @unique
+  responseGroup     ResponseGroup?     @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}
