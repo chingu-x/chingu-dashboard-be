@@ -77,6 +77,7 @@ describe("Techs Controller (e2e)", () => {
                             {
                                 id: expect.any(Number),
                                 name: expect.any(String),
+                                isSelected: expect.any(Boolean),
                                 teamTechStackItemVotes: expect.any(Array),
                             },
                         ]),
