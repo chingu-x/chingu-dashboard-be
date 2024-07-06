@@ -103,6 +103,38 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
+        it("should return 404 if invalid teamId provided", async () => {
+            const teamId: number = 9999999;
+
+            return request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", accessToken)
+                .expect(404)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 401 unauthorized if not logged in", async () => {
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/techs`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 403 if a user of other team tries to access tech stack items", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", access_token)
+                .expect(403)
+                .expect("Content-Type", /json/);
+        });
     });
     describe("POST voyages/teams/:teamId/techs - add new tech item", () => {
         it("should return 201 if new tech item successfully added", async () => {
@@ -179,6 +211,25 @@ describe("Techs Controller (e2e)", () => {
                         }),
                     );
                 });
+        });
+        it("should return 403 if a user of other team tries to add a tech stack item", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const teamId: number = 2;
+            const teamMemberId: number = 9;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", access_token)
+                .send({
+                    techName: newTechName,
+                    techCategoryId: 1,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(403);
         });
 
         it("should return 404 if invalid teamId provided", async () => {
@@ -312,6 +363,22 @@ describe("Techs Controller (e2e)", () => {
                 })
                 .expect(403);
         });
+        it("should return 403 if a user of other team tries to update a tech stack item", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/techs/${techId}`)
+                .set("Cookie", access_token)
+                .send({
+                    techName: updatedTechName,
+                })
+                .expect(403);
+        });
         it("should return 401 unauthorized if not logged in", async () => {
             const techId: number = 5;
 
@@ -374,6 +441,19 @@ describe("Techs Controller (e2e)", () => {
                         }),
                     );
                 });
+        });
+        it("should return 403 if a user of other team tries to delete a tech stack item", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}`)
+                .set("Cookie", access_token)
+                .expect(403);
         });
         it("should return 401 if user is not logged in", async () => {
             const techId: number = 5;

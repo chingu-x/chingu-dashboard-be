@@ -10,8 +10,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "src/global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "src/ability/conditions/voyage-teams.ability";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -220,6 +220,7 @@ export class TechsService {
             );
 
         manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
         // check if the tech stack item has votes other than the user created it
         if (teamTechItem.teamTechStackItemVotes.length > 1) {
             throw new ConflictException(
@@ -290,15 +291,7 @@ export class TechsService {
                         id: teamTechItemId,
                     },
                     select: {
-                        addedBy: {
-                            select: {
-                                member: {
-                                    select: {
-                                        id: true,
-                                    },
-                                },
-                            },
-                        },
+                        voyageTeamId: true,
                         teamTechStackItemVotes: {
                             select: {
                                 votedBy: {
@@ -320,6 +313,8 @@ export class TechsService {
                 throw new NotFoundException(
                     `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
                 );
+
+            manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
 
             // check if the tech stack item has votes other than the user created it
             if (teamTechItem.teamTechStackItemVotes.length > 1) {
@@ -351,7 +346,7 @@ export class TechsService {
         }
     }
 
-    async addExistingTechVote(req, teamTechItemId: number) {
+    async addExistingTechVote(req: CustomRequest, teamTechItemId: number) {
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
             where: {

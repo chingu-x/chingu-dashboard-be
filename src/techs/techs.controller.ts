@@ -197,6 +197,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
     @Delete("techs/:teamTechItemId")
     deleteTeamTech(
         @Request() req: CustomRequest,
