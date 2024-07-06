@@ -63,10 +63,6 @@ describe("VoyagesController", () => {
         expect(controller).toBeDefined();
     });
 
-    it("voyages service should be defined", () => {
-        expect(controller.submitVoyageProject).toBeDefined();
-    });
-
     describe("createVoyageProjectSubmission", () => {
         it("should be defined", () => {
             expect(controller.submitVoyageProject).toBeDefined();

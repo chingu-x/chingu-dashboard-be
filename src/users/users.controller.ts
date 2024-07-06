@@ -20,6 +20,7 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
+import { Unverified } from "../global/decorators/unverified.decorator";
 import { isUUID } from "class-validator";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
@@ -76,6 +77,7 @@ export class UsersController {
         description: "User not found",
         type: NotFoundErrorResponse,
     })
+    @Unverified()
     @Get("me")
     getProfile(@Request() req: CustomRequest) {
         return this.usersService.getPrivateUserProfile(req.user.userId);

@@ -1,4 +1,6 @@
 import { populateCheckinForm } from "./checkinform";
+import { populateCheckinFormSM } from "./checkinformSM";
+import { populateCheckinFormPO } from "./checkinformPO";
 import { populateSoloProjectForm } from "./solo-project";
 import { populateVoyageApplicationForm } from "./voyage-app";
 import { populateVoyageSubmissionForm } from "./voyage-project-submission";
@@ -144,6 +146,8 @@ export const populateFormsAndResponses = async () => {
 
     // Sprints checkin form
     await populateCheckinForm();
+    await populateCheckinFormPO();
+    await populateCheckinFormSM();
     await populateCheckinFormResponse();
     await populateSoloProjectForm();
     await populateVoyageApplicationForm();

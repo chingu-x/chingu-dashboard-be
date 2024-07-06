@@ -1,0 +1,122 @@
+// === Voyage - Schedule, sprint dates and Teams ===
+
+model Voyage {
+  id                   Int           @id @default(autoincrement())
+  number               String        @unique
+  status               VoyageStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  statusId             Int?
+  startDate            DateTime      @db.Timestamptz()
+  endDate              DateTime      @db.Timestamptz()
+  soloProjectDeadline  DateTime      @db.Timestamptz()
+  certificateIssueDate DateTime      @db.Timestamptz()
+  showcasePublishDate  DateTime?     @db.Timestamptz()
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  voyageTeams        VoyageTeam[]
+  sprints            Sprint[]
+  voyageApplications VoyageApplication[]
+}
+
+model Sprint {
+  id        Int      @id @default(autoincrement())
+  voyageId  Int
+  voyage    Voyage   @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  number    Int
+  startDate DateTime @db.Timestamptz()
+  endDate   DateTime @db.Timestamptz()
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  teamMeetings TeamMeeting[]
+  checkinForms FormResponseCheckin[]
+
+  @@unique(fields: [voyageId, number], name: "voyageSprintNumber")
+}
+
+model VoyageStatus {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  voyageTeams       VoyageTeam[]
+  voyageTeamMembers VoyageTeamMember[]
+  Voyage            Voyage[]
+}
+
+model Tier {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  voyageTeams VoyageTeam[]
+}
+
+model VoyageRole {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  voyageTeamMembers VoyageTeamMember[]
+}
+
+model VoyageTeam {
+  id            Int           @id @default(autoincrement())
+  voyage        Voyage?       @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageId      Int?
+  name          String        @unique
+  status        VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId      Int?
+  repoUrl       String
+  repoUrlBE     String?
+  deployedUrl   String?
+  deployedUrlBE String?
+  tier          Tier?         @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  tierId        Int?
+  endDate       DateTime
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  voyageTeamMembers         VoyageTeamMember[]
+  teamTechStackItems        TeamTechStackItem[]
+  teamMeetings              TeamMeeting[]
+  FormResponseVoyageProject FormResponseVoyageProject?
+}
+
+model VoyageTeamMember {
+  id           Int           @id @default(autoincrement())
+  member       User          @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  userId       String        @db.Uuid
+  voyageTeam   VoyageTeam    @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamId Int
+  voyageRole   VoyageRole?   @relation(fields: [voyageRoleId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageRoleId Int?
+  status       VoyageStatus? @relation(fields: [statusId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  statusId     Int?
+  hrPerSprint  Int
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  teamTechStackItemVotes TeamTechStackItemVote[]
+  projectIdeas           ProjectIdea[]
+  projectIdeaVotes       ProjectIdeaVote[]
+  teamResources          TeamResource[]
+  projectFeatures        ProjectFeature[]
+  checkinForms           FormResponseCheckin[]
+  TeamTechStackItem      TeamTechStackItem[]
+
+  @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
+}

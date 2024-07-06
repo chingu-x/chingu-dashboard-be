@@ -9,6 +9,7 @@ export type UserReq = {
     userId: string;
     email: string;
     roles: string[];
+    isVerified: boolean;
     voyageTeams: VoyageTeam[];
 };
 

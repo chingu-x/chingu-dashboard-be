@@ -8,7 +8,6 @@ import {
     Delete,
     ParseIntPipe,
     Request,
-    HttpException,
     HttpStatus,
     NotFoundException,
     ForbiddenException,
@@ -205,9 +204,8 @@ export class FeaturesController {
             );
             return updatedFeature;
         } else {
-            throw new HttpException(
-                "user is unauthorized to perform this action",
-                HttpStatus.FORBIDDEN,
+            throw new ForbiddenException(
+                "Access denied: You do not have sufficient permissions to perform this action",
             );
         }
     }
