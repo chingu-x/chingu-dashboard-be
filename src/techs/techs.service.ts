@@ -31,37 +31,6 @@ export class TechsService {
         }
     };
 
-    validTeamMember = (req: CustomRequest, teamId: number) => {
-        // teams of which the logged in user is a member
-        const teams = req.user.voyageTeams;
-
-        // check if the teamId is in the teams array
-        const voyageMember = teams.filter((team) => team.teamId === teamId);
-        if (voyageMember.length === 0) {
-            throw new BadRequestException(
-                "User is not in the specified team, check voyageTeamId or voyageTeamMemberId is correct.",
-            );
-        }
-
-        return voyageMember[0].memberId;
-    };
-
-    findVoyageMemberId = async (
-        req,
-        teamId: number,
-    ): Promise<number | null> => {
-        const uuid = req.user.userId;
-        const voyageMember = await this.prisma.voyageTeamMember.findUnique({
-            where: {
-                userVoyageId: {
-                    userId: uuid,
-                    voyageTeamId: teamId,
-                },
-            },
-        });
-        return voyageMember ? voyageMember.id : null;
-    };
-
     getAllTechItemsByTeamId = async (teamId: number, req: CustomRequest) => {
         await this.validateTeamId(teamId);
 
@@ -101,10 +70,16 @@ export class TechsService {
     };
 
     async updateTechStackSelections(
-        req,
+        req: CustomRequest,
         teamId: number,
         updateTechSelectionsDto: UpdateTechSelectionsDto,
     ) {
+        //check for valid teamId
+        await this.validateTeamId(teamId);
+
+        //check if user is a member of the team
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
         const categories = updateTechSelectionsDto.categories;
 
         //count selections in categories for exceeding MAX_SELECT_COUNT
@@ -118,10 +93,6 @@ export class TechsService {
                     `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
                 );
         });
-
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (!voyageMemberId)
-            throw new BadRequestException("Invalid User or Team Id");
 
         //extract techs to an array for .map
         const techsArray: any[] = [];
@@ -355,14 +326,13 @@ export class TechsService {
         });
 
         if (!teamTechItem)
-            throw new BadRequestException("Team Tech Item not found");
+            throw new NotFoundException("Team Tech Item not found");
 
-        // check if the user is a member of the team
-        // Note: This can be removed after new authorization is implemented
-        const voyageMemberId = this.validTeamMember(
-            req,
-            teamTechItem.voyageTeamId,
-        );
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
+        const voyageMemberId = req.user.voyageTeams.find(
+            (vt) => vt.teamId === teamTechItem.voyageTeamId,
+        )!.memberId;
 
         try {
             const teamMemberTechVote =
@@ -399,14 +369,13 @@ export class TechsService {
         });
 
         if (!teamTechItem)
-            throw new BadRequestException("Team Tech Item not found");
+            throw new NotFoundException("Team Tech Item not found");
 
-        // check if the user is a member of the team
-        // Note: This can be removed after new authorization is implemented
-        const voyageMemberId = this.validTeamMember(
-            req,
-            teamTechItem.voyageTeamId,
-        );
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
+        const voyageMemberId = req.user.voyageTeams.find(
+            (vt) => vt.teamId === teamTechItem.voyageTeamId,
+        )!.memberId;
 
         try {
             await this.prisma.teamTechStackItemVote.delete({

@@ -515,6 +515,30 @@ describe("Techs Controller (e2e)", () => {
                 });
         });
 
+        it("should return 404 if tech item to vote for does not exist", async () => {
+            const techId: number = 9999999;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
+                .expect(404)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 403 if a user of other team tries to vote for a tech stack item", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", access_token)
+                .expect(403)
+                .expect("Content-Type", /json/);
+        });
+
         it("should return 409 if user vote for tech already exists", async () => {
             const techId: number = 6;
 
@@ -608,6 +632,29 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
+        it("should return 404 if tech item to vote for does not exist", async () => {
+            const techId: number = 9999999;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", accessToken)
+                .expect(404)
+                .expect("Content-Type", /json/);
+        });
+        it("should return 403 if a user of other team tries to vote for a tech stack item", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const techId: number = 1;
+
+            return request(app.getHttpServer())
+                .delete(`/voyages/techs/${techId}/vote`)
+                .set("Cookie", access_token)
+                .expect(403)
+                .expect("Content-Type", /json/);
+        });
 
         it("should return 404 if vote to delete does not exist", async () => {
             const techId: number = 6;
@@ -698,8 +745,8 @@ describe("Techs Controller (e2e)", () => {
                 .expect(400);
         });
 
-        it("should return 400 invalid team id provided", async () => {
-            const teamId: number = 3;
+        it("should return 404 invalid team id provided", async () => {
+            const teamId: number = 999999;
 
             return request(app.getHttpServer())
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
@@ -717,7 +764,34 @@ describe("Techs Controller (e2e)", () => {
                         },
                     ],
                 })
-                .expect(400);
+                .expect(404);
+        });
+        it("should return 403 if a user does not belong to the same team", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const teamId: number = 2;
+
+            return request(app.getHttpServer())
+                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .set("Cookie", access_token)
+                .send({
+                    categories: [
+                        {
+                            categoryId: 1,
+                            techs: [
+                                {
+                                    techId: 1,
+                                    isSelected: true,
+                                },
+                            ],
+                        },
+                    ],
+                })
+                .expect(403);
         });
 
         it("should return 401 unauthorized if not logged in", async () => {

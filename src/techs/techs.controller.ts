@@ -238,6 +238,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
+    @CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
     @Post("techs/:teamTechItemId/vote")
     addExistingTechVote(
         @Request() req: CustomRequest,
@@ -277,6 +278,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
     @Delete("techs/:teamTechItemId/vote")
     removeVote(
         @Request() req: CustomRequest,
@@ -313,6 +315,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
+    @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("teams/:teamId/techs/selections")
     updateTechStackSelections(
         @Request() req,
