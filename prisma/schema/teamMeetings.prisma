@@ -1,0 +1,32 @@
+// === Voyage Team Meetings ===
+
+model TeamMeeting {
+  id           Int        @id @default(autoincrement())
+  sprintId     Int
+  sprint       Sprint     @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  voyageTeamId Int
+  voyageTeam   VoyageTeam @relation(fields: [voyageTeamId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  dateTime     DateTime?
+  meetingLink  String?
+  notes        String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  agendas             Agenda[]
+  formResponseMeeting FormResponseMeeting[]
+}
+
+model Agenda {
+  id            Int         @id @default(autoincrement())
+  teamMeetingId Int
+  teamMeeting   TeamMeeting @relation(fields: [teamMeetingId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  status        Boolean
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}

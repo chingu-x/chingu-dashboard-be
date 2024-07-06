@@ -1,0 +1,44 @@
+// === Voyage - Tech stack ===
+
+model TechStackCategory {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  teamTechStackItems TeamTechStackItem[]
+}
+
+model TeamTechStackItem {
+  id                 Int                @id @default(autoincrement())
+  name               String             @db.Citext
+  category           TechStackCategory? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  categoryId         Int?
+  voyageTeam         VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamId       Int
+  isSelected         Boolean            @default(false)
+  addedBy            VoyageTeamMember?  @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageTeamMemberId Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  teamTechStackItemVotes TeamTechStackItemVote[]
+
+  @@unique(fields: [name, voyageTeamId, categoryId], name: "teamTechUniqueKey")
+}
+
+model TeamTechStackItemVote {
+  id           Int               @id @default(autoincrement())
+  teamTech     TeamTechStackItem @relation(fields: [teamTechId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  teamTechId   Int
+  votedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  teamMemberId Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  @@unique(fields: [teamTechId, teamMemberId], name: "userTeamStackVote")
+}
