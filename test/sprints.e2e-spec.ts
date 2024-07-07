@@ -1245,22 +1245,7 @@ describe("Sprints Controller (e2e)", () => {
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.arrayContaining([
-                            expect.objectContaining({
-                                id: expect.any(Number),
-                                createdAt: expect.any(String),
-                                updatedAt: expect.any(String),
-                                adminComments: expect.toBeOneOf([
-                                    null,
-                                    expect.any(String),
-                                ]),
-                                feedbackSent: expect.any(Boolean),
-                                responseGroupId: expect.any(Number),
-                                sprintId: expect.any(Number),
-                                voyageTeamMember: expect.objectContaining({
-                                    voyageTeamId: expect.any(Number),
-                                }),
-                                voyageTeamMemberId: expect.any(Number),
-                            }),
+                            expect.objectContaining(formResponseCheckinShape),
                         ]),
                     );
                 });
