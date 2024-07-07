@@ -48,6 +48,8 @@ Another example [here](https://co-pilot.dev/changelog)
 
 - Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))
 
+- Add CASL permissions for Tech endpoint ([#172](https://github.com/chingu-x/chingu-dashboard-be/pull/172))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
