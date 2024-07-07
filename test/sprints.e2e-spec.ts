@@ -1204,34 +1204,19 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
-            const key = "sprintNumber";
-            const val = 1;
+            const key = ["sprintNumber", "voyageNumber"];
+            const val = [1, "46"];
 
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
-                .query({ [key]: val })
+                .query({ [key[0]]: val[0], [key[1]]: val[1] })
                 .set("Cookie", accessToken)
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
                     expect(res.body).toEqual(
                         expect.arrayContaining([
-                            expect.objectContaining({
-                                id: expect.any(Number),
-                                createdAt: expect.any(String),
-                                updatedAt: expect.any(String),
-                                adminComments: expect.toBeOneOf([
-                                    null,
-                                    expect.any(String),
-                                ]),
-                                feedbackSent: expect.any(Boolean),
-                                responseGroupId: expect.any(Number),
-                                sprintId: expect.any(Number),
-                                voyageTeamMember: expect.objectContaining({
-                                    voyageTeamId: expect.any(Number),
-                                }),
-                                voyageTeamMemberId: expect.any(Number),
-                            }),
+                            expect.objectContaining(formResponseCheckinShape),
                         ]),
                     );
                 });
