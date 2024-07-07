@@ -1261,6 +1261,16 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(400);
         });
 
+        it("should return 400 if sprintNumber provided without voyageNumber", async () => {
+            const key = "sprintNumber";
+            const val = "1";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(400);
+        });
+
         it("should return 401 if user is not logged in or admin", async () => {
             await request(app.getHttpServer())
                 .get(sprintCheckinUrl)
