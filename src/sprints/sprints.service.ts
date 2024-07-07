@@ -788,9 +788,14 @@ export class SprintsService {
             (item) => Object.keys(item).length > 0,
         );
 
+        // no matches
         if (checkinFormResponse.length < 1) {
             throw new NotFoundException(
-                `Query ${key} with value ${val} did not match any check-in form responses`,
+                `Query ${
+                    Array.isArray(val)
+                        ? `sprintNumber with value ${val[0]} and voyageNumber with value ${val[1]}`
+                        : `${[key]} with value ${[val]}`
+                } did not match any check-in form responses`,
             );
         }
 
