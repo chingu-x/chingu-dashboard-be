@@ -618,12 +618,11 @@ export class SprintsService {
     }
 
     async getCheckinFormResponse(query: CheckinQueryDto) {
-        // convert query's key/val pair into strings for error handling
-        const queryObjectStringified = Object.entries(query).filter(
-            ([_, v]) => v,
-        );
+        // put query's key/val pair(s) into array of arrays for switch statement logic and error handling
+        const keyValPairs = Object.entries(query).filter(([_, v]) => v);
+
         // just grab the first key if there are multiple provided by accident
-        const [key, val] = queryObjectStringified[0] || [];
+        const [key, val] = keyValPairs[0] || [];
 
         if (!key) {
             throw new BadRequestException("No query provided");
