@@ -624,13 +624,28 @@ export class SprintsService {
         const sprintNumberIndex = keyValPairs.findIndex(
             ([k, _]) => k === "sprintNumber",
         );
+        let key, val;
 
         // if sprintNumber is found, handle separately and store with voyageNumber's val included
         if (sprintNumberIndex !== -1) {
+            const voyageNumberIndex = keyValPairs.findIndex(
+                ([k, _]) => k === "voyageNumber",
+            );
+            if (voyageNumberIndex !== -1) {
+                key = "sprintNumber";
+                val = [
+                    Number(keyValPairs[sprintNumberIndex][1]),
+                    keyValPairs[voyageNumberIndex][1],
+                ];
+            } else {
+                throw new BadRequestException(
+                    "No voyage number provided for sprint number query",
+                );
+            }
+        } else {
+            // just grab the first key if there are multiple provided by accident
+            [key, val] = keyValPairs[0] || [];
         }
-
-        // just grab the first key if there are multiple provided by accident
-        const [key, val] = keyValPairs[0] || [];
 
         if (!key) {
             throw new BadRequestException("No query provided");
