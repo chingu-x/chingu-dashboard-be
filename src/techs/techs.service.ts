@@ -47,6 +47,7 @@ export class TechsService {
                     select: {
                         id: true,
                         name: true,
+                        isSelected: true,
                         teamTechStackItemVotes: {
                             select: {
                                 votedBy: {
