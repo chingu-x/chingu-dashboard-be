@@ -1153,7 +1153,6 @@ describe("Sprints Controller (e2e)", () => {
                 ]),
             }),
         };
-        console.log(formResponseCheckinShape);
 
         beforeEach(async () => {
             await loginAndGetTokens(
