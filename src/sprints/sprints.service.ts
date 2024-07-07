@@ -621,6 +621,14 @@ export class SprintsService {
         // put query's key/val pair(s) into array of arrays for switch statement logic and error handling
         const keyValPairs = Object.entries(query).filter(([_, v]) => v);
 
+        const sprintNumberIndex = keyValPairs.findIndex(
+            ([k, _]) => k === "sprintNumber",
+        );
+
+        // if sprintNumber is found, handle separately and store with voyageNumber's val included
+        if (sprintNumberIndex !== -1) {
+        }
+
         // just grab the first key if there are multiple provided by accident
         const [key, val] = keyValPairs[0] || [];
 
