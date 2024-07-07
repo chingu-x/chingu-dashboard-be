@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Optional } from "@nestjs/common";
+import { ResponseGroup } from "../forms/forms.response";
 
 class Sprint {
     @ApiProperty({ example: 1 })
@@ -242,8 +243,8 @@ export class CheckinFormResponse {
     @ApiProperty({ example: true })
     feedbackSent: boolean;
 
-    @ApiProperty({ example: 1 })
-    responseGroupId: number;
+    @ApiProperty({ isArray: true })
+    responseGroup: ResponseGroup;
 
     @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
     createdAt: Date;
