@@ -40,7 +40,8 @@ export class TechsController {
     constructor(private readonly techsService: TechsService) {}
 
     @ApiOperation({
-        summary: "Gets all selected tech for a team given a teamId (int)",
+        summary:
+            "[Permission: own_team] Gets all selected tech for a team given a teamId (int)",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -65,7 +66,7 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "Adds a new tech (not already chosen by the team) to the team, and set first voter.",
+            "[Permission: own_team] Adds a new tech (not already chosen by the team) to the team, and set first voter.",
         description: "Requires login",
     })
     @ApiResponse({
@@ -107,7 +108,8 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Updates a existing tech stack item in the team",
+        summary:
+            "[Permission: own_team] Updates a existing tech stack item in the team",
         description: "Requires login",
     })
     @ApiResponse({
@@ -162,7 +164,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Delete a tech stack item of a team",
+        summary: "[Permission: own_team] Delete a tech stack item of a team",
         description: "Requires login",
     })
     @ApiResponse({
@@ -208,7 +210,7 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
+            '[Permission: own_team] Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
@@ -248,7 +250,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Removes logged in users vote.",
+        summary: "[Permission: own_team] Removes logged in users vote.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -289,7 +291,7 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
+            "[Permission: own_team]  Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
         description:
             "Maximum of 3 selections per category allowed.  All tech items (isSelected === true/false) are required for updated categories. Login required.",
     })
