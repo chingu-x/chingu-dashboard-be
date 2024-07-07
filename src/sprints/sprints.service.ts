@@ -619,7 +619,9 @@ export class SprintsService {
 
     async getCheckinFormResponse(query: CheckinQueryDto) {
         // put query's key/val pair(s) into array of arrays for switch statement logic and error handling
-        const keyValPairs = Object.entries(query).filter(([_, v]) => v);
+        const keyValPairs: Array<[string, string | number]> = Object.entries(
+            query,
+        ).filter(([_, v]) => v);
 
         const sprintNumberIndex = keyValPairs.findIndex(
             ([k, _]) => k === "sprintNumber",
