@@ -185,6 +185,8 @@ $ yarn docker:clean
 ## Custom Pipes
 ### FormInputValidationPipe
 For use with form responses, this pipe validates that the responses or response (array) values include a questionId and at least one input value of any type. 
+### VoyageTeamMemberValidationPipe
+It checks the voyageTeamMemberId in the request body and validates if the logged in user belongs to that team. 
 
 Example: `@Body(new FormInputValidationPipe())`
 
