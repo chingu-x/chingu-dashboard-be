@@ -1101,6 +1101,59 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("GET /voyages/sprints/check-in - returns sprint check in form", () => {
         const sprintCheckinUrl = "/voyages/sprints/check-in";
+        const questionShape = {
+            id: expect.any(Number),
+            formId: expect.any(Number),
+            order: expect.any(Number),
+            inputTypeId: expect.any(Number),
+            text: expect.any(String),
+            description: expect.toBeOneOf([null, expect.any(String)]),
+            answerRequired: expect.any(Boolean),
+            multipleAllowed: expect.toBeOneOf([null, expect.any(Boolean)]),
+            optionGroupId: expect.toBeOneOf([null, expect.any(Number)]),
+            parentQuestionId: expect.toBeOneOf([null, expect.any(Number)]),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        };
+        const optionChoiceShape = {
+            id: expect.any(Number),
+            optionGroupId: expect.any(Number),
+            text: expect.any(String),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        };
+        const responseGroupShape = {
+            id: expect.any(Number),
+            questionId: expect.any(Number),
+            optionChoiceId: expect.toBeOneOf([null, expect.any(Number)]),
+            numeric: expect.toBeOneOf([null, expect.any(Number)]),
+            boolean: expect.toBeOneOf([null, expect.any(Boolean)]),
+            text: expect.toBeOneOf([null, expect.any(String)]),
+            responseGroupId: expect.any(Number),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            question: expect.objectContaining(questionShape),
+            optionChoice: expect.toBeOneOf([optionChoiceShape]),
+        };
+        const formResponseCheckinShape = {
+            id: expect.any(Number),
+            voyageTeamMemberId: expect.any(Number),
+            sprintId: expect.any(Number),
+            adminComments: expect.toBeOneOf([null, expect.any(String)]),
+            feedbackSent: expect.any(Boolean),
+            responseGroupId: expect.any(Number),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            voyageTeamMember: expect.objectContaining({
+                voyageTeamId: expect.any(Number),
+            }),
+            responseGroup: expect.objectContaining({
+                responses: expect.arrayContaining([
+                    expect.objectContaining(responseGroupShape),
+                ]),
+            }),
+        };
+        console.log(formResponseCheckinShape);
 
         beforeEach(async () => {
             await loginAndGetTokens(
