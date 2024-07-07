@@ -656,12 +656,28 @@ export class SprintsService {
         switch (key) {
             case "teamId":
                 checkinFormResponse =
-                    await this.prisma.voyageTeamMember.findMany({
+                    await this.prisma.formResponseCheckin.findMany({
                         where: {
-                            voyageTeamId: val,
+                            voyageTeamMember: {
+                                voyageTeamId: val,
+                            },
                         },
                         include: {
-                            checkinForms: true,
+                            voyageTeamMember: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
+                            },
+                            responseGroup: {
+                                select: {
+                                    responses: {
+                                        include: {
+                                            question: true,
+                                            optionChoice: true,
+                                        },
+                                    },
+                                },
+                            },
                         },
                     });
                 break;
@@ -669,12 +685,27 @@ export class SprintsService {
                 checkinFormResponse =
                     await this.prisma.formResponseCheckin.findMany({
                         where: {
-                            sprintId: val,
+                            sprint: {
+                                number: val[0],
+                                voyage: {
+                                    number: val[1],
+                                },
+                            },
                         },
                         include: {
                             voyageTeamMember: {
                                 select: {
                                     voyageTeamId: true,
+                                },
+                            },
+                            responseGroup: {
+                                select: {
+                                    responses: {
+                                        include: {
+                                            question: true,
+                                            optionChoice: true,
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -686,24 +717,33 @@ export class SprintsService {
                     });
                 break;
             case "voyageNumber":
-                checkinFormResponse = await this.prisma.sprint.findMany({
-                    where: {
-                        voyage: {
-                            number: val,
+                checkinFormResponse =
+                    await this.prisma.formResponseCheckin.findMany({
+                        where: {
+                            sprint: {
+                                voyage: {
+                                    number: val,
+                                },
+                            },
                         },
-                    },
-                    include: {
-                        checkinForms: {
-                            include: {
-                                voyageTeamMember: {
-                                    select: {
-                                        voyageTeamId: true,
+                        include: {
+                            voyageTeamMember: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
+                            },
+                            responseGroup: {
+                                select: {
+                                    responses: {
+                                        include: {
+                                            question: true,
+                                            optionChoice: true,
+                                        },
                                     },
                                 },
                             },
                         },
-                    },
-                });
+                    });
                 break;
             case "userId":
                 checkinFormResponse =
@@ -719,6 +759,16 @@ export class SprintsService {
                                             voyageTeamId: true,
                                         },
                                     },
+                                    responseGroup: {
+                                        select: {
+                                            responses: {
+                                                include: {
+                                                    question: true,
+                                                    optionChoice: true,
+                                                },
+                                            },
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -726,7 +776,7 @@ export class SprintsService {
                 break;
             default:
                 throw new BadRequestException(
-                    `Query ${key} did not match any keywords`,
+                    `Query ${key[0]} did not match any keywords`,
                 );
         }
 
