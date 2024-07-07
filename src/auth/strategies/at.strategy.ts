@@ -36,6 +36,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
             userId: payload.sub,
             email: payload.email,
             roles: userInDb.roles,
+            isVerified: userInDb.emailVerified,
             voyageTeams: userInDb.voyageTeamMembers?.map((t) => {
                 return {
                     teamId: t.voyageTeamId,

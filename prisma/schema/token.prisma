@@ -1,0 +1,18 @@
+// == Tokens ===
+
+model ResetToken {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @db.Uuid
+  token  String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+}
+
+model EmailVerificationToken {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @db.Uuid
+  token  String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}

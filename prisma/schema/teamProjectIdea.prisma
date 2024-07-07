@@ -1,0 +1,26 @@
+// === Voyage Team Project Ideas ===
+model ProjectIdea {
+  id                 Int               @id @default(autoincrement())
+  contributedBy      VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  voyageTeamMemberId Int?
+  title              String
+  description        String
+  vision             String
+  isSelected         Boolean           @default(false)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  projectIdeaVotes ProjectIdeaVote[]
+}
+
+model ProjectIdeaVote {
+  id                 Int               @id @default(autoincrement())
+  votedBy            VoyageTeamMember? @relation(fields: [voyageTeamMemberId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  voyageTeamMemberId Int?
+  projectIdea        ProjectIdea?      @relation(fields: [projectIdeaId], references: [id], onDelete: Cascade)
+  projectIdeaId      Int
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}

@@ -48,6 +48,9 @@ export class TeamTechResponse {
     @ApiProperty({ example: "Frontend Stuff" })
     description: string;
 
+    @ApiProperty({ example: false })
+    isSelected: boolean;
+
     @ApiProperty({ isArray: true })
     teamTechStackItems: TeamTechStackItem;
 }

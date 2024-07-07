@@ -83,3 +83,32 @@ export class ForbiddenErrorResponse {
     @ApiProperty({ example: 403 })
     statusCode: number;
 }
+
+export class ServerErrorResponse {
+    @ApiProperty({
+        example: "Internal Server Error",
+    })
+    message: string;
+
+    @ApiPropertyOptional({ example: "Internal Server Error" })
+    error: string;
+
+    @ApiProperty({ example: 500 })
+    statusCode: number;
+}
+
+export class UnprocessableEntityErrorResponse {
+    @ApiProperty({
+        example:
+            "This endpoint can only be used in the development environment.",
+    })
+    message: string;
+
+    @ApiPropertyOptional({
+        example: "Unprocessable Entity",
+    })
+    error: string;
+
+    @ApiProperty({ example: 422 })
+    statusCode: number;
+}
