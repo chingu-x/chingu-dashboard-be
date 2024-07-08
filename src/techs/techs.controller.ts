@@ -48,6 +48,21 @@ export class TechsController {
         description: "Successfully gets all selected tech stack for a team",
         type: TeamTechResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid team id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
     @ApiParam({
         name: "teamId",
         description: "voyage team Id",
@@ -86,8 +101,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -118,14 +138,14 @@ export class TechsController {
         type: TechItemUpdateResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "User is unauthorized to perform this action",
-        type: ForbiddenErrorResponse,
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized when user is not logged in",
-        type: UnauthorizedErrorResponse,
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -173,14 +193,14 @@ export class TechsController {
         type: TechItemDeleteResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "User is unauthorized to perform this action",
-        type: ForbiddenErrorResponse,
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized when user is not logged in",
-        type: UnauthorizedErrorResponse,
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -230,8 +250,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamTechItemId",
@@ -270,8 +295,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamTechItemId",
@@ -307,8 +337,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",

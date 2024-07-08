@@ -171,7 +171,7 @@ Having spun up your Docker services and migrated + seeded your DB your services 
 - PGAdmin: `4000`
 - Prisma Studio: `5555`
 
-### <a name="tearDown">Tearing down Docker services<a/>
+### <a name="tearDown">Tearing down Docker services</a>
 
 To stop and tear down the Docker services:
 ```bash
@@ -185,10 +185,13 @@ $ yarn docker:clean
 ## Custom Pipes
 ### FormInputValidationPipe
 For use with form responses, this pipe validates that the responses or response (array) values include a questionId and at least one input value of any type. 
+
+Example: `@Body(new FormInputValidationPipe())`
+
 ### VoyageTeamMemberValidationPipe
 It checks the voyageTeamMemberId in the request body and validates if the logged in user belongs to that team. 
 
-Example: `@Body(new FormInputValidationPipe())`
+Example: `@Body(VoyageTeamMemberValidationPipe)`
 
 ## Custom Decorators 
 
