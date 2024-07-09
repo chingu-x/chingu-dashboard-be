@@ -194,7 +194,7 @@ export class IdeationsService {
         });
     }
 
-    async removeVote(req: CustomRequest, teamId: number, ideationId: number) {
+    async removeVote(req: CustomRequest, ideationId: number) {
         try {
             const ideationVote = await this.prisma.projectIdeaVote.findFirst({
                 where: {
@@ -227,11 +227,7 @@ export class IdeationsService {
         }
     }
 
-    async deleteIdeation(
-        req: CustomRequest,
-        teamId: number,
-        ideationId: number,
-    ) {
+    async deleteIdeation(req: CustomRequest, ideationId: number) {
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
             throw new ConflictException(
@@ -239,24 +235,16 @@ export class IdeationsService {
             );
         }
         try {
-            await this.removeVote(req, teamId, ideationId);
+            await this.removeVote(req, ideationId);
             return await this.removeIdeation(ideationId);
         } catch (e) {
             throw e;
         }
     }
 
-    async deleteIdeationVote(
-        req: CustomRequest,
-        teamId: number,
-        ideationId: number,
-    ) {
+    async deleteIdeationVote(req: CustomRequest, ideationId: number) {
         try {
-            const deleteIdeationVote = await this.removeVote(
-                req,
-                teamId,
-                ideationId,
-            );
+            const deleteIdeationVote = await this.removeVote(req, ideationId);
             //delete ideation if no remaining votes
             const voteCount = await this.getIdeationVoteCount(ideationId);
             if (voteCount === 0) {
@@ -265,11 +253,6 @@ export class IdeationsService {
 
             return deleteIdeationVote;
         } catch (e) {
-            // if (e.code === "P2002") {
-            //     throw new NotFoundException(
-            //         `IdeationVote (id: ${ideationVote.id}) does not exist.`,
-            //     );
-            // }
             throw e;
         }
     }

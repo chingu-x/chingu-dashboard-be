@@ -335,9 +335,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/DELETE /teams/:teamId/ideations/:ideationId", () => {
+    describe("/DELETE /ideations/:ideationId", () => {
         const ideationId = 1;
-        const deleteIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
+        const deleteIdeationUrl = `/voyages/ideations/${ideationId}`;
 
         // user can only delete their own ideation when there is no votes except their own,
         // this will also delete their own vote if exist
@@ -347,7 +347,7 @@ describe("IdeationsController (e2e)", () => {
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/3`)
+                .delete(`/voyages/ideations/3`)
                 .set("Cookie", accessToken)
                 .expect(200);
 
@@ -359,14 +359,14 @@ describe("IdeationsController (e2e)", () => {
         });
 
         // user cannot delete someone else's ideation
-        // Note: should be 403
+        // Add a 403 test
         it("should return 400 if the user delete their own ideation with other votes", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
             const ideationVoteCountBefore =
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/7`)
+                .delete(`/voyages/ideations/7`)
                 .set("Cookie", accessToken)
                 .expect(400);
 
@@ -386,7 +386,7 @@ describe("IdeationsController (e2e)", () => {
         // Should be 404
         it("should return 400 if ideation Id does not exist", async () => {
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/200`)
+                .delete(`/voyages/ideations/200`)
                 .set("Cookie", accessToken)
                 .expect(400);
         });
@@ -410,7 +410,7 @@ describe("IdeationsController (e2e)", () => {
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/2`)
+                .delete(`/voyages/ideations/2`)
                 .set("Cookie", accessToken)
                 .expect(409);
 

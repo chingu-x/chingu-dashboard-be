@@ -195,13 +195,12 @@ export class IdeationsController {
         type: ConflictErrorResponse,
     })
     @CheckAbilities({ action: Action.Delete, subject: "Ideation" })
-    @Delete("teams/:teamId/ideations/:ideationId")
+    @Delete("ideations/:ideationId")
     deleteIdeation(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
-        return this.ideationsService.deleteIdeation(req, teamId, ideationId);
+        return this.ideationsService.deleteIdeation(req, ideationId);
     }
 
     @ApiOperation({
@@ -231,11 +230,7 @@ export class IdeationsController {
         @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
-        return this.ideationsService.deleteIdeationVote(
-            req,
-            teamId,
-            ideationId,
-        );
+        return this.ideationsService.deleteIdeationVote(req, ideationId);
     }
 
     @ApiOperation({
