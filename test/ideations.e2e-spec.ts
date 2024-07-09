@@ -287,9 +287,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/PATCH /teams/:teamId/ideations/:ideationId", () => {
+    describe("/PATCH /ideations/:ideationId", () => {
         const ideationId = 2;
-        const updateIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
+        const updateIdeationUrl = `/voyages/ideations/${ideationId}`;
         it("should return 200 if update is successful", async () => {
             const ideationToUpdate = await prisma.projectIdea.findUnique({
                 where: { id: ideationId },
@@ -314,29 +314,22 @@ describe("IdeationsController (e2e)", () => {
                 .expect(200);
         });
 
-        it("should return 400 when ideation Id is not in the specified team", async () => {
-            await request(app.getHttpServer())
-                .patch(`/voyages/teams/2/ideations/1`)
-                .set("Cookie", accessToken)
-                .expect(400);
-        });
-
         it("should return 401 when user is not logged in", async () => {
             await request(app.getHttpServer())
                 .patch(updateIdeationUrl)
                 .expect(401);
         });
 
-        it("should return 403 when user tries to delete someone else's ideation in the same team", async () => {
+        it("should return 403 when user tries to update someone else's ideation in the same team", async () => {
             await request(app.getHttpServer())
-                .patch(`/voyages/teams/${userVoyageTeamId}/ideations/8`)
+                .patch(`/voyages/ideations/8`)
                 .set("Cookie", accessToken)
                 .expect(403);
         });
 
         it("should return 404 when ideation Id does not exist", async () => {
             await request(app.getHttpServer())
-                .patch(`/voyages/teams/1/ideations/100`)
+                .patch(`/voyages/ideations/100`)
                 .set("Cookie", accessToken)
                 .expect(404);
         });

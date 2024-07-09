@@ -1,7 +1,6 @@
 import {
     BadRequestException,
     ConflictException,
-    ForbiddenException,
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
@@ -11,6 +10,7 @@ import { UpdateIdeationDto } from "./dto/update-ideation.dto";
 import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
+import { manageOwnIdeationById } from "../ability/conditions/ideations.ability";
 
 @Injectable()
 export class IdeationsService {
@@ -160,56 +160,33 @@ export class IdeationsService {
     async updateIdeation(
         req: CustomRequest,
         ideationId: number,
-        teamId: number,
+        // teamId: number,
         updateIdeationDto: UpdateIdeationDto,
     ) {
         const { title, description, vision } = updateIdeationDto;
 
-        const voyageTeamMemberId = this.globalService.getVoyageTeamMemberId(
-            req,
-            teamId,
-        );
-
-        const ideationExistsCheck = await this.prisma.projectIdea.findUnique({
-            where: {
-                id: ideationId,
-            },
-            select: {
-                voyageTeamMemberId: true,
-            },
-        });
-        if (!ideationExistsCheck) {
-            throw new NotFoundException(
-                `Ideation (id: ${ideationId}) does not exist.`,
-            );
-        }
+        await manageOwnIdeationById(req.user, ideationId);
 
         try {
             //only allow the user that created the idea to edit it
-            if (voyageTeamMemberId === ideationExistsCheck.voyageTeamMemberId) {
-                const updatedIdeation = await this.prisma.projectIdea.update({
-                    where: {
-                        id: ideationId,
-                    },
-                    data: {
-                        title,
-                        description,
-                        vision,
-                    },
-                });
-                return updatedIdeation;
-            } else {
-                throw new ForbiddenException(
-                    "[Ideation Service]:  You can only update your own project ideas.",
-                );
-            }
+            const updatedIdeation = await this.prisma.projectIdea.update({
+                where: {
+                    id: ideationId,
+                },
+                data: {
+                    title,
+                    description,
+                    vision,
+                },
+            });
+            return updatedIdeation;
         } catch (e) {
             throw e;
         }
     }
 
     async removeIdeation(ideationId: number) {
-        return await this.prisma.projectIdea.delete({
+        return this.prisma.projectIdea.delete({
             where: {
                 id: ideationId,
             },
