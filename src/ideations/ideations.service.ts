@@ -167,9 +167,11 @@ export class IdeationsService {
 
         await manageOwnIdeationById(req.user, ideationId);
 
+        // TODO: might need to check if user can update it
+        //  (they should only be able to update it when they have the only vote)
         try {
             //only allow the user that created the idea to edit it
-            const updatedIdeation = await this.prisma.projectIdea.update({
+            return this.prisma.projectIdea.update({
                 where: {
                     id: ideationId,
                 },
@@ -179,7 +181,6 @@ export class IdeationsService {
                     vision,
                 },
             });
-            return updatedIdeation;
         } catch (e) {
             throw e;
         }
@@ -194,16 +195,23 @@ export class IdeationsService {
     }
 
     async removeVote(req: CustomRequest, teamId: number, ideationId: number) {
-        let ideationVote: any;
         try {
-            const voyageTeamMemberId = this.globalService.getVoyageTeamMemberId(
-                req,
-                teamId,
-            );
-            ideationVote = await this.getIdeationVote(
-                ideationId,
-                voyageTeamMemberId,
-            );
+            const ideationVote = await this.prisma.projectIdeaVote.findFirst({
+                where: {
+                    projectIdeaId: ideationId,
+                    voyageTeamMemberId: {
+                        in: req.user.voyageTeams.map((vt) => vt.teamId),
+                    },
+                },
+                select: {
+                    id: true,
+                },
+            });
+            if (!ideationVote)
+                throw new BadRequestException(
+                    `Invalid Ideation Id or Team Member Id. The user does not have a vote for ideation id: ${ideationId}`,
+                );
+
             return await this.prisma.projectIdeaVote.delete({
                 where: {
                     id: ideationVote.id,
@@ -212,14 +220,18 @@ export class IdeationsService {
         } catch (e) {
             if (e.code === "P2002") {
                 throw new NotFoundException(
-                    `IdeationVote (id: ${ideationVote.id}) does not exist.`,
+                    `Vote for ideation (id=${ideationId}) does not exist for the user.`,
                 );
             }
             throw e;
         }
     }
 
-    async deleteIdeation(req: CustomRequest, teamId, ideationId: number) {
+    async deleteIdeation(
+        req: CustomRequest,
+        teamId: number,
+        ideationId: number,
+    ) {
         const checkVotes = await this.getIdeationVoteCount(ideationId);
         if (checkVotes > 1) {
             throw new ConflictException(
@@ -275,7 +287,7 @@ export class IdeationsService {
         //extract ids into array
         const idArray = teamMemberIds.map((member) => member.id);
         //search all team member project ideas for isSelected === true
-        return await this.prisma.projectIdea.findFirst({
+        return this.prisma.projectIdea.findFirst({
             where: {
                 voyageTeamMemberId: {
                     in: idArray,
@@ -366,25 +378,5 @@ export class IdeationsService {
                 `Ideation (id: ${ideationId}) does not exist`,
             );
         return votesForIdeation.length;
-    }
-
-    private async getIdeationVote(
-        ideationId: number,
-        voyageTeamMemberId: number,
-    ) {
-        const oneIdeationVote = await this.prisma.projectIdeaVote.findFirst({
-            where: {
-                projectIdeaId: ideationId,
-                voyageTeamMemberId: voyageTeamMemberId,
-            },
-            select: {
-                id: true,
-            },
-        });
-        if (!oneIdeationVote)
-            throw new BadRequestException(
-                `Invalid Ideation Id or Team Member Id. The user (teamMemberId:${voyageTeamMemberId}) does not have a vote for ideation id: ${ideationId}`,
-            );
-        return oneIdeationVote;
     }
 }
