@@ -359,8 +359,6 @@ describe("IdeationsController (e2e)", () => {
             expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore - 1);
         });
 
-        // user cannot delete someone else's ideation
-        // Add a 403 test
         it("should return 400 if the user delete their own ideation with other votes", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
             const ideationVoteCountBefore =
@@ -384,7 +382,6 @@ describe("IdeationsController (e2e)", () => {
                 .expect(401);
         });
 
-        // Should be 404
         it("should return 404 if ideation Id does not exist", async () => {
             await request(app.getHttpServer())
                 .delete(`/voyages/ideations/200`)
