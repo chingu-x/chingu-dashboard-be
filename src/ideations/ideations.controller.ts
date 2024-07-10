@@ -94,17 +94,12 @@ export class IdeationsController {
         type: IdeationVoteResponse,
     })
     @CheckAbilities({ action: Action.Create, subject: "Ideation" })
-    @Post("teams/:teamId/ideations/:ideationId/ideation-votes")
+    @Post("ideations/:ideationId/ideation-votes")
     createIdeationVote(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
-        return this.ideationsService.createIdeationVote(
-            req,
-            teamId,
-            ideationId,
-        );
+        return this.ideationsService.createIdeationVote(req, ideationId);
     }
 
     @ApiOperation({

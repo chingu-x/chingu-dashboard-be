@@ -134,9 +134,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/POST voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+    describe("/POST voyages/ideations/:ideationId/ideation-votes", () => {
         const ideationId = 1;
-        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
+        const ideationVoteUrl = `/voyages/ideations/${ideationId}/ideation-votes`;
 
         it("should return 201 if an ideation vote is successfully created", async () => {
             // login to another user in the same team to vote
@@ -173,15 +173,20 @@ describe("IdeationsController (e2e)", () => {
         });
 
         it("should return 403 when user is voting for another ideation which belongs to another team", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
-                .post(`/voyages/teams/2/ideations/4/ideation-votes`)
-                .set("Cookie", accessToken)
+                .post(`/voyages/ideations/4/ideation-votes`)
+                .set("Cookie", access_token)
                 .expect(403);
         });
 
         it("should return 404 when the ideation ID doesn't exist", async () => {
             await request(app.getHttpServer())
-                .post(`/voyages/teams/1/ideations/20/ideation-votes`)
+                .post(`/voyages/ideations/20/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(404);
         });
@@ -401,7 +406,7 @@ describe("IdeationsController (e2e)", () => {
             );
 
             await request(app.getHttpServer())
-                .post(`/voyages/teams/1/ideations/2/ideation-votes`)
+                .post(`/voyages/ideations/2/ideation-votes`)
                 .set("Cookie", access_token)
                 .expect(201);
 
