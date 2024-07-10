@@ -3,7 +3,9 @@ import { IdeationsService } from "./ideations.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
+import * as IdeationAbility from "../ability/conditions/ideations.ability";
 
+// TODO: these tests probably need to be updated, it shouldn't use prisma, should only use prismaMock
 describe("IdeationsService", () => {
     let service: IdeationsService;
 
@@ -14,6 +16,9 @@ describe("IdeationsService", () => {
             description: "Ideation 1 description",
             vision: "Ideation 1 vision",
             voyageTeamMemberId: 1,
+            contributedBy: {
+                voyageTeamId: 1,
+            },
         },
     ];
     const ideationOne = ideationArr[0];
@@ -114,6 +119,8 @@ describe("IdeationsService", () => {
         }).compile();
 
         service = module.get<IdeationsService>(IdeationsService);
+
+        jest.spyOn(service, <any>"checkIdeationAndVotes").mockResolvedValue(1);
     });
 
     it("should be defined", () => {
@@ -134,7 +141,7 @@ describe("IdeationsService", () => {
                 ],
                 roles: ["voyager"],
             },
-        } as CustomRequest;
+        } as unknown as CustomRequest;
         const createIdeationDto = {
             req,
             title: "Ideation 1",
@@ -152,7 +159,6 @@ describe("IdeationsService", () => {
 
     it("should create an ideation vote", async () => {
         const userId = "00a10ade-7308-11ee-a962-0242ac120002";
-        const teamId = 1;
         const ideationId = 1;
         const req = {
             user: {
@@ -168,8 +174,7 @@ describe("IdeationsService", () => {
         };
 
         const result = await service.createIdeationVote(
-            req,
-            teamId,
+            req as CustomRequest,
             ideationId,
         );
         expect(result).toEqual(ideationVoteOne);
@@ -198,7 +203,11 @@ describe("IdeationsService", () => {
     it("should update an ideation", async () => {
         const userId = "00a10ade-7308-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const teamId = 1;
+
+        const manageOwnIdeationByIdMock = jest
+            .spyOn(IdeationAbility, "manageOwnIdeationById")
+            .mockResolvedValue();
+
         const req = {
             user: {
                 userId: userId,
@@ -221,15 +230,14 @@ describe("IdeationsService", () => {
         const result = await service.updateIdeation(
             req,
             ideationId,
-            teamId,
             updateIdeationDto,
         );
         expect(result).toEqual(ideationOne);
+        expect(manageOwnIdeationByIdMock).toHaveBeenCalled();
     });
 
     it("should delete an ideation vote", async () => {
         const userId = "00a10ade-7308-11ee-a962-0242ac120002";
-        const teamId = 1;
         const ideationId = 1;
         const req = {
             user: {
@@ -244,18 +252,13 @@ describe("IdeationsService", () => {
             },
         } as CustomRequest;
 
-        const result = await service.deleteIdeationVote(
-            req,
-            teamId,
-            ideationId,
-        );
+        const result = await service.deleteIdeationVote(req, ideationId);
         expect(result).toEqual(ideationVoteOne);
     });
 
     it("should delete an ideation", async () => {
         const userId = "00a10ade-7308-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const teamId = 1;
         const req = {
             user: {
                 userId: userId,
@@ -268,7 +271,7 @@ describe("IdeationsService", () => {
                 roles: ["voyager"],
             },
         } as CustomRequest;
-        const result = await service.deleteIdeation(req, teamId, ideationId);
+        const result = await service.deleteIdeation(req, ideationId);
         expect(result).toEqual(ideationOne);
     });
 });

@@ -16,7 +16,7 @@ export const manageOwnIdeationById = async (
         },
     });
     if (!ideation) {
-        throw new NotFoundException(`Ideation (id:${ideationId} not found`);
+        throw new NotFoundException(`Ideation (id:${ideationId}) not found`);
     }
     // ideation is not linked to any members, this should never happen unless the user gets deleted
     // or removed from the team?
