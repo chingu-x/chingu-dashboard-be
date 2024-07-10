@@ -384,11 +384,11 @@ describe("IdeationsController (e2e)", () => {
         });
 
         // Should be 404
-        it("should return 400 if ideation Id does not exist", async () => {
+        it("should return 404 if ideation Id does not exist", async () => {
             await request(app.getHttpServer())
                 .delete(`/voyages/ideations/200`)
                 .set("Cookie", accessToken)
-                .expect(400);
+                .expect(404);
         });
 
         // user cannot delete ideation with votes in it
