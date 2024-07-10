@@ -219,10 +219,9 @@ export class IdeationsController {
         type: IdeationVoteResponse,
     })
     @CheckAbilities({ action: Action.Delete, subject: "Ideation" })
-    @Delete("teams/:teamId/ideations/:ideationId/ideation-votes")
+    @Delete("ideations/:ideationId/ideation-votes")
     deleteIdeationVote(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("ideationId", ParseIntPipe) ideationId: number,
     ) {
         return this.ideationsService.deleteIdeationVote(req, ideationId);

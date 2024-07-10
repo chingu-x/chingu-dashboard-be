@@ -199,9 +199,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/DELETE voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+    describe("/DELETE voyages/ideations/:ideationId/ideation-votes", () => {
         const ideationId = 1;
-        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
+        const ideationVoteUrl = `/voyages/ideations/${ideationId}/ideation-votes`;
 
         it("should return 200 when ideation vote is deleted", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
@@ -248,9 +248,7 @@ describe("IdeationsController (e2e)", () => {
             const ideationVoteCountBefore =
                 await prisma.projectIdeaVote.count();
             await request(app.getHttpServer())
-                .delete(
-                    `/voyages/teams/${userVoyageTeamId}/ideations/8/ideation-votes`,
-                )
+                .delete(`/voyages/ideations/8/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(400);
 
@@ -264,9 +262,7 @@ describe("IdeationsController (e2e)", () => {
         // Note: this should be 404
         it("should return 400 when ideation id does not exist", async () => {
             await request(app.getHttpServer())
-                .delete(
-                    `/voyages/teams/${userVoyageTeamId}/ideations/100/ideation-votes`,
-                )
+                .delete(`/voyages/ideations/100/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(400);
         });

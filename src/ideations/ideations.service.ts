@@ -199,13 +199,12 @@ export class IdeationsService {
             const userHasVoted = await this.hasIdeationVote(req, ideationId);
             //if user has not voted then a vote can be created
             if (!userHasVoted) {
-                const createVote = await this.prisma.projectIdeaVote.create({
+                return this.prisma.projectIdeaVote.create({
                     data: {
                         voyageTeamMemberId,
                         projectIdeaId: ideationId,
                     },
                 });
-                return createVote;
             } else {
                 throw new ConflictException(
                     `User has already voted for ideationId: ${ideationId}`,
