@@ -41,6 +41,7 @@ export class AbilityFactory {
                 },
             });
             can([Action.Submit, Action.Read], "Form");
+            can([Action.Manage], "TeamTechStackItem");
         } else {
             // all other users
             can([Action.Submit, Action.Read], "Form", {
