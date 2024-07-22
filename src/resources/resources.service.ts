@@ -38,7 +38,6 @@ export class ResourcesService {
             where: {
                 url: url,
                 addedBy: {
-                    id: teamMemberId,
                     voyageTeam: {
                         id: teamId,
                     },
@@ -58,15 +57,12 @@ export class ResourcesService {
         });
     }
 
-    async findAllResources(req, teamId: number) {
+    async findAllResources(req: CustomRequest, teamId: number) {
         // make sure teamId exists
         await this.checkTeamExists(teamId);
 
         // make sure user is a member of this team
-        await this.globalService.validateLoggedInAndTeamMember(
-            teamId,
-            req.user.userId,
-        );
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
         return this.prisma.teamResource.findMany({
             where: {

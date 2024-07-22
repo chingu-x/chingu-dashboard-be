@@ -108,9 +108,10 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Resource" })
     @Get("/teams/:teamId")
     findAllResources(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
     ) {
         return this.resourcesService.findAllResources(req, teamId);

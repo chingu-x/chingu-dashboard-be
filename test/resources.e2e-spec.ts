@@ -237,6 +237,12 @@ describe("ResourcesController (e2e)", () => {
 
     describe("/GET voyages/:teamId/resources", () => {
         it("should return 200 and retrieve all resources for the team.", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const voyageTeamId: number = 1;
             const resourceCount: number = await prisma.teamResource.count({
                 where: {
                     addedBy: {
@@ -247,7 +253,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -266,18 +272,36 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid teamId", async () => {
-            const invalidTeamId = 999;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidTeamId = 99999;
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${invalidTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
+        it("should return 401 when the user is not logged in", async () => {
+            const voyageTeamId: number = 1;
 
-        it("should return 401 and not allow users to GET other teams' resources", async () => {
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `Bearer ${undefined}`)
+                .expect(401);
+        });
+        it("should return 401 and not allow users to GET other teams' resources", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const voyageTeamId: number = 2;
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${voyageTeamId}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(401);
         });
     });
