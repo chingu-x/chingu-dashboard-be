@@ -79,6 +79,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Refactored the prisma models to be grouped by domain type [#172](https://github.com/chingu-x/chingu-dashboard-be/pull/172)
 - Updated response for GET teams/:teamId/techs to include isSelected value for techs [#173](https://github.com/chingu-x/chingu-dashboard-be/pull/173)
 - Refactor ideation endpoints to remove redundant teamId params  [#175](https://github.com/chingu-x/chingu-dashboard-be/pull/175)
+- Squashed migration files into one [#176](https://github.com/chingu-x/chingu-dashboard-be/pull/176)
 
 
 ### Fixed
