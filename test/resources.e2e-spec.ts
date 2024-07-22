@@ -6,28 +6,9 @@ import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { CreateResourceDto } from "src/resources/dto/create-resource.dto";
 import { UpdateResourceDto } from "src/resources/dto/update-resource.dto";
-import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
+import { loginAndGetTokens } from "./utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 import * as cookieParser from "cookie-parser";
-
-const loginUser = async (
-    email: string,
-    password: string,
-    app: INestApplication,
-) => {
-    const res = await request(app.getHttpServer())
-        .post("/auth/login")
-        .send({
-            email,
-            password,
-        })
-        .expect(200);
-
-    return extractResCookieValueByKey(
-        res.headers["set-cookie"],
-        "access_token",
-    );
-};
 
 const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
     return prisma.voyageTeamMember.findFirst({
@@ -71,11 +52,9 @@ describe("ResourcesController (e2e)", () => {
     // main user
     const userEmail: string = "dan@random.com";
     let voyageTeamId: number;
-    let userAccessToken: string;
     // user for testing access control
     const otherUserEmail: string = "JosoMadar@dayrep.com";
     let otherVoyageTeamId: number;
-    let otherUserAccessToken: string;
 
     const memberShape = {
         avatar: expect.any(String),
@@ -110,11 +89,9 @@ describe("ResourcesController (e2e)", () => {
         // voyageTeamId of main user
         const voyageTeam = await findVoyageTeamId(userEmail, prisma);
         voyageTeamId = voyageTeam!.voyageTeamId;
-        userAccessToken = await loginUser(userEmail, "password", app);
 
         const otherVoyageTeam = await findVoyageTeamId(otherUserEmail, prisma);
         otherVoyageTeamId = otherVoyageTeam!.voyageTeamId;
-        otherUserAccessToken = await loginUser(otherUserEmail, "password", app);
 
         if (voyageTeamId === otherVoyageTeamId) {
             throw new Error("Voyage team IDs should be different");
@@ -414,6 +391,11 @@ describe("ResourcesController (e2e)", () => {
 
     describe("/DELETE :teamId/resources/:resourceId", () => {
         it("should return 200 after deleting a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const resourceToDelete = await findOwnResource(userEmail, prisma);
             const resourceId: number = resourceToDelete!.id;
             const initialResourceCount = await countResources(
@@ -423,7 +405,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect(async (res) => {
                     expect(res.body).toEqual({
@@ -444,29 +426,54 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid resourceId", async () => {
-            const invalidResourceId = 999;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidResourceId = 99999;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${invalidResourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
 
         it("should return 400 for invalid request body", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/rm -rf`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
 
-        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
+        it("should return 401 if a user is not logged in", async () => {
             const resourceToDelete = await findOwnResource(userEmail, prisma);
             const resourceId: number = resourceToDelete!.id;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 when user of other member tries to delete a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+
+            const resourceId: number = 1;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/resources/${resourceId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 });

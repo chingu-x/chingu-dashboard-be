@@ -157,6 +157,7 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "Resource" })
     @Patch("resources/:resourceId")
     updateResource(
         @Request() req: CustomRequest,
@@ -181,8 +182,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -200,9 +206,10 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "Resource" })
     @Delete("resources/:resourceId")
     removeResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("resourceId", ParseIntPipe) resourceId: number,
     ) {
         return this.resourcesService.removeResource(req, resourceId);

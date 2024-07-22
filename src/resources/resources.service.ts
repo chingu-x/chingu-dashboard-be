@@ -2,22 +2,17 @@ import {
     BadRequestException,
     Injectable,
     NotFoundException,
-    UnauthorizedException,
 } from "@nestjs/common";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 import { manageOwnResourceById } from "../ability/conditions/resource.ability";
 
 @Injectable()
 export class ResourcesService {
-    constructor(
-        private prisma: PrismaService,
-        private readonly globalService: GlobalService,
-    ) {}
+    constructor(private prisma: PrismaService) {}
 
     async createNewResource(
         req: CustomRequest,
@@ -113,9 +108,8 @@ export class ResourcesService {
         }
     }
 
-    async removeResource(req, resourceId: number) {
-        // check if logged in user's id matches the userId that created this resource
-        await this.checkAuthAndHandleErrors(resourceId, req.user.userId);
+    async removeResource(req: CustomRequest, resourceId: number) {
+        await manageOwnResourceById(req.user, resourceId);
 
         try {
             return this.prisma.teamResource.delete({
@@ -124,31 +118,6 @@ export class ResourcesService {
         } catch {
             throw new BadRequestException("Resource deletion failed");
         }
-    }
-
-    private async checkAuthAndHandleErrors(resourceId, uuid) {
-        const resourceToModify = await this.prisma.teamResource.findUnique({
-            where: { id: resourceId },
-            include: {
-                addedBy: {
-                    select: {
-                        member: {
-                            select: {
-                                id: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        if (!resourceToModify)
-            throw new NotFoundException(
-                `Resource (id: ${resourceId}) doesn't exist`,
-            );
-
-        if (resourceToModify.addedBy?.member.id !== uuid)
-            throw new UnauthorizedException();
     }
 
     private async checkTeamExists(teamId: number) {
