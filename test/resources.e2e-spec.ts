@@ -10,20 +10,6 @@ import { loginAndGetTokens } from "./utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 import * as cookieParser from "cookie-parser";
 
-const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
-    return prisma.voyageTeamMember.findFirst({
-        where: {
-            member: {
-                email,
-            },
-        },
-        select: {
-            userId: true,
-            voyageTeamId: true,
-        },
-    });
-};
-
 const findOwnResource = async (email: string, prisma: PrismaService) => {
     return prisma.teamResource.findFirst({
         where: {
@@ -49,12 +35,18 @@ const countResources = async (voyageTeamId: number, prisma: PrismaService) => {
 describe("ResourcesController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    // main user
-    const userEmail: string = "dan@random.com";
-    let voyageTeamId: number;
-    // user for testing access control
-    const otherUserEmail: string = "JosoMadar@dayrep.com";
-    let otherVoyageTeamId: number;
+
+    const newResource: CreateResourceDto = {
+        url: "http://www.github.com/chingux",
+        title: "Chingu Github repo",
+    };
+    const patchedResource: UpdateResourceDto = {
+        url: "http://www.github.com/chingu-x/chingu-dashboard-be",
+        title: "Chingu Github BE repo",
+    };
+    const invalidResource = {
+        title: "Chingu Github repo",
+    };
 
     const memberShape = {
         avatar: expect.any(String),
@@ -85,17 +77,6 @@ describe("ResourcesController (e2e)", () => {
         app.useGlobalFilters(new CASLForbiddenExceptionFilter());
         app.use(cookieParser());
         await app.init();
-
-        // voyageTeamId of main user
-        const voyageTeam = await findVoyageTeamId(userEmail, prisma);
-        voyageTeamId = voyageTeam!.voyageTeamId;
-
-        const otherVoyageTeam = await findVoyageTeamId(otherUserEmail, prisma);
-        otherVoyageTeamId = otherVoyageTeam!.voyageTeamId;
-
-        if (voyageTeamId === otherVoyageTeamId) {
-            throw new Error("Voyage team IDs should be different");
-        }
     });
 
     afterAll(async () => {
@@ -110,10 +91,8 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux",
-                title: "Chingu Github repo",
-            };
+
+            const voyageTeamId: number = 1;
             const initialResourceCount: number = await countResources(
                 voyageTeamId,
                 prisma,
@@ -147,9 +126,7 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-            const invalidResource = {
-                title: "Chingu Github repo",
-            };
+            const voyageTeamId: number = 1;
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
@@ -165,11 +142,6 @@ describe("ResourcesController (e2e)", () => {
                 app,
             );
             const invalidTeamId = 999;
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux2",
-                title: "Chingu Github repo",
-            };
-
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${invalidTeamId}`)
                 .set("Cookie", [access_token, refresh_token])
@@ -178,10 +150,7 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 401 when the is not looged in", async () => {
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux3",
-                title: "Chingu Github repo",
-            };
+            const voyageTeamId: number = 1;
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
@@ -196,13 +165,7 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux4",
-                title: "Chingu Github repo",
-            };
-
-            const teamId: number = 4;
+            const teamId: number = 1;
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}`)
@@ -271,11 +234,11 @@ describe("ResourcesController (e2e)", () => {
         });
         it("should return 403 and not allow users to GET other teams' resources", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
-                "dan@random.com",
+                "JosoMadar@dayrep.com",
                 "password",
                 app,
             );
-            const voyageTeamId: number = 2;
+            const voyageTeamId: number = 1;
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
                 .set("Cookie", [access_token, refresh_token])
@@ -290,12 +253,11 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
@@ -323,10 +285,6 @@ describe("ResourcesController (e2e)", () => {
                 app,
             );
             const invalidResourceId = 99999;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${invalidResourceId}`)
@@ -342,11 +300,11 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const invalidResource = {
-                url: "Chingu Github repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
@@ -356,13 +314,11 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 401 when the user is not logged in", async () => {
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
-
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
                 .set("Authorization", `${undefined}`)
@@ -376,10 +332,6 @@ describe("ResourcesController (e2e)", () => {
                 app,
             );
             const resourceId: number = 1;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
@@ -396,8 +348,12 @@ describe("ResourcesController (e2e)", () => {
                 "password",
                 app,
             );
-            const resourceToDelete = await findOwnResource(userEmail, prisma);
+            const resourceToDelete = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToDelete!.id;
+            const voyageTeamId: number = 1;
             const initialResourceCount = await countResources(
                 voyageTeamId,
                 prisma,
@@ -452,7 +408,10 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 401 if a user is not logged in", async () => {
-            const resourceToDelete = await findOwnResource(userEmail, prisma);
+            const resourceToDelete = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToDelete!.id;
 
             await request(app.getHttpServer())
