@@ -8,6 +8,8 @@ import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 @Injectable()
 export class ResourcesService {
@@ -17,28 +19,28 @@ export class ResourcesService {
     ) {}
 
     async createNewResource(
-        req,
+        req: CustomRequest,
         createResourceDto: CreateResourceDto,
         teamId: number,
     ) {
         const { url, title } = createResourceDto;
-        const userId = req.user.userId;
 
         // make sure teamId exists
         await this.checkTeamExists(teamId);
 
-        const teamMember =
-            await this.globalService.validateLoggedInAndTeamMember(
-                teamId,
-                userId,
-            );
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
+        const teamMemberId = req.user.voyageTeams.find(
+            (vt) => vt.teamId === teamId,
+        )?.memberId;
 
         const existingResource = await this.prisma.teamResource.findFirst({
             where: {
                 url: url,
                 addedBy: {
+                    id: teamMemberId,
                     voyageTeam: {
-                        id: teamMember.id,
+                        id: teamId,
                     },
                 },
             },
@@ -51,7 +53,7 @@ export class ResourcesService {
             data: {
                 url,
                 title,
-                teamMemberId: teamMember.id,
+                teamMemberId: teamMemberId,
             },
         });
     }

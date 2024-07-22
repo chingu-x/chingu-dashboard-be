@@ -19,11 +19,15 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
     BadRequestErrorArrayResponse,
+    ForbiddenErrorResponse,
 } from "../global/responses/errors";
 import {
     TeamResourceAddedByResponse,
     TeamResourceResponse,
 } from "./resources.response";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Resources")
@@ -32,7 +36,7 @@ export class ResourcesController {
 
     @ApiOperation({
         summary:
-            "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
+            "[Permission: own_team] Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
@@ -51,8 +55,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -60,9 +69,10 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Create, subject: "Resource" })
     @Post("/teams/:teamId")
     createNewResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createResourceDto: CreateResourceDto,
     ) {

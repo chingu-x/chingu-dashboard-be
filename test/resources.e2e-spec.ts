@@ -6,7 +6,9 @@ import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { CreateResourceDto } from "src/resources/dto/create-resource.dto";
 import { UpdateResourceDto } from "src/resources/dto/update-resource.dto";
-import { extractResCookieValueByKey } from "./utils";
+import { extractResCookieValueByKey, loginAndGetTokens } from "./utils";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import * as cookieParser from "cookie-parser";
 
 const loginUser = async (
     email: string,
@@ -101,6 +103,8 @@ describe("ResourcesController (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+        app.use(cookieParser());
         await app.init();
 
         // voyageTeamId of main user
@@ -124,6 +128,11 @@ describe("ResourcesController (e2e)", () => {
 
     describe("/POST voyages/:teamId/resources", () => {
         it("should return 201 and create a new resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const newResource: CreateResourceDto = {
                 url: "http://www.github.com/chingux",
                 title: "Chingu Github repo",
@@ -135,7 +144,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(newResource)
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -156,18 +165,28 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 400 for invalid request body", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const invalidResource = {
                 title: "Chingu Github repo",
             };
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(invalidResource)
                 .expect(400);
         });
 
         it("should return 404 for invalid teamId", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const invalidTeamId = 999;
             const newResource: CreateResourceDto = {
                 url: "http://www.github.com/chingux2",
@@ -176,12 +195,12 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${invalidTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(newResource)
                 .expect(404);
         });
 
-        it("should return 401 and not allow users to POST to other teams' resources", async () => {
+        it("should return 401 when the is not looged in", async () => {
             const newResource: CreateResourceDto = {
                 url: "http://www.github.com/chingux3",
                 title: "Chingu Github repo",
@@ -189,9 +208,30 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `Bearer ${undefined}`)
                 .send(newResource)
                 .expect(401);
+        });
+
+        it("should return 403 when user of other team tries to post a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+
+            const newResource: CreateResourceDto = {
+                url: "http://www.github.com/chingux4",
+                title: "Chingu Github repo",
+            };
+
+            const teamId: number = 4;
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send(newResource)
+                .expect(403);
         });
     });
 
