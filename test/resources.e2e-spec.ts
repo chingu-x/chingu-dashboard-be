@@ -292,7 +292,7 @@ describe("ResourcesController (e2e)", () => {
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
-        it("should return 401 and not allow users to GET other teams' resources", async () => {
+        it("should return 403 and not allow users to GET other teams' resources", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
@@ -302,12 +302,17 @@ describe("ResourcesController (e2e)", () => {
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
                 .set("Cookie", [access_token, refresh_token])
-                .expect(401);
+                .expect(403);
         });
     });
 
     describe("/PATCH :teamId/resources/:resourceId", () => {
         it("should return 200 and update a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const resourceToPatch = await findOwnResource(userEmail, prisma);
             const resourceId: number = resourceToPatch!.id;
             const patchedResource: UpdateResourceDto = {
@@ -317,7 +322,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(patchedResource)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -335,7 +340,12 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid resourceId", async () => {
-            const invalidResourceId = 999;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidResourceId = 99999;
             const patchedResource: UpdateResourceDto = {
                 url: "http://www.github.com/chingu-x/chingu-dashboard-be",
                 title: "Chingu Github BE repo",
@@ -343,13 +353,18 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${invalidResourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(patchedResource)
                 .expect(404)
                 .expect("Content-Type", /json/);
         });
 
         it("should return 400 for invalid request body", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const resourceToPatch = await findOwnResource(userEmail, prisma);
             const resourceId: number = resourceToPatch!.id;
             const invalidResource = {
@@ -358,12 +373,12 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(invalidResource)
                 .expect(400);
         });
 
-        it("should return 401 if a user tries to PATCH a resource created by someone else", async () => {
+        it("should return 401 when the user is not logged in", async () => {
             const resourceToPatch = await findOwnResource(userEmail, prisma);
             const resourceId: number = resourceToPatch!.id;
             const patchedResource: UpdateResourceDto = {
@@ -373,9 +388,27 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `${undefined}`)
                 .send(patchedResource)
                 .expect(401);
+        });
+        it("should return 403 when user of other member tries to patch a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const resourceId: number = 1;
+            const patchedResource: UpdateResourceDto = {
+                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
+                title: "Chingu Github BE repo",
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/resources/${resourceId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send(patchedResource)
+                .expect(403);
         });
     });
 

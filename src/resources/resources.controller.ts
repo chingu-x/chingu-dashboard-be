@@ -99,8 +99,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -128,8 +133,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -149,7 +159,7 @@ export class ResourcesController {
     })
     @Patch("resources/:resourceId")
     updateResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("resourceId", ParseIntPipe) resourceId: number,
         @Body() updateResourceDto: UpdateResourceDto,
     ) {

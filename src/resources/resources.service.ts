@@ -10,6 +10,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
+import { manageOwnResourceById } from "../ability/conditions/resource.ability";
 
 @Injectable()
 export class ResourcesService {
@@ -23,12 +24,11 @@ export class ResourcesService {
         createResourceDto: CreateResourceDto,
         teamId: number,
     ) {
-        const { url, title } = createResourceDto;
-
         // make sure teamId exists
         await this.checkTeamExists(teamId);
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        const { url, title } = createResourceDto;
 
         const teamMemberId = req.user.voyageTeams.find(
             (vt) => vt.teamId === teamId,
@@ -91,14 +91,14 @@ export class ResourcesService {
     }
 
     async updateResource(
-        req,
+        req: CustomRequest,
         resourceId: number,
         updateResourceDto: UpdateResourceDto,
     ) {
         const { url, title } = updateResourceDto;
 
-        // check if logged in user's id matches the userId that created this resource
-        await this.checkAuthAndHandleErrors(resourceId, req.user.userId);
+        // check for own team permissions
+        await manageOwnResourceById(req.user, resourceId);
 
         try {
             return this.prisma.teamResource.update({
@@ -151,7 +151,7 @@ export class ResourcesService {
             throw new UnauthorizedException();
     }
 
-    private async checkTeamExists(teamId) {
+    private async checkTeamExists(teamId: number) {
         const voyageTeam = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
