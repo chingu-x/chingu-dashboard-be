@@ -162,7 +162,8 @@ export class ResourcesController {
     updateResource(
         @Request() req: CustomRequest,
         @Param("resourceId", ParseIntPipe) resourceId: number,
-        @Body() updateResourceDto: UpdateResourceDto,
+        @Body()
+        updateResourceDto: UpdateResourceDto,
     ) {
         return this.resourcesService.updateResource(
             req,

@@ -46,6 +46,7 @@ describe("ResourcesController (e2e)", () => {
     };
     const invalidResource = {
         title: "Chingu Github repo",
+        url: "",
     };
 
     const memberShape = {
