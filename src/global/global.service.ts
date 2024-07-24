@@ -136,23 +136,29 @@ export class GlobalService {
         });
     };
 
-    public validateOrGetDbItemById = async (
+    public validateOrGetDbItem = async (
         dbTableName: string,
-        id: string | number | [number, string] | null | [string, string],
+        searchValue:
+            | string
+            | number
+            | [number, string]
+            | null
+            | [string, string],
+        searchField: string = "id",
         findOptions: string = "findUnique",
-        whereOptions?,
-        queryOptions?, // rest of Prisma query object after "where"
+        whereOptions?, // any additional "where" criteria
+        queryOptions?, // "include" or other Prisma query options after "where: {...},"
         customErrorMessage?,
     ) => {
         const prismaQuery = this.prisma[dbTableName][findOptions]({
             where: {
-                id,
+                searchField,
                 ...whereOptions,
             },
             ...queryOptions,
         });
 
-        let dbItem = await prismaQuery;
+        const dbItem = await prismaQuery;
 
         if (!dbItem) {
             // for if special cases need different error messages
@@ -161,7 +167,7 @@ export class GlobalService {
             } else {
                 // else match most common formatting of existing 404 messages
                 throw new NotFoundException(
-                    `${dbTableName} (id: ${id}) does not exist.`,
+                    `${dbTableName.toUpperCase()} (${searchField}: ${searchValue}) does not exist.`,
                 );
             }
         }
