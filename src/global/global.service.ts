@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
@@ -133,5 +134,38 @@ export class GlobalService {
                     `Question Id ${response.questionId} is not in form ${title} (id: ${form.id})`,
                 );
         });
+    };
+
+    public validateOrGetDbItemById = async (
+        dbTableName: string,
+        id: string | number | [number, string] | null | [string, string],
+        findOptions: string = "findUnique",
+        whereOptions?,
+        queryOptions?, // rest of Prisma query object after "where"
+        customErrorMessage?,
+    ) => {
+        const prismaQuery = this.prisma[dbTableName][findOptions]({
+            where: {
+                id,
+                ...whereOptions,
+            },
+            ...queryOptions,
+        });
+
+        let dbItem = await prismaQuery;
+
+        if (!dbItem) {
+            // for if special cases need different error messages
+            if (customErrorMessage) {
+                customErrorMessage;
+            } else {
+                // else match most common formatting of existing 404 messages
+                throw new NotFoundException(
+                    `${dbTableName} (id: ${id}) does not exist.`,
+                );
+            }
+        }
+
+        return dbItem;
     };
 }
