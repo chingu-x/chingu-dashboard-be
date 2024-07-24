@@ -9,10 +9,14 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 import { manageOwnResourceById } from "../ability/conditions/resource.ability";
+import { GlobalService } from "../global/global.service";
 
 @Injectable()
 export class ResourcesService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private global: GlobalService,
+    ) {}
 
     async createNewResource(
         req: CustomRequest,
@@ -25,9 +29,10 @@ export class ResourcesService {
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
         const { url, title } = createResourceDto;
 
-        const teamMemberId = req.user.voyageTeams.find(
-            (vt) => vt.teamId === teamId,
-        )?.memberId;
+        const teamMemberId: number = this.global.getVoyageTeamMemberId(
+            req,
+            teamId,
+        );
 
         const existingResource = await this.prisma.teamResource.findFirst({
             where: {
