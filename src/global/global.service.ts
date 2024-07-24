@@ -152,7 +152,7 @@ export class GlobalService {
     ) => {
         const prismaQuery = this.prisma[dbTableName][findOptions]({
             where: {
-                searchField,
+                [searchField]: searchValue,
                 ...whereOptions,
             },
             ...queryOptions,
