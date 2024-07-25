@@ -182,7 +182,7 @@ export class GlobalService {
             } else {
                 // else match most common formatting of existing 404 messages
                 throw new NotFoundException(
-                    `${dbTableName.toUpperCase()} (${searchField}: ${searchValue}) does not exist.`,
+                    `${dbTableName.charAt(0).toUpperCase() + dbTableName.slice(1)} (${searchField}: ${searchValue}) does not exist.`,
                 );
             }
         }
