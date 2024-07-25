@@ -638,33 +638,10 @@ export class SprintsService {
         return filteredUniformResponses;
     }
 
-    private checkIfSprintNumberQuery(
-        keyValPairs: Array<[string, string | number]>,
-    ) {
-        const sprintNumberIndex = keyValPairs.findIndex(
-            ([k, _]) => k === "sprintNumber",
-        );
-
-        if (sprintNumberIndex !== -1) {
-            const voyageNumberIndex = keyValPairs.findIndex(
-                ([k, _]) => k === "voyageNumber",
-            );
-            if (voyageNumberIndex === -1) {
-                throw new BadRequestException(
-                    "No voyage number provided for sprint number query",
-                );
-            }
-        }
-
-        return;
-    }
-
     private async buildQuery(inputQuery: CheckinQueryDto): Promise<any> {
         // stores arguments to "where: " clause
         const keyValPairs: Array<[string, string | string | number]> =
             Object.entries(inputQuery).filter(([_, v]) => v);
-        // check if the query was for sprintNumber, throw error if no other key provided
-        this.checkIfSprintNumberQuery(keyValPairs);
 
         const query: any = {};
         const keyIndex = 0;
@@ -676,11 +653,30 @@ export class SprintsService {
 
             switch (currentKey) {
                 case "sprintNumber":
+                    let whereOptions;
+
+                    if (!query) {
+                        //
+                        const voyageNumberIndex = keyValPairs.findIndex(
+                            ([k, _]) => k === "voyageNumber",
+                        );
+                        if (voyageNumberIndex === -1) {
+                            throw new BadRequestException(
+                                "No voyage number provided for sprint number query",
+                            );
+                        }
+                        whereOptions = {
+                            voyage: {
+                                number: keyValPairs[voyageNumberIndex][1],
+                            },
+                        };
+                    }
                     await this.globalServices.validateOrGetDbItem(
                         "sprint",
                         currentVal as number,
                         "findFirst",
                         "number",
+                        whereOptions,
                     );
                     // query.* subfields must be initialized to {} first if empty
                     query.sprint = query.sprint || {};
