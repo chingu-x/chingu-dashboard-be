@@ -679,7 +679,6 @@ export class SprintsService {
                         "voyage",
                         currentVal as string,
                         "number",
-                        "findUnique",
                     );
                     query.sprint = query.sprint || {};
                     query.sprint.voyage = { number: currentVal };
@@ -689,7 +688,6 @@ export class SprintsService {
                         "user",
                         currentVal as string,
                         "id",
-                        "findMany",
                     );
                     query.voyageTeamMember = query.voyageTeamMember || {};
                     query.voyageTeamMember.userId = currentVal;
