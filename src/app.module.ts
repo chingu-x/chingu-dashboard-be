@@ -19,6 +19,7 @@ import { TasksModule } from "./tasks/tasks.module";
 import { VoyagesModule } from "./voyages/voyages.module";
 import { AbilityModule } from "./ability/ability.module";
 import { AbilitiesGuard } from "./auth/guards/abilities.guard";
+import { DevelopmentModule } from "./development/development.module";
 
 @Module({
     imports: [
@@ -33,7 +34,7 @@ import { AbilitiesGuard } from "./auth/guards/abilities.guard";
                     { path: "/", module: TechsModule },
                     { path: "/", module: FeaturesModule },
                     {
-                        path: "teams/:teamId/ideations",
+                        path: "/",
                         module: IdeationsModule,
                     },
                     { path: "sprints", module: SprintsModule },
@@ -55,6 +56,7 @@ import { AbilitiesGuard } from "./auth/guards/abilities.guard";
         TasksModule,
         VoyagesModule,
         AbilityModule,
+        DevelopmentModule,
     ],
     controllers: [HealthCheckController],
     providers: [

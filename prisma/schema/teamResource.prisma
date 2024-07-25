@@ -1,0 +1,12 @@
+// === Voyage Team Resources ===
+
+model TeamResource {
+  id           Int               @id @default(autoincrement())
+  teamMemberId Int?
+  addedBy      VoyageTeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: SetNull)
+  url          String
+  title        String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}

@@ -31,6 +31,7 @@ export const manageOwnVoyageTeam = (user: UserReq, voyageTeam: VoyageTeam) => {
         voyageTeams: [{ teamId: 2, memberId: 1 }],
         userId: "userId",
         email: "email",
+        isVerified: true,
         roles: ["voyager"],
     };
     const ability = abilityFactory.defineAbility(mockUser);

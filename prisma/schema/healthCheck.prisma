@@ -1,0 +1,8 @@
+model HealthCheck {
+  id         Int    @id @default(autoincrement())
+  statusCode Int
+  resMsg     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

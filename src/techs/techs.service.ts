@@ -10,7 +10,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "src/global/types/CustomRequest";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -30,40 +31,10 @@ export class TechsService {
         }
     };
 
-    validTeamMember = (req: CustomRequest, teamId: number) => {
-        // teams of which the logged in user is a member
-        const teams = req.user.voyageTeams;
+    getAllTechItemsByTeamId = async (teamId: number, req: CustomRequest) => {
+        await this.validateTeamId(teamId);
 
-        // check if the teamId is in the teams array
-        const voyageMember = teams.filter((team) => team.teamId === teamId);
-        if (voyageMember.length === 0) {
-            throw new BadRequestException(
-                "User is not in the specified team, check voyageTeamId or voyageTeamMemberId is correct.",
-            );
-        }
-
-        return voyageMember[0].memberId;
-    };
-
-    findVoyageMemberId = async (
-        req,
-        teamId: number,
-    ): Promise<number | null> => {
-        const uuid = req.user.userId;
-        const voyageMember = await this.prisma.voyageTeamMember.findUnique({
-            where: {
-                userVoyageId: {
-                    userId: uuid,
-                    voyageTeamId: teamId,
-                },
-            },
-        });
-        return voyageMember ? voyageMember.id : null;
-    };
-
-    getAllTechItemsByTeamId = async (teamId: number) => {
-        this.validateTeamId(teamId);
-
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
         return this.prisma.techStackCategory.findMany({
             select: {
                 id: true,
@@ -76,6 +47,7 @@ export class TechsService {
                     select: {
                         id: true,
                         name: true,
+                        isSelected: true,
                         teamTechStackItemVotes: {
                             select: {
                                 votedBy: {
@@ -99,10 +71,16 @@ export class TechsService {
     };
 
     async updateTechStackSelections(
-        req,
+        req: CustomRequest,
         teamId: number,
         updateTechSelectionsDto: UpdateTechSelectionsDto,
     ) {
+        //check for valid teamId
+        await this.validateTeamId(teamId);
+
+        //check if user is a member of the team
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
         const categories = updateTechSelectionsDto.categories;
 
         //count selections in categories for exceeding MAX_SELECT_COUNT
@@ -116,10 +94,6 @@ export class TechsService {
                     `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
                 );
         });
-
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (!voyageMemberId)
-            throw new BadRequestException("Invalid User or Team Id");
 
         //extract techs to an array for .map
         const techsArray: any[] = [];
@@ -141,20 +115,14 @@ export class TechsService {
     }
 
     async addNewTeamTech(
-        req,
+        req: CustomRequest,
         teamId: number,
         createTechVoteDto: CreateTeamTechDto,
     ) {
         //check for valid teamId
         await this.validateTeamId(teamId);
 
-        // To Check if the voyageTeamMemberId in request body is in the voyageTeam
-        const voyageMemberId = await this.findVoyageMemberId(req, teamId);
-        if (
-            !voyageMemberId ||
-            voyageMemberId !== createTechVoteDto.voyageTeamMemberId
-        )
-            throw new BadRequestException("Invalid User or Team Id");
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
@@ -202,15 +170,7 @@ export class TechsService {
                 id: teamTechItemId,
             },
             select: {
-                addedBy: {
-                    select: {
-                        member: {
-                            select: {
-                                id: true,
-                            },
-                        },
-                    },
-                },
+                voyageTeamId: true,
                 teamTechStackItemVotes: {
                     select: {
                         votedBy: {
@@ -230,6 +190,8 @@ export class TechsService {
             throw new NotFoundException(
                 `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
             );
+
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
 
         // check if the tech stack item has votes other than the user created it
         if (teamTechItem.teamTechStackItemVotes.length > 1) {
@@ -301,15 +263,7 @@ export class TechsService {
                         id: teamTechItemId,
                     },
                     select: {
-                        addedBy: {
-                            select: {
-                                member: {
-                                    select: {
-                                        id: true,
-                                    },
-                                },
-                            },
-                        },
+                        voyageTeamId: true,
                         teamTechStackItemVotes: {
                             select: {
                                 votedBy: {
@@ -331,6 +285,8 @@ export class TechsService {
                 throw new NotFoundException(
                     `[Tech Service]: Team Tech Stack Item with id:${teamTechItemId} not found`,
                 );
+
+            manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
 
             // check if the tech stack item has votes other than the user created it
             if (teamTechItem.teamTechStackItemVotes.length > 1) {
@@ -362,7 +318,7 @@ export class TechsService {
         }
     }
 
-    async addExistingTechVote(req, teamTechItemId: number) {
+    async addExistingTechVote(req: CustomRequest, teamTechItemId: number) {
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
             where: {
@@ -371,14 +327,13 @@ export class TechsService {
         });
 
         if (!teamTechItem)
-            throw new BadRequestException("Team Tech Item not found");
+            throw new NotFoundException("Team Tech Item not found");
 
-        // check if the user is a member of the team
-        // Note: This can be removed after new authorization is implemented
-        const voyageMemberId = this.validTeamMember(
-            req,
-            teamTechItem.voyageTeamId,
-        );
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
+        const voyageMemberId = req.user.voyageTeams.find(
+            (vt) => vt.teamId === teamTechItem.voyageTeamId,
+        )!.memberId;
 
         try {
             const teamMemberTechVote =
@@ -415,14 +370,13 @@ export class TechsService {
         });
 
         if (!teamTechItem)
-            throw new BadRequestException("Team Tech Item not found");
+            throw new NotFoundException("Team Tech Item not found");
 
-        // check if the user is a member of the team
-        // Note: This can be removed after new authorization is implemented
-        const voyageMemberId = this.validTeamMember(
-            req,
-            teamTechItem.voyageTeamId,
-        );
+        manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
+        const voyageMemberId = req.user.voyageTeams.find(
+            (vt) => vt.teamId === teamTechItem.voyageTeamId,
+        )!.memberId;
 
         try {
             await this.prisma.teamTechStackItemVote.delete({

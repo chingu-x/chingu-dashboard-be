@@ -134,9 +134,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/POST voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+    describe("/POST voyages/ideations/:ideationId/ideation-votes", () => {
         const ideationId = 1;
-        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
+        const ideationVoteUrl = `/voyages/ideations/${ideationId}/ideation-votes`;
 
         it("should return 201 if an ideation vote is successfully created", async () => {
             // login to another user in the same team to vote
@@ -173,15 +173,20 @@ describe("IdeationsController (e2e)", () => {
         });
 
         it("should return 403 when user is voting for another ideation which belongs to another team", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
-                .post(`/voyages/teams/2/ideations/4/ideation-votes`)
-                .set("Cookie", accessToken)
+                .post(`/voyages/ideations/4/ideation-votes`)
+                .set("Cookie", access_token)
                 .expect(403);
         });
 
         it("should return 404 when the ideation ID doesn't exist", async () => {
             await request(app.getHttpServer())
-                .post(`/voyages/teams/1/ideations/20/ideation-votes`)
+                .post(`/voyages/ideations/20/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(404);
         });
@@ -194,9 +199,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/DELETE voyages/teams/:teamId/ideations/:ideationId/ideation-votes", () => {
+    describe("/DELETE voyages/ideations/:ideationId/ideation-votes", () => {
         const ideationId = 1;
-        const ideationVoteUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}/ideation-votes`;
+        const ideationVoteUrl = `/voyages/ideations/${ideationId}/ideation-votes`;
 
         it("should return 200 when ideation vote is deleted", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
@@ -243,9 +248,7 @@ describe("IdeationsController (e2e)", () => {
             const ideationVoteCountBefore =
                 await prisma.projectIdeaVote.count();
             await request(app.getHttpServer())
-                .delete(
-                    `/voyages/teams/${userVoyageTeamId}/ideations/8/ideation-votes`,
-                )
+                .delete(`/voyages/ideations/8/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(400);
 
@@ -259,9 +262,7 @@ describe("IdeationsController (e2e)", () => {
         // Note: this should be 404
         it("should return 400 when ideation id does not exist", async () => {
             await request(app.getHttpServer())
-                .delete(
-                    `/voyages/teams/${userVoyageTeamId}/ideations/100/ideation-votes`,
-                )
+                .delete(`/voyages/ideations/100/ideation-votes`)
                 .set("Cookie", accessToken)
                 .expect(400);
         });
@@ -287,9 +288,9 @@ describe("IdeationsController (e2e)", () => {
         });
     });
 
-    describe("/PATCH /teams/:teamId/ideations/:ideationId", () => {
+    describe("/PATCH /ideations/:ideationId", () => {
         const ideationId = 2;
-        const updateIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
+        const updateIdeationUrl = `/voyages/ideations/${ideationId}`;
         it("should return 200 if update is successful", async () => {
             const ideationToUpdate = await prisma.projectIdea.findUnique({
                 where: { id: ideationId },
@@ -314,37 +315,30 @@ describe("IdeationsController (e2e)", () => {
                 .expect(200);
         });
 
-        it("should return 400 when ideation Id is not in the specified team", async () => {
-            await request(app.getHttpServer())
-                .patch(`/voyages/teams/2/ideations/1`)
-                .set("Cookie", accessToken)
-                .expect(400);
-        });
-
         it("should return 401 when user is not logged in", async () => {
             await request(app.getHttpServer())
                 .patch(updateIdeationUrl)
                 .expect(401);
         });
 
-        it("should return 403 when user tries to delete someone else's ideation in the same team", async () => {
+        it("should return 403 when user tries to update someone else's ideation in the same team", async () => {
             await request(app.getHttpServer())
-                .patch(`/voyages/teams/${userVoyageTeamId}/ideations/8`)
+                .patch(`/voyages/ideations/8`)
                 .set("Cookie", accessToken)
                 .expect(403);
         });
 
         it("should return 404 when ideation Id does not exist", async () => {
             await request(app.getHttpServer())
-                .patch(`/voyages/teams/1/ideations/100`)
+                .patch(`/voyages/ideations/100`)
                 .set("Cookie", accessToken)
                 .expect(404);
         });
     });
 
-    describe("/DELETE /teams/:teamId/ideations/:ideationId", () => {
+    describe("/DELETE /ideations/:ideationId", () => {
         const ideationId = 1;
-        const deleteIdeationUrl = `/voyages/teams/${userVoyageTeamId}/ideations/${ideationId}`;
+        const deleteIdeationUrl = `/voyages/ideations/${ideationId}`;
 
         // user can only delete their own ideation when there is no votes except their own,
         // this will also delete their own vote if exist
@@ -354,7 +348,7 @@ describe("IdeationsController (e2e)", () => {
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/3`)
+                .delete(`/voyages/ideations/3`)
                 .set("Cookie", accessToken)
                 .expect(200);
 
@@ -365,15 +359,13 @@ describe("IdeationsController (e2e)", () => {
             expect(ideationVoteCountAfter).toEqual(ideationVoteCountBefore - 1);
         });
 
-        // user cannot delete someone else's ideation
-        // Note: should be 403
         it("should return 400 if the user delete their own ideation with other votes", async () => {
             const ideationCountBefore = await prisma.projectIdea.count();
             const ideationVoteCountBefore =
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/7`)
+                .delete(`/voyages/ideations/7`)
                 .set("Cookie", accessToken)
                 .expect(400);
 
@@ -390,12 +382,11 @@ describe("IdeationsController (e2e)", () => {
                 .expect(401);
         });
 
-        // Should be 404
-        it("should return 400 if ideation Id does not exist", async () => {
+        it("should return 404 if ideation Id does not exist", async () => {
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/200`)
+                .delete(`/voyages/ideations/200`)
                 .set("Cookie", accessToken)
-                .expect(400);
+                .expect(404);
         });
 
         // user cannot delete ideation with votes in it
@@ -408,7 +399,7 @@ describe("IdeationsController (e2e)", () => {
             );
 
             await request(app.getHttpServer())
-                .post(`/voyages/teams/1/ideations/2/ideation-votes`)
+                .post(`/voyages/ideations/2/ideation-votes`)
                 .set("Cookie", access_token)
                 .expect(201);
 
@@ -417,7 +408,7 @@ describe("IdeationsController (e2e)", () => {
                 await prisma.projectIdeaVote.count();
 
             await request(app.getHttpServer())
-                .delete(`/voyages/teams/${userVoyageTeamId}/ideations/2`)
+                .delete(`/voyages/ideations/2`)
                 .set("Cookie", accessToken)
                 .expect(409);
 

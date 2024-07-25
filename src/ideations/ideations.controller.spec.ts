@@ -74,7 +74,6 @@ describe("IdeationsController", () => {
 
     it("should create an ideation vote", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const teamId = 1;
         const ideationId = 1;
         const req = {
             user: {
@@ -83,7 +82,6 @@ describe("IdeationsController", () => {
         } as CustomRequest;
         const ideationVote = await controller.createIdeationVote(
             req,
-            teamId,
             ideationId,
         );
 
@@ -112,7 +110,6 @@ describe("IdeationsController", () => {
     it("should update an ideation", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const teamId = 1;
         const req = {
             user: {
                 userId: userId,
@@ -126,7 +123,6 @@ describe("IdeationsController", () => {
         const ideation = await controller.updateIdeation(
             req,
             ideationId,
-            teamId,
             updateIdeationDto,
         );
         expect(service.updateIdeation).toHaveBeenCalled();
@@ -136,17 +132,12 @@ describe("IdeationsController", () => {
     it("should delete an ideation", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
         const ideationId = 1;
-        const teamId = 1;
         const req = {
             user: {
                 userId: userId,
             },
         } as CustomRequest;
-        const ideation = await controller.deleteIdeation(
-            req,
-            teamId,
-            ideationId,
-        );
+        const ideation = await controller.deleteIdeation(req, ideationId);
 
         expect(service.deleteIdeation).toHaveBeenCalled();
         expect(ideation).toBe(true);
@@ -154,7 +145,6 @@ describe("IdeationsController", () => {
 
     it("should delete an ideation vote", async () => {
         const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const teamId = 1;
         const ideationId = 1;
         const req = {
             user: {
@@ -163,7 +153,6 @@ describe("IdeationsController", () => {
         } as CustomRequest;
         const ideationVote = await controller.deleteIdeationVote(
             req,
-            teamId,
             ideationId,
         );
 
