@@ -867,4 +867,44 @@ export class SprintsService {
 
         return query;
     }
+
+    private async executeQuery(query: any): Promise<any> {
+        const queryOptions = {
+            include: {
+                voyageTeamMember: {
+                    select: {
+                        voyageTeamId: true,
+                    },
+                },
+                sprint: {
+                    include: {
+                        voyage: {
+                            select: {
+                                number: true,
+                            },
+                        },
+                    },
+                },
+                responseGroup: {
+                    select: {
+                        responses: {
+                            include: {
+                                question: true,
+                                optionChoice: true,
+                            },
+                        },
+                    },
+                },
+            },
+        };
+
+        return this.globalServices.validateOrGetDbItem(
+            "formResponseCheckin",
+            null,
+            "findMany",
+            "",
+            query,
+            queryOptions,
+        );
+    }
 }
