@@ -1115,6 +1115,7 @@ describe("Sprints Controller (e2e)", () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         };
+
         const optionChoiceShape = {
             id: expect.any(Number),
             optionGroupId: expect.any(Number),
@@ -1122,7 +1123,8 @@ describe("Sprints Controller (e2e)", () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         };
-        const responseGroupShape = {
+
+        const responseShape = {
             id: expect.any(Number),
             questionId: expect.any(Number),
             optionChoiceId: expect.toBeOneOf([null, expect.any(Number)]),
@@ -1133,25 +1135,38 @@ describe("Sprints Controller (e2e)", () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             question: expect.objectContaining(questionShape),
-            optionChoice: expect.toBeOneOf([optionChoiceShape]),
+            optionChoice: expect.toBeOneOf([
+                null,
+                expect.objectContaining(optionChoiceShape),
+            ]),
         };
+
+        const responseGroupShape = {
+            responses: expect.arrayContaining([
+                expect.objectContaining(responseShape),
+            ]),
+        };
+
+        const sprintWithVoyageNumberShape = {
+            number: expect.any(Number),
+            voyage: expect.objectContaining({
+                number: expect.any(String),
+            }),
+        };
+
         const formResponseCheckinShape = {
             id: expect.any(Number),
             voyageTeamMemberId: expect.any(Number),
             sprintId: expect.any(Number),
             adminComments: expect.toBeOneOf([null, expect.any(String)]),
             feedbackSent: expect.any(Boolean),
-            responseGroupId: expect.any(Number),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             voyageTeamMember: expect.objectContaining({
                 voyageTeamId: expect.any(Number),
             }),
-            responseGroup: expect.objectContaining({
-                responses: expect.arrayContaining([
-                    expect.objectContaining(responseGroupShape),
-                ]),
-            }),
+            sprint: expect.objectContaining(sprintWithVoyageNumberShape),
+            responseGroup: expect.objectContaining(responseGroupShape),
         };
 
         beforeEach(async () => {
