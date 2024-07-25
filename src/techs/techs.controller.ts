@@ -29,7 +29,10 @@ import {
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "src/global/types/CustomRequest";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
+import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Techs")
@@ -37,12 +40,28 @@ export class TechsController {
     constructor(private readonly techsService: TechsService) {}
 
     @ApiOperation({
-        summary: "Gets all selected tech for a team given a teamId (int)",
+        summary:
+            "[Permission: own_team] Gets all selected tech for a team given a teamId (int)",
     })
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully gets all selected tech stack for a team",
         type: TeamTechResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid team id",
+        type: NotFoundErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -52,13 +71,17 @@ export class TechsController {
         example: 1,
     })
     @Get("teams/:teamId/techs")
-    getAllTechItemsByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.techsService.getAllTechItemsByTeamId(teamId);
+    @CheckAbilities({ action: Action.Read, subject: "TeamTechStackItem" })
+    getAllTechItemsByTeamId(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.techsService.getAllTechItemsByTeamId(teamId, req);
     }
 
     @ApiOperation({
         summary:
-            "Adds a new tech (not already chosen by the team) to the team, and set first voter.",
+            "[Permission: own_team] Adds a new tech (not already chosen by the team) to the team, and set first voter.",
         description: "Requires login",
     })
     @ApiResponse({
@@ -78,8 +101,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -88,17 +116,20 @@ export class TechsController {
         required: true,
         example: 2,
     })
+    @CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
     @Post("teams/:teamId/techs")
     addNewTeamTech(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) createTeamTechDto: CreateTeamTechDto,
+        @Body(ValidationPipe, VoyageTeamMemberValidationPipe)
+        createTeamTechDto: CreateTeamTechDto,
     ) {
         return this.techsService.addNewTeamTech(req, teamId, createTeamTechDto);
     }
 
     @ApiOperation({
-        summary: "Updates a existing tech stack item in the team",
+        summary:
+            "[Permission: own_team] Updates a existing tech stack item in the team",
         description: "Requires login",
     })
     @ApiResponse({
@@ -107,14 +138,14 @@ export class TechsController {
         type: TechItemUpdateResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "User is unauthorized to perform this action",
-        type: ForbiddenErrorResponse,
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized when user is not logged in",
-        type: UnauthorizedErrorResponse,
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -138,6 +169,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("techs/:teamTechItemId")
     updateTeamTech(
         @Request() req: CustomRequest,
@@ -152,7 +184,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Delete a tech stack item of a team",
+        summary: "[Permission: own_team] Delete a tech stack item of a team",
         description: "Requires login",
     })
     @ApiResponse({
@@ -161,14 +193,14 @@ export class TechsController {
         type: TechItemDeleteResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "User is unauthorized to perform this action",
-        type: ForbiddenErrorResponse,
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized when user is not logged in",
-        type: UnauthorizedErrorResponse,
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -187,6 +219,7 @@ export class TechsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
     @Delete("techs/:teamTechItemId")
     deleteTeamTech(
         @Request() req: CustomRequest,
@@ -197,7 +230,7 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            'Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
+            '[Permission: own_team] Votes for an existing tech / adds the voter to the votedBy list. VotedBy: "UserId:uuid"',
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
@@ -217,8 +250,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamTechItemId",
@@ -227,6 +265,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
+    @CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
     @Post("techs/:teamTechItemId/vote")
     addExistingTechVote(
         @Request() req: CustomRequest,
@@ -236,7 +275,7 @@ export class TechsController {
     }
 
     @ApiOperation({
-        summary: "Removes logged in users vote.",
+        summary: "[Permission: own_team] Removes logged in users vote.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -256,8 +295,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamTechItemId",
@@ -266,6 +310,7 @@ export class TechsController {
         required: true,
         example: 6,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
     @Delete("techs/:teamTechItemId/vote")
     removeVote(
         @Request() req: CustomRequest,
@@ -276,7 +321,7 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
+            "[Permission: own_team]  Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
         description:
             "Maximum of 3 selections per category allowed.  All tech items (isSelected === true/false) are required for updated categories. Login required.",
     })
@@ -292,8 +337,13 @@ export class TechsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -302,6 +352,7 @@ export class TechsController {
         required: true,
         example: 2,
     })
+    @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("teams/:teamId/techs/selections")
     updateTechStackSelections(
         @Request() req,

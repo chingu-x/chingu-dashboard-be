@@ -32,12 +32,16 @@ export class AbilityFactory {
             can([Action.Manage], "VoyageTeam", {
                 id: { in: user.voyageTeams.map((vt) => vt.teamId) },
             });
+            // For Ideation and Tech stack, we make the permission team based here
+            // as there are times we'll need them to be able to manage other team members ideations/tech
+            // more specific permission checks can be found in `ideations.ability.ts` etc
             can([Action.Manage], "Ideation", {
                 voyageTeamMemberId: {
                     in: user.voyageTeams.map((vt) => vt.memberId),
                 },
             });
             can([Action.Submit, Action.Read], "Form");
+            can([Action.Manage], "TeamTechStackItem");
         } else {
             // all other users
             can([Action.Submit, Action.Read], "Form", {

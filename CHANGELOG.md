@@ -50,6 +50,8 @@ Another example [here](https://co-pilot.dev/changelog)
 
 - Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))
 
+- Add CASL permissions for Tech endpoint ([#174](https://github.com/chingu-x/chingu-dashboard-be/pull/174))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
@@ -77,7 +79,8 @@ Another example [here](https://co-pilot.dev/changelog)
 - Updated DELETE ideation-vote service to also delete ideation when no votes remain [#161](https://github.com/chingu-x/chingu-dashboard-be/pull/161)
 - Refactored the prisma models to be grouped by domain type [#172](https://github.com/chingu-x/chingu-dashboard-be/pull/172)
 - Updated response for GET teams/:teamId/techs to include isSelected value for techs [#173](https://github.com/chingu-x/chingu-dashboard-be/pull/173)
-
+- Refactor ideation endpoints to remove redundant teamId params  [#175](https://github.com/chingu-x/chingu-dashboard-be/pull/175)
+- Squashed migration files into one [#176](https://github.com/chingu-x/chingu-dashboard-be/pull/176)
 
 
 ### Fixed
