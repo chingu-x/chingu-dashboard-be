@@ -656,8 +656,8 @@ export class SprintsService {
                     await this.globalServices.validateOrGetDbItem(
                         "sprint",
                         currentVal as number,
-                        "findFirst",
                         "number",
+                        "findFirst",
                     );
                     // query.* subfields must be initialized to {} first if empty
                     query.sprint = query.sprint || {};
@@ -678,8 +678,8 @@ export class SprintsService {
                     await this.globalServices.validateOrGetDbItem(
                         "voyage",
                         currentVal as string,
-                        "findUnique",
                         "number",
+                        "findUnique",
                     );
                     query.sprint = query.sprint || {};
                     query.sprint.voyage = { number: currentVal };
@@ -688,6 +688,7 @@ export class SprintsService {
                     await this.globalServices.validateOrGetDbItem(
                         "user",
                         currentVal as string,
+                        "id",
                         "findMany",
                     );
                     query.voyageTeamMember = query.voyageTeamMember || {};
@@ -713,7 +714,8 @@ export class SprintsService {
                     },
                 },
                 sprint: {
-                    include: {
+                    select: {
+                        number: true,
                         voyage: {
                             select: {
                                 number: true,
