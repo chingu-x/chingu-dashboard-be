@@ -557,7 +557,7 @@ export class SprintsController {
         summary:
             "[Admin only]: gets checkin forms given a sprintNumber, voyageId, userId, or teamId",
         description:
-            "Takes any 1 of 4 keys: sprintNumber, voyageId, userId, or teamId",
+            "Takes any combination of 4 keys: sprintNumber, voyageId, userId, or teamId",
     })
     @ApiResponse({
         status: HttpStatus.OK,
