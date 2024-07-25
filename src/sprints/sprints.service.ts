@@ -803,4 +803,68 @@ export class SprintsService {
 
         return checkinFormResponse;
     }
+
+    private async buildQuery(inputQuery: CheckinQueryDto): Promise<any> {
+        // stores arguments to "where: " clause
+        const keyValPairs: Array<[string, string | string | number]> =
+            Object.entries(inputQuery).filter(([_, v]) => v);
+        const query: any = {};
+        const keyIndex = 0;
+        const valIndex = 1;
+
+        for (let i = 0; i < keyValPairs.length; i++) {
+            const currentKey = keyValPairs[i][keyIndex];
+            const currentVal = keyValPairs[i][valIndex];
+
+            switch (currentKey) {
+                case "sprintNumber":
+                    await this.globalServices.validateOrGetDbItem(
+                        "sprint",
+                        currentVal as number,
+                        "findFirst",
+                        "number",
+                    );
+                    // query.* subfields must be initialized to {} first if empty
+                    query.sprint = query.sprint || {};
+                    query.sprint = {
+                        ...query.sprint,
+                        number: currentVal,
+                    };
+                    break;
+                case "teamId":
+                    await this.globalServices.validateOrGetDbItem(
+                        "voyageTeam",
+                        currentVal as number,
+                    );
+                    query.voyageTeamMember = query.voyageTeamMember || {};
+                    query.voyageTeamMember.voyageTeamId = currentVal;
+                    break;
+                case "voyageNumber":
+                    await this.globalServices.validateOrGetDbItem(
+                        "voyage",
+                        currentVal as string,
+                        "findUnique",
+                        "number",
+                    );
+                    query.sprint = query.sprint || {};
+                    query.sprint.voyage = { number: currentVal };
+                    break;
+                case "userId":
+                    await this.globalServices.validateOrGetDbItem(
+                        "user",
+                        currentVal as string,
+                        "findMany",
+                    );
+                    query.voyageTeamMember = query.voyageTeamMember || {};
+                    query.voyageTeamMember.userId = currentVal;
+                    break;
+                default:
+                    throw new BadRequestException(
+                        `Query ${currentKey} did not match any keywords`,
+                    );
+            }
+        }
+
+        return query;
+    }
 }

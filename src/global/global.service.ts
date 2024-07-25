@@ -173,7 +173,7 @@ export class GlobalService {
             ...queryOptions,
         });
 
-        let dbItem = await prismaQuery;
+        const dbItem = await prismaQuery;
 
         if (!dbItem) {
             // for if special cases need different error messages
