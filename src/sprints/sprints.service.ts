@@ -704,7 +704,8 @@ export class SprintsService {
     }
 
     private async executeQuery(query: any): Promise<any> {
-        const queryOptions = {
+        return this.prisma.formResponseCheckin.findMany({
+            where: query,
             include: {
                 voyageTeamMember: {
                     select: {
@@ -731,15 +732,6 @@ export class SprintsService {
                     },
                 },
             },
-        };
-
-        return this.globalServices.validateOrGetDbItem(
-            "formResponseCheckin",
-            null,
-            "findMany",
-            "",
-            query,
-            queryOptions,
-        );
+        });
     }
 }
