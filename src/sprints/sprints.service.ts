@@ -618,190 +618,24 @@ export class SprintsService {
     }
 
     async getCheckinFormResponse(query: CheckinQueryDto) {
-        // put query's key/val pair(s) into array of arrays for switch statement logic and error handling
-        const keyValPairs: Array<[string, string | number]> = Object.entries(
-            query,
-        ).filter(([_, v]) => v);
+        const queryToExecute = await this.buildQuery(query);
 
-        const sprintNumberIndex = keyValPairs.findIndex(
-            ([k, _]) => k === "sprintNumber",
-        );
-        let key, val;
-
-        // if sprintNumber is found, handle separately and store with voyageNumber's val included
-        if (sprintNumberIndex !== -1) {
-            const voyageNumberIndex = keyValPairs.findIndex(
-                ([k, _]) => k === "voyageNumber",
-            );
-            if (voyageNumberIndex !== -1) {
-                key = "sprintNumber";
-                val = [
-                    Number(keyValPairs[sprintNumberIndex][1]),
-                    keyValPairs[voyageNumberIndex][1],
-                ];
-            } else {
-                throw new BadRequestException(
-                    "No voyage number provided for sprint number query",
-                );
-            }
-        } else {
-            // just grab the first key if there are multiple provided by accident
-            [key, val] = keyValPairs[0] || [];
-        }
-
-        if (!key) {
-            throw new BadRequestException("No query provided");
-        }
-
-        let checkinFormResponse;
-
-        switch (key) {
-            case "teamId":
-                checkinFormResponse =
-                    await this.prisma.formResponseCheckin.findMany({
-                        where: {
-                            voyageTeamMember: {
-                                voyageTeamId: val,
-                            },
-                        },
-                        include: {
-                            voyageTeamMember: {
-                                select: {
-                                    voyageTeamId: true,
-                                },
-                            },
-                            responseGroup: {
-                                select: {
-                                    responses: {
-                                        include: {
-                                            question: true,
-                                            optionChoice: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    });
-                break;
-            case "sprintNumber":
-                checkinFormResponse =
-                    await this.prisma.formResponseCheckin.findMany({
-                        where: {
-                            sprint: {
-                                number: val[0],
-                                voyage: {
-                                    number: val[1],
-                                },
-                            },
-                        },
-                        include: {
-                            voyageTeamMember: {
-                                select: {
-                                    voyageTeamId: true,
-                                },
-                            },
-                            responseGroup: {
-                                select: {
-                                    responses: {
-                                        include: {
-                                            question: true,
-                                            optionChoice: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        orderBy: {
-                            voyageTeamMember: {
-                                voyageTeamId: "asc",
-                            },
-                        },
-                    });
-                break;
-            case "voyageNumber":
-                checkinFormResponse =
-                    await this.prisma.formResponseCheckin.findMany({
-                        where: {
-                            sprint: {
-                                voyage: {
-                                    number: val,
-                                },
-                            },
-                        },
-                        include: {
-                            voyageTeamMember: {
-                                select: {
-                                    voyageTeamId: true,
-                                },
-                            },
-                            responseGroup: {
-                                select: {
-                                    responses: {
-                                        include: {
-                                            question: true,
-                                            optionChoice: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    });
-                break;
-            case "userId":
-                checkinFormResponse =
-                    await this.prisma.voyageTeamMember.findMany({
-                        where: {
-                            userId: val,
-                        },
-                        include: {
-                            checkinForms: {
-                                include: {
-                                    voyageTeamMember: {
-                                        select: {
-                                            voyageTeamId: true,
-                                        },
-                                    },
-                                    responseGroup: {
-                                        select: {
-                                            responses: {
-                                                include: {
-                                                    question: true,
-                                                    optionChoice: true,
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    });
-                break;
-            default:
-                throw new BadRequestException(
-                    `Query ${key[0]} did not match any keywords`,
-                );
-        }
+        const checkinFormResponses = await this.executeQuery(queryToExecute);
 
         // make responses uniform and get rid of empty arrays
-        checkinFormResponse = checkinFormResponse.flatMap(
+        const uniformResponses = checkinFormResponses.flatMap(
             (item) => item.checkinForms || [item],
         );
-        checkinFormResponse = checkinFormResponse.filter(
+        const filteredUniformResponses = uniformResponses.filter(
             (item) => Object.keys(item).length > 0,
         );
 
-        // no matches
-        if (checkinFormResponse.length < 1) {
-            throw new NotFoundException(
-                `Query ${
-                    Array.isArray(val)
-                        ? `sprintNumber with value ${val[0]} and voyageNumber with value ${val[1]}`
-                        : `${[key]} with value ${[val]}`
-                } did not match any check-in form responses`,
-            );
+        // if no matches, return empty array and status code 200
+        if (filteredUniformResponses.length < 1) {
+            return [];
         }
 
-        return checkinFormResponse;
+        return filteredUniformResponses;
     }
 
     private async buildQuery(inputQuery: CheckinQueryDto): Promise<any> {
