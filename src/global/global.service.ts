@@ -136,7 +136,22 @@ export class GlobalService {
         });
     };
 
-    public validateOrGetDbItem = async (
+    /**
+     * Validates the existence of or retrieves a database item. Additional, optional criteria
+     * and options are supported for flexibility but the intent is for simple queries.
+     *
+     * @param dbTableName - The name of the database table to query.
+     * @param searchValue - The value to search in the id (default) or other field.
+     *
+     * @param searchField - (Optional) The field to search by (defaults to "id").
+     * @param findOptions - (Optional) Prisma query method (defaults to "findUnique").
+     * @param whereOptions - (Optional) Additional query criteria.
+     * @param queryOptions - (Optional) Prisma query options (e.g., `include` or `select`).
+     * @param customErrorMessage - (Optional) Custom error message instead of default 404.
+     *
+     * @returns The database item or throws an error if not found.
+     */
+    public validateOrGetDbItem = async <T>(
         dbTableName: string,
         searchValue:
             | string
@@ -146,10 +161,10 @@ export class GlobalService {
             | [string, string],
         searchField: string = "id",
         findOptions: string = "findUnique",
-        whereOptions?, // any additional "where" criteria
-        queryOptions?, // "include" or other Prisma query options after "where: {...},"
+        whereOptions?: Record<string, any>,
+        queryOptions?,
         customErrorMessage?,
-    ) => {
+    ): Promise<T | null> => {
         const prismaQuery = this.prisma[dbTableName][findOptions]({
             where: {
                 [searchField]: searchValue,
@@ -158,7 +173,7 @@ export class GlobalService {
             ...queryOptions,
         });
 
-        const dbItem = await prismaQuery;
+        let dbItem = await prismaQuery;
 
         if (!dbItem) {
             // for if special cases need different error messages
