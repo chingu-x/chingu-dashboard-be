@@ -653,30 +653,11 @@ export class SprintsService {
 
             switch (currentKey) {
                 case "sprintNumber":
-                    let whereOptions;
-
-                    if (!query) {
-                        //
-                        const voyageNumberIndex = keyValPairs.findIndex(
-                            ([k, _]) => k === "voyageNumber",
-                        );
-                        if (voyageNumberIndex === -1) {
-                            throw new BadRequestException(
-                                "No voyage number provided for sprint number query",
-                            );
-                        }
-                        whereOptions = {
-                            voyage: {
-                                number: keyValPairs[voyageNumberIndex][1],
-                            },
-                        };
-                    }
                     await this.globalServices.validateOrGetDbItem(
                         "sprint",
                         currentVal as number,
                         "findFirst",
                         "number",
-                        whereOptions,
                     );
                     // query.* subfields must be initialized to {} first if empty
                     query.sprint = query.sprint || {};
