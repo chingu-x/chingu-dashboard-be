@@ -224,11 +224,6 @@ export class CheckinSubmissionResponse {
     createdAt: Date;
 }
 
-class SprintWithVoyageNumber extends Sprint {
-    @ApiProperty({ example: 46 })
-    voyage: VoyageNumber;
-}
-
 class VoyageNumber {
     @ApiProperty({ example: 46 })
     number: number;
@@ -237,6 +232,14 @@ class VoyageNumber {
 class VoyageTeamMemberTeamId {
     @ApiProperty({ example: 4 })
     voyageTeamId: number;
+}
+
+class SprintNumberWithVoyageNumber {
+    @ApiProperty({ example: 1 })
+    number: number;
+
+    @ApiProperty({ example: 46 })
+    voyage: VoyageNumber;
 }
 
 export class CheckinFormResponse {
@@ -264,8 +267,8 @@ export class CheckinFormResponse {
     @ApiProperty({ type: VoyageTeamMemberTeamId })
     voyageTeamMember: VoyageTeamMemberTeamId;
 
-    @ApiProperty({ type: SprintWithVoyageNumber })
-    sprint: SprintWithVoyageNumber;
+    @ApiProperty({ type: SprintNumberWithVoyageNumber })
+    sprint: SprintNumberWithVoyageNumber;
 
     @ApiProperty({ isArray: true })
     responseGroup: ResponseGroup;
