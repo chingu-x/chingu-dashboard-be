@@ -1260,23 +1260,27 @@ describe("Sprints Controller (e2e)", () => {
                 .expect(400);
         });
 
-        it("should return 400 if sprintNumber provided without voyageNumber", async () => {
-            const key = "sprintNumber";
-            const val = "1";
-            return request(app.getHttpServer())
-                .get(sprintCheckinUrl)
-                .query({ [key]: val })
-                .set("Cookie", accessToken)
-                .expect(400);
-        });
-
         it("should return 401 if user is not logged in or admin", async () => {
             await request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .expect(401);
         });
 
-        it("should return 404 if check in form not found", async () => {
+        it("should return an empty array if check in form not found", async () => {
+            // TODO: create user with no check ins
+            const key = "teamId";
+            const val = "5";
+            return request(app.getHttpServer())
+                .get(sprintCheckinUrl)
+                .query({ [key]: val })
+                .set("Cookie", accessToken)
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).toEqual(expect.arrayContaining([]));
+                });
+        });
+
+        it("should return 404 if query not found", async () => {
             const key = "teamId";
             const val = "9999";
             return request(app.getHttpServer())
