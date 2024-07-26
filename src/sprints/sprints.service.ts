@@ -639,11 +639,11 @@ export class SprintsService {
     }
 
     private async buildQuery(inputQuery: CheckinQueryDto): Promise<any> {
-        // stores arguments to "where: " clause
         const keyValPairs: Array<[string, string | string | number]> =
             Object.entries(inputQuery).filter(([_, v]) => v);
 
-        const query: any = {};
+        // query stores arguments to "where: " clause in Prisma query
+        const query: Record<string, any> = {};
         const keyIndex = 0;
         const valIndex = 1;
 
@@ -653,13 +653,14 @@ export class SprintsService {
 
             switch (currentKey) {
                 case "sprintNumber":
+                    // make sure this (key: val) exists in db
                     await this.globalServices.validateOrGetDbItem(
                         "sprint",
                         currentVal as number,
                         "number",
                         "findFirst",
                     );
-                    // query.* subfields must be initialized to {} first if empty
+                    // query.* subfields must be initialized to {} first if null
                     query.sprint = query.sprint || {};
                     query.sprint = {
                         ...query.sprint,
@@ -687,7 +688,6 @@ export class SprintsService {
                     await this.globalServices.validateOrGetDbItem(
                         "user",
                         currentVal as string,
-                        "id",
                     );
                     query.voyageTeamMember = query.voyageTeamMember || {};
                     query.voyageTeamMember.userId = currentVal;
@@ -702,7 +702,7 @@ export class SprintsService {
         return query;
     }
 
-    private async executeQuery(query: any): Promise<any> {
+    private async executeQuery(query: Record<string, any>): Promise<any> {
         return this.prisma.formResponseCheckin.findMany({
             where: query,
             include: {

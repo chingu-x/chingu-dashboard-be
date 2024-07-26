@@ -162,7 +162,7 @@ export class GlobalService {
         searchField: string = "id",
         findOptions: string = "findUnique",
         whereOptions?: Record<string, any>,
-        queryOptions?,
+        queryOptions?: Record<string, any>,
         customErrorMessage?,
     ): Promise<T | null> => {
         const prismaQuery = this.prisma[dbTableName][findOptions]({

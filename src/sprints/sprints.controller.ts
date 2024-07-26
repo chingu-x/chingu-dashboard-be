@@ -555,18 +555,18 @@ export class SprintsController {
 
     @ApiOperation({
         summary:
-            "[Admin only]: gets checkin forms given a sprintNumber, voyageId, userId, or teamId",
+            "[Admin only]: gets check-in forms given a sprintNumber, voyageId, userId, teamId, or combination",
         description:
             "Takes any combination of 4 keys: sprintNumber, voyageId, userId, or teamId",
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: "successfully gets checkin form responses",
+        description: "successfully gets check-in form responses",
         type: CheckinSubmissionResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
-        description: "no matching checkin form response found",
+        description: "no matching check-in form response found",
         type: NotFoundErrorResponse,
     })
     @ApiResponse({
