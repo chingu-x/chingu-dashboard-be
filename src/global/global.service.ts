@@ -7,7 +7,6 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
 import { FormResponseDto } from "./dtos/FormResponse.dto";
-import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class GlobalService {
@@ -163,7 +162,7 @@ export class GlobalService {
         searchField: string = "id",
         findOptions: string = "findUnique",
         whereOptions?: Record<string, any>,
-        queryOptions?: Prisma.PrismaClientOptions,
+        queryOptions?: Record<string, any>,
         customErrorMessage?: () => never, // called like: () => {throw new BadRequestException(`No form with form title = ${title}`)}
     ): Promise<T | null> => {
         const prismaQuery = this.prisma[dbTableName][findOptions]({
