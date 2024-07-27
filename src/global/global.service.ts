@@ -34,7 +34,7 @@ export class GlobalService {
         return teamMember;
     }
 
-    public getVoyageTeamMemberId(req: CustomRequest, teamId: number) {
+    public getVoyageTeamMemberId(req: CustomRequest, teamId: number): number {
         const teamMemberId = req.user.voyageTeams.find(
             (t) => t.teamId == teamId,
         )?.memberId;
