@@ -732,6 +732,11 @@ export class SprintsService {
                     },
                 },
             },
+            orderBy: {
+                voyageTeamMember: {
+                    voyageTeamId: "asc",
+                },
+            },
         });
     }
 }
