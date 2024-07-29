@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     HttpStatus,
     Post,
@@ -346,4 +347,18 @@ export class AuthController {
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);
     }
+
+    @Public()
+    @Get("/discord/login")
+    handleDiscordLogin() {
+        return { msg: "Discord Authentication" };
+    }
+
+    @Public()
+    @Get("/discord/redirect")
+    handleDiscordRedirect() {
+        return { msg: "Discord Redirect" };
+    }
+
+    // TODO: Discord logout, will probably just be in the normal logout route
 }
