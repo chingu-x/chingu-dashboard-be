@@ -28,6 +28,7 @@ import { FormInputValidationPipe } from "../pipes/form-input-validation";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import {
     AgendaResponse,
+    CheckinFormResponse,
     CheckinSubmissionResponse,
     MeetingFormResponse,
     MeetingResponse,
@@ -562,7 +563,7 @@ export class SprintsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "successfully gets check-in form responses",
-        type: CheckinSubmissionResponse,
+        type: CheckinFormResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
