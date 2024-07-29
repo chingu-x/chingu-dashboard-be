@@ -185,7 +185,7 @@ export class FeaturesController {
     //Can only update if loggedIn userId mataches addedBy userId
     @Patch("/features/:featureId")
     async updateFeature(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
         @Body() updateFeatureDto: UpdateFeatureDto,
     ) {
@@ -276,7 +276,7 @@ export class FeaturesController {
     //Can only delete if loggedIn userId mataches addedBy userId
     @Delete("/features/:featureId")
     async deleteFeature(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
     ) {
         const feature = await this.featuresService.findOneFeature(featureId);
