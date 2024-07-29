@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID, IsInt } from "class-validator";
+import { IsOptional, IsUUID, IsInt, Max, Min } from "class-validator";
 import { Type } from "class-transformer";
 
 export class CheckinQueryDto {
@@ -9,6 +9,8 @@ export class CheckinQueryDto {
 
     @IsOptional()
     @IsInt()
+    @Min(1)
+    @Max(6)
     @Type(() => Number)
     sprintNumber?: number;
 
