@@ -51,6 +51,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add new @unverified decorator to 4 routes, updated permission guard ([#171](https://github.com/chingu-x/chingu-dashboard-be/pull/171))
 
 - Add CASL permissions for Tech endpoint ([#174](https://github.com/chingu-x/chingu-dashboard-be/pull/174))
+- Add CASL permissions for Team Resource endpoint ([#177](https://github.com/chingu-x/chingu-dashboard-be/pull/177))
 
 ### Changed
 
