@@ -10,6 +10,7 @@ import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "src/ability/conditions/voyage-teams.ability";
 
 @Injectable()
 export class FeaturesService {
@@ -18,11 +19,28 @@ export class FeaturesService {
         private readonly globalService: GlobalService,
     ) {}
 
+    async checkTeamId(teamId: number) {
+        const team = await this.prisma.voyageTeam.findFirst({
+            where: {
+                id: teamId,
+            },
+        });
+
+        if (!team) {
+            throw new BadRequestException("invalid Team Id");
+        }
+    }
+
     async createFeature(
         req: CustomRequest,
         teamId: number,
         createFeatureDto: CreateFeatureDto,
     ) {
+        //check for valid team id
+        await this.checkTeamId(teamId);
+
+        //owm team permissions
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
         const { featureCategoryId, description } = createFeatureDto;
 
         const validCategory = await this.prisma.featureCategory.findFirst({

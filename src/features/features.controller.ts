@@ -36,6 +36,8 @@ import {
     DeleteFeatureResponse,
 } from "./features.response";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "src/global/decorators/abilities.decorator";
+import { Action } from "src/ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Features")
@@ -66,7 +68,7 @@ export class FeaturesController {
         description: "Successfully created a new feature.",
         type: FeatureResponse,
     })
-    // TODO: Add own_team permission here
+    @CheckAbilities({ action: Action.Create, subject: "Feature" })
     @Post("/teams/:teamId/features")
     @ApiCreatedResponse({ type: Feature })
     async createFeature(

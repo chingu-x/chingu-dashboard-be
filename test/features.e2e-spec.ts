@@ -77,7 +77,7 @@ describe("Features Controller (e2e)", () => {
                 "password",
                 app,
             );
-            const teamId: number = 2;
+            const teamId: number = 99999;
             const featureData = {
                 featureCategoryId: 1,
                 description: "This is a must have feature",
@@ -88,6 +88,24 @@ describe("Features Controller (e2e)", () => {
                 .send(featureData)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(400);
+        });
+        it("should return 403 when a user tries to create a feature in other team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const teamId: number = 2;
+            const featureData = {
+                featureCategoryId: 1,
+                description: "This is a valid feature",
+            };
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/features`)
+                .send(featureData)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
         it("should return 404 when feature category does not exist", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
