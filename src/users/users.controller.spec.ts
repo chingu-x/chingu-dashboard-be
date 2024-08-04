@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { CustomRequest } from "src/global/types/CustomRequest";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { toBeArray } from "jest-extended";
