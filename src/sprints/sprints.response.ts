@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Optional } from "@nestjs/common";
+import { ResponseGroup } from "../forms/forms.response";
 
 class Sprint {
     @ApiProperty({ example: 1 })
@@ -221,4 +222,54 @@ export class CheckinSubmissionResponse {
 
     @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
     createdAt: Date;
+}
+
+class VoyageNumber {
+    @ApiProperty({ example: 46 })
+    number: number;
+}
+
+class VoyageTeamMemberTeamId {
+    @ApiProperty({ example: 4 })
+    voyageTeamId: number;
+}
+
+class SprintNumberWithVoyageNumber {
+    @ApiProperty({ example: 1 })
+    number: number;
+
+    @ApiProperty({ example: 46 })
+    voyage: VoyageNumber;
+}
+
+export class CheckinFormResponse {
+    @ApiProperty({ example: 1 })
+    id: number;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamMemberId: number;
+
+    @ApiProperty({ example: 1 })
+    sprintId: number;
+
+    @ApiProperty({ example: "Great job!" })
+    adminComments: string;
+
+    @ApiProperty({ example: true })
+    feedbackSent: boolean;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    createdAt: Date;
+
+    @ApiProperty({ example: "2023-11-30T06:47:11.694Z" })
+    updatedAt: Date;
+
+    @ApiProperty({ type: VoyageTeamMemberTeamId })
+    voyageTeamMember: VoyageTeamMemberTeamId;
+
+    @ApiProperty({ type: SprintNumberWithVoyageNumber })
+    sprint: SprintNumberWithVoyageNumber;
+
+    @ApiProperty({ isArray: true })
+    responseGroup: ResponseGroup;
 }

@@ -66,6 +66,11 @@ class Response {
     responseGroupId: number;
 }
 
+export class ResponseGroup {
+    @ApiProperty({ isArray: true })
+    responses: ResponseWithQuestionAndOptionChoice[];
+}
+
 class BaseQuestion {
     @ApiProperty({ example: 1 })
     id: number;
@@ -102,6 +107,14 @@ class BaseQuestion {
 
     @ApiProperty()
     updatedAt: Date;
+}
+
+class ResponseWithQuestionAndOptionChoice extends Response {
+    @ApiProperty({ isArray: true })
+    question: BaseQuestion;
+
+    @ApiProperty({ isArray: true })
+    optionChoice: OptionChoice;
 }
 
 class SubQuestion extends BaseQuestion {}
