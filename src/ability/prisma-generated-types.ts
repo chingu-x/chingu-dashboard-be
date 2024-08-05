@@ -7,6 +7,7 @@ import {
     Voyage,
     VoyageTeam,
     TeamTechStackItem,
+    TeamResource,
 } from "@prisma/client";
 
 export type PrismaSubjects = Subjects<{
@@ -16,4 +17,5 @@ export type PrismaSubjects = Subjects<{
     VoyageTeam: VoyageTeam;
     Ideation: ProjectIdea;
     TeamTechStackItem: TeamTechStackItem;
+    Resource: TeamResource;
 }>;

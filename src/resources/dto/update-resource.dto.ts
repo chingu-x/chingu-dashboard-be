@@ -4,9 +4,8 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, IsUrl } from "class-validator";
 
 export class UpdateResourceDto extends PartialType(CreateResourceDto) {
-    @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @IsString()
     @IsUrl(
         {
             require_protocol: false,
@@ -20,8 +19,8 @@ export class UpdateResourceDto extends PartialType(CreateResourceDto) {
     })
     url: string;
 
-    @IsString()
     @IsNotEmpty()
+    @IsString()
     @ApiProperty({
         example: "Github",
     })
