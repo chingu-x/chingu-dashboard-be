@@ -4,8 +4,7 @@ import { UsersService } from "./users.service";
 import { CustomRequest } from "src/global/types/CustomRequest";
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { toBeArray } from "jest-extended";
-import { UnauthorizedException, NotFoundException } from "@nestjs/common";
-import { PrivateUserResponse } from "./users.response";
+import { UnauthorizedException } from "@nestjs/common";
 
 expect.extend({ toBeArray });
 
@@ -31,10 +30,6 @@ describe("UsersController", () => {
 
     const userOne = usersArr[0];
     const userOneId = userOne.id;
-
-    const customRequestMock = {
-        user: userOne,
-    } as unknown as CustomRequest;
 
     const LookupEmailDtoMock = {
         email: userOne.email,
@@ -78,7 +73,7 @@ describe("UsersController", () => {
             expect(result).toEqual(usersArr);
         });
     });
-    //TODO: getprofile
+
     describe("getProfile", () => {
         it("getProfile service should be defined", async () => {
             expect(controller.getProfile).toBeDefined();
