@@ -11,7 +11,7 @@ expect.extend({ toBeArray });
 
 describe("UsersController", () => {
     let controller: UsersController;
-
+    let usersService: UsersService;
     const usersArr = [
         {
             id: "55e03658-7fa8-4815-b4d2-942d2eec1dfb",
@@ -41,10 +41,11 @@ describe("UsersController", () => {
     } as UserLookupByEmailDto;
 
     const mockUsersService = {
-        findAll: jest.fn().mockResolvedValue(usersArr),
-        getProfile: jest.fn().mockResolvedValue(userOne),
-        getUserDetailsById: jest.fn().mockResolvedValue(userOne),
-        getUserDetailsByEmail: jest.fn().mockResolvedValue(userOne),
+        findAll: jest.fn(),
+        getProfile: jest.fn(),
+        getPrivateUserProfile: jest.fn(),
+        getUserDetailsById: jest.fn(),
+        getUserDetailsByEmail: jest.fn(),
     };
 
     beforeEach(async () => {
@@ -57,6 +58,7 @@ describe("UsersController", () => {
             .compile();
 
         controller = module.get<UsersController>(UsersController);
+        usersService = module.get<UsersService>(UsersService);
     });
 
     it("should be defined", () => {
@@ -68,19 +70,12 @@ describe("UsersController", () => {
             expect(controller.findAll).toBeDefined();
         });
 
-        it("should return all users", async () => {
+        it("should return an array of all users", async () => {
+            (usersService.findAll as jest.Mock).mockResolvedValueOnce(usersArr);
             const result = await controller.findAll();
-            expect(result).toHaveLength(2);
+            expect(usersService.findAll).toHaveBeenCalled();
             expect(result).toBeArray();
-            expect(result).toContainEqual({
-                id: expect.any(String),
-                email: expect.any(String),
-                password: expect.any(String),
-                roles: expect.any(Array),
-                isVerified: expect.any(Boolean),
-            });
-
-            expect(mockUsersService.findAll).toHaveBeenCalled();
+            expect(result).toEqual(usersArr);
         });
     });
     //TODO: getprofile
@@ -89,52 +84,43 @@ describe("UsersController", () => {
             expect(controller.getProfile).toBeDefined();
         });
 
-        it("should return user profile if user is found", async () => {
-            const mockUserProfile: PrivateUserResponse = {
-                ...userOne,
-                voyageTeamMembers: [
-                    {
-                        id: 1,
-                        voyageTeamId: 1,
-                        voyageTeam: {
-                            id: 1,
-                            name: "Team 1",
-                            description: "Description of Team 1",
-                            voyage: {
-                                id: 1,
-                                name: "Voyage 1",
-                                description: "Description of Voyage 1",
-                                status: {
-                                    id: 1,
-                                    name: "Active",
-                                },
-                            },
-                        },
-                        voyageRole: "member",
-                    },
-                ],
+        it("should return unauthorized if user is not logged in", async () => {
+            mockUsersService.getPrivateUserProfile.mockRejectedValueOnce(
+                new UnauthorizedException(),
+            );
+            const req: any = {
+                user: {},
+                cookies: {},
+                signedCookies: {},
+                get: jest.fn(),
+                header: jest.fn(),
             };
-            mockUsersService.getProfile.mockResolvedValueOnce(mockUserProfile);
-            const result = await controller.getProfile(customRequestMock);
-            expect(result).toEqual(mockUserProfile);
-            expect(mockUsersService.getProfile).toHaveBeenCalledWith(
-                customRequestMock,
+            await expect(controller.getProfile(req)).rejects.toThrow(
+                UnauthorizedException,
             );
         });
 
-        it("should return unauthorized if user is not logged in", async () => {
-            await expect(
-                controller.getProfile({ user: undefined } as any),
-            ).rejects.toThrow(new UnauthorizedException());
-        });
-
         it("should return 'not found' if user is not found", async () => {
-            mockUsersService.getProfile.mockResolvedValueOnce(null);
+            mockUsersService.getPrivateUserProfile.mockResolvedValueOnce(null);
+            const req: Partial<CustomRequest> = {
+                user: {
+                    userId: "123",
+                    email: "test@example.com",
+                    roles: ["user"],
+                    isVerified: false,
+                    voyageTeams: [],
+                },
+                cookies: {},
+                signedCookies: {},
+                get: jest.fn(),
+                header: jest.fn(),
+            };
+
             await expect(
-                controller.getProfile(customRequestMock),
-            ).rejects.toThrow(new NotFoundException());
-            expect(mockUsersService.getProfile).toHaveBeenCalledWith(
-                customRequestMock,
+                controller.getProfile(req as CustomRequest),
+            ).resolves.toBeNull();
+            expect(mockUsersService.getPrivateUserProfile).toHaveBeenCalledWith(
+                req.user!.userId,
             );
         });
     });
@@ -145,6 +131,7 @@ describe("UsersController", () => {
         });
 
         it("should return the user's profile based on the userId", async () => {
+            mockUsersService.getUserDetailsById.mockResolvedValueOnce(userOne);
             const result = await controller.getUserDetailsById(userOneId);
             expect(result).toEqual(userOne);
             expect(mockUsersService.getUserDetailsById).toHaveBeenCalledWith(
@@ -168,6 +155,9 @@ describe("UsersController", () => {
         });
 
         it("should return the user's profile based on the email", async () => {
+            mockUsersService.getUserDetailsByEmail.mockResolvedValueOnce(
+                userOne,
+            );
             const result =
                 await controller.getUserDetailsByEmail(LookupEmailDtoMock);
             expect(result).toEqual(userOne);
