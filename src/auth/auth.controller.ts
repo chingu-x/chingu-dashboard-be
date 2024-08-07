@@ -43,6 +43,7 @@ import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
+import { DiscordAuthGuard } from "./guards/discord-auth.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -348,12 +349,14 @@ export class AuthController {
         return this.authService.resetPassword(resetPasswordDto);
     }
 
+    @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/login")
     handleDiscordLogin() {
         return { msg: "Discord Authentication" };
     }
 
+    @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/redirect")
     handleDiscordRedirect() {

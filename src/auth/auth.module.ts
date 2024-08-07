@@ -8,6 +8,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
 import * as process from "process";
+import { DiscordStrategy } from "./strategies/discord.strategy";
 
 @Module({
     imports: [
@@ -17,7 +18,13 @@ import * as process from "process";
             secret: process.env.JWT_SECRET,
         }),
     ],
-    providers: [AuthService, LocalStrategy, AtStrategy, RtStrategy],
+    providers: [
+        AuthService,
+        LocalStrategy,
+        AtStrategy,
+        RtStrategy,
+        DiscordStrategy,
+    ],
     controllers: [AuthController],
     exports: [AuthService],
 })
