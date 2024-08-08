@@ -19,11 +19,15 @@ import {
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
     BadRequestErrorArrayResponse,
+    ForbiddenErrorResponse,
 } from "../global/responses/errors";
 import {
     TeamResourceAddedByResponse,
     TeamResourceResponse,
 } from "./resources.response";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Resources")
@@ -32,7 +36,7 @@ export class ResourcesController {
 
     @ApiOperation({
         summary:
-            "Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
+            "[Permission: own_team] Adds a URL with title to the team's resources, addedBy: teamMemberId (int)",
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
@@ -51,8 +55,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -60,9 +69,10 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Create, subject: "Resource" })
     @Post("/teams/:teamId")
     createNewResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body() createResourceDto: CreateResourceDto,
     ) {
@@ -89,8 +99,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -98,9 +113,10 @@ export class ResourcesController {
         description: "Voyage team ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Resource" })
     @Get("/teams/:teamId")
     findAllResources(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
     ) {
         return this.resourcesService.findAllResources(req, teamId);
@@ -117,8 +133,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -136,11 +157,13 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "Resource" })
     @Patch("resources/:resourceId")
     updateResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("resourceId", ParseIntPipe) resourceId: number,
-        @Body() updateResourceDto: UpdateResourceDto,
+        @Body()
+        updateResourceDto: UpdateResourceDto,
     ) {
         return this.resourcesService.updateResource(
             req,
@@ -160,8 +183,13 @@ export class ResourcesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is unauthorized to perform this action",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -179,9 +207,10 @@ export class ResourcesController {
         description: "Team resource ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Delete, subject: "Resource" })
     @Delete("resources/:resourceId")
     removeResource(
-        @Request() req,
+        @Request() req: CustomRequest,
         @Param("resourceId", ParseIntPipe) resourceId: number,
     ) {
         return this.resourcesService.removeResource(req, resourceId);

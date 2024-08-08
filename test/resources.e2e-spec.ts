@@ -6,40 +6,9 @@ import { AppModule } from "../src/app.module";
 import { PrismaService } from "../src/prisma/prisma.service";
 import { CreateResourceDto } from "src/resources/dto/create-resource.dto";
 import { UpdateResourceDto } from "src/resources/dto/update-resource.dto";
-import { extractResCookieValueByKey } from "./utils";
-
-const loginUser = async (
-    email: string,
-    password: string,
-    app: INestApplication,
-) => {
-    const res = await request(app.getHttpServer())
-        .post("/auth/login")
-        .send({
-            email,
-            password,
-        })
-        .expect(200);
-
-    return extractResCookieValueByKey(
-        res.headers["set-cookie"],
-        "access_token",
-    );
-};
-
-const findVoyageTeamId = async (email: string, prisma: PrismaService) => {
-    return prisma.voyageTeamMember.findFirst({
-        where: {
-            member: {
-                email,
-            },
-        },
-        select: {
-            userId: true,
-            voyageTeamId: true,
-        },
-    });
-};
+import { loginAndGetTokens } from "./utils";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import * as cookieParser from "cookie-parser";
 
 const findOwnResource = async (email: string, prisma: PrismaService) => {
     return prisma.teamResource.findFirst({
@@ -66,14 +35,19 @@ const countResources = async (voyageTeamId: number, prisma: PrismaService) => {
 describe("ResourcesController (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    // main user
-    const userEmail: string = "dan@random.com";
-    let voyageTeamId: number;
-    let userAccessToken: string;
-    // user for testing access control
-    const otherUserEmail: string = "JosoMadar@dayrep.com";
-    let otherVoyageTeamId: number;
-    let otherUserAccessToken: string;
+
+    const newResource: CreateResourceDto = {
+        url: "http://www.github.com/chingux",
+        title: "Chingu Github repo",
+    };
+    const patchedResource: UpdateResourceDto = {
+        url: "http://www.github.com/chingu-x/chingu-dashboard-be",
+        title: "Chingu Github BE repo",
+    };
+    const invalidResource = {
+        title: "Chingu Github repo",
+        url: "",
+    };
 
     const memberShape = {
         avatar: expect.any(String),
@@ -101,20 +75,9 @@ describe("ResourcesController (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe());
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
+        app.use(cookieParser());
         await app.init();
-
-        // voyageTeamId of main user
-        const voyageTeam = await findVoyageTeamId(userEmail, prisma);
-        voyageTeamId = voyageTeam!.voyageTeamId;
-        userAccessToken = await loginUser(userEmail, "password", app);
-
-        const otherVoyageTeam = await findVoyageTeamId(otherUserEmail, prisma);
-        otherVoyageTeamId = otherVoyageTeam!.voyageTeamId;
-        otherUserAccessToken = await loginUser(otherUserEmail, "password", app);
-
-        if (voyageTeamId === otherVoyageTeamId) {
-            throw new Error("Voyage team IDs should be different");
-        }
     });
 
     afterAll(async () => {
@@ -124,10 +87,13 @@ describe("ResourcesController (e2e)", () => {
 
     describe("/POST voyages/:teamId/resources", () => {
         it("should return 201 and create a new resource", async () => {
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux",
-                title: "Chingu Github repo",
-            };
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const voyageTeamId: number = 1;
             const initialResourceCount: number = await countResources(
                 voyageTeamId,
                 prisma,
@@ -135,7 +101,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(newResource)
                 .expect(201)
                 .expect("Content-Type", /json/)
@@ -156,47 +122,68 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 400 for invalid request body", async () => {
-            const invalidResource = {
-                title: "Chingu Github repo",
-            };
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const voyageTeamId: number = 1;
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(invalidResource)
                 .expect(400);
         });
 
         it("should return 404 for invalid teamId", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             const invalidTeamId = 999;
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux2",
-                title: "Chingu Github repo",
-            };
-
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${invalidTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(newResource)
                 .expect(404);
         });
 
-        it("should return 401 and not allow users to POST to other teams' resources", async () => {
-            const newResource: CreateResourceDto = {
-                url: "http://www.github.com/chingux3",
-                title: "Chingu Github repo",
-            };
+        it("should return 401 when the is not looged in", async () => {
+            const voyageTeamId: number = 1;
 
             await request(app.getHttpServer())
                 .post(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `Bearer ${undefined}`)
                 .send(newResource)
                 .expect(401);
+        });
+
+        it("should return 403 when user of other team tries to post a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const teamId: number = 1;
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send(newResource)
+                .expect(403);
         });
     });
 
     describe("/GET voyages/:teamId/resources", () => {
         it("should return 200 and retrieve all resources for the team.", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const voyageTeamId: number = 1;
             const resourceCount: number = await prisma.teamResource.count({
                 where: {
                     addedBy: {
@@ -207,7 +194,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -226,34 +213,56 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid teamId", async () => {
-            const invalidTeamId = 999;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidTeamId = 99999;
 
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${invalidTeamId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
+        it("should return 401 when the user is not logged in", async () => {
+            const voyageTeamId: number = 1;
 
-        it("should return 401 and not allow users to GET other teams' resources", async () => {
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${voyageTeamId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 and not allow users to GET other teams' resources", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const voyageTeamId: number = 1;
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${voyageTeamId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 
     describe("/PATCH :teamId/resources/:resourceId", () => {
         it("should return 200 and update a resource", async () => {
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(patchedResource)
                 .expect(200)
                 .expect("Content-Type", /json/)
@@ -271,54 +280,81 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid resourceId", async () => {
-            const invalidResourceId = 999;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidResourceId = 99999;
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${invalidResourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(patchedResource)
                 .expect(404)
                 .expect("Content-Type", /json/);
         });
 
         it("should return 400 for invalid request body", async () => {
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const invalidResource = {
-                url: "Chingu Github repo",
-            };
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(invalidResource)
                 .expect(400);
         });
 
-        it("should return 401 if a user tries to PATCH a resource created by someone else", async () => {
-            const resourceToPatch = await findOwnResource(userEmail, prisma);
+        it("should return 401 when the user is not logged in", async () => {
+            const resourceToPatch = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToPatch!.id;
-            const patchedResource: UpdateResourceDto = {
-                url: "http://www.github.com/chingu-x/chingu-dashboard-be",
-                title: "Chingu Github BE repo",
-            };
+            await request(app.getHttpServer())
+                .patch(`/voyages/resources/${resourceId}`)
+                .set("Authorization", `${undefined}`)
+                .send(patchedResource)
+                .expect(401);
+        });
+        it("should return 403 when user of other member tries to patch a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const resourceId: number = 1;
 
             await request(app.getHttpServer())
                 .patch(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .send(patchedResource)
-                .expect(401);
+                .expect(403);
         });
     });
 
     describe("/DELETE :teamId/resources/:resourceId", () => {
         it("should return 200 after deleting a resource", async () => {
-            const resourceToDelete = await findOwnResource(userEmail, prisma);
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const resourceToDelete = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToDelete!.id;
+            const voyageTeamId: number = 1;
             const initialResourceCount = await countResources(
                 voyageTeamId,
                 prisma,
@@ -326,7 +362,7 @@ describe("ResourcesController (e2e)", () => {
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect(async (res) => {
                     expect(res.body).toEqual({
@@ -347,29 +383,57 @@ describe("ResourcesController (e2e)", () => {
         });
 
         it("should return 404 for invalid resourceId", async () => {
-            const invalidResourceId = 999;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const invalidResourceId = 99999;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${invalidResourceId}`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
 
         it("should return 400 for invalid request body", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/rm -rf`)
-                .set("Authorization", `Bearer ${userAccessToken}`)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
 
-        it("should return 401 if a user tries to DELETE a resource created by someone else", async () => {
-            const resourceToDelete = await findOwnResource(userEmail, prisma);
+        it("should return 401 if a user is not logged in", async () => {
+            const resourceToDelete = await findOwnResource(
+                "dan@random.com",
+                prisma,
+            );
             const resourceId: number = resourceToDelete!.id;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/resources/${resourceId}`)
-                .set("Authorization", `Bearer ${otherUserAccessToken}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 when user of other member tries to delete a resource", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+
+            const resourceId: number = 1;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/resources/${resourceId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 });
