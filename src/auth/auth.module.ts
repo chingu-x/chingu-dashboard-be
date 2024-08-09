@@ -9,6 +9,7 @@ import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
 import * as process from "process";
 import { DiscordStrategy } from "./strategies/discord.strategy";
+import { DiscordAuthService } from "./discord-auth.service";
 
 @Module({
     imports: [
@@ -24,6 +25,10 @@ import { DiscordStrategy } from "./strategies/discord.strategy";
         AtStrategy,
         RtStrategy,
         DiscordStrategy,
+        {
+            provide: "DISCORD_OAUTH",
+            useClass: DiscordAuthService,
+        },
     ],
     controllers: [AuthController],
     exports: [AuthService],

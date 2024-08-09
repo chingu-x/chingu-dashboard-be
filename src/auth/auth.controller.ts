@@ -349,6 +349,11 @@ export class AuthController {
         return this.authService.resetPassword(resetPasswordDto);
     }
 
+    @ApiOperation({
+        summary: "discord oauth",
+        description:
+            "This does not work on swagger. Open this link from a web browser, a discord popup should appear. `{BaseURL}/api/v1/auth/discord/login` ",
+    })
     @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/login")
