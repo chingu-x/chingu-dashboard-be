@@ -15,6 +15,7 @@ import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
 import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 
 @Injectable()
 export class SprintsService {
@@ -614,5 +615,128 @@ export class SprintsService {
                 throw e;
             }
         }
+    }
+
+    async getCheckinFormResponse(query: CheckinQueryDto) {
+        const queryToExecute = await this.buildQuery(query);
+
+        const checkinFormResponses = await this.executeQuery(queryToExecute);
+
+        // make responses uniform and get rid of empty arrays
+        const uniformResponses = checkinFormResponses.flatMap(
+            (item) => item.checkinForms || [item],
+        );
+        const filteredUniformResponses = uniformResponses.filter(
+            (item) => Object.keys(item).length > 0,
+        );
+
+        // if no matches, return empty array and status code 200
+        if (filteredUniformResponses.length < 1) {
+            return [];
+        }
+
+        return filteredUniformResponses;
+    }
+
+    private async buildQuery(inputQuery: CheckinQueryDto): Promise<any> {
+        const keyValPairs: Array<[string, string | string | number]> =
+            Object.entries(inputQuery).filter(([_, v]) => v);
+
+        // query stores arguments to "where: " clause in Prisma query
+        const query: Record<string, any> = {};
+        const keyIndex = 0;
+        const valIndex = 1;
+
+        for (let i = 0; i < keyValPairs.length; i++) {
+            const currentKey = keyValPairs[i][keyIndex];
+            const currentVal = keyValPairs[i][valIndex];
+
+            switch (currentKey) {
+                case "sprintNumber":
+                    // make sure this (key: val) exists in db
+                    await this.globalServices.validateOrGetDbItem(
+                        "sprint",
+                        currentVal as number,
+                        "number",
+                        "findFirst",
+                    );
+                    // query.* subfields must be initialized to {} first if null
+                    query.sprint = query.sprint || {};
+                    query.sprint = {
+                        ...query.sprint,
+                        number: currentVal,
+                    };
+                    break;
+                case "teamId":
+                    await this.globalServices.validateOrGetDbItem(
+                        "voyageTeam",
+                        currentVal as number,
+                    );
+                    query.voyageTeamMember = query.voyageTeamMember || {};
+                    query.voyageTeamMember.voyageTeamId = currentVal;
+                    break;
+                case "voyageNumber":
+                    await this.globalServices.validateOrGetDbItem(
+                        "voyage",
+                        currentVal as string,
+                        "number",
+                    );
+                    query.sprint = query.sprint || {};
+                    query.sprint.voyage = { number: currentVal };
+                    break;
+                case "userId":
+                    await this.globalServices.validateOrGetDbItem(
+                        "user",
+                        currentVal as string,
+                    );
+                    query.voyageTeamMember = query.voyageTeamMember || {};
+                    query.voyageTeamMember.userId = currentVal;
+                    break;
+                default:
+                    throw new BadRequestException(
+                        `Query ${currentKey} did not match any keywords`,
+                    );
+            }
+        }
+
+        return query;
+    }
+
+    private async executeQuery(query: Record<string, any>): Promise<any> {
+        return this.prisma.formResponseCheckin.findMany({
+            where: query,
+            include: {
+                voyageTeamMember: {
+                    select: {
+                        voyageTeamId: true,
+                    },
+                },
+                sprint: {
+                    select: {
+                        number: true,
+                        voyage: {
+                            select: {
+                                number: true,
+                            },
+                        },
+                    },
+                },
+                responseGroup: {
+                    select: {
+                        responses: {
+                            include: {
+                                question: true,
+                                optionChoice: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: {
+                voyageTeamMember: {
+                    voyageTeamId: "asc",
+                },
+            },
+        });
     }
 }
