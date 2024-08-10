@@ -152,7 +152,7 @@ describe("Features Controller (e2e)", () => {
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
         });
-        it("should return 404 for invalid team id", async () => {
+        it("should return 400 for invalid team id", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
@@ -163,7 +163,20 @@ describe("Features Controller (e2e)", () => {
             await request(app.getHttpServer())
                 .get(`/voyages/teams/${teamId}/features`)
                 .set("Cookie", [access_token, refresh_token])
-                .expect(404);
+                .expect(400);
+        });
+        it("should return 403 when a user tries to create a feature in other team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const teamId: number = 2;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/features`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
     describe("GET /voyages/features/feature-categories - Gets all feature categories", () => {

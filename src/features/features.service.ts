@@ -98,20 +98,14 @@ export class FeaturesService {
         }
     }
 
-    async findAllFeatures(teamId: number) {
+    async findAllFeatures(teamId: number, req: CustomRequest) {
         try {
             //check for valid teamId
-            const team = await this.prisma.voyageTeam.findFirst({
-                where: {
-                    id: teamId,
-                },
-            });
+            await this.checkTeamId(teamId);
 
-            if (!team) {
-                throw new NotFoundException(
-                    `TeamId (id: ${teamId}) does not exist.`,
-                );
-            }
+            //check for team permissions
+            manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
             const allTeamFeatures = await this.prisma.projectFeature.findMany({
                 where: {
                     addedBy: {
@@ -359,7 +353,7 @@ export class FeaturesService {
                 },
             });
         }
-        const newCategoryFeaturesList = await this.findAllFeatures(teamId);
+        const newCategoryFeaturesList = await this.findAllFeatures(teamId, req);
         return newCategoryFeaturesList;
     }
 

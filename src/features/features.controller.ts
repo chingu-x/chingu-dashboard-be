@@ -55,8 +55,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "Unauthorized when user is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -85,7 +90,7 @@ export class FeaturesController {
 
     @ApiOperation({
         summary:
-            "Gets all feature category options. e.g. Must have, should have, nice to have",
+            "[Permission: own_team] Gets all feature category options. e.g. Must have, should have, nice to have",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -98,6 +103,7 @@ export class FeaturesController {
         description: "Unauthorized when user is not logged in",
         type: UnauthorizedErrorResponse,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Feature" })
     @Get("/features/feature-categories")
     findFeatureCategory() {
         return this.featuresService.findFeatureCategories();
@@ -115,9 +121,13 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -125,10 +135,13 @@ export class FeaturesController {
             "Could not find features for project. Team with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
-    // TODO: Add own_team permission here
+    @CheckAbilities({ action: Action.Read, subject: "Feature" })
     @Get("/teams/:teamId/features")
-    findAllFeatures(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.featuresService.findAllFeatures(teamId);
+    findAllFeatures(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.featuresService.findAllFeatures(teamId, req);
     }
 
     @ApiOperation({
