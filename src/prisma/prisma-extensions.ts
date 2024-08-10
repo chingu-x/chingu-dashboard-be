@@ -20,12 +20,13 @@ export const findUserByOAuthId = Prisma.defineExtension({
     },
 });
 
-export const extendedPrismaClient = (prismaClient: PrismaClient) => {
-    return prismaClient.$extends(findUserByOAuthId);
+export const extendedPrismaClient = () => {
+    const prisma = new PrismaClient();
+    return prisma.$extends(findUserByOAuthId);
 };
 
 export const ExtendedPrismaClient = class {
     constructor() {
-        return extendedPrismaClient;
+        return extendedPrismaClient();
     }
 } as new () => ReturnType<typeof extendedPrismaClient>;

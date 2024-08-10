@@ -74,11 +74,12 @@ model OAuthProvider {
 }
 
 model UserOAuthProfile {
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String        @db.Uuid
-  provider       OAuthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  providerId     Int
-  providerUserId String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String        @db.Uuid
+  provider         OAuthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  providerId       Int
+  providerUserId   String
+  providerUsername String?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
