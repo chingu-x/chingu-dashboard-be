@@ -42,6 +42,11 @@ export class AbilityFactory {
             });
             can([Action.Submit, Action.Read], "Form");
             can([Action.Manage], "TeamTechStackItem");
+            can([Action.Manage], "Resource", {
+                teamMemberId: {
+                    in: user.voyageTeams.map((vt) => vt.memberId),
+                },
+            });
         } else {
             // all other users
             can([Action.Submit, Action.Read], "Form", {
