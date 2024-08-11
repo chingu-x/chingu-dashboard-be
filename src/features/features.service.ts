@@ -189,24 +189,45 @@ export class FeaturesService {
         }
     }
 
-    async updateFeature(featureId: number, updateFeatureDto: UpdateFeatureDto) {
-        const { teamMemberId, description } = updateFeatureDto;
-        const updatedFeature = await this.prisma.projectFeature.update({
-            where: {
-                id: featureId,
-                teamMemberId: teamMemberId,
-            },
-            data: {
-                teamMemberId,
-                description,
-            },
-        });
-        if (!updatedFeature) {
-            throw new BadRequestException(
-                `Req.body or featureId (id: ${featureId}) is invalid. Body: ${updateFeatureDto}.`,
-            );
+    async updateFeature(
+        featureId: number,
+        updateFeatureDto: UpdateFeatureDto,
+        req: CustomRequest,
+    ) {
+        try {
+            await manageOwnFeaturesById(req.user, featureId);
+
+            const { teamMemberId, description } = updateFeatureDto;
+
+            //check for valid teamMemberId in dto
+            const isValidTeamMember = req.user.voyageTeams
+                .map((vt) => vt.memberId)
+                .includes(teamMemberId);
+            if (!isValidTeamMember) {
+                throw new BadRequestException(
+                    `TeamMemberId (id: ${teamMemberId}) is invalid.`,
+                );
+            }
+
+            const updatedFeature = await this.prisma.projectFeature.update({
+                where: {
+                    id: featureId,
+                    teamMemberId: teamMemberId,
+                },
+                data: {
+                    teamMemberId,
+                    description,
+                },
+            });
+            if (!updatedFeature) {
+                throw new BadRequestException(
+                    `Req.body or featureId (id: ${featureId}) is invalid. Body: ${updateFeatureDto}.`,
+                );
+            }
+            return updatedFeature;
+        } catch (e) {
+            throw e;
         }
-        return updatedFeature;
     }
 
     async updateFeatureOrderAndCategory(

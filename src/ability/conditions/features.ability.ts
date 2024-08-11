@@ -11,6 +11,21 @@ export const manageOwnFeaturesById = async (
         where: {
             id: featureId,
         },
+        select: {
+            teamMemberId: true,
+            addedBy: {
+                select: {
+                    member: {
+                        select: {
+                            id: true,
+                            avatar: true,
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
+            },
+        },
     });
     if (!feature) {
         throw new NotFoundException(

@@ -205,35 +205,18 @@ export class FeaturesController {
         description: "Successfully updated feature.",
         type: FeatureResponse,
     })
-    //Can only update if loggedIn userId mataches addedBy userId
+    @CheckAbilities({ action: Action.Update, subject: "Feature" })
     @Patch("/features/:featureId")
     async updateFeature(
         @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
         @Body() updateFeatureDto: UpdateFeatureDto,
     ) {
-        const feature = await this.featuresService.findOneFeature(
+        return this.featuresService.updateFeature(
             featureId,
+            updateFeatureDto,
             req,
         );
-
-        if (!feature) {
-            throw new NotFoundException(
-                `featureId (id: ${featureId}) does not exist.`,
-            );
-        }
-
-        if (feature.addedBy?.member.id === req.user.userId) {
-            const updatedFeature = await this.featuresService.updateFeature(
-                featureId,
-                updateFeatureDto,
-            );
-            return updatedFeature;
-        } else {
-            throw new ForbiddenException(
-                "Access denied: You do not have sufficient permissions to perform this action",
-            );
-        }
     }
 
     @ApiOperation({

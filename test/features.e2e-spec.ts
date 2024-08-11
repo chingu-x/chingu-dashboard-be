@@ -419,6 +419,26 @@ describe("Features Controller (e2e)", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
+        it("should return 400 when teamMemberId in the dto is invalid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+
+            const featureId: number = 1;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 999999,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(400);
+        });
         it("should return 403 when trying to patch a feature created by other member", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
@@ -426,6 +446,26 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
             const featureId: number = 4;
+            const updatedFeature = {
+                description:
+                    "This is a updated description of must have feature",
+                teamMemberId: 1,
+            };
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}`)
+                .send(updatedFeature)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 when a non voyager tries to update a feature", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const featureId: number = 1;
             const updatedFeature = {
                 description:
                     "This is a updated description of must have feature",
