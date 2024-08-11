@@ -154,18 +154,26 @@ export class FeaturesController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description:
-            "Invalid uuid or teamID. User is not authorized to perform this action.",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
         description: "Feature with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Feature" })
     @Get("/features/:featureId")
-    findOneFeature(@Param("featureId", ParseIntPipe) featureId: number) {
-        return this.featuresService.findOneFeature(featureId);
+    findOneFeature(
+        @Request() req: CustomRequest,
+        @Param("featureId", ParseIntPipe) featureId: number,
+    ) {
+        return this.featuresService.findOneFeature(featureId, req);
     }
 
     @ApiOperation({
@@ -204,7 +212,10 @@ export class FeaturesController {
         @Param("featureId", ParseIntPipe) featureId: number,
         @Body() updateFeatureDto: UpdateFeatureDto,
     ) {
-        const feature = await this.featuresService.findOneFeature(featureId);
+        const feature = await this.featuresService.findOneFeature(
+            featureId,
+            req,
+        );
 
         if (!feature) {
             throw new NotFoundException(
@@ -294,7 +305,10 @@ export class FeaturesController {
         @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
     ) {
-        const feature = await this.featuresService.findOneFeature(featureId);
+        const feature = await this.featuresService.findOneFeature(
+            featureId,
+            req,
+        );
 
         if (!feature) {
             throw new NotFoundException(

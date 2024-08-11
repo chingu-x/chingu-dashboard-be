@@ -89,13 +89,32 @@ describe("Features Controller (e2e)", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
-        it("should return 403 when a user tries to create a feature in other team", async () => {
+        it("should return 403 when a user tries to post feature in other team", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
                 app,
             );
             const teamId: number = 2;
+            const featureData = {
+                featureCategoryId: 1,
+                description: "This is a valid feature",
+            };
+
+            await request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/features`)
+                .send(featureData)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 when a non voyager tries to post a feature", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const teamId: number = 1;
             const featureData = {
                 featureCategoryId: 1,
                 description: "This is a valid feature",
@@ -165,7 +184,7 @@ describe("Features Controller (e2e)", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
-        it("should return 403 when a user tries to create a feature in other team", async () => {
+        it("should return 403 when a user tries to access all feature in other team", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
                 "password",
@@ -177,6 +196,21 @@ describe("Features Controller (e2e)", () => {
                 .get(`/voyages/teams/${teamId}/features`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(403);
+        });
+        it("should return 403 when a non voyager tries to access features", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const teamId: number = 1;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/teams/${teamId}/features`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403)
+                .expect("Content-Type", /json/);
         });
     });
     describe("GET /voyages/features/feature-categories - Gets all feature categories", () => {
@@ -201,6 +235,19 @@ describe("Features Controller (e2e)", () => {
                 .get(`/voyages/features/feature-categories`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 when a non voyager tries to access feature categories", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            await request(app.getHttpServer())
+                .get(`/voyages/features/feature-categories`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403)
+                .expect("Content-Type", /json/);
         });
     });
     describe("GET /voyages/features/:featureId - [Permission: own_team] - Gets a feature for a featureId (int)", () => {
@@ -243,6 +290,32 @@ describe("Features Controller (e2e)", () => {
                 .get(`/voyages/features/${featureId}`)
                 .set("Cookie", [access_token, refresh_token])
                 .expect(404);
+        });
+        it("should return 403 when a user tries to access a feature in other team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const featureId: number = 4;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 when a non voayger tries to access a feature in other team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const featureId: number = 4;
+
+            await request(app.getHttpServer())
+                .get(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
     describe("PATCH /voyages/features/:featureId - [Permission: own_team] - Updates a feature for a featureId (int)", () => {

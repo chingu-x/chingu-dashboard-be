@@ -11,6 +11,7 @@ import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and
 import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "src/ability/conditions/voyage-teams.ability";
+import { manageOwnFeaturesById } from "src/ability/conditions/features.ability";
 
 @Injectable()
 export class FeaturesService {
@@ -147,8 +148,9 @@ export class FeaturesService {
         }
     }
 
-    async findOneFeature(featureId: number) {
+    async findOneFeature(featureId: number, req: CustomRequest) {
         try {
+            await manageOwnFeaturesById(req.user, featureId);
             const projectFeature = await this.prisma.projectFeature.findFirst({
                 where: {
                     id: featureId,
@@ -180,12 +182,6 @@ export class FeaturesService {
                     },
                 },
             });
-
-            if (!projectFeature) {
-                throw new NotFoundException(
-                    `FeatureId (id: ${featureId}) does not exist.`,
-                );
-            }
 
             return projectFeature;
         } catch (e) {
