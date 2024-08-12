@@ -1,28 +1,24 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
-export const findUserByOAuthId = Prisma.defineExtension({
+export const prismaExtension = Prisma.defineExtension({
     name: "findUserByOAuthId",
-    model: {
-        userOAuthProfile: {
-            async findUserByOAuthId(
-                providerName: string,
-                providerUserId: string,
-            ) {
-                const context = Prisma.getExtensionContext(this);
-                return context.$queryRaw`
-                            SELECT userOAuthProfile.*
-                            FROM userOAuthProfile
-                            JOIN oAuthProviders ON userOAuthProfile.providerId = oAuthProviders.id
-                            WHERE oAuthProviders.name = ${providerName} AND userOAuthProfile.providerUserId = ${providerUserId}
-                        `;
-            },
+    client: {
+        async findUserByOAuthId(providerName: string, providerUserId: string) {
+            const context = Prisma.getExtensionContext(this);
+
+            return context.$queryRaw`
+                SELECT "UserOAuthProfile".*
+                FROM "UserOAuthProfile"
+                JOIN "OAuthProvider" ON "UserOAuthProfile"."providerId" = "OAuthProvider"."id"
+                WHERE "OAuthProvider".name = ${providerName} AND "UserOAuthProfile"."providerUserId" = ${providerUserId}
+            `;
         },
     },
 });
 
 export const extendedPrismaClient = () => {
     const prisma = new PrismaClient();
-    return prisma.$extends(findUserByOAuthId);
+    return prisma.$extends(prismaExtension);
 };
 
 export const ExtendedPrismaClient = class {

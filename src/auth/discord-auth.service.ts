@@ -7,11 +7,13 @@ import { DiscordUser } from "../global/types/auth.types";
 export class DiscordAuthService implements IAuthProvider {
     constructor(private prisma: PrismaService) {}
     async validateUser(user: DiscordUser) {
-        const userInDb = await this.prisma.userOAuthProfile.findUserByOAuthId(
+        const userInDb = await this.prisma.findUserByOAuthId(
             "discord",
             user.discordId,
         );
-        console.log(`discord-auth.service.ts (14): userInDb = ${userInDb}`);
+        console.log(
+            `discord-auth.service.ts (14): userInDb = ${JSON.stringify(userInDb)}`,
+        );
     }
 
     createUser() {}
