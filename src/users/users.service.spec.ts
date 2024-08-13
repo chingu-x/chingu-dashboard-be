@@ -139,7 +139,7 @@ describe("UsersService", () => {
             });
             prismaMock.user.findMany.mockResolvedValue(usersWithRoles);
 
-            let result = await usersService.findAll();
+            const result = await usersService.findAll();
 
             expect(result).toBeArray();
             expect(result).toEqual(expectedUsersWithRoles);
