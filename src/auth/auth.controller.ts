@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     Delete,
+    Get,
     HttpCode,
     HttpStatus,
     Post,
@@ -42,6 +43,7 @@ import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
+import { DiscordAuthGuard } from "./guards/discord-auth.guard";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -346,4 +348,25 @@ export class AuthController {
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);
     }
+
+    @ApiOperation({
+        summary: "discord oauth",
+        description:
+            "This does not work on swagger. Open this link from a web browser, a discord popup should appear. `{BaseURL}/api/v1/auth/discord/login` ",
+    })
+    @UseGuards(DiscordAuthGuard)
+    @Public()
+    @Get("/discord/login")
+    handleDiscordLogin() {
+        return { msg: "Discord Authentication" };
+    }
+
+    @UseGuards(DiscordAuthGuard)
+    @Public()
+    @Get("/discord/redirect")
+    handleDiscordRedirect() {
+        return { msg: "Discord Redirect" };
+    }
+
+    // TODO: Discord logout, will probably just be in the normal logout route
 }

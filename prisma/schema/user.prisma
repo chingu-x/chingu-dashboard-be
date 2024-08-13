@@ -19,10 +19,6 @@ model User {
   firstName     String?
   lastName      String?
   avatar        String?
-  githubId      String?
-  discordId     String?
-  twitterId     String?
-  linkedinId    String?
   gender        Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   genderId      Int?
   countryCode   String?
@@ -41,6 +37,7 @@ model User {
   resetToken             ResetToken?
   emailVerificationToken EmailVerificationToken?
   roles                  UserRole[]
+  oAuthProfiles          UserOAuthProfile[]
 }
 
 model Role {
@@ -64,4 +61,29 @@ model UserRole {
   updatedAt DateTime @updatedAt
 
   @@unique(fields: [userId, roleId], name: "userRoleKey")
+}
+
+model OAuthProvider {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  userOAuthProfiles UserOAuthProfile[]
+}
+
+model UserOAuthProfile {
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String        @db.Uuid
+  provider         OAuthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  providerId       Int
+  providerUserId   String
+  providerUsername String?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  @@id(fields: [userId, providerId], name: "oauthProfileId")
+  @@unique(fields: [providerId, providerUserId], name: "providerUserKey")
 }
