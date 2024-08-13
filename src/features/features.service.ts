@@ -374,50 +374,57 @@ export class FeaturesService {
         return newCategoryFeaturesList;
     }
 
-    async deleteFeature(featureId: number) {
-        const currFeature = await this.findFeature(featureId);
+    async deleteFeature(featureId: number, req: CustomRequest) {
+        try {
+            await manageOwnFeaturesById(req.user, featureId);
+            const currFeature = await this.findFeature(featureId);
 
-        const voyageTeamMember = await this.prisma.voyageTeamMember.findFirst({
-            where: { id: currFeature.teamMemberId! },
-            select: { voyageTeamId: true },
-        });
+            const voyageTeamMember =
+                await this.prisma.voyageTeamMember.findFirst({
+                    where: { id: currFeature.teamMemberId! },
+                    select: { voyageTeamId: true },
+                });
 
-        const teamId = voyageTeamMember?.voyageTeamId;
-        const existingCategoryFeatures =
-            await this.prisma.projectFeature.findMany({
-                where: {
-                    featureCategoryId: currFeature.featureCategoryId,
-                    addedBy: { voyageTeamId: teamId },
-                },
-            });
-        const existingFeaturesToUpdate = existingCategoryFeatures.filter(
-            (feature) =>
-                feature.id !== featureId && currFeature.order! < feature.order!,
-        );
-        await Promise.all(
-            existingFeaturesToUpdate.map(async (feature) => {
-                await this.prisma.projectFeature.update({
-                    where: { id: feature.id },
-                    data: {
-                        order: feature.order! - 1,
+            const teamId = voyageTeamMember?.voyageTeamId;
+            const existingCategoryFeatures =
+                await this.prisma.projectFeature.findMany({
+                    where: {
+                        featureCategoryId: currFeature.featureCategoryId,
+                        addedBy: { voyageTeamId: teamId },
                     },
                 });
-            }),
-        );
-        const deletedFeature = await this.prisma.projectFeature.delete({
-            where: {
-                id: featureId,
-            },
-        });
-        if (!deletedFeature) {
-            throw new NotFoundException(
-                `FeatureId (id: ${featureId}) does not exist.`,
+            const existingFeaturesToUpdate = existingCategoryFeatures.filter(
+                (feature) =>
+                    feature.id !== featureId &&
+                    currFeature.order! < feature.order!,
             );
-        } else {
-            return {
-                message: "Feature deleted successfully",
-                status: 200,
-            };
+            await Promise.all(
+                existingFeaturesToUpdate.map(async (feature) => {
+                    await this.prisma.projectFeature.update({
+                        where: { id: feature.id },
+                        data: {
+                            order: feature.order! - 1,
+                        },
+                    });
+                }),
+            );
+            const deletedFeature = await this.prisma.projectFeature.delete({
+                where: {
+                    id: featureId,
+                },
+            });
+            if (!deletedFeature) {
+                throw new NotFoundException(
+                    `FeatureId (id: ${featureId}) does not exist.`,
+                );
+            } else {
+                return {
+                    message: "Feature deleted successfully",
+                    status: 200,
+                };
+            }
+        } catch (e) {
+            throw e;
         }
     }
 

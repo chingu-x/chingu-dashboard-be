@@ -304,7 +304,7 @@ describe("Features Controller (e2e)", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(403);
         });
-        it("should return 403 when a non voayger tries to access a feature in other team", async () => {
+        it("should return 403 when a non voyager tries to access a feature in other team", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "not_in_voyage@example.com",
                 "password",
@@ -523,6 +523,20 @@ describe("Features Controller (e2e)", () => {
                 app,
             );
             const featureId: number = 4;
+
+            await request(app.getHttpServer())
+                .delete(`/voyages/features/${featureId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 when a non voyager tries to update a feature", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const featureId: number = 1;
 
             await request(app.getHttpServer())
                 .delete(`/voyages/features/${featureId}`)

@@ -9,8 +9,6 @@ import {
     ParseIntPipe,
     Request,
     HttpStatus,
-    NotFoundException,
-    ForbiddenException,
 } from "@nestjs/common";
 import { FeaturesService } from "./features.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -282,31 +280,12 @@ export class FeaturesController {
         description: "Successfully deleted feature.",
         type: DeleteFeatureResponse,
     })
-    //Can only delete if loggedIn userId mataches addedBy userId
+    @CheckAbilities({ action: Action.Delete, subject: "Feature" })
     @Delete("/features/:featureId")
     async deleteFeature(
         @Request() req: CustomRequest,
         @Param("featureId", ParseIntPipe) featureId: number,
     ) {
-        const feature = await this.featuresService.findOneFeature(
-            featureId,
-            req,
-        );
-
-        if (!feature) {
-            throw new NotFoundException(
-                `featureId (id: ${featureId}) does not exist.`,
-            );
-        }
-
-        if (feature.addedBy?.member.id === req.user.userId) {
-            const deletedFeature =
-                await this.featuresService.deleteFeature(featureId);
-            return deletedFeature;
-        } else {
-            throw new ForbiddenException(
-                `uuid ${req.user.userId} does not match addedBy teamMemberID ${feature.addedBy?.member.id}`,
-            );
-        }
+        return this.featuresService.deleteFeature(featureId, req);
     }
 }
