@@ -243,6 +243,7 @@ export class FeaturesController {
         isArray: true,
         type: ExtendedFeaturesResponse,
     })
+    @CheckAbilities({ action: Action.Update, subject: "Feature" })
     @Patch("/features/:featureId/reorder")
     async updateFeatureOrderAndCategory(
         @Request() req: CustomRequest,

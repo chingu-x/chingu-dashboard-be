@@ -13,18 +13,6 @@ export const manageOwnFeaturesById = async (
         },
         select: {
             teamMemberId: true,
-            addedBy: {
-                select: {
-                    member: {
-                        select: {
-                            id: true,
-                            avatar: true,
-                            firstName: true,
-                            lastName: true,
-                        },
-                    },
-                },
-            },
         },
     });
     if (!feature) {
