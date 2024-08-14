@@ -25,10 +25,6 @@ describe("UsersService", () => {
             emailVerified: true,
             firstName: "Jessica",
             lastName: "Williamson",
-            githubId: "jess-github",
-            discordId: "jess-discord",
-            twitterId: "jess-twitter",
-            linkedinId: "jess-linkedin",
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
             timezone: "Australia/Melbourne",
             countryCode: "AU",
@@ -143,7 +139,7 @@ describe("UsersService", () => {
             });
             prismaMock.user.findMany.mockResolvedValue(usersWithRoles);
 
-            let result = await usersService.findAll();
+            const result = await usersService.findAll();
 
             expect(result).toBeArray();
             expect(result).toEqual(expectedUsersWithRoles);
