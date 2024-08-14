@@ -34,8 +34,8 @@ import {
     DeleteFeatureResponse,
 } from "./features.response";
 import { CustomRequest } from "../global/types/CustomRequest";
-import { CheckAbilities } from "src/global/decorators/abilities.decorator";
-import { Action } from "src/ability/ability.factory/ability.factory";
+import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "../ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Features")
