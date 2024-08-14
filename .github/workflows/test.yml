@@ -15,6 +15,9 @@ jobs:
       JWT_SECRET: jwtsecret
       AT_SECRET: atsecret
       RT_SECRET: rtsecret
+      DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+      DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+      DISCORD_CALLBACK_URL: /api/v1/auth/discord/redirect
 
     steps:
       - name: Checkout code

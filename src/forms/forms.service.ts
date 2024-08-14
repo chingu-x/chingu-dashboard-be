@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma, Question } from "@prisma/client";
+import { Form, Prisma, Question } from "@prisma/client";
 import { canReadAndSubmitForms } from "../ability/conditions/forms.ability";
 import { CustomRequest } from "../global/types/CustomRequest";
 
@@ -73,7 +73,7 @@ export const formSelect = {
             updatedAt: true,
         },
     },
-} as Prisma.FormSelect;
+} satisfies Prisma.FormSelect;
 
 @Injectable()
 export class FormsService {
@@ -88,7 +88,7 @@ export class FormsService {
 
         forms.forEach((form) => {
             form.questions.forEach((question) => {
-                const currentQuestion = question as Question & {
+                const currentQuestion = question as unknown as Question & {
                     subQuestions: Question[];
                 };
                 currentQuestion.subQuestions.forEach((subQuestion) => {
@@ -123,14 +123,14 @@ export class FormsService {
             );
 
         canReadAndSubmitForms(req.user, {
-            ...form,
+            ...(form as unknown as Form),
             formTypeId: form.formType.id,
         });
 
         const subQuestionsIds: number[] = [];
 
         form.questions.forEach((question) => {
-            const currentQuestion = question as Question & {
+            const currentQuestion = question as unknown as Question & {
                 subQuestions: Question[];
             };
             currentQuestion.subQuestions.forEach((subQuestion) => {
