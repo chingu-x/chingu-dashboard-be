@@ -353,4 +353,6 @@ export const populateUsersProd = async () => {
         },
     });
     //</editor-fold>
+
+    console.log("[Prod] Users populated.");
 };

@@ -3,7 +3,7 @@ import { prisma } from "../seed/prisma-client";
 export const populateVoyagesProd = async () => {
     await prisma.voyage.create({
         data: {
-            number: "52",
+            number: "999",
             status: {
                 connect: {
                     name: "Active",
