@@ -1,5 +1,8 @@
 import { populateTables } from "../seed/tables";
 import { prisma } from "../seed/prisma-client";
+import { populateVoyagesProd } from "./voyages";
+import { populateSprints } from "../seed/sprints";
+import { populateUsersProd } from "./users";
 
 export const deleteAllTables = async () => {
     const tablenames = await prisma.$queryRaw<
@@ -25,6 +28,10 @@ export const deleteAllTables = async () => {
 (async function () {
     await deleteAllTables();
     await populateTables(); // tables with no relations
+    await populateVoyagesProd();
+    await populateSprints();
+
+    await populateUsersProd();
 
     console.log("===\n🌱 [Production] Database seeding completed.\n===");
 
