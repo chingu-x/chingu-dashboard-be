@@ -48,11 +48,12 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add CASL permissions for Tech endpoint ([#174](https://github.com/chingu-x/chingu-dashboard-be/pull/174))
 - Add CASL permissions for Team Resource endpoint ([#177](https://github.com/chingu-x/chingu-dashboard-be/pull/177))
 - Add units tests for the users controller & services([#179](https://github.com/chingu-x/chingu-dashboard-be/pull/178))
+- Add production seed for alpha test ([#185](https://github.com/chingu-x/chingu-dashboard-be/pull/185))
 
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
-- Restructure seed/index.ts to work with e2e tests, and add --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
+- Restructure seed/-index.ts to work with e2e tests, and add --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
 - Update changelog ([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 - Update test.yml to run e2e tests on pull requests to the main branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
 - Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
