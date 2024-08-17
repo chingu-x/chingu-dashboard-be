@@ -570,6 +570,8 @@ export class SprintsService {
             responsesArray,
         );
 
+        // find voyageNumber from sprint id, and make sure it matches the voyage the
+        // team member is part of
         let voyageNumber;
         const voyageNumberFromSprintId: any =
             await this.globalServices.validateOrGetDbItem(
@@ -580,7 +582,27 @@ export class SprintsService {
                 undefined,
                 { include: { voyage: { select: { number: true } } } },
             );
-        console.log(voyageNumberFromSprintId, voyageNumber);
+
+        const voyageNumberFromTeamMemberId: any =
+            await this.globalServices.validateOrGetDbItem(
+                "voyageTeamMember",
+                createCheckinForm.voyageTeamMemberId,
+                "id",
+                "findUnique",
+                undefined,
+                {
+                    include: {
+                        voyageTeam: {
+                            include: { voyage: { select: { number: true } } },
+                        },
+                    },
+                },
+            );
+        console.log(
+            voyageNumberFromSprintId,
+            voyageNumber,
+            voyageNumberFromTeamMemberId,
+        );
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
