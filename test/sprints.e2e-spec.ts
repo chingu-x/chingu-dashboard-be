@@ -1015,6 +1015,22 @@ describe("Sprints Controller (e2e)", () => {
                 })
                 .expect(400);
 
+            // sprint id is for a voyage the team member isn't part of
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", accessToken)
+                .send({
+                    sprintId: 25,
+                    voyageTeamMemberId: 4,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
+                        },
+                    ],
+                })
+                .expect(400);
+
             const responsesAfter = await prisma.response.count();
             const responseGroupAfter = await prisma.responseGroup.count();
             const checkinsAfter = await prisma.formResponseCheckin.count();
