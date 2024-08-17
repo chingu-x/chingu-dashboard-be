@@ -570,6 +570,18 @@ export class SprintsService {
             responsesArray,
         );
 
+        let voyageNumber;
+        const voyageNumberFromSprintId: any =
+            await this.globalServices.validateOrGetDbItem(
+                "sprint",
+                createCheckinForm.sprintId,
+                "id",
+                "findUnique",
+                undefined,
+                { include: { voyage: { select: { number: true } } } },
+            );
+        console.log(voyageNumberFromSprintId, voyageNumber);
+
         try {
             const checkinSubmission = await this.prisma.$transaction(
                 async (tx) => {
