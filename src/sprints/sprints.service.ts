@@ -610,7 +610,6 @@ export class SprintsService {
         } else {
             voyageNumber = voyageNumberFromSprintId.voyage.number;
         }
-        console.log(voyageNumber);
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
@@ -639,6 +638,7 @@ export class SprintsService {
                 id: checkinSubmission.id,
                 voyageTeamMemberId: checkinSubmission.voyageTeamMemberId,
                 sprintId: checkinSubmission.sprintId,
+                voyageNumber,
                 responseGroupId: checkinSubmission.responseGroupId,
                 createdAt: checkinSubmission.createdAt,
             };
