@@ -598,11 +598,19 @@ export class SprintsService {
                     },
                 },
             );
-        console.log(
-            voyageNumberFromSprintId,
-            voyageNumber,
-            voyageNumberFromTeamMemberId,
-        );
+
+        if (
+            voyageNumberFromSprintId.voyage.number !==
+            voyageNumberFromTeamMemberId.voyageTeam.voyage.number
+        ) {
+            throw new BadRequestException(
+                `Voyage team member id ${createCheckinForm.voyageTeamMemberId}
+                is not part of the same voyage as sprint id ${createCheckinForm.sprintId}.`,
+            );
+        } else {
+            voyageNumber = voyageNumberFromSprintId.voyage.number;
+        }
+        console.log(voyageNumber);
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
