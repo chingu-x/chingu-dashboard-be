@@ -90,6 +90,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Fix form responses giving error and not inserting values when the boolean value is false ([#156](https://github.com/chingu-x/chingu-dashboard-be/pull/156))
 - Fix a bug for check on voyageTeamMemberId ([#159](https://github.com/chingu-x/chingu-dashboard-be/pull/159))
 - Fix users unit test failing due to a schema change
+- Fix voyageNumber generation from sprintId for check-in submissions ([#186](https://github.com/chingu-x/chingu-dashboard-be/pull/186))
 
 ### Removed
 
