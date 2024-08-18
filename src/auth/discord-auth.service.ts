@@ -16,7 +16,11 @@ export class DiscordAuthService implements IAuthProvider {
         );
     }
 
-    createUser() {}
+    createUser() {
+        throw new Error("Method not implemented");
+    }
 
-    findUserById() {}
+    findUserById() {
+        throw new Error("Method not implemented");
+    }
 }
