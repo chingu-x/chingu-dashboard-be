@@ -14,8 +14,6 @@ export const prismaExtension = Prisma.defineExtension({
                 WHERE "OAuthProvider".name = ${providerName} AND "UserOAuthProfile"."providerUserId" = ${providerUserId}
             `;
 
-            console.log(`prisma-extensions.ts (17): userInDb = ${userInDb}`);
-
             switch (userInDb.length) {
                 case 0:
                     return null;
