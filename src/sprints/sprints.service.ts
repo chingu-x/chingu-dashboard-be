@@ -572,7 +572,6 @@ export class SprintsService {
 
         // find voyageNumber from sprint id, and make sure it matches the voyage the
         // team member is part of
-        let voyageNumber;
         const voyageNumberFromSprintId: any =
             await this.globalServices.validateOrGetDbItem(
                 "sprint",
@@ -582,7 +581,6 @@ export class SprintsService {
                 undefined,
                 { include: { voyage: { select: { number: true } } } },
             );
-
         const voyageNumberFromTeamMemberId: any =
             await this.globalServices.validateOrGetDbItem(
                 "voyageTeamMember",
@@ -607,8 +605,6 @@ export class SprintsService {
                 `Voyage team member id ${createCheckinForm.voyageTeamMemberId}
                 is not part of the same voyage as sprint id ${createCheckinForm.sprintId}.`,
             );
-        } else {
-            voyageNumber = voyageNumberFromSprintId.voyage.number;
         }
 
         try {
@@ -638,7 +634,6 @@ export class SprintsService {
                 id: checkinSubmission.id,
                 voyageTeamMemberId: checkinSubmission.voyageTeamMemberId,
                 sprintId: checkinSubmission.sprintId,
-                voyageNumber,
                 responseGroupId: checkinSubmission.responseGroupId,
                 createdAt: checkinSubmission.createdAt,
             };
