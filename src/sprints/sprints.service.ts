@@ -17,6 +17,17 @@ import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 
+type VoyageTeamMemberWithSprintIds = {
+    id: number;
+    voyageTeam: {
+        voyage: {
+            sprints: {
+                id: number;
+            }[];
+        };
+    };
+};
+
 @Injectable()
 export class SprintsService {
     constructor(
@@ -581,7 +592,7 @@ export class SprintsService {
                 undefined,
                 { include: { voyage: { select: { number: true } } } },
             );
-        const voyageNumberFromTeamMemberId: any =
+        const voyageNumberFromTeamMemberId: VoyageTeamMemberWithSprintIds | null =
             await this.globalServices.validateOrGetDbItem(
                 "voyageTeamMember",
                 createCheckinForm.voyageTeamMemberId,
@@ -599,7 +610,7 @@ export class SprintsService {
 
         if (
             voyageNumberFromSprintId.voyage.number !==
-            voyageNumberFromTeamMemberId.voyageTeam.voyage.number
+            voyageNumberFromTeamMemberId?.voyageTeam.voyage
         ) {
             throw new BadRequestException(
                 `Voyage team member id ${createCheckinForm.voyageTeamMemberId}
