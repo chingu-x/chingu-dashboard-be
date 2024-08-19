@@ -18,7 +18,6 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 
 type VoyageTeamMemberWithSprintIds = {
-    id: number;
     voyageTeam: {
         voyage: {
             sprints: {
