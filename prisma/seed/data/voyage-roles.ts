@@ -8,6 +8,10 @@ export default [
         description: "Product Owner description",
     },
     {
+        name: "Scrum Master",
+        description: "Product Owner description",
+    },
+    {
         name: "UI/UX Designer",
         description: "User interface / User experience",
     },
