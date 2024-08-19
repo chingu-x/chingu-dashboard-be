@@ -581,40 +581,36 @@ export class SprintsService {
             responsesArray,
         );
 
-        // find voyageNumber from sprint id, and make sure it matches the voyage the
-        // team member is part of
-        const voyageNumberFromSprintId: any =
-            await this.globalServices.validateOrGetDbItem(
-                "sprint",
-                createCheckinForm.sprintId,
-                "id",
-                "findUnique",
-                undefined,
-                { include: { voyage: { select: { number: true } } } },
-            );
-        const voyageNumberFromTeamMemberId: VoyageTeamMemberWithSprintIds | null =
-            await this.globalServices.validateOrGetDbItem(
+        // find voyageNumber team member is part of and make sure it matches input
+        const teamMemberData: VoyageTeamMemberWithSprintIds | null =
+            await this.globalServices.validateOrGetDbItem<VoyageTeamMemberWithSprintIds>(
                 "voyageTeamMember",
                 createCheckinForm.voyageTeamMemberId,
                 "id",
                 "findUnique",
                 undefined,
                 {
-                    include: {
+                    select: {
                         voyageTeam: {
-                            include: { voyage: { select: { number: true } } },
+                            select: {
+                                voyage: {
+                                    select: {
+                                        sprints: { select: { id: true } },
+                                    },
+                                },
+                            },
                         },
                     },
                 },
             );
 
         if (
-            voyageNumberFromSprintId.voyage.number !==
-            voyageNumberFromTeamMemberId?.voyageTeam.voyage
+            !teamMemberData?.voyageTeam.voyage.sprints.some(
+                (sprint) => sprint.id === createCheckinForm.sprintId,
+            )
         ) {
             throw new BadRequestException(
-                `Voyage team member id ${createCheckinForm.voyageTeamMemberId}
-                is not part of the same voyage as sprint id ${createCheckinForm.sprintId}.`,
+                `Voyage team member id ${createCheckinForm.voyageTeamMemberId} is not part of the same voyage as sprint id ${createCheckinForm.sprintId}.`,
             );
         }
 
