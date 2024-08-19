@@ -217,9 +217,6 @@ export class CheckinSubmissionResponse {
     @ApiProperty({ example: 1 })
     sprintId: number;
 
-    @ApiProperty({ example: "46" })
-    voyageNumber: string;
-
     @ApiProperty({ example: 1 })
     responseGroupId: 5;
 
