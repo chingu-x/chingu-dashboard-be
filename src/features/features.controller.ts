@@ -19,6 +19,7 @@ import {
     ApiOperation,
     ApiResponse,
     ApiTags,
+    ApiParam,
 } from "@nestjs/swagger";
 import { Feature } from "./entities/feature.entity";
 import {
@@ -70,6 +71,13 @@ export class FeaturesController {
         status: HttpStatus.CREATED,
         description: "Successfully created a new feature.",
         type: FeatureResponse,
+    })
+    @ApiParam({
+        name: "teamId",
+        description: "team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @CheckAbilities({ action: Action.Create, subject: "Feature" })
     @Post("/teams/:teamId/features")
@@ -133,6 +141,13 @@ export class FeaturesController {
             "Could not find features for project. Team with given ID does not exist.",
         type: NotFoundErrorResponse,
     })
+    @ApiParam({
+        name: "teamId",
+        description: "team Id",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @CheckAbilities({ action: Action.Read, subject: "Feature" })
     @Get("/teams/:teamId/features")
     findAllFeatures(
@@ -164,6 +179,13 @@ export class FeaturesController {
         status: HttpStatus.NOT_FOUND,
         description: "Feature with given ID does not exist.",
         type: NotFoundErrorResponse,
+    })
+    @ApiParam({
+        name: "featureId",
+        description: "feature Id",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @CheckAbilities({ action: Action.Read, subject: "Feature" })
     @Get("/features/:featureId")
@@ -202,6 +224,13 @@ export class FeaturesController {
         status: HttpStatus.OK,
         description: "Successfully updated feature.",
         type: FeatureResponse,
+    })
+    @ApiParam({
+        name: "featureId",
+        description: "login with dan@random.com",
+        type: "Integer",
+        required: true,
+        example: 1,
     })
     @CheckAbilities({ action: Action.Update, subject: "Feature" })
     @Patch("/features/:featureId")
@@ -243,6 +272,13 @@ export class FeaturesController {
         isArray: true,
         type: ExtendedFeaturesResponse,
     })
+    @ApiParam({
+        name: "featureId",
+        description: "login with dan@random.com",
+        type: "Integer",
+        required: true,
+        example: 1,
+    })
     @CheckAbilities({ action: Action.Update, subject: "Feature" })
     @Patch("/features/:featureId/reorder")
     async updateFeatureOrderAndCategory(
@@ -280,6 +316,13 @@ export class FeaturesController {
         status: HttpStatus.OK,
         description: "Successfully deleted feature.",
         type: DeleteFeatureResponse,
+    })
+    @ApiParam({
+        name: "featureId",
+        description: "login with dan@random.com",
+        type: "Integer",
+        required: true,
+        example: 2,
     })
     @CheckAbilities({ action: Action.Delete, subject: "Feature" })
     @Delete("/features/:featureId")
