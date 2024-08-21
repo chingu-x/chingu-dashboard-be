@@ -5,12 +5,14 @@ import {
     UnprocessableEntityException,
 } from "@nestjs/common";
 import { seed } from "../../prisma/seed/seed";
-import * as process from "node:process";
+import { AppConfigService } from "src/config/app/appConfig.service";
 
 @Injectable()
 export class DevelopmentService {
+    constructor(private readonly appConfigService: AppConfigService) {}
     async reseedDatabase(res) {
-        if (process.env.NODE_ENV !== "development") {
+        const nodeEnv = this.appConfigService.nodeEnv;
+        if (nodeEnv !== "development") {
             throw new UnprocessableEntityException(
                 "Reseed failed. This endpoint can only be used in the development environment.",
             );
