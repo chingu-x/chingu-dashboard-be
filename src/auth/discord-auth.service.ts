@@ -17,9 +17,6 @@ export class DiscordAuthService implements IAuthProvider {
             "discord",
             user.discordId,
         );
-        console.log(
-            `discord-auth.service.ts (14): userInDb = ${JSON.stringify(userInDb)}`,
-        );
 
         if (userInDb)
             return {
@@ -40,11 +37,30 @@ export class DiscordAuthService implements IAuthProvider {
                 "[discord-auth.service]: Cannot get email from discord to create a new Chingu account",
             );
 
-        return this.prisma.user.create({
-            data: {
+        // check if email is in the database, add oauth profile to existing account, otherwise, create a new user account
+        return this.prisma.user.upsert({
+            where: {
+                email: user.email,
+            },
+            update: {
+                emailVerified: true,
+                oAuthProfiles: {
+                    create: {
+                        provider: {
+                            connect: {
+                                name: "discord",
+                            },
+                        },
+                        providerUserId: user.discordId,
+                        providerUsername: user.username,
+                    },
+                },
+            },
+            create: {
                 email: user.email,
                 password: await generatePasswordHash(),
                 emailVerified: true,
+                avatar: `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`,
                 oAuthProfiles: {
                     create: {
                         provider: {
