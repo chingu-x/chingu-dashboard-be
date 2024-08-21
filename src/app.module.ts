@@ -21,8 +21,11 @@ import { AbilityModule } from "./ability/ability.module";
 import { AbilitiesGuard } from "./auth/guards/abilities.guard";
 import { DevelopmentModule } from "./development/development.module";
 
+import { AppConfigModule } from "./config/app/appConfig.module";
+
 @Module({
     imports: [
+        AppConfigModule,
         RouterModule.register([
             {
                 path: "voyages",
