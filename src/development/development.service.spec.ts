@@ -2,9 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DevelopmentService } from "./development.service";
 import * as Seed from "../../prisma/seed/seed";
 import * as process from "node:process";
+import { AppConfigService } from "../config/app/appConfig.service";
 
 describe("DevelopmentService", () => {
     let service: DevelopmentService;
+    let config: AppConfigService;
     const oldNodeEnv = process.env.NODE_ENV;
 
     beforeAll(() => {
@@ -23,9 +25,19 @@ describe("DevelopmentService", () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [DevelopmentService],
+            providers: [
+                DevelopmentService,
+                {
+                    provide: AppConfigService,
+                    useValue: {
+                        nodeEnv: jest.fn((key: string) =>
+                            key === "NODE_ENV" ? "development" : undefined,
+                        ),
+                    },
+                },
+            ],
         }).compile();
-
+        config = module.get<AppConfigService>(AppConfigService);
         service = module.get<DevelopmentService>(DevelopmentService);
     });
 
@@ -34,6 +46,9 @@ describe("DevelopmentService", () => {
     });
 
     it("should be able to reseed the database", async () => {
+        Object.defineProperty(config, "nodeEnv", {
+            get: jest.fn().mockReturnValue("development"),
+        });
         const seedFnMock = jest
             .spyOn(Seed, "seed")
             .mockImplementationOnce((): Promise<any> => Promise.resolve(null));
