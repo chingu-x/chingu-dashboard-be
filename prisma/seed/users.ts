@@ -23,22 +23,6 @@ export const populateUsers = async () => {
                     abbreviation: "F",
                 },
             },
-            oAuthProfiles: {
-                create: {
-                    providerUserId: "1234567",
-                    providerUsername: "jessica-discord",
-                    provider: {
-                        connectOrCreate: {
-                            where: {
-                                name: "discord",
-                            },
-                            create: {
-                                name: "discord",
-                            },
-                        },
-                    },
-                },
-            },
         },
     });
 
