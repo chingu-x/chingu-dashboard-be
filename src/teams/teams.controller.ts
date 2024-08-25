@@ -158,7 +158,7 @@ export class TeamsController {
     })
     @CheckAbilities({ action: Action.Update, subject: "VoyageTeam" })
     @Patch(":teamId/members")
-    update(
+    updateTeamMemberById(
         @Param("teamId", ParseIntPipe) teamId: number,
         @Request() req: CustomRequest,
         @Body() updateTeamMemberDto: UpdateTeamMemberDto,
