@@ -93,6 +93,19 @@ describe("TeamsService", () => {
     it("should be defined", () => {
         expect(service).toBeDefined();
     });
+
+    describe("findAll", () => {
+        it("should get array of all voyage teams", async () => {
+            prismaMock.voyageTeam.findMany.mockResolvedValue(mockVoyageTeams);
+
+            const result = await service.findAll();
+            expect(result).toBeArray();
+            expect(result).toEqual(mockVoyageTeams);
+
+            expect(prismaMock.voyageTeam.findMany).toHaveBeenCalled();
+        });
+    });
+
     describe("findTeamsByVoyageId", () => {
         it("should get team array by id", async () => {
             prismaMock.voyage.findUnique.mockResolvedValue(mockVoyage);
