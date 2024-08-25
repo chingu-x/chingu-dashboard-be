@@ -14,10 +14,16 @@ export const fullUserDetailSelect = {
         },
     },
     avatar: true,
-    githubId: true,
-    discordId: true,
-    twitterId: true,
-    linkedinId: true,
+    oAuthProfiles: {
+        select: {
+            provider: {
+                select: {
+                    name: true,
+                },
+            },
+            providerUsername: true,
+        },
+    },
     gender: {
         select: {
             id: true,
@@ -71,10 +77,16 @@ export const privateUserDetailSelect = {
         },
     },
     avatar: true,
-    discordId: true,
-    githubId: true,
-    twitterId: true,
-    linkedinId: true,
+    oAuthProfiles: {
+        select: {
+            provider: {
+                select: {
+                    name: true,
+                },
+            },
+            providerUsername: true,
+        },
+    },
     email: true,
     countryCode: true,
     timezone: true,
@@ -111,10 +123,16 @@ export const publicUserDetailSelect = {
     firstName: true,
     lastName: true,
     avatar: true,
-    githubId: true,
-    discordId: true,
-    twitterId: true,
-    linkedinId: true,
+    oAuthProfiles: {
+        select: {
+            provider: {
+                select: {
+                    name: true,
+                },
+            },
+            providerUsername: true,
+        },
+    },
     countryCode: true,
     timezone: true,
 };
