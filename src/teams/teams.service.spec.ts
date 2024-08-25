@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { NotFoundException } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { prismaMock } from "../prisma/singleton";

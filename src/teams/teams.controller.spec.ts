@@ -2,8 +2,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { TeamsController } from "./teams.controller";
 import { TeamsService } from "./teams.service";
 import { CustomRequest } from "../global/types/CustomRequest";
-import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { VoyageTeamMemberUpdateResponse } from "./teams.response";
+import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 
 describe("TeamsController", () => {
     let controller: TeamsController;
@@ -57,28 +57,22 @@ describe("TeamsController", () => {
     } as VoyageTeamMemberUpdateResponse;
 
     const mockUpdateTeamMemberDto = {
-        hrPerSprint: 3,
+        hrPerSprint: 35,
     } as UpdateTeamMemberDto;
 
     const mockTeamsService = {
         findAll: jest.fn(() => {
             return voyageTeamsMockResponseArray;
         }),
-        findTeamsByVoyageId: jest.fn((id: number) => {
+        findTeamsByVoyageId: jest.fn(() => {
             return [voyageTeamsMockResponseArray[0]];
         }),
-        findTeamById: jest.fn((id: number, requestMock) => {
+        findTeamById: jest.fn(() => {
             return voyageTeamsMockResponseArray[0];
         }),
-        updateTeamMemberById: jest.fn(
-            (
-                teamId: number,
-                requestMock: CustomRequest,
-                updateTeamMemberDto: UpdateTeamMemberDto,
-            ) => {
-                return voyageTeamMemberUpdateMockResponse;
-            },
-        ),
+        updateTeamMemberById: jest.fn(() => {
+            return voyageTeamMemberUpdateMockResponse;
+        }),
     };
 
     beforeEach(async () => {
@@ -179,27 +173,29 @@ describe("TeamsController", () => {
         });
     });
 
-    // describe("update a team member's hours per week by id", () => {
-    //     it("should be defined", () => {
-    //         expect(controller.updateTeamMemberById).toBeDefined();
-    //     });
+    describe("update a team member's hours per week by id", () => {
+        it("should be defined", () => {
+            expect(controller.updateTeamMemberById).toBeDefined();
+        });
 
-    //     it("should return team member object with updated sprint hours", async () => {
-    //         const member = await controller.updateTeamMemberById(1,
-    //             requestMock,
-    //             mockUpdateTeamMemberDto);
-    //         expect(member).toEqual({
-    //             id: expect.any(Number),
-    //             userId: expect.any(String),
-    //             voyageTeamId: expect.any(Number),
-    //             voyageRoleId: expect.any(Number),
-    //             statusId: expect.any(Number),
-    //             hrPerSprint: expect.any(Number),
-    //             createdAt: expect.any(Date),
-    //             updatedAt: expect.any(Date),
-    //         });
+        it("should return team member object with updated sprint hours", async () => {
+            const member = await controller.updateTeamMemberById(
+                1,
+                requestMock,
+                mockUpdateTeamMemberDto,
+            );
+            expect(member).toEqual({
+                id: expect.any(Number),
+                userId: expect.any(String),
+                voyageTeamId: expect.any(Number),
+                voyageRoleId: expect.any(Number),
+                statusId: expect.any(Number),
+                hrPerSprint: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+            });
 
-    //         expect(mockTeamsService.updateTeamMemberById).toHaveBeenCalled();
-    //     });
-    // });
+            expect(mockTeamsService.updateTeamMemberById).toHaveBeenCalled();
+        });
+    });
 });
