@@ -1,5 +1,6 @@
 import { hashPassword } from "../../src/utils/auth";
 import { prisma } from "./prisma-client";
+import { generateGravatarUrl } from "./utils";
 
 export const getRoleId = (roles, name) => {
     return roles.filter((role) => role.name == name)[0].id;
@@ -15,7 +16,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Jessica",
             lastName: "Williamson",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
+            avatar: generateGravatarUrl("jessica.williamson@gmail.com"),
             timezone: "Australia/Melbourne",
             countryCode: "AU",
             gender: {
@@ -63,7 +64,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Larry",
             lastName: "Castro",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=monsterid&r=x",
+            avatar: generateGravatarUrl("l.castro@outlook.com"),
             timezone: "America/Chicago",
             comment: "Member seems to be inactive",
             countryCode: "US",
@@ -96,7 +97,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Leonarda",
             lastName: "Rowe",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=identicon&r=x",
+            avatar: generateGravatarUrl("leo.rowe@outlook.com"),
             timezone: "America/Los_Angeles",
             comment: "This is a random admin comment",
             countryCode: "US",
@@ -122,7 +123,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Joso",
             lastName: "Mađar",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            avatar: generateGravatarUrl("JosoMadar@dayrep.com"),
             timezone: "Europe/Zagreb",
             comment: "This is a random admin comment",
             countryCode: "HR",
@@ -143,7 +144,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Dan",
             lastName: "Ko",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            avatar: generateGravatarUrl("dan@random.com"),
             timezone: "America/Los_Angeles",
             comment: "No comment",
             countryCode: "US",
@@ -164,7 +165,7 @@ export const populateUsers = async () => {
             emailVerified: true,
             firstName: "Not in a voyage",
             lastName: "Voyage",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=wavatar&r=x",
+            avatar: generateGravatarUrl("not_in_voyage@example.com"),
             timezone: "America/New_York",
             comment:
                 "This user is not in a voyage - does not have the 'voyager' role",
@@ -179,7 +180,7 @@ export const populateUsers = async () => {
             emailVerified: false,
             firstName: "Yoshi",
             lastName: "Amano",
-            avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
+            avatar: generateGravatarUrl("yoshi@gmail.com"),
             timezone: "Australia/Melbourne",
             countryCode: "AU",
             gender: {
