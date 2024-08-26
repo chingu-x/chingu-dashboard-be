@@ -178,7 +178,7 @@ export const populateCheckinForm = async () => {
                                 name: "teamMembersCheckbox",
                             },
                         },
-                        text: "Is there anyone on your team who has not been super helpful, kind, hard-working, etc. and deserves a shout-out in the Chingu Weekly? If so, please add his/her Discord username here:",
+                        text: "Is there anyone on your team who has been super helpful, kind, hard-working, etc. and deserves a shout-out in the Chingu Weekly? If so, please add his/her Discord username here:",
                         answerRequired: false,
                     },
                     {
@@ -235,7 +235,7 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "Is there anything else you'd like to tell us about your Voyage Guide?",
-                        answerRequired: true,
+                        answerRequired: false,
                     },
                     {
                         order: 12,
