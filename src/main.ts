@@ -6,7 +6,6 @@ import { ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
 import { AppConfigService } from "./config/app/appConfig.service";
-import { MailConfigService } from "./config/mail/mailConfig.service";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -54,7 +53,6 @@ async function bootstrap() {
         }),
     );
     const appConfig = app.get(AppConfigService);
-    const mailConfig = app.get(MailConfigService);
 
     const port = appConfig.appPort;
     await app.listen(port);
