@@ -10,16 +10,22 @@ import { RtStrategy } from "./strategies/rt.strategy";
 import * as process from "process";
 import { DiscordStrategy } from "./strategies/discord.strategy";
 import { DiscordAuthService } from "./discord-auth.service";
+import { EmailService } from "src/utils/emails/sendEmail";
+import { MailConfigModule } from "src/config/mail/mailConfig.module";
+import { AppConfigModule } from "src/config/app/appConfig.module";
 
 @Module({
     imports: [
+        AppConfigModule,
         UsersModule,
         PassportModule,
+        MailConfigModule,
         JwtModule.register({
             secret: process.env.JWT_SECRET,
         }),
     ],
     providers: [
+        EmailService,
         AuthService,
         LocalStrategy,
         AtStrategy,
