@@ -10,6 +10,16 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [v1.0.0-alpha]
+
+### Added
+
 - Add @ApiResponse tags to resources ([#76](https://github.com/chingu-x/chingu-dashboard-be/pull/76))
 - Add @ApiResponse tags to ideations and features ([#65](https://github.com/chingu-x/chingu-dashboard-be/pull/77))
 - Add refresh token functionality and global guard to protect all routes ([#78](https://github.com/chingu-x/chingu-dashboard-be/pull/78))
