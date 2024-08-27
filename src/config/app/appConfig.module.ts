@@ -11,7 +11,7 @@ import { AppConfigService } from "./appConfig.service";
                 nodeEnv: Joi.string()
                     .valid("development", "production", "test")
                     .default("development"),
-                port: Joi.number().port().default(8000),
+                port: Joi.number().port(),
             }),
         }),
     ],
