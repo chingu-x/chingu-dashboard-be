@@ -5,11 +5,15 @@ import { ConfigService } from "@nestjs/config";
 export class MailConfigService {
     constructor(private readonly configService: ConfigService) {}
 
-    getMailjetApiPublic() {
-        return this.configService.get<string>("mailjetApiPublic");
+    get MailjetApiPublic() {
+        return this.configService.get<string>("mail.mailjetApiPublic");
     }
 
-    getMailjetApiPrivate() {
-        return this.configService.get<string>("mailjetApiPrivate");
+    get MailjetApiPrivate() {
+        return this.configService.get<string>("mail.mailjetApiPrivate");
+    }
+
+    get FrontendUrl() {
+        return this.configService.get<string>("mail.frontendUrl");
     }
 }

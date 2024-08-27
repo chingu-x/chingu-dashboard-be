@@ -9,8 +9,9 @@ import { MailConfigService } from "./mailConfig.service";
         ConfigModule.forRoot({
             load: [mailConfig],
             validationSchema: Joi.object({
-                mailjetApiPublic: Joi.string().required(),
-                mailjetApiPrivate: Joi.string().required(),
+                mailjetApiPublic: Joi.string(),
+                mailjetApiPrivate: Joi.string(),
+                frontendUrl: Joi.string(),
             }),
         }),
     ],
