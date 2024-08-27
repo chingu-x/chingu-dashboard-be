@@ -5,6 +5,8 @@ import { PrismaClientExceptionFilter } from "./exception-filters/prisma-client-e
 import { ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
+import { AppConfigService } from "./config/app/appConfig.service";
+import { MailConfigService } from "./config/mail/mailConfig.service";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -51,8 +53,10 @@ async function bootstrap() {
             transform: true,
         }),
     );
+    const appConfig = app.get(AppConfigService);
+    const mailConfig = app.get(MailConfigService);
 
-    const port = parseInt(process.env.PORT as string);
+    const port = appConfig.appPort;
     await app.listen(port);
 }
 
