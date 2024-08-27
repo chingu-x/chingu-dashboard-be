@@ -13,11 +13,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
 import { comparePassword, hashPassword } from "../utils/auth";
-import {
-    sendAttemptedRegistrationEmail,
-    sendPasswordResetEmail,
-    sendSignupVerificationEmail,
-} from "../utils/emails/sendEmail";
+import { EmailService } from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
@@ -32,6 +28,7 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
+        private emailService: EmailService,
     ) {}
 
     private readonly logger = new Logger(AuthService.name);
@@ -272,7 +269,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendSignupVerificationEmail(signupDto.email, token);
+            await this.emailService.sendSignupVerificationEmail(
+                signupDto.email,
+                token,
+            );
             return {
                 message: "Signup Success.",
                 statusCode: 200,
@@ -317,12 +317,17 @@ export class AuthService {
                     this.logger.debug(
                         `[Auth/Signup]: User account ${signupDto.email} is not verified, resending verification email.`,
                     );
-                    await sendSignupVerificationEmail(signupDto.email, token);
+                    await this.emailService.sendSignupVerificationEmail(
+                        signupDto.email,
+                        token,
+                    );
                 } else {
                     this.logger.debug(
                         `[Auth/Signup]: Email ${signupDto.email} already verified. Sending "attempt registration" email.`,
                     );
-                    await sendAttemptedRegistrationEmail(signupDto.email);
+                    await this.emailService.sendAttemptedRegistrationEmail(
+                        signupDto.email,
+                    );
                 }
             } else {
                 this.logger.debug(`[Auth/Signup]: Other signup errors: ${e}`);
@@ -367,7 +372,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendSignupVerificationEmail(resendEmailDto.email, token);
+            await this.emailService.sendSignupVerificationEmail(
+                resendEmailDto.email,
+                token,
+            );
             return {
                 message: "Email successfully re-sent",
                 statusCode: 200,
@@ -481,7 +489,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendPasswordResetEmail(passwordResetRequestDto.email, token);
+            await this.emailService.sendPasswordResetEmail(
+                passwordResetRequestDto.email,
+                token,
+            );
         }
         return {
             message:
