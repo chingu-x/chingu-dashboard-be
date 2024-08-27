@@ -8,16 +8,16 @@ import { AppConfigService } from "../../config/app/appConfig.service";
 export class EmailService {
     private mailjet: Mailjet.Client;
     constructor(
-        private readonly ConfigService: MailConfigService,
-        private readonly AppConfigService: AppConfigService,
+        private readonly mailConfigService: MailConfigService,
+        private readonly appConfigService: AppConfigService,
     ) {
         this.mailjet = new Mailjet.Client({
-            apiKey: this.ConfigService.MailjetApiPublic,
-            apiSecret: this.ConfigService.MailjetApiPrivate,
+            apiKey: this.mailConfigService.MailjetApiPublic,
+            apiSecret: this.mailConfigService.MailjetApiPrivate,
         });
     }
     async sendSignupVerificationEmail(email: string, token: string) {
-        if (this.AppConfigService.nodeEnv === "test") return;
+        if (this.appConfigService.nodeEnv === "test") return;
         await this.mailjet.post("send", { version: "v3.1" }).request({
             Messages: [
                 {
@@ -29,7 +29,7 @@ export class EmailService {
                     TemplateID: templateIds.verificationEmail,
                     TemplateLanguage: true,
                     Variables: {
-                        verificationLink: `${this.ConfigService.FrontendUrl}/users/verify?token=${token}`,
+                        verificationLink: `${this.mailConfigService.FrontendUrl}/users/verify?token=${token}`,
                     },
                 },
             ],
@@ -37,7 +37,7 @@ export class EmailService {
     }
 
     async sendAttemptedRegistrationEmail(email: string) {
-        if (this.AppConfigService.nodeEnv === "test") return;
+        if (this.appConfigService.nodeEnv === "test") return;
         await this.mailjet.post("send", { version: "v3.1" }).request({
             Messages: [
                 {
@@ -50,7 +50,7 @@ export class EmailService {
                     TemplateLanguage: true,
                     Variables: {
                         userEmail: email,
-                        passwordResetPage: `${this.ConfigService.FrontendUrl}/users/reset-password`,
+                        passwordResetPage: `${this.mailConfigService.FrontendUrl}/users/reset-password`,
                     },
                 },
             ],
@@ -69,7 +69,7 @@ export class EmailService {
                     TemplateID: templateIds.passwordResetEmail,
                     TemplateLanguage: true,
                     Variables: {
-                        passwordResetLink: `${this.ConfigService.FrontendUrl}/users/reset-password?token=${token}`,
+                        passwordResetLink: `${this.mailConfigService.FrontendUrl}/users/reset-password?token=${token}`,
                     },
                 },
             ],
