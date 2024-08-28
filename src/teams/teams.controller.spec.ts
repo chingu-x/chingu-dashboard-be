@@ -143,7 +143,9 @@ describe("TeamsController", () => {
                 updatedAt: expect.any(Date),
             });
 
-            expect(mockTeamsService.findTeamsByVoyageId).toHaveBeenCalled();
+            expect(mockTeamsService.findTeamsByVoyageId).toHaveBeenCalledWith(
+                1,
+            );
         });
     });
 
@@ -195,7 +197,11 @@ describe("TeamsController", () => {
                 updatedAt: expect.any(Date),
             });
 
-            expect(mockTeamsService.updateTeamMemberById).toHaveBeenCalled();
+            expect(mockTeamsService.updateTeamMemberById).toHaveBeenCalledWith(
+                1,
+                requestMock,
+                mockUpdateTeamMemberDto,
+            );
         });
     });
 });
