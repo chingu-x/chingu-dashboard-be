@@ -61,6 +61,10 @@ Another example [here](https://co-pilot.dev/changelog)
 -  Add CASL permissions for Team features endpoint ([#184](https://github.com/chingu-x/chingu-dashboard-be/pull/184))
 - Add production seed for alpha test ([#185](https://github.com/chingu-x/chingu-dashboard-be/pull/185))
 
+
+
+- Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
+
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
