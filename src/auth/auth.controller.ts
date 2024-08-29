@@ -356,6 +356,6 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
     ) {
         await this.authService.returnTokensOnLoginSuccess(req, res);
-        res.status(HttpStatus.OK).send({ message: "Login Success" });
+        res.redirect(`${process.env.FRONTEND_URL}`);
     }
 }
