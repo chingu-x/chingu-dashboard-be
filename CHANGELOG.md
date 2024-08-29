@@ -10,6 +10,16 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [v1.0.0-alpha]
+
+### Added
+
 - Add @ApiResponse tags to resources ([#76](https://github.com/chingu-x/chingu-dashboard-be/pull/76))
 - Add @ApiResponse tags to ideations and features ([#65](https://github.com/chingu-x/chingu-dashboard-be/pull/77))
 - Add refresh token functionality and global guard to protect all routes ([#78](https://github.com/chingu-x/chingu-dashboard-be/pull/78))
@@ -48,7 +58,12 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add CASL permissions for Tech endpoint ([#174](https://github.com/chingu-x/chingu-dashboard-be/pull/174))
 - Add CASL permissions for Team Resource endpoint ([#177](https://github.com/chingu-x/chingu-dashboard-be/pull/177))
 - Add units tests for the users controller & services([#179](https://github.com/chingu-x/chingu-dashboard-be/pull/178))
+-  Add CASL permissions for Team features endpoint ([#184](https://github.com/chingu-x/chingu-dashboard-be/pull/184))
 - Add production seed for alpha test ([#185](https://github.com/chingu-x/chingu-dashboard-be/pull/185))
+
+
+
+- Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
 
 ### Changed
 
