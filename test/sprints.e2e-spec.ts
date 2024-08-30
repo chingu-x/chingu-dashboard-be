@@ -346,9 +346,14 @@ describe("Sprints Controller (e2e)", () => {
     describe("PATCH /voyages/sprints/meetings/:meetingId - updates details for a meeting", () => {
         it("should return 200 if meeting details was successfully updated", async () => {
             const meetingId = 1;
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: "Test title",
                     dateTime: "2024-02-29T17:17:50.100Z",
@@ -388,7 +393,45 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 if a non-voyager tries to access it", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 if a user of other team tries to access the meeting", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+
+        it("should return 404 if meetingId is invalid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const meetingId = 9999;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(404);
         });
     });
 

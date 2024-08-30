@@ -277,26 +277,35 @@ export class SprintsService {
             dateTime,
             notes,
         }: UpdateTeamMeetingDto,
+        req: CustomRequest,
     ) {
-        try {
-            const updatedMeeting = await this.prisma.teamMeeting.update({
-                where: {
-                    id: meetingId,
-                },
-                data: {
-                    title,
-                    description,
-                    meetingLink,
-                    dateTime,
-                    notes,
-                },
-            });
-            return updatedMeeting;
-        } catch (e) {
-            if (e.code === "P2025") {
-                throw new NotFoundException(`Invalid meetingId: ${meetingId}`);
-            }
+        const meeting = await this.prisma.teamMeeting.findUnique({
+            where: {
+                id: meetingId,
+            },
+            select: {
+                voyageTeamId: true,
+            },
+        });
+        if (!meeting) {
+            throw new NotFoundException(
+                `Meeting with Id ${meetingId} does not exist.`,
+            );
         }
+        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
+        const updatedMeeting = await this.prisma.teamMeeting.update({
+            where: {
+                id: meetingId,
+            },
+            data: {
+                title,
+                description,
+                meetingLink,
+                dateTime,
+                notes,
+            },
+        });
+        return updatedMeeting;
     }
 
     async createMeetingAgenda(

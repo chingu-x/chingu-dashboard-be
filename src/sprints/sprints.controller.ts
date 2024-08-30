@@ -195,8 +195,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "sprintNumber",
@@ -239,8 +244,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -249,12 +259,14 @@ export class SprintsController {
         example: 1,
     })
     updateTeamMeeting(
+        @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Body(ValidationPipe) updateTeamMeetingDto: UpdateTeamMeetingDto,
     ) {
         return this.sprintsService.updateTeamMeeting(
             meetingId,
             updateTeamMeetingDto,
+            req,
         );
     }
 
