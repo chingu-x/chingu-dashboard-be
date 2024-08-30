@@ -408,7 +408,7 @@ describe("Sprints Controller (e2e)", () => {
                 .set("Cookie", [access_token, refresh_token])
                 .expect(403);
         });
-        it("should return 403 if a user of other team tries to access the meeting", async () => {
+        it("should return 403 if a user of other team tries to update the meeting", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "JosoMadar@dayrep.com",
                 "password",
@@ -437,13 +437,18 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("POST /voyages/sprints/:sprintNumber/teams/:teamId/meetings - creates new meeting for a sprint", () => {
         it("should return 201 if creating sprint meeting details was successful", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
@@ -481,13 +486,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 409 if trying to create a meeting that already exists for sprint", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 1;
             const sprintNumber = 4;
             return request(app.getHttpServer())
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
@@ -499,13 +509,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if teamId not found", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 999;
             const sprintNumber = 5;
             return request(app.getHttpServer())
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: FormTitles.sprintPlanning,
                     description: "This is a meeting description.",
@@ -517,13 +532,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 400 for bad request (title is Number)", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 1;
             const sprintNumber = 5;
             return request(app.getHttpServer())
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: 1, //bad request - title should be string
                     dateTime: "2024-03-01T23:11:20.271Z",
@@ -535,12 +555,51 @@ describe("Sprints Controller (e2e)", () => {
 
         it("should return 401 if user is not logged in", async () => {
             const teamId = 1;
-            const sprintNumber = 5;
+            const sprintNumber = 4;
             return request(app.getHttpServer())
                 .post(
                     `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
                 )
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 if a non-voyager tries to create a sprint meeting", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const teamId = 1;
+            const sprintNumber = 4;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 if a user of other team tries to  create the meetings", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const teamId = 1;
+            const sprintNumber = 4;
+            return request(app.getHttpServer())
+                .post(
+                    `/voyages/sprints/${sprintNumber}/teams/${teamId}/meetings`,
+                )
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: FormTitles.sprintPlanning,
+                    description: "This is a meeting description.",
+                    dateTime: "2024-03-01T23:11:20.271Z",
+                    meetingLink: "samplelink.com/meeting1234",
+                    notes: "Notes for the meeting",
+                })
+                .expect(403);
         });
     });
 

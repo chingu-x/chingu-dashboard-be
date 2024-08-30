@@ -230,6 +230,7 @@ export class SprintsService {
             dateTime,
             notes,
         }: CreateTeamMeetingDto,
+        req: CustomRequest,
     ) {
         const sprintId = await this.findSprintIdBySprintNumber(
             teamId,
@@ -240,6 +241,8 @@ export class SprintsService {
                 `Sprint number ${sprintNumber} or team Id ${teamId} does not exist.`,
             );
         }
+
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
         // check if the sprint already has a meeting.
         // This is temporary just remove this block when the app supports multiple meeting per sprint

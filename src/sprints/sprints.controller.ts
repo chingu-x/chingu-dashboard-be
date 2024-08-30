@@ -165,6 +165,7 @@ export class SprintsController {
     ) {
         return this.sprintsService.getMeetingById(meetingId, req);
     }
+
     @CheckAbilities({ action: Action.Create, subject: "Sprint" })
     @Post(":sprintNumber/teams/:teamId/meetings")
     @ApiOperation({
@@ -216,6 +217,7 @@ export class SprintsController {
         example: 1,
     })
     createTeamMeeting(
+        @Request() req: CustomRequest,
         @Param("sprintNumber", ParseIntPipe) sprintNumber: number,
         @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe) createTeamMeetingDto: CreateTeamMeetingDto,
@@ -224,6 +226,7 @@ export class SprintsController {
             teamId,
             sprintNumber,
             createTeamMeetingDto,
+            req,
         );
     }
 
