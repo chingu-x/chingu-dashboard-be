@@ -39,6 +39,7 @@ import {
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
+    ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
 } from "../global/responses/errors";
@@ -69,6 +70,16 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
         description: "User is not logged in",
         type: UnauthorizedErrorResponse,
     })
@@ -94,8 +105,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "teamId",
@@ -110,8 +126,6 @@ export class SprintsController {
         return this.sprintsService.getSprintDatesByTeamId(teamId, req);
     }
 
-    // TODO: this route and most routes here will only be available to team member
-    // To be added with authorization
     @CheckAbilities({ action: Action.Read, subject: "Sprint" })
     @Get("meetings/:meetingId")
     @ApiOperation({
@@ -131,8 +145,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
