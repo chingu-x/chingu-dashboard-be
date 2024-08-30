@@ -211,10 +211,15 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("GET /voyages/sprints/meetings/:meetingId - gets details for one meeting", () => {
         it("should return 200 if fetching meeting details was successful", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -293,10 +298,15 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if meetingId is invalid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const meetingId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
 
@@ -304,7 +314,32 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 if a non-voyager tries to access it", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 if a user of other team tries to access the meeting", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/meetings/${meetingId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 
