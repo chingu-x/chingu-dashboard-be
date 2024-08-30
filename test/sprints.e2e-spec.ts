@@ -605,6 +605,11 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("POST /voyages/sprints/meetings/:meetingId/agendas - creates a new meeting agenda", () => {
         it("should return 201 if create new agenda was successful", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const meetingId = 1;
             const createAgendaDto: CreateAgendaDto = {
                 title: "Test agenda 3",
@@ -613,7 +618,7 @@ describe("Sprints Controller (e2e)", () => {
             };
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send(createAgendaDto)
                 .expect(201)
                 .expect((res) => {
@@ -642,12 +647,48 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 400 if meetingId is String", async () => {
-            const meetingId = " ";
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const meetingId = "a";
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: "Contribute to the agenda!",
+                    description:
+                        "To get started, click the Add Topic button...",
+                })
+                .expect(400);
+        });
+        it("should return 400 if description is missing", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Contribute to the agenda!",
+                })
+                .expect(400);
+        });
+        it("should return 400 if title is missing", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
                     description:
                         "To get started, click the Add Topic button...",
                 })
@@ -658,7 +699,45 @@ describe("Sprints Controller (e2e)", () => {
             const meetingId = 1;
             return request(app.getHttpServer())
                 .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 if a non-voyager tries to create an agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Contribute to the agenda!",
+                    description:
+                        "To get started, click the Add Topic button...",
+                })
+                .expect(403);
+        });
+
+        it("should return 403 if a user of other team tries to create an agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const meetingId = 1;
+            return request(app.getHttpServer())
+                .post(`/voyages/sprints/meetings/${meetingId}/agendas`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Contribute to the agenda!",
+                    description:
+                        "To get started, click the Add Topic button...",
+                })
+                .expect(403);
         });
     });
 

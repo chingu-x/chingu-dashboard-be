@@ -273,7 +273,6 @@ export class SprintsController {
         );
     }
 
-    @Post("meetings/:meetingId/agendas")
     @ApiOperation({
         summary: "Adds an agenda item given meeting ID",
         description: "returns agenda item details.",
@@ -299,13 +298,17 @@ export class SprintsController {
         description: "voyage team meeting ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
+    @Post("meetings/:meetingId/agendas")
     addMeetingAgenda(
+        @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Body(ValidationPipe) createAgendaDto: CreateAgendaDto,
     ) {
         return this.sprintsService.createMeetingAgenda(
             meetingId,
             createAgendaDto,
+            req,
         );
     }
 
