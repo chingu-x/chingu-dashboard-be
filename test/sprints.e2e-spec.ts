@@ -9,6 +9,7 @@ import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
 import * as cookieParser from "cookie-parser";
 import { FormTitles } from "../src/global/constants/formTitles";
+import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 expect.extend({ toBeOneOf });
 
@@ -26,6 +27,7 @@ describe("Sprints Controller (e2e)", () => {
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
         app.useGlobalPipes(new ValidationPipe({ transform: true }));
+        app.useGlobalFilters(new CASLForbiddenExceptionFilter());
         app.use(cookieParser());
         await app.init();
     });
@@ -47,9 +49,14 @@ describe("Sprints Controller (e2e)", () => {
 
     describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
         it("should return 200 if fetching all voyage and sprints data", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -90,16 +97,44 @@ describe("Sprints Controller (e2e)", () => {
         it("should return 401 if user is not logged in", async () => {
             return request(app.getHttpServer())
                 .get(`/voyages/sprints`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 if a non-admin user tries to access it", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "leo.rowe@outlook.com",
+                "password",
+                app,
+            );
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 if a non-voyager tries to access it", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 
     describe("GET /voyages/sprints/teams/:teamId - gets a team's sprint dates", () => {
         it("should return 200 if fetching all the sprint dates of a particular team was successful", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -129,10 +164,15 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if teamId is invalid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const teamId = 9999;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
 
@@ -140,7 +180,32 @@ describe("Sprints Controller (e2e)", () => {
             const teamId = 1;
             return request(app.getHttpServer())
                 .get(`/voyages/sprints/teams/${teamId}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+        it("should return 403 if a user of other team tries to access", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const teamId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/teams/${teamId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
+        });
+        it("should return 403 if a non-voyager tries to access it", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const teamId = 1;
+            return request(app.getHttpServer())
+                .get(`/voyages/sprints/teams/${teamId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .expect(403);
         });
     });
 

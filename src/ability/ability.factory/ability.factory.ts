@@ -52,11 +52,7 @@ export class AbilityFactory {
                     in: user.voyageTeams.map((vt) => vt.memberId),
                 },
             });
-            can([Action.Manage], "Meeting", {
-                voyageTeamId: {
-                    in: user.voyageTeams.map((vt) => vt.teamId),
-                },
-            });
+            can([Action.Manage], "Sprint");
         } else {
             // all other users
             can([Action.Submit, Action.Read], "Form", {

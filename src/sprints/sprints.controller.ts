@@ -56,6 +56,7 @@ export class SprintsController {
     constructor(private readonly sprintsService: SprintsService) {}
 
     // dev and admin purpose
+    @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
     @ApiOperation({
         summary: "gets all the voyages and sprints details in the database",
@@ -75,6 +76,7 @@ export class SprintsController {
         return this.sprintsService.getVoyagesAndSprints();
     }
 
+    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
     @Get("teams/:teamId")
     @ApiOperation({
         summary: "gets all the voyages and sprints given a teamId",
@@ -101,12 +103,16 @@ export class SprintsController {
         required: true,
         example: 1,
     })
-    getSprintDatesByTeamId(@Param("teamId", ParseIntPipe) teamId: number) {
-        return this.sprintsService.getSprintDatesByTeamId(teamId);
+    getSprintDatesByTeamId(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+    ) {
+        return this.sprintsService.getSprintDatesByTeamId(teamId, req);
     }
 
     // TODO: this route and most routes here will only be available to team member
     // To be added with authorization
+    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
     @Get("meetings/:meetingId")
     @ApiOperation({
         summary: "gets meeting detail given meeting ID",
@@ -134,10 +140,13 @@ export class SprintsController {
         description: "voyage team Meeting ID (TeamMeeting/id)",
         example: 1,
     })
-    getMeetingById(@Param("meetingId", ParseIntPipe) meetingId: number) {
-        return this.sprintsService.getMeetingById(meetingId);
+    getMeetingById(
+        @Request() req: CustomRequest,
+        @Param("meetingId", ParseIntPipe) meetingId: number,
+    ) {
+        return this.sprintsService.getMeetingById(meetingId, req);
     }
-
+    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
     @Post(":sprintNumber/teams/:teamId/meetings")
     @ApiOperation({
         summary: "Creates a sprint meeting given a sprint number and team Id",

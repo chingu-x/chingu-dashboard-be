@@ -16,6 +16,7 @@ import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
+import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 @Injectable()
 export class SprintsService {
@@ -100,7 +101,8 @@ export class SprintsService {
         });
     }
 
-    async getSprintDatesByTeamId(teamId: number) {
+    async getSprintDatesByTeamId(teamId: number, req: CustomRequest) {
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
         const teamSprintDates = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -142,13 +144,14 @@ export class SprintsService {
         return teamSprintDates.voyage;
     }
 
-    async getMeetingById(meetingId: number) {
+    async getMeetingById(meetingId: number, req: CustomRequest) {
         const teamMeeting = await this.prisma.teamMeeting.findUnique({
             where: {
                 id: meetingId,
             },
             select: {
                 id: true,
+                voyageTeamId: true,
                 sprint: {
                     select: {
                         id: true,
@@ -213,6 +216,7 @@ export class SprintsService {
             throw new NotFoundException(
                 `Meeting with id ${meetingId} not found`,
             );
+        manageOwnVoyageTeamWithIdParam(req.user, teamMeeting.voyageTeamId);
         return teamMeeting;
     }
 
