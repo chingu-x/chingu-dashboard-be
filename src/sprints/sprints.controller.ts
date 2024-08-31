@@ -400,7 +400,6 @@ export class SprintsController {
         return this.sprintsService.deleteMeetingAgenda(agendaId, req);
     }
 
-    @Post("meetings/:meetingId/forms/:formId")
     @ApiOperation({
         summary:
             "Adds sprint reviews or sprint planning section to the meeting",
@@ -428,8 +427,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -443,14 +447,20 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
+    @Post("meetings/:meetingId/forms/:formId")
     addMeetingFormResponse(
+        @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
     ) {
-        return this.sprintsService.addMeetingFormResponse(meetingId, formId);
+        return this.sprintsService.addMeetingFormResponse(
+            meetingId,
+            formId,
+            req,
+        );
     }
 
-    @Get("meetings/:meetingId/forms/:formId")
     @ApiOperation({
         summary: "Gets a form given meeting ID and formId",
         description: "returns the form, including questions and responses",
@@ -472,8 +482,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -487,6 +502,8 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
+    @Get("meetings/:meetingId/forms/:formId")
     getMeetingFormQuestionsWithResponses(
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
@@ -499,7 +516,6 @@ export class SprintsController {
         );
     }
 
-    @Patch("meetings/:meetingId/forms/:formId")
     @ApiOperation({
         summary: "Updates a form given meeting ID and formId",
         description:
@@ -534,8 +550,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -549,7 +570,10 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "Sprint" })
+    @Patch("meetings/:meetingId/forms/:formId")
     updateMeetingFormResponse(
+        @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
         @Param("formId", ParseIntPipe) formId: number,
         @Body(new FormInputValidationPipe())
@@ -559,6 +583,7 @@ export class SprintsController {
             meetingId,
             formId,
             updateMeetingFormResponse,
+            req,
         );
     }
 

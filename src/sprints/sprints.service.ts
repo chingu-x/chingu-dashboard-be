@@ -27,7 +27,7 @@ export class SprintsService {
     ) {}
 
     // this checks if the form with the given formId is of formType = "meeting"
-    private isMeetingForm = async (formId) => {
+    private isMeetingForm = async (formId: number) => {
         const form = await this.prisma.form.findUnique({
             where: {
                 id: formId,
@@ -414,7 +414,25 @@ export class SprintsService {
         });
     }
 
-    async addMeetingFormResponse(meetingId: number, formId: number) {
+    async addMeetingFormResponse(
+        meetingId: number,
+        formId: number,
+        req: CustomRequest,
+    ) {
+        const meeting = await this.prisma.teamMeeting.findUnique({
+            where: {
+                id: meetingId,
+            },
+            select: {
+                voyageTeamId: true,
+            },
+        });
+        if (!meeting) {
+            throw new NotFoundException(
+                `Meeting with Id ${meetingId} does not exist.`,
+            );
+        }
+        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
         if (await this.isMeetingForm(formId)) {
             try {
                 const formResponseMeeting =
@@ -422,6 +440,14 @@ export class SprintsService {
                         data: {
                             formId,
                             meetingId,
+                        },
+                        select: {
+                            id: true,
+                            meeting: {
+                                select: {
+                                    voyageTeamId: true,
+                                },
+                            },
                         },
                     });
                 const updatedFormResponse =
@@ -448,11 +474,6 @@ export class SprintsService {
                             `FormId: ${formId} does not exist.`,
                         );
                     }
-                    if (e.meta["field_name"].includes("meetingId")) {
-                        throw new BadRequestException(
-                            `MeetingId: ${meetingId} does not exist.`,
-                        );
-                    }
                 }
             }
         }
@@ -467,12 +488,17 @@ export class SprintsService {
             where: {
                 id: meetingId,
             },
+            select: {
+                voyageTeamId: true,
+            },
         });
 
         if (!meeting)
             throw new NotFoundException(
                 `Meeting with Id ${meetingId} does not exist.`,
             );
+
+        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
 
         const formResponseMeeting =
             await this.prisma.formResponseMeeting.findUnique({
@@ -548,7 +574,22 @@ export class SprintsService {
         meetingId: number,
         formId: number,
         responses: UpdateMeetingFormResponseDto,
+        req: CustomRequest,
     ) {
+        const meeting = await this.prisma.teamMeeting.findUnique({
+            where: {
+                id: meetingId,
+            },
+            select: {
+                voyageTeamId: true,
+            },
+        });
+        if (!meeting) {
+            throw new NotFoundException(
+                `Meeting with Id ${meetingId} does not exist.`,
+            );
+        }
+        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
         // at this stage, it is unclear what id the frontend is able to send,
         // if they are able to send the fromResponseMeeting ID, then we won't need this step
         const formResponseMeeting =
