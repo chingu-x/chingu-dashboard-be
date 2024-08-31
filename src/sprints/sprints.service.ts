@@ -347,40 +347,71 @@ export class SprintsService {
     async updateMeetingAgenda(
         agendaId: number,
         { title, description, status }: UpdateAgendaDto,
+        req: CustomRequest,
     ) {
-        try {
-            const updatedMeeting = await this.prisma.agenda.update({
-                where: {
-                    id: agendaId,
+        const agenda = await this.prisma.agenda.findUnique({
+            where: {
+                id: agendaId,
+            },
+            select: {
+                teamMeeting: {
+                    select: {
+                        voyageTeamId: true,
+                    },
                 },
-                data: {
-                    title,
-                    description,
-                    status,
-                },
-            });
-            return updatedMeeting;
-        } catch (e) {
-            if (e.code === "P2025") {
-                throw new NotFoundException(`Invalid agendaId: ${agendaId}`);
-            }
+            },
+        });
+        if (!agenda) {
+            throw new NotFoundException(
+                `Agenda with Id ${agendaId} does not exist.`,
+            );
         }
+        manageOwnVoyageTeamWithIdParam(
+            req.user,
+            agenda.teamMeeting.voyageTeamId,
+        );
+        const updatedMeeting = await this.prisma.agenda.update({
+            where: {
+                id: agendaId,
+            },
+            data: {
+                title,
+                description,
+                status,
+            },
+        });
+        return updatedMeeting;
     }
 
-    async deleteMeetingAgenda(agendaId: number) {
-        try {
-            return await this.prisma.agenda.delete({
-                where: {
-                    id: agendaId,
+    async deleteMeetingAgenda(agendaId: number, req: CustomRequest) {
+        const agenda = await this.prisma.agenda.findUnique({
+            where: {
+                id: agendaId,
+            },
+            select: {
+                teamMeeting: {
+                    select: {
+                        voyageTeamId: true,
+                    },
                 },
-            });
-        } catch (e) {
-            if (e.code === "P2025") {
-                throw new NotFoundException(
-                    `${e.meta.cause} agendaId: ${agendaId}`,
-                );
-            }
+            },
+        });
+        if (!agenda) {
+            throw new NotFoundException(
+                `Agenda with Id ${agendaId} does not exist.`,
+            );
         }
+
+        manageOwnVoyageTeamWithIdParam(
+            req.user,
+            agenda.teamMeeting.voyageTeamId,
+        );
+
+        return await this.prisma.agenda.delete({
+            where: {
+                id: agendaId,
+            },
+        });
     }
 
     async addMeetingFormResponse(meetingId: number, formId: number) {

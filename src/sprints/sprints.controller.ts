@@ -289,8 +289,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "meetingId",
@@ -312,7 +317,6 @@ export class SprintsController {
         );
     }
 
-    @Patch("agendas/:agendaId")
     @ApiOperation({
         summary: "Updates an agenda item given an agenda ID",
         description: "returns updated agenda item details.",
@@ -329,8 +333,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "agendaId",
@@ -338,17 +347,20 @@ export class SprintsController {
         description: "agenda ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "Sprint" })
+    @Patch("agendas/:agendaId")
     updateMeetingAgenda(
+        @Request() req: CustomRequest,
         @Param("agendaId", ParseIntPipe) agendaId: number,
         @Body(ValidationPipe) updateAgendaDto: UpdateAgendaDto,
     ) {
         return this.sprintsService.updateMeetingAgenda(
             agendaId,
             updateAgendaDto,
+            req,
         );
     }
 
-    @Delete("agendas/:agendaId")
     @ApiOperation({
         summary: "Deletes an agenda item given agenda ID",
         description: "returns deleted agenda item detail.",
@@ -365,8 +377,13 @@ export class SprintsController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "User is not logged in",
+        description: "unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
     })
     @ApiParam({
         name: "agendaId",
@@ -374,8 +391,13 @@ export class SprintsController {
         description: "agenda ID",
         example: 1,
     })
-    deleteMeetingAgenda(@Param("agendaId", ParseIntPipe) agendaId: number) {
-        return this.sprintsService.deleteMeetingAgenda(agendaId);
+    @CheckAbilities({ action: Action.Delete, subject: "Sprint" })
+    @Delete("agendas/:agendaId")
+    deleteMeetingAgenda(
+        @Request() req: CustomRequest,
+        @Param("agendaId", ParseIntPipe) agendaId: number,
+    ) {
+        return this.sprintsService.deleteMeetingAgenda(agendaId, req);
     }
 
     @Post("meetings/:meetingId/forms/:formId")

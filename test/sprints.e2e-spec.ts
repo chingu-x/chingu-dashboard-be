@@ -741,12 +741,17 @@ describe("Sprints Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH /voyages/sprints/agendas/:agendaId - supdate an agenda", () => {
+    describe("PATCH /voyages/sprints/agendas/:agendaId - update an agenda", () => {
         it("should return 200 if updating the agenda was successful with provided values", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -779,10 +784,15 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if agendaId is not found", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     title: "Title updated",
                     description: "New agenda",
@@ -795,15 +805,57 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 if a non-voyager tries to update an agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(403);
+        });
+
+        it("should return 403 if a user of other team tries to update the agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .patch(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(403);
         });
     });
     describe("DELETE /voyages/sprints/agendas/:agendaId - deletes specified agenda", () => {
         it("should return 200 and delete agenda from database", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(
@@ -829,10 +881,15 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if agendaId is not found", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const agendaId = 9999;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
 
@@ -840,7 +897,44 @@ describe("Sprints Controller (e2e)", () => {
             const agendaId = 1;
             return request(app.getHttpServer())
                 .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Authorization", `${undefined}`)
                 .expect(401);
+        });
+
+        it("should return 403 if a non-voyager tries to delete an agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "not_in_voyage@example.com",
+                "password",
+                app,
+            );
+            const agendaId = 1;
+            return request(app.getHttpServer())
+                .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(403);
+        });
+
+        it("should return 403 if a user of other team tries to delete the agenda", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "JosoMadar@dayrep.com",
+                "password",
+                app,
+            );
+            const agendaId = 2;
+            return request(app.getHttpServer())
+                .delete(`/voyages/sprints/agendas/${agendaId}`)
+                .set("Cookie", [access_token, refresh_token])
+                .send({
+                    title: "Title updated",
+                    description: "New agenda",
+                    status: true,
+                })
+                .expect(403);
         });
     });
 
