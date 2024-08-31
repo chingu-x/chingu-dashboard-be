@@ -9,6 +9,8 @@ Another example [here](https://co-pilot.dev/changelog)
 ## [Unreleased]
 
 ### Added
+- Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
+- Add discord oauth and e2e test ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
 
 ### Changed
 
@@ -63,7 +65,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 
 
-- Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
+
 
 ### Changed
 
@@ -105,7 +107,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Fix bug with reading roles after reseeding causes the db to not recognize the tokens stored by the user's browser ([#134](https://github.com/chingu-x/chingu-dashboard-be/pull/134))
 - Fix form responses giving error and not inserting values when the boolean value is false ([#156](https://github.com/chingu-x/chingu-dashboard-be/pull/156))
 - Fix a bug for check on voyageTeamMemberId ([#159](https://github.com/chingu-x/chingu-dashboard-be/pull/159))
-- Fix users unit test failing due to a schema change
+- Fix users unit test failing due to a schema change ([#182](https://github.com/chingu-x/chingu-dashboard-be/pull/182))
 
 ### Removed
 
