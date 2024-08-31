@@ -9,6 +9,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ## [Unreleased]
 
 ### Added
+- Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
 
 ### Changed
 
