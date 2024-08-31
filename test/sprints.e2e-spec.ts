@@ -16,7 +16,6 @@ expect.extend({ toBeOneOf });
 describe("Sprints Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;
-    let accessToken: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,16 +34,6 @@ describe("Sprints Controller (e2e)", () => {
     afterAll(async () => {
         await prisma.$disconnect();
         await app.close();
-    });
-
-    beforeEach(async () => {
-        await loginAndGetTokens(
-            "jessica.williamson@gmail.com",
-            "password",
-            app,
-        ).then((tokens) => {
-            accessToken = tokens.access_token;
-        });
     });
 
     describe("GET /voyages/sprints - gets all voyage and sprints data", () => {
@@ -1403,13 +1392,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 201 if successfully submitted a check in form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const responsesBefore = await prisma.response.count();
             const responseGroupBefore = await prisma.responseGroup.count();
             const checkinsBefore = await prisma.formResponseCheckin.count();
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 4, // voyageTeamMemberId 1 is already in the seed
                     sprintId: 1,
@@ -1443,13 +1437,18 @@ describe("Sprints Controller (e2e)", () => {
             expect(checkinsAfter).toEqual(checkinsBefore + 1);
         });
         it("should return 400 for invalid inputs", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const responsesBefore = await prisma.response.count();
             const responseGroupBefore = await prisma.responseGroup.count();
             const checkinsBefore = await prisma.formResponseCheckin.count();
             // missing voyageTeamMemberId
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     sprintId: 1,
                     responses: [
@@ -1464,7 +1463,7 @@ describe("Sprints Controller (e2e)", () => {
             // missing sprintId"
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1479,7 +1478,7 @@ describe("Sprints Controller (e2e)", () => {
             // missing responses
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     sprintId: 1,
@@ -1489,7 +1488,7 @@ describe("Sprints Controller (e2e)", () => {
             // missing questionId in responses - response validation pipe
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1503,7 +1502,7 @@ describe("Sprints Controller (e2e)", () => {
             // missing input in responses - response validation pipe
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1517,7 +1516,7 @@ describe("Sprints Controller (e2e)", () => {
             // wrong response input types
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1531,7 +1530,7 @@ describe("Sprints Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1545,7 +1544,7 @@ describe("Sprints Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1559,7 +1558,7 @@ describe("Sprints Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 1,
                     responses: [
@@ -1597,9 +1596,14 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 409 if user has already submitted the check in form for the same sprint", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 4,
                     sprintId: 1,
@@ -1616,7 +1620,7 @@ describe("Sprints Controller (e2e)", () => {
 
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 4,
                     sprintId: 1,
@@ -1638,9 +1642,14 @@ describe("Sprints Controller (e2e)", () => {
             expect(checkinsAfter).toEqual(checkinsBefore);
         });
         it("should return 400 if the user doesnot belong to the voyage team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .send({
                     voyageTeamMemberId: 5,
                     sprintId: 1,
@@ -1725,24 +1734,19 @@ describe("Sprints Controller (e2e)", () => {
             responseGroup: expect.objectContaining(responseGroupShape),
         };
 
-        beforeEach(async () => {
-            await loginAndGetTokens(
+        it("should return 200 if voyageNumber key's value successfully returns a check in form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
                 app,
-            ).then((tokens) => {
-                accessToken = tokens.access_token;
-            });
-        });
-
-        it("should return 200 if voyageNumber key's value successfully returns a check in form", async () => {
+            );
             const key = "voyageNumber";
             const val = "46";
 
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -1755,13 +1759,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 200 if teamId key's value successfully returns a check in form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const key = "teamId";
             const val = "1";
 
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -1774,13 +1783,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 200 if sprintNumber key's value successfully returns a check in form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const key = ["sprintNumber", "voyageNumber"];
             const val = [1, "46"];
 
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key[0]]: val[0], [key[1]]: val[1] })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -1793,6 +1807,11 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 200 if userId key's value successfully returns a check in form", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const key = "userId";
             const user = await prisma.voyageTeamMember.findFirst({
                 where: {
@@ -1809,7 +1828,7 @@ describe("Sprints Controller (e2e)", () => {
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
@@ -1822,12 +1841,17 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 400 if query params are invalid", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const key = "teamsId";
             const val = "1";
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(400);
         });
 
@@ -1838,13 +1862,18 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return an empty array if check in form not found", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             // TODO: create user with no check ins
             const key = "teamId";
             const val = "5";
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(200)
                 .expect((res) => {
                     expect(res.body).toEqual(expect.arrayContaining([]));
@@ -1852,12 +1881,17 @@ describe("Sprints Controller (e2e)", () => {
         });
 
         it("should return 404 if query not found", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "jessica.williamson@gmail.com",
+                "password",
+                app,
+            );
             const key = "teamId";
             const val = "9999";
             return request(app.getHttpServer())
                 .get(sprintCheckinUrl)
                 .query({ [key]: val })
-                .set("Cookie", accessToken)
+                .set("Cookie", [access_token, refresh_token])
                 .expect(404);
         });
     });
