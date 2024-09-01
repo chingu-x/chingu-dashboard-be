@@ -178,14 +178,14 @@ export const populateCheckinForm = async () => {
                                 name: "teamMembersCheckbox",
                             },
                         },
-                        text: "Is there anyone on your team who has not been super helpful, kind, hard-working, etc. and deserves a shout-out in the Chingu Weekly? If so, please add his/her Discord username here:",
+                        text: "Is there anyone on your team who has been super helpful, kind, hard-working, etc. and deserves a shout-out in the Chingu Weekly? If so, please add his/her Discord username here:",
                         answerRequired: false,
                     },
                     {
                         order: 9,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "teamMembersCheckbox",
                             },
                         },
                         text: "Please share any personal or team achievements this week here. (ex. held a meeting, teammate got a job, had a pair programming session, learned a valuable team lesson, solved a challenging problem).",
@@ -235,49 +235,10 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "Is there anything else you'd like to tell us about your Voyage Guide?",
-                        answerRequired: true,
+                        answerRequired: false,
                     },
                     {
                         order: 12,
-                        inputType: {
-                            connect: {
-                                name: "radio",
-                            },
-                        },
-                        text: "What is your role in your team?",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "checkin-form-role",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "Product Owner",
-                                            },
-                                            {
-                                                text: "Scrum Master",
-                                            },
-                                            {
-                                                text: "Web Developer",
-                                            },
-                                            {
-                                                text: "UI/UX Designer",
-                                            },
-                                            {
-                                                text: "Data Scientist",
-                                            },
-                                            {
-                                                text: "Voyage Guide",
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    {
-                        order: 13,
                         inputType: {
                             connect: {
                                 name: "text",
