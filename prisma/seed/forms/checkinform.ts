@@ -235,7 +235,7 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "Is there anything else you'd like to tell us about your Voyage Guide?",
-                        answerRequired: true,
+                        answerRequired: false,
                     },
                     {
                         order: 12,
