@@ -545,6 +545,7 @@ export class SprintsController {
         description: "User has already submitted a check in for that sprint.",
         type: ConflictErrorResponse,
     })
+    @CheckAbilities({ action: Action.Submit, subject: "FormResponseCheckin" })
     addCheckinFormResponse(
         @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
