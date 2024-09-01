@@ -17,6 +17,7 @@ import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
+import { manageOwnTeamMeetingOrAgendaById } from "../ability/conditions/meetingOrAgenda.ability";
 
 @Injectable()
 export class SprintsService {
@@ -270,18 +271,7 @@ export class SprintsService {
             },
         });
     }
-
-    async updateTeamMeeting(
-        meetingId: number,
-        {
-            title,
-            description,
-            meetingLink,
-            dateTime,
-            notes,
-        }: UpdateTeamMeetingDto,
-        req: CustomRequest,
-    ) {
+    async helper(meetingId: number) {
         const meeting = await this.prisma.teamMeeting.findUnique({
             where: {
                 id: meetingId,
@@ -295,7 +285,22 @@ export class SprintsService {
                 `Meeting with Id ${meetingId} does not exist.`,
             );
         }
-        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
+
+        return meeting.voyageTeamId;
+    }
+    async updateTeamMeeting(
+        meetingId: number,
+        {
+            title,
+            description,
+            meetingLink,
+            dateTime,
+            notes,
+        }: UpdateTeamMeetingDto,
+        req: CustomRequest,
+    ) {
+        await manageOwnTeamMeetingOrAgendaById({ user: req.user, meetingId });
+
         const updatedMeeting = await this.prisma.teamMeeting.update({
             where: {
                 id: meetingId,
@@ -316,22 +321,7 @@ export class SprintsService {
         { title, description, status }: CreateAgendaDto,
         req: CustomRequest,
     ) {
-        const meeting = await this.prisma.teamMeeting.findUnique({
-            where: {
-                id: meetingId,
-            },
-            select: {
-                voyageTeamId: true,
-            },
-        });
-
-        if (!meeting) {
-            throw new NotFoundException(
-                `Meeting with Id ${meetingId} does not exist.`,
-            );
-        }
-
-        manageOwnVoyageTeamWithIdParam(req.user, meeting.voyageTeamId);
+        await manageOwnTeamMeetingOrAgendaById({ user: req.user, meetingId });
 
         const newAgenda = await this.prisma.agenda.create({
             data: {
@@ -349,27 +339,7 @@ export class SprintsService {
         { title, description, status }: UpdateAgendaDto,
         req: CustomRequest,
     ) {
-        const agenda = await this.prisma.agenda.findUnique({
-            where: {
-                id: agendaId,
-            },
-            select: {
-                teamMeeting: {
-                    select: {
-                        voyageTeamId: true,
-                    },
-                },
-            },
-        });
-        if (!agenda) {
-            throw new NotFoundException(
-                `Agenda with Id ${agendaId} does not exist.`,
-            );
-        }
-        manageOwnVoyageTeamWithIdParam(
-            req.user,
-            agenda.teamMeeting.voyageTeamId,
-        );
+        await manageOwnTeamMeetingOrAgendaById({ user: req.user, agendaId });
         const updatedMeeting = await this.prisma.agenda.update({
             where: {
                 id: agendaId,
@@ -384,28 +354,7 @@ export class SprintsService {
     }
 
     async deleteMeetingAgenda(agendaId: number, req: CustomRequest) {
-        const agenda = await this.prisma.agenda.findUnique({
-            where: {
-                id: agendaId,
-            },
-            select: {
-                teamMeeting: {
-                    select: {
-                        voyageTeamId: true,
-                    },
-                },
-            },
-        });
-        if (!agenda) {
-            throw new NotFoundException(
-                `Agenda with Id ${agendaId} does not exist.`,
-            );
-        }
-
-        manageOwnVoyageTeamWithIdParam(
-            req.user,
-            agenda.teamMeeting.voyageTeamId,
-        );
+        await manageOwnTeamMeetingOrAgendaById({ user: req.user, agendaId });
 
         return await this.prisma.agenda.delete({
             where: {

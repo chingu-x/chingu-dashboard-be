@@ -125,9 +125,6 @@ export class SprintsController {
     ) {
         return this.sprintsService.getSprintDatesByTeamId(teamId, req);
     }
-
-    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
-    @Get("meetings/:meetingId")
     @ApiOperation({
         summary: "gets meeting detail given meeting ID",
         description:
@@ -159,6 +156,8 @@ export class SprintsController {
         description: "voyage team Meeting ID (TeamMeeting/id)",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Read, subject: "SprintMeetingOrAgenda" })
+    @Get("meetings/:meetingId")
     getMeetingById(
         @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
@@ -166,8 +165,6 @@ export class SprintsController {
         return this.sprintsService.getMeetingById(meetingId, req);
     }
 
-    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
-    @Post(":sprintNumber/teams/:teamId/meetings")
     @ApiOperation({
         summary: "Creates a sprint meeting given a sprint number and team Id",
         description: "Returns meeting details",
@@ -216,6 +213,8 @@ export class SprintsController {
         description: "voyage team ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Create, subject: "SprintMeetingOrAgenda" })
+    @Post(":sprintNumber/teams/:teamId/meetings")
     createTeamMeeting(
         @Request() req: CustomRequest,
         @Param("sprintNumber", ParseIntPipe) sprintNumber: number,
@@ -230,7 +229,6 @@ export class SprintsController {
         );
     }
 
-    @Patch("meetings/:meetingId")
     @ApiOperation({
         summary: "Updates a meeting given a meeting ID",
         description: "Updates meeting detail, including link, time, notes",
@@ -261,6 +259,8 @@ export class SprintsController {
         description: "voyage team meeting ID",
         example: 1,
     })
+    @CheckAbilities({ action: Action.Update, subject: "SprintMeetingOrAgenda" })
+    @Patch("meetings/:meetingId")
     updateTeamMeeting(
         @Request() req: CustomRequest,
         @Param("meetingId", ParseIntPipe) meetingId: number,
@@ -303,7 +303,7 @@ export class SprintsController {
         description: "voyage team meeting ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
+    @CheckAbilities({ action: Action.Create, subject: "SprintMeetingOrAgenda" })
     @Post("meetings/:meetingId/agendas")
     addMeetingAgenda(
         @Request() req: CustomRequest,
@@ -347,7 +347,7 @@ export class SprintsController {
         description: "agenda ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Update, subject: "Sprint" })
+    @CheckAbilities({ action: Action.Update, subject: "SprintMeetingOrAgenda" })
     @Patch("agendas/:agendaId")
     updateMeetingAgenda(
         @Request() req: CustomRequest,
@@ -391,7 +391,7 @@ export class SprintsController {
         description: "agenda ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Delete, subject: "Sprint" })
+    @CheckAbilities({ action: Action.Delete, subject: "SprintMeetingOrAgenda" })
     @Delete("agendas/:agendaId")
     deleteMeetingAgenda(
         @Request() req: CustomRequest,

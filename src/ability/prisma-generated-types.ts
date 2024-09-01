@@ -10,6 +10,8 @@ import {
     TeamResource,
     ProjectFeature,
     Sprint,
+    TeamMeeting,
+    Agenda,
 } from "@prisma/client";
 
 export type PrismaSubjects = Subjects<{
@@ -22,4 +24,5 @@ export type PrismaSubjects = Subjects<{
     Resource: TeamResource;
     Feature: ProjectFeature;
     Sprint: Sprint;
+    SprintMeetingOrAgenda: TeamMeeting | Agenda;
 }>;

@@ -53,6 +53,7 @@ export class AbilityFactory {
                 },
             });
             can([Action.Manage], "Sprint");
+            can([Action.Manage], "SprintMeetingOrAgenda");
         } else {
             // all other users
             can([Action.Submit, Action.Read], "Form", {
