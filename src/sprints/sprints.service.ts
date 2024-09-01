@@ -16,6 +16,7 @@ import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
+import { canSubmitCheckin } from "src/ability/conditions/sprints.ability";
 
 type VoyageTeamMemberWithSprintIds = {
     voyageTeam: {
@@ -571,7 +572,7 @@ export class SprintsService {
         );
     }
 
-    async addCheckinFormResponse(createCheckinForm: CreateCheckinFormDto) {
+    async addCheckinFormResponse(req, createCheckinForm: CreateCheckinFormDto) {
         const responsesArray =
             this.globalServices.responseDtoToArray(createCheckinForm);
 
@@ -579,6 +580,8 @@ export class SprintsService {
             FormTitles.sprintCheckin,
             responsesArray,
         );
+
+        canSubmitCheckin(req.user, createCheckinForm.sprintId);
 
         // find voyageNumber team member is part of and make sure it matches input
         const teamMemberData: VoyageTeamMemberWithSprintIds | null =
