@@ -547,10 +547,12 @@ export class SprintsController {
     })
     @CheckAbilities({ action: Action.Submit, subject: "FormResponseCheckin" })
     addCheckinFormResponse(
+        @Request() req: CustomRequest,
         @Body(new FormInputValidationPipe(), VoyageTeamMemberValidationPipe)
         createCheckinFormResponse: CreateCheckinFormDto,
     ) {
         return this.sprintsService.addCheckinFormResponse(
+            req,
             createCheckinFormResponse,
         );
     }
