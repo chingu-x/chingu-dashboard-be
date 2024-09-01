@@ -185,7 +185,7 @@ export const populateCheckinForm = async () => {
                         order: 9,
                         inputType: {
                             connect: {
-                                name: "text",
+                                name: "teamMembersCheckbox",
                             },
                         },
                         text: "Please share any personal or team achievements this week here. (ex. held a meeting, teammate got a job, had a pair programming session, learned a valuable team lesson, solved a challenging problem).",
@@ -239,45 +239,6 @@ export const populateCheckinForm = async () => {
                     },
                     {
                         order: 12,
-                        inputType: {
-                            connect: {
-                                name: "radio",
-                            },
-                        },
-                        text: "What is your role in your team?",
-                        answerRequired: true,
-                        optionGroup: {
-                            create: {
-                                name: "checkin-form-role",
-                                optionChoices: {
-                                    createMany: {
-                                        data: [
-                                            {
-                                                text: "Product Owner",
-                                            },
-                                            {
-                                                text: "Scrum Master",
-                                            },
-                                            {
-                                                text: "Web Developer",
-                                            },
-                                            {
-                                                text: "UI/UX Designer",
-                                            },
-                                            {
-                                                text: "Data Scientist",
-                                            },
-                                            {
-                                                text: "Voyage Guide",
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    {
-                        order: 13,
                         inputType: {
                             connect: {
                                 name: "text",
