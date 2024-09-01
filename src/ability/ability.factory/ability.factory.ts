@@ -12,6 +12,7 @@ export enum Action {
     Update = "update",
     Delete = "delete",
     Submit = "submit",
+    ManageSprintForms = "manageSprintForms",
 }
 
 type ExtendedSubjects = "all";
@@ -52,7 +53,7 @@ export class AbilityFactory {
                     in: user.voyageTeams.map((vt) => vt.memberId),
                 },
             });
-            can([Action.Manage], "Sprint");
+            can([Action.ManageSprintForms, Action.Read], "Sprint");
             can([Action.Manage], "SprintMeetingOrAgenda");
         } else {
             // all other users

@@ -60,7 +60,8 @@ export class SprintsController {
     @CheckAbilities({ action: Action.Manage, subject: "all" })
     @Get()
     @ApiOperation({
-        summary: "gets all the voyages and sprints details in the database",
+        summary:
+            "[Roles:Admin] gets all the voyages and sprints details in the database",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -87,10 +88,9 @@ export class SprintsController {
         return this.sprintsService.getVoyagesAndSprints();
     }
 
-    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
-    @Get("teams/:teamId")
     @ApiOperation({
-        summary: "gets all the voyages and sprints given a teamId",
+        summary:
+            "[Permissions: Own Team] gets all the voyages and sprints given a teamId",
         description: "returns all the sprint dates of a particular team",
     })
     @ApiResponse({
@@ -119,6 +119,8 @@ export class SprintsController {
         required: true,
         example: 1,
     })
+    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
+    @Get("teams/:teamId")
     getSprintDatesByTeamId(
         @Request() req: CustomRequest,
         @Param("teamId", ParseIntPipe) teamId: number,
@@ -126,7 +128,7 @@ export class SprintsController {
         return this.sprintsService.getSprintDatesByTeamId(teamId, req);
     }
     @ApiOperation({
-        summary: "gets meeting detail given meeting ID",
+        summary: "[Permissions: Own Team] gets meeting detail given meeting ID",
         description:
             "returns meeting details such as title, meeting time, meeting link, notes, agenda, meeting forms. Everything needed to populate the meeting page.",
     })
@@ -166,7 +168,8 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Creates a sprint meeting given a sprint number and team Id",
+        summary:
+            "[Permissions: Own Team] Creates a sprint meeting given a sprint number and team Id",
         description: "Returns meeting details",
     })
     @ApiResponse({
@@ -230,7 +233,7 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Updates a meeting given a meeting ID",
+        summary: "[Permissions: Own Team] Updates a meeting given a meeting ID",
         description: "Updates meeting detail, including link, time, notes",
     })
     @ApiResponse({
@@ -274,7 +277,7 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Adds an agenda item given meeting ID",
+        summary: "[Permissions: Own Team] Adds an agenda item given meeting ID",
         description: "returns agenda item details.",
     })
     @ApiResponse({
@@ -318,7 +321,8 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Updates an agenda item given an agenda ID",
+        summary:
+            "[Permissions: Own Team] Updates an agenda item given an agenda ID",
         description: "returns updated agenda item details.",
     })
     @ApiResponse({
@@ -362,7 +366,8 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Deletes an agenda item given agenda ID",
+        summary:
+            "[Permissions: Own Team] Deletes an agenda item given agenda ID",
         description: "returns deleted agenda item detail.",
     })
     @ApiResponse({
@@ -402,7 +407,7 @@ export class SprintsController {
 
     @ApiOperation({
         summary:
-            "Adds sprint reviews or sprint planning section to the meeting",
+            "[Permissions: Own Team] Adds sprint reviews or sprint planning section to the meeting",
         description:
             "This creates a record which stores all the responses for this particular forms <br>" +
             'This should only work if the form type is "meeting"<br>' +
@@ -447,7 +452,7 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Create, subject: "Sprint" })
+    @CheckAbilities({ action: Action.ManageSprintForms, subject: "Sprint" })
     @Post("meetings/:meetingId/forms/:formId")
     addMeetingFormResponse(
         @Request() req: CustomRequest,
@@ -462,7 +467,8 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Gets a form given meeting ID and formId",
+        summary:
+            "[Permissions: Own Team] Gets a form given meeting ID and formId",
         description: "returns the form, including questions and responses",
     })
     @ApiResponse({
@@ -502,7 +508,7 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Read, subject: "Sprint" })
+    @CheckAbilities({ action: Action.ManageSprintForms, subject: "Sprint" })
     @Get("meetings/:meetingId/forms/:formId")
     getMeetingFormQuestionsWithResponses(
         @Param("meetingId", ParseIntPipe) meetingId: number,
@@ -517,7 +523,8 @@ export class SprintsController {
     }
 
     @ApiOperation({
-        summary: "Updates a form given meeting ID and formId",
+        summary:
+            "[Permissions: Own Team] Updates a form given meeting ID and formId",
         description:
             "Returns the updated form, including questions and responses <br>" +
             "A sample body <br>" +
@@ -570,7 +577,7 @@ export class SprintsController {
         description: "form ID",
         example: 1,
     })
-    @CheckAbilities({ action: Action.Update, subject: "Sprint" })
+    @CheckAbilities({ action: Action.ManageSprintForms, subject: "Sprint" })
     @Patch("meetings/:meetingId/forms/:formId")
     updateMeetingFormResponse(
         @Request() req: CustomRequest,
@@ -587,9 +594,10 @@ export class SprintsController {
         );
     }
 
+    @CheckAbilities({ action: Action.ManageSprintForms, subject: "Sprint" })
     @Post("check-in")
     @ApiOperation({
-        summary: "Submit end of sprint check in form",
+        summary: "[Permissions: Own Team] Submit end of sprint check in form",
         description:
             "Inputs (choiceId, text, boolean, number are all optional), <br>" +
             "depends on the question type, but AT LEAST ONE of them must be present, <br>" +
