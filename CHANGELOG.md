@@ -15,6 +15,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Changed
 
 ### Fixed
+- Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
 
 ### Removed
 
@@ -108,6 +109,8 @@ Another example [here](https://co-pilot.dev/changelog)
 - Fix form responses giving error and not inserting values when the boolean value is false ([#156](https://github.com/chingu-x/chingu-dashboard-be/pull/156))
 - Fix a bug for check on voyageTeamMemberId ([#159](https://github.com/chingu-x/chingu-dashboard-be/pull/159))
 - Fix users unit test failing due to a schema change ([#182](https://github.com/chingu-x/chingu-dashboard-be/pull/182))
+
+
 
 ### Removed
 
