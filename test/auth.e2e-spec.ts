@@ -13,6 +13,8 @@ import {
 import { PrismaService } from "../src/prisma/prisma.service";
 import { comparePassword } from "../src/utils/auth";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import { AuthConfigService } from "src/config/auth/authConfig.service";
+import { AuthConfigModule } from "src/config/auth/authConfig.module";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";
@@ -58,11 +60,12 @@ const requestAndGetResetToken = async (
 describe("AuthController e2e Tests", () => {
     let app: INestApplication;
     let prisma: PrismaService;
+    let authConfig: AuthConfigService;
     let cookie: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [AppModule, AuthConfigModule],
         }).compile();
 
         await seed();
