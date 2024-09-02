@@ -9,12 +9,14 @@ import {
     TeamTechStackItem,
     TeamResource,
     ProjectFeature,
+    FormResponseCheckin,
 } from "@prisma/client";
 
 export type PrismaSubjects = Subjects<{
     Voyage: Voyage;
     User: User;
     Form: Form;
+    FormResponseCheckin: FormResponseCheckin;
     VoyageTeam: VoyageTeam;
     Ideation: ProjectIdea;
     TeamTechStackItem: TeamTechStackItem;
