@@ -18,9 +18,10 @@ import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
-import * as process from "process";
+
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
+import { AuthConfigService } from "../config/auth/authConfig.service";
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
         private jwtService: JwtService,
         private prisma: PrismaService,
         private emailService: EmailService,
+        private authConfigService: AuthConfigService,
     ) {}
 
     private readonly logger = new Logger(AuthService.name);
@@ -45,13 +47,15 @@ export class AuthService {
 
     // access token and refresh token
     private generateAtRtTokens = async (payload: object) => {
+        const AT_SECRET = this.authConfigService.getSecrets().at;
+        const RT_SECRET = this.authConfigService.getSecrets().rt;
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync(payload, {
-                secret: process.env.AT_SECRET,
+                secret: AT_SECRET,
                 expiresIn: AT_MAX_AGE,
             }),
             this.jwtService.signAsync(payload, {
-                secret: process.env.RT_SECRET,
+                secret: RT_SECRET,
                 expiresIn: RT_MAX_AGE,
             }),
         ]);
@@ -223,8 +227,9 @@ export class AuthService {
 
     async logout(refreshToken: string) {
         try {
+            const RT_SECRET = this.authConfigService.getSecrets().rt;
             const payload = await this.jwtService.verifyAsync(refreshToken, {
-                secret: process.env.RT_SECRET,
+                secret: RT_SECRET,
             });
             if (!payload) {
                 throw new BadRequestException("refresh token error");

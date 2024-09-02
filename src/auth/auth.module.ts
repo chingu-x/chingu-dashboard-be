@@ -13,10 +13,12 @@ import { DiscordAuthService } from "./discord-auth.service";
 import { EmailService } from "src/utils/emails/sendEmail";
 import { MailConfigModule } from "src/config/mail/mailConfig.module";
 import { AppConfigModule } from "src/config/app/appConfig.module";
+import { AuthConfigModule } from "src/config/auth/authConfig.module";
 
 @Module({
     imports: [
         AppConfigModule,
+        AuthConfigModule,
         UsersModule,
         PassportModule,
         MailConfigModule,
