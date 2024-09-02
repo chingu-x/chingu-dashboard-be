@@ -23,6 +23,8 @@ import { DevelopmentModule } from "./development/development.module";
 
 import { AppConfigModule } from "./config/app/appConfig.module";
 import { MailConfigModule } from "./config/mail/mailConfig.module";
+
+import { AuthConfigService } from "./config/auth/authConfig.service";
 @Module({
     imports: [
         AppConfigModule,
