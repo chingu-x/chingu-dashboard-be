@@ -23,6 +23,17 @@ import { AuthConfigService } from "./authConfig.service";
                         clientSecret: Joi.string().required(),
                         callbackURL: Joi.string().required(),
                     }),
+                    // Add other social types here as needed
+                    // e.g., facebook: Joi.object({
+                    //         clientID: Joi.string().required(),
+                    //         clientSecret: Joi.string().required(),
+                    //         callbackURL: Joi.string().required(),
+                    //     }),
+                    //     twitter: Joi.object({
+                    //         clientID: Joi.string().required(),
+                    //         clientSecret: Joi.string().required(),
+                    //         callbackURL: Joi.string().required(),
+                    //     }),
                 }),
             }),
         }),
