@@ -18,16 +18,6 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { canSubmitCheckin } from "src/ability/conditions/sprints.ability";
 
-type VoyageTeamMemberWithSprintIds = {
-    voyageTeam: {
-        voyage: {
-            sprints: {
-                id: number;
-            }[];
-        };
-    };
-};
-
 @Injectable()
 export class SprintsService {
     constructor(
@@ -581,40 +571,12 @@ export class SprintsService {
             responsesArray,
         );
 
-        canSubmitCheckin(req.user, createCheckinForm.sprintId);
-
-        // find voyageNumber team member is part of and make sure it matches input
-        const teamMemberData: VoyageTeamMemberWithSprintIds | null =
-            await this.globalServices.validateOrGetDbItem<VoyageTeamMemberWithSprintIds>(
-                "voyageTeamMember",
-                createCheckinForm.voyageTeamMemberId,
-                "id",
-                "findUnique",
-                undefined,
-                {
-                    select: {
-                        voyageTeam: {
-                            select: {
-                                voyage: {
-                                    select: {
-                                        sprints: { select: { id: true } },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            );
-
-        if (
-            !teamMemberData?.voyageTeam.voyage.sprints.some(
-                (sprint) => sprint.id === createCheckinForm.sprintId,
-            )
-        ) {
-            throw new BadRequestException(
-                `Voyage team member id ${createCheckinForm.voyageTeamMemberId} is not part of the same voyage as sprint id ${createCheckinForm.sprintId}.`,
-            );
-        }
+        await canSubmitCheckin(
+            req.user,
+            createCheckinForm.sprintId,
+            createCheckinForm.voyageTeamMemberId,
+            this.globalServices.validateOrGetDbItem,
+        );
 
         try {
             const checkinSubmission = await this.prisma.$transaction(
