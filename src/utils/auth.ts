@@ -1,4 +1,5 @@
 import * as bcrypt from "bcrypt";
+import { AuthConfigService } from "src/config/auth/authConfig.service";
 
 const roundsOfHashing = parseInt(process.env.BCRYPT_HASHING_ROUNDS as string);
 
