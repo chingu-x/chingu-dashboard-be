@@ -10,6 +10,16 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+## [v1.0.0-alpha]
+
+### Added
+
 - Add @ApiResponse tags to resources ([#76](https://github.com/chingu-x/chingu-dashboard-be/pull/76))
 - Add @ApiResponse tags to ideations and features ([#65](https://github.com/chingu-x/chingu-dashboard-be/pull/77))
 - Add refresh token functionality and global guard to protect all routes ([#78](https://github.com/chingu-x/chingu-dashboard-be/pull/78))
@@ -48,11 +58,17 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add CASL permissions for Tech endpoint ([#174](https://github.com/chingu-x/chingu-dashboard-be/pull/174))
 - Add CASL permissions for Team Resource endpoint ([#177](https://github.com/chingu-x/chingu-dashboard-be/pull/177))
 - Add units tests for the users controller & services([#179](https://github.com/chingu-x/chingu-dashboard-be/pull/178))
+-  Add CASL permissions for Team features endpoint ([#184](https://github.com/chingu-x/chingu-dashboard-be/pull/184))
+- Add production seed for alpha test ([#185](https://github.com/chingu-x/chingu-dashboard-be/pull/185))
+
+
+
+- Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
 
 ### Changed
 
 - Update docker compose and scripts in package.json to include a test database container and remove usage of .env.dev to avoid confusion ([#100](https://github.com/chingu-x/chingu-dashboard-be/pull/100))
-- Restructure seed/index.ts to work with e2e tests, and add --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
+- Restructure seed/-index.ts to work with e2e tests, and add --runInBand to e2e scripts[#101](https://github.com/chingu-x/chingu-dashboard-be/pull/101)
 - Update changelog ([#104](https://github.com/chingu-x/chingu-dashboard-be/pull/104))
 - Update test.yml to run e2e tests on pull requests to the main branch [#105](https://github.com/chingu-x/chingu-dashboard-be/pull/105)
 - Update email templates to use domain in environment variables [#110](https://github.com/chingu-x/chingu-dashboard-be/pull/110)
@@ -90,6 +106,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Fix form responses giving error and not inserting values when the boolean value is false ([#156](https://github.com/chingu-x/chingu-dashboard-be/pull/156))
 - Fix a bug for check on voyageTeamMemberId ([#159](https://github.com/chingu-x/chingu-dashboard-be/pull/159))
 - Fix users unit test failing due to a schema change
+- Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
 
 ### Removed
 

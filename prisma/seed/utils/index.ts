@@ -1,4 +1,5 @@
 import { prisma } from "../prisma-client";
+import * as crypto from "crypto";
 
 export const addDays = (date, days: number) => {
     const newDate = new Date(date);
@@ -25,4 +26,11 @@ export const getRandomDateDuringSprint = async (sprintId) => {
         },
     });
     return addDays(sprint?.startDate, Math.floor(Math.random() * 6));
+};
+
+export const generateGravatarUrl = (email: string = "noemail@example.com") => {
+    const themes = ["identicon", "monsterid", "wavatar", "retro", "robohash"];
+    const hash = crypto.createHash("sha256").update(email).digest("hex");
+    return `https://gravatar.com/avatar/${hash}?s=200&r=g&d=${themes[Math.floor(Math.random() * themes.length)]}
+`;
 };

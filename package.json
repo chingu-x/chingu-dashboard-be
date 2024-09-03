@@ -26,6 +26,7 @@
         "studio:test": "dotenv -e ./.env.test prisma studio",
         "studio:test:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public prisma studio",
         "seed": "prisma db seed",
+        "seed:prod": "dotenv -e .env.production.local ts-node prisma/production-seed/index.ts",
         "lint": "eslint \"{prisma/*seed,src,test}/**/*.ts\" --fix",
         "test:unit": "dotenv -e ./.env.test jest",
         "test:unit:docker": "dotenv -v NODE_ENV=test -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public jest",
