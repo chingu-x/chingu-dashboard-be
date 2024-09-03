@@ -155,20 +155,7 @@ export class AuthController {
         @Request() req: CustomRequest,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const { access_token, refresh_token } = await this.authService.login(
-            req.user,
-            req.cookies?.refresh_token,
-        );
-        res.cookie("access_token", access_token, {
-            maxAge: AT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
-        res.cookie("refresh_token", refresh_token, {
-            maxAge: RT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
+        await this.authService.returnTokensOnLoginSuccess(req, res);
         res.status(HttpStatus.OK).send({ message: "Login Success" });
     }
 
@@ -358,15 +345,17 @@ export class AuthController {
     @Public()
     @Get("/discord/login")
     handleDiscordLogin() {
-        return { msg: "Discord Authentication" };
+        return;
     }
 
     @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/redirect")
-    handleDiscordRedirect() {
-        return { msg: "Discord Redirect" };
+    async handleDiscordRedirect(
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        await this.authService.returnTokensOnLoginSuccess(req, res);
+        res.redirect(`${process.env.FRONTEND_URL}`);
     }
-
-    // TODO: Discord logout, will probably just be in the normal logout route
 }
