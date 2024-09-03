@@ -1,10 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { AuthConfigService } from "../config/auth/authConfig.service";
+import { AuthConfig } from "../config/auth/auth.interface";
 describe("AuthController", () => {
     let controller: AuthController;
-    let authConfig: AuthConfigService;
+    let authService: AuthService;
+
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
@@ -14,20 +15,20 @@ describe("AuthController", () => {
                     useValue: {},
                 },
                 {
-                    provide: AuthConfigService,
+                    provide: "Auth-Config",
                     useValue: {},
                 },
             ],
         }).compile();
 
         controller = module.get<AuthController>(AuthController);
-        authConfig = module.get<AuthConfigService>(AuthConfigService);
+        authService = module.get<AuthService>(AuthService);
     });
 
     it("should be defined", () => {
         expect(controller).toBeDefined();
     });
     it("should be defined", () => {
-        expect(authConfig).toBeDefined();
+        expect(authService).toBeDefined();
     });
 });
