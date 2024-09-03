@@ -1,44 +1,39 @@
-import * as Joi from "joi";
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import authConfig from "./auth.config";
-import { AuthConfigService } from "./authConfig.service";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+
+import { authValidationSchema } from "./authConfig.schema";
+import { AuthConfig } from "./auth.interface";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            load: [authConfig],
-            validationSchema: Joi.object({
-                secrets: Joi.object({
-                    jwt: Joi.string().required(),
-                    at: Joi.string().required(),
-                    rt: Joi.string().required(),
-                }),
-                bcrypt: Joi.object({
-                    hashingRounds: Joi.number().required(),
-                }),
-                social: Joi.object({
-                    discord: Joi.object({
-                        clientID: Joi.string().required(),
-                        clientSecret: Joi.string().required(),
-                        callbackURL: Joi.string().required(),
-                    }),
-                    // Add other social types here as needed
-                    // e.g., facebook: Joi.object({
-                    //         clientID: Joi.string().required(),
-                    //         clientSecret: Joi.string().required(),
-                    //         callbackURL: Joi.string().required(),
-                    //     }),
-                    //     twitter: Joi.object({
-                    //         clientID: Joi.string().required(),
-                    //         clientSecret: Joi.string().required(),
-                    //         callbackURL: Joi.string().required(),
-                    //     }),
-                }),
-            }),
+            validationSchema: authValidationSchema,
+            validationOptions: {
+                allowUnknown: true,
+                abortEarly: false,
+            },
         }),
     ],
-    providers: [AuthConfigService],
-    exports: [AuthConfigService],
+    providers: [
+        {
+            provide: "Auth-Config",
+            useFactory: (configService: ConfigService): AuthConfig => ({
+                secrets: {
+                    JWT_SECRET: configService.get<string>(
+                        "JWT_SECRET",
+                    ) as string,
+                    AT_SECRET: configService.get<string>("AT_SECRET") as string,
+                    RT_SECRET: configService.get<string>("RT_SECRET") as string,
+                },
+                bcrypt: {
+                    hashingRounds: configService.get<number>(
+                        "BCRYPT_HASHING_ROUNDS",
+                    ) as number,
+                },
+            }),
+            inject: [ConfigService],
+        },
+    ],
+    exports: ["Auth-Config"],
 })
 export class AuthConfigModule {}
