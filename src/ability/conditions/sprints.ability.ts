@@ -1,4 +1,3 @@
-import { UserReq } from "../../global/types/CustomRequest";
 import { BadRequestException } from "@nestjs/common";
 
 type VoyageTeamMemberWithSprintIds = {
@@ -21,15 +20,12 @@ type ValidateOrGetDbItemGlobalFunc = <T>(
     customErrorMessage?: () => never,
 ) => Promise<T | null>;
 
-// find voyageNumber team member is part of and make sure it matches input
+// find voyage that team member is part of and make sure it matches the input sprint id's voyage
 export const canSubmitCheckin = async (
-    user: UserReq,
     sprintId: number,
     voyageTeamMemberId: number,
     validateOrGetDbItem: ValidateOrGetDbItemGlobalFunc,
 ) => {
-    if (user.roles?.includes("admin")) return;
-
     // find voyageNumber team member is part of and make sure it matches input
     const teamMemberData: VoyageTeamMemberWithSprintIds | null =
         await validateOrGetDbItem<VoyageTeamMemberWithSprintIds>(

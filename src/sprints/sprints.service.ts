@@ -562,7 +562,7 @@ export class SprintsService {
         );
     }
 
-    async addCheckinFormResponse(req, createCheckinForm: CreateCheckinFormDto) {
+    async addCheckinFormResponse(createCheckinForm: CreateCheckinFormDto) {
         const responsesArray =
             this.globalServices.responseDtoToArray(createCheckinForm);
 
@@ -572,7 +572,6 @@ export class SprintsService {
         );
 
         await canSubmitCheckin(
-            req.user,
             createCheckinForm.sprintId,
             createCheckinForm.voyageTeamMemberId,
             this.globalServices.validateOrGetDbItem,
