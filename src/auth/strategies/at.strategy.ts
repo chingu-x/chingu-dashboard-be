@@ -1,27 +1,24 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Request } from "express";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Inject } from "@nestjs/common";
 import { UsersService } from "../../users/users.service";
-import { AuthConfigService } from "src/config/auth/authConfig.service";
+import { AuthConfig } from "../../config/auth/auth.interface";
+
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
     constructor(
         private usersService: UsersService,
-        private authConfigService: AuthConfigService,
+        @Inject("Auth-Config") private authConfig: AuthConfig,
     ) {
-        const secrets = authConfigService.getSecrets();
-        if (!secrets) {
-            throw new Error("Auth secrets not found in configuration");
-        }
-
+        const { AT_SECRET } = authConfig.secrets;
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 AtStrategy.extractJWT,
                 ExtractJwt.fromAuthHeaderAsBearerToken(),
             ]),
             ignoreExpiration: false,
-            secretOrKey: secrets.at,
+            secretOrKey: AT_SECRET,
         });
     }
 

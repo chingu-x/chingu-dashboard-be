@@ -1,23 +1,21 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Request } from "express";
-import { Injectable } from "@nestjs/common";
-import { AuthConfigService } from "src/config/auth/authConfig.service";
+import { Injectable, Inject } from "@nestjs/common";
+import { AuthConfig } from "../../config/auth/auth.interface";
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, "jwt-refresh") {
-    constructor(private authConfigService: AuthConfigService) {
-        const secrets = authConfigService.getSecrets();
-        if (!secrets) {
-            throw new Error("Auth secrets not found in configuration");
-        }
+    constructor(@Inject("Auth-Config") private authConfig: AuthConfig) {
+        const { RT_SECRET } = authConfig.secrets;
+
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 RtStrategy.extractJWT,
                 ExtractJwt.fromAuthHeaderAsBearerToken(),
             ]),
             ignoreExpiration: false,
-            secretOrKey: secrets.rt,
+            secretOrKey: RT_SECRET,
             passReqToCallback: true,
         });
     }

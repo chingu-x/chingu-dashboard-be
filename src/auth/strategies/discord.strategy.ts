@@ -2,17 +2,20 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, Profile } from "passport-discord";
 import { IAuthProvider } from "../../global/interfaces/oauth.interface";
+import { OAuthConfig } from "../../config/0auth/oauthConfig.interface";
 
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, "discord") {
     constructor(
         @Inject("DISCORD_OAUTH")
         private readonly discordAuthService: IAuthProvider,
+        @Inject("OAuth-Config") private oAuthConfig: OAuthConfig,
     ) {
+        const { clientId, clientSecret, callbackUrl } = oAuthConfig.discord;
         super({
-            clientID: process.env.DISCORD_CLIENT_ID,
-            clientSecret: process.env.DISCORD_CLIENT_SECRET,
-            callbackURL: process.env.DISCORD_CALLBACK_URL,
+            clientID: clientId,
+            clientSecret: clientSecret,
+            callbackURL: callbackUrl,
             scope: ["identify"],
         });
     }
