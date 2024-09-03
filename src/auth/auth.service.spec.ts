@@ -6,13 +6,13 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { AppConfigService } from "../config/app/appConfig.service";
 import { EmailService } from "../utils/emails/sendEmail";
-import { AuthConfigService } from "../config/auth/authConfig.service";
+import { AuthConfig } from "../config/auth/auth.interface";
 
 describe("AuthService", () => {
     let service: AuthService;
     let config: AppConfigService;
     let emailService: EmailService;
-    let authConfig: AuthConfigService;
+    let authConfig: AuthConfig;
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -25,14 +25,17 @@ describe("AuthService", () => {
                     },
                 },
                 {
-                    provide: AuthConfigService,
+                    provide: "Auth-Config",
                     useValue: {
-                        getSecrets: jest.fn(() => ({
-                            jwt: "jwt",
-                            at: "at",
-                            rt: "rt",
-                        })),
-                    },
+                        secrets: {
+                            JWT_SECRET: "jwt-secret",
+                            AT_SECRET: "at-secret",
+                            RT_SECRET: "rt-secret",
+                        },
+                        bcrypt: {
+                            hashingRounds: 10,
+                        },
+                    } as AuthConfig,
                 },
                 {
                     provide: EmailService,
@@ -51,9 +54,10 @@ describe("AuthService", () => {
             ],
         }).compile();
         config = module.get<AppConfigService>(AppConfigService);
-        authConfig = module.get<AuthConfigService>(AuthConfigService);
+
         emailService = module.get<EmailService>(EmailService);
         service = module.get<AuthService>(AuthService);
+        authConfig = module.get("Auth-Config");
     });
 
     it("should be defined", () => {
@@ -62,10 +66,16 @@ describe("AuthService", () => {
     it("should be defiined", () => {
         expect(config).toBeDefined();
     });
-    it("should be defined", () => {
-        expect(authConfig).toBeDefined();
-    });
     it("should be defiined", () => {
         expect(emailService).toBeDefined();
+    });
+    it("should have Auth_Config injected", () => {
+        expect(authConfig).toBeDefined();
+        expect(authConfig.secrets).toBeDefined();
+        expect(authConfig.secrets.JWT_SECRET).toBeDefined();
+        expect(authConfig.secrets.AT_SECRET).toBeDefined();
+        expect(authConfig.secrets.RT_SECRET).toBeDefined();
+        expect(authConfig.bcrypt).toBeDefined();
+        expect(authConfig.bcrypt.hashingRounds).toBeDefined();
     });
 });
