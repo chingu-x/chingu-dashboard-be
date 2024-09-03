@@ -14,11 +14,13 @@ import { EmailService } from "src/utils/emails/sendEmail";
 import { MailConfigModule } from "src/config/mail/mailConfig.module";
 import { AppConfigModule } from "src/config/app/appConfig.module";
 import { AuthConfigModule } from "src/config/auth/authConfig.module";
+import { OAuthConfigModule } from "src/config/0auth/oauthConfig.module";
 
 @Module({
     imports: [
         AppConfigModule,
         AuthConfigModule,
+        OAuthConfigModule,
         UsersModule,
         PassportModule,
         MailConfigModule,
