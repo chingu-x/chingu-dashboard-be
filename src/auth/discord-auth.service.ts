@@ -7,7 +7,6 @@ import { IAuthProvider } from "../global/interfaces/oauth.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { DiscordUser } from "../global/types/auth.types";
 import { generatePasswordHash } from "../utils/auth";
-import { AuthService } from "./auth.service";
 
 import { OAuthConfig } from "src/config/0auth/oauthConfig.interface";
 @Injectable()
