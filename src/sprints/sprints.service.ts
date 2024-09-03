@@ -16,7 +16,7 @@ import { GlobalService } from "../global/global.service";
 import { FormTitles } from "../global/constants/formTitles";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
-import { canSubmitCheckin } from "src/ability/conditions/sprints.ability";
+import { canSubmitCheckin } from "../ability/conditions/sprints.ability";
 
 @Injectable()
 export class SprintsService {
