@@ -16,7 +16,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, "discord") {
             clientID: clientId,
             clientSecret: clientSecret,
             callbackURL: callbackUrl,
-            scope: ["identify"],
+            scope: ["identify", "email"],
         });
     }
 
@@ -26,19 +26,12 @@ export class DiscordStrategy extends PassportStrategy(Strategy, "discord") {
         profile: Profile,
     ): Promise<any> {
         const { username, id, avatar, email } = profile;
-        console.log(`discord.strategy.ts (22): accessToken = ${accessToken}`);
-        console.log(`discord.strategy.ts (23): refreshToken = ${refreshToken}`);
-        console.log(
-            `discord.strategy.ts (24): profile = ${JSON.stringify(profile)})}`,
-        );
-        console.log(
-            `discord.strategy.ts (24): profile = ${username}, ${id}, ${avatar}, ${email})}`,
-        );
 
-        await this.discordAuthService.validateUser({
+        return this.discordAuthService.validateUser({
             discordId: id,
             username,
             avatar,
+            email,
         });
     }
 }

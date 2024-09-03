@@ -22,6 +22,8 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
+import { Response } from "express";
+import { CustomRequest } from "../global/types/CustomRequest";
 import { AuthConfig } from "../config/auth/auth.interface";
 
 @Injectable()
@@ -69,7 +71,7 @@ export class AuthService {
         return crypto.createHash("sha256").update(jwt).digest("hex");
     };
 
-    private updateRtHash = async (
+    updateRtHash = async (
         userId: string,
         rt: string,
         oldRtInCookies?: string,
@@ -122,6 +124,23 @@ export class AuthService {
             });
         }
     };
+
+    async returnTokensOnLoginSuccess(req: CustomRequest, res: Response) {
+        const { access_token, refresh_token } = await this.login(
+            req.user,
+            req.cookies?.refresh_token,
+        );
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+    }
 
     /**
      * Checks user email/username match database - for passport
