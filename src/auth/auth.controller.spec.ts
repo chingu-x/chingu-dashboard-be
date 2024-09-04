@@ -1,7 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
-import { AuthConfig } from "../config/auth/auth.interface";
+
+import { MailConfigService } from "../config/mail/mailConfig.service";
 describe("AuthController", () => {
     let controller: AuthController;
     let authService: AuthService;
@@ -16,6 +17,10 @@ describe("AuthController", () => {
                 },
                 {
                     provide: "Auth-Config",
+                    useValue: {},
+                },
+                {
+                    provide: MailConfigService,
                     useValue: {},
                 },
             ],

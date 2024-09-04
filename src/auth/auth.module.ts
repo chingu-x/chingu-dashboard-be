@@ -7,7 +7,6 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
-import * as process from "process";
 import { DiscordStrategy } from "./strategies/discord.strategy";
 import { DiscordAuthService } from "./discord-auth.service";
 import { EmailService } from "src/utils/emails/sendEmail";
@@ -15,6 +14,7 @@ import { MailConfigModule } from "src/config/mail/mailConfig.module";
 import { AppConfigModule } from "src/config/app/appConfig.module";
 import { AuthConfigModule } from "src/config/auth/authConfig.module";
 import { OAuthConfigModule } from "src/config/0auth/oauthConfig.module";
+import { AuthConfig } from "src/config/auth/auth.interface";
 
 @Module({
     imports: [
@@ -24,8 +24,13 @@ import { OAuthConfigModule } from "src/config/0auth/oauthConfig.module";
         UsersModule,
         PassportModule,
         MailConfigModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
+        JwtModule.registerAsync({
+            imports: [AuthConfigModule],
+            useFactory: async (authconfig: AuthConfig) => ({
+                secret: authconfig.secrets.JWT_SECRET,
+                signOptions: { expiresIn: "1d" },
+            }),
+            inject: ["Auth-Config"],
         }),
     ],
     providers: [

@@ -13,7 +13,7 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
-import { comparePassword, hashPassword } from "../utils/auth";
+import { comparePassword, hashPassword } from "../../shared/auth/auth";
 import { EmailService } from "../utils/emails/sendEmail";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";

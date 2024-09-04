@@ -44,11 +44,15 @@ import { Action } from "../ability/ability.factory/ability.factory";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
+import { MailConfigService } from "../config/mail/mailConfig.service";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private mailConfigService: MailConfigService,
+    ) {}
 
     @ApiOperation({
         summary: "Public Route: Signup, and send a verification email",
@@ -356,6 +360,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
     ) {
         await this.authService.returnTokensOnLoginSuccess(req, res);
-        res.redirect(`${process.env.FRONTEND_URL}`);
+        const FRONTEND_URL = this.mailConfigService.FrontendUrl;
+        res.redirect(`${FRONTEND_URL}`);
     }
 }
