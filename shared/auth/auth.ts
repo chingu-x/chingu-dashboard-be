@@ -1,7 +1,8 @@
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
+import { config } from "./authConfig";
 
-const roundsOfHashing = parseInt(process.env.BCRYPT_HASHING_ROUNDS as string);
+const roundsOfHashing = config.bcrypt.hashingRounds;
 
 export const hashPassword = async (password: string) => {
     return await bcrypt.hash(password, roundsOfHashing);
