@@ -7,13 +7,14 @@ import { AppConfigService } from "../config/app/appConfig.service";
 describe("DevelopmentService", () => {
     let service: DevelopmentService;
     let config: AppConfigService;
-    const oldNodeEnv = process.env.NODE_ENV;
+    let oldNodeEnv: string;
 
     beforeAll(() => {
         process.env.NODE_ENV = "development";
     });
 
     afterAll(() => {
+        oldNodeEnv = config.nodeEnv;
         process.env.NODE_ENV = oldNodeEnv;
     });
 
@@ -30,9 +31,7 @@ describe("DevelopmentService", () => {
                 {
                     provide: AppConfigService,
                     useValue: {
-                        nodeEnv: jest.fn((key: string) =>
-                            key === "NODE_ENV" ? "development" : undefined,
-                        ),
+                        nodeEnv: "development",
                     },
                 },
             ],
@@ -44,9 +43,12 @@ describe("DevelopmentService", () => {
     it("should be defined", () => {
         expect(service).toBeDefined();
     });
+    it("should be defined", () => {
+        expect(config).toBeDefined();
+    });
 
     it("should be able to reseed the database", async () => {
-        Object.defineProperty(config, "nodeEnv", {
+        Object.defineProperty(process.config, "nodeEnv", {
             get: jest.fn().mockReturnValue("development"),
         });
         const seedFnMock = jest
