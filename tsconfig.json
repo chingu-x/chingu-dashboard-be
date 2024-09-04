@@ -22,7 +22,6 @@
         "forceConsistentCasingInFileNames": false,
         "noFallthroughCasesInSwitch": false
     },
-    "include": ["src/**/*", "shared/**/*", "prisma/**/*"],
     "watchOptions": {
         "watchFile": "dynamicPriorityPolling",
         "watchDirectory": "dynamicPriorityPolling",
