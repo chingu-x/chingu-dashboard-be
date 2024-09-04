@@ -23,8 +23,8 @@ async function bootstrap() {
     app.setGlobalPrefix("api/v1");
 
     app.useGlobalPipes(new ValidationPipe());
-
-    if (process.env.NODE_ENV !== "production") {
+    const NODE_ENV = app.get(AppConfigService).nodeEnv;
+    if (NODE_ENV !== "production") {
         const config = new DocumentBuilder()
             .setTitle("Chingu Dashboard Project")
             .setDescription(
