@@ -271,23 +271,6 @@ export class SprintsService {
             },
         });
     }
-    async helper(meetingId: number) {
-        const meeting = await this.prisma.teamMeeting.findUnique({
-            where: {
-                id: meetingId,
-            },
-            select: {
-                voyageTeamId: true,
-            },
-        });
-        if (!meeting) {
-            throw new NotFoundException(
-                `Meeting with Id ${meetingId} does not exist.`,
-            );
-        }
-
-        return meeting.voyageTeamId;
-    }
     async updateTeamMeeting(
         meetingId: number,
         {
@@ -301,7 +284,7 @@ export class SprintsService {
     ) {
         await manageOwnTeamMeetingOrAgendaById({ user: req.user, meetingId });
 
-        const updatedMeeting = await this.prisma.teamMeeting.update({
+        return this.prisma.teamMeeting.update({
             where: {
                 id: meetingId,
             },
@@ -313,7 +296,6 @@ export class SprintsService {
                 notes,
             },
         });
-        return updatedMeeting;
     }
 
     async createMeetingAgenda(
@@ -323,7 +305,7 @@ export class SprintsService {
     ) {
         await manageOwnTeamMeetingOrAgendaById({ user: req.user, meetingId });
 
-        const newAgenda = await this.prisma.agenda.create({
+        return this.prisma.agenda.create({
             data: {
                 teamMeetingId: meetingId,
                 title,
@@ -331,7 +313,6 @@ export class SprintsService {
                 status,
             },
         });
-        return newAgenda;
     }
 
     async updateMeetingAgenda(
@@ -340,7 +321,7 @@ export class SprintsService {
         req: CustomRequest,
     ) {
         await manageOwnTeamMeetingOrAgendaById({ user: req.user, agendaId });
-        const updatedMeeting = await this.prisma.agenda.update({
+        return this.prisma.agenda.update({
             where: {
                 id: agendaId,
             },
@@ -350,7 +331,6 @@ export class SprintsService {
                 status,
             },
         });
-        return updatedMeeting;
     }
 
     async deleteMeetingAgenda(agendaId: number, req: CustomRequest) {
