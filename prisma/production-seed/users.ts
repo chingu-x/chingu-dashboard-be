@@ -1,5 +1,5 @@
 import { prisma } from "../seed/prisma-client";
-import { hashPassword } from "../../src/utils/auth";
+import { hashPassword } from "../../shared/auth/auth";
 import { getRoleId } from "../seed/users";
 import { generateGravatarUrl } from "../seed/utils";
 

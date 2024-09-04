@@ -1,4 +1,4 @@
-import { hashPassword } from "../../src/utils/auth";
+import { hashPassword } from "../../shared/auth/auth";
 import { prisma } from "./prisma-client";
 import { generateGravatarUrl } from "./utils";
 
