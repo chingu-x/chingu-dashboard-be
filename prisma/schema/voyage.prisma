@@ -91,6 +91,7 @@ model VoyageTeam {
 
   voyageTeamMembers         VoyageTeamMember[]
   teamTechStackItems        TeamTechStackItem[]
+  TechStackCategories       TechStackCategory[]
   teamMeetings              TeamMeeting[]
   FormResponseVoyageProject FormResponseVoyageProject?
 }
