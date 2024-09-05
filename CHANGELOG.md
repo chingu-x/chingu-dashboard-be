@@ -16,6 +16,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Fixed
 - Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
+- Fix seed checkin form data for PO and SM , and voyage-role for team 6 ([#196](https://github.com/chingu-x/chingu-dashboard-be/pull/196))
 
 ### Removed
 
