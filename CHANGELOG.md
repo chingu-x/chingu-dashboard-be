@@ -16,6 +16,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Fixed
 - Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
+- revised 2 checkin questions for alpha test (check in form question changes, gravatar) ([#192](https://github.com/chingu-x/chingu-dashboard-be/pull/192))
 
 ### Removed
 
