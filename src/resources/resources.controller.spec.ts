@@ -73,10 +73,12 @@ describe("ResourcesController", () => {
             updatedAt: new Date(Date.now()),
         },
     ];
+
     const mockResourcesService = {
         createNewResource: jest.fn(),
         findAllResources: jest.fn(),
         updateResource: jest.fn(),
+        removeResource: jest.fn(),
     };
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -110,15 +112,7 @@ describe("ResourcesController", () => {
                 dtoCreateMock,
             );
 
-            expect(result).toEqual({
-                id: expect.any(Number),
-                url: expect.any(String),
-                title: expect.any(String),
-                teamMemberId: expect.any(Number),
-                createdAt: expect.any(Date),
-                updatedAt: expect.any(Date),
-            });
-            expect(mockResourcesService.createNewResource).toHaveBeenCalled();
+            expect(result).toEqual(singleResource);
             expect(mockResourcesService.createNewResource).toHaveBeenCalledWith(
                 requestMock,
                 dtoCreateMock,
@@ -187,7 +181,6 @@ describe("ResourcesController", () => {
                 createdAt: expect.any(Date),
                 updatedAt: expect.any(Date),
             });
-            expect(mockResourcesService.findAllResources).toHaveBeenCalled();
             expect(mockResourcesService.findAllResources).toHaveBeenCalledWith(
                 requestMock,
                 teamIdMock,
@@ -222,15 +215,7 @@ describe("ResourcesController", () => {
                 dtoUpdateMock,
             );
 
-            expect(result).toEqual({
-                id: expect.any(Number),
-                url: expect.any(String),
-                title: expect.any(String),
-                teamMemberId: expect.any(Number),
-                createdAt: expect.any(Date),
-                updatedAt: expect.any(Date),
-            });
-            expect(mockResourcesService.updateResource).toHaveBeenCalled();
+            expect(result).toEqual(singleResourceUpdated);
             expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
                 requestMock,
                 1,
@@ -248,6 +233,38 @@ describe("ResourcesController", () => {
                 requestMock,
                 9999,
                 dtoUpdateMock,
+            );
+        });
+    });
+
+    describe("Remove Resource", () => {
+        it("removeResource service should be defined", async () => {
+            expect(controller.removeResource).toBeDefined();
+        });
+
+        it("should delete a resource", async () => {
+            mockResourcesService.removeResource.mockResolvedValueOnce(
+                singleResource,
+            );
+
+            const result = await controller.removeResource(requestMock, 1);
+
+            expect(result).toEqual(singleResource);
+            expect(mockResourcesService.removeResource).toHaveBeenCalledWith(
+                requestMock,
+                1,
+            );
+        });
+        it("should throw notFound exception for invalid resourceId", async () => {
+            mockResourcesService.removeResource.mockRejectedValueOnce(
+                new NotFoundException(),
+            );
+            expect(
+                controller.removeResource(requestMock, 9999),
+            ).rejects.toThrow(NotFoundException);
+            expect(mockResourcesService.removeResource).toHaveBeenCalledWith(
+                requestMock,
+                9999,
             );
         });
     });
