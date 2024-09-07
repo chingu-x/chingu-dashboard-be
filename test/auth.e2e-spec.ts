@@ -11,11 +11,11 @@ import {
     loginAndGetTokens,
 } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { comparePassword } from "../shared/auth/auth";
+import { comparePassword } from "../src/global/auth/auth";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
 
 import { AuthConfig } from "../src/config/auth/auth.interface";
-import { OAuthConfig } from "../src/config/0auth/oauthConfig.interface";
+import { OAuthConfig } from "../src/config/Oauth/oauthConfig.interface";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";
