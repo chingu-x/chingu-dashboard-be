@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, Profile } from "passport-discord";
 import { IAuthProvider } from "../../global/interfaces/oauth.interface";
-import { OAuthConfig } from "../../config/0auth/oauthConfig.interface";
+import { OAuthConfig } from "../../config/Oauth/oauthConfig.interface";
 
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, "discord") {
