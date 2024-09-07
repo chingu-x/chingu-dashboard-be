@@ -6,9 +6,9 @@ import {
 import { IAuthProvider } from "../global/interfaces/oauth.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { DiscordUser } from "../global/types/auth.types";
-import { generatePasswordHash } from "../../shared/auth/auth";
+import { generatePasswordHash } from "../global/auth/auth";
 
-import { OAuthConfig } from "src/config/0auth/oauthConfig.interface";
+import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
 @Injectable()
 export class DiscordAuthService implements IAuthProvider {
     constructor(

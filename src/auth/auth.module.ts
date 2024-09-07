@@ -13,7 +13,7 @@ import { EmailService } from "src/utils/emails/sendEmail";
 import { MailConfigModule } from "src/config/mail/mailConfig.module";
 import { AppConfigModule } from "src/config/app/appConfig.module";
 import { AuthConfigModule } from "src/config/auth/authConfig.module";
-import { OAuthConfigModule } from "src/config/0auth/oauthConfig.module";
+import { OAuthConfigModule } from "../config/Oauth/oauthConfig.module";
 import { AuthConfig } from "src/config/auth/auth.interface";
 
 @Module({
@@ -26,8 +26,8 @@ import { AuthConfig } from "src/config/auth/auth.interface";
         MailConfigModule,
         JwtModule.registerAsync({
             imports: [AuthConfigModule],
-            useFactory: async (authconfig: AuthConfig) => ({
-                secret: authconfig.secrets.JWT_SECRET,
+            useFactory: async (authConfig: AuthConfig) => ({
+                secret: authConfig.secrets.JWT_SECRET,
                 signOptions: { expiresIn: "1d" },
             }),
             inject: ["Auth-Config"],
