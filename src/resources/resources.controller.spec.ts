@@ -4,6 +4,7 @@ import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { UpdateResourceDto } from "./dto/update-resource.dto";
 
 describe("ResourcesController", () => {
     let controller: ResourcesController;
@@ -13,6 +14,11 @@ describe("ResourcesController", () => {
         url: "https://chingu.com",
         title: "Chingu",
     } as CreateResourceDto;
+
+    // dto for updating a resource url
+    const dtoUpdateMock = {
+        url: "https://chingu-2.com",
+    } as UpdateResourceDto;
     const teamIdMock: number = 1;
 
     const singleResource = {
@@ -23,6 +29,16 @@ describe("ResourcesController", () => {
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
     };
+
+    const singleResourceUpdated = {
+        id: 1,
+        url: "https://chingu-2.com",
+        title: "Chingu",
+        teamMemberId: 1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    };
+
     const allResources = [
         {
             id: 1,
@@ -60,6 +76,7 @@ describe("ResourcesController", () => {
     const mockResourcesService = {
         createNewResource: jest.fn(),
         findAllResources: jest.fn(),
+        updateResource: jest.fn(),
     };
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -186,6 +203,51 @@ describe("ResourcesController", () => {
             expect(mockResourcesService.findAllResources).toHaveBeenCalledWith(
                 requestMock,
                 9999,
+            );
+        });
+    });
+    describe("Update Resource", () => {
+        it("updateResource service should be defined", async () => {
+            expect(controller.updateResource).toBeDefined();
+        });
+
+        it("should update a resource", async () => {
+            mockResourcesService.updateResource.mockResolvedValueOnce(
+                singleResourceUpdated,
+            );
+
+            const result = await controller.updateResource(
+                requestMock,
+                1,
+                dtoUpdateMock,
+            );
+
+            expect(result).toEqual({
+                id: expect.any(Number),
+                url: expect.any(String),
+                title: expect.any(String),
+                teamMemberId: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+            });
+            expect(mockResourcesService.updateResource).toHaveBeenCalled();
+            expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
+                requestMock,
+                1,
+                dtoUpdateMock,
+            );
+        });
+        it("should throw notFound exception for invalid resourceId", async () => {
+            mockResourcesService.updateResource.mockRejectedValueOnce(
+                new NotFoundException(),
+            );
+            expect(
+                controller.updateResource(requestMock, 9999, dtoUpdateMock),
+            ).rejects.toThrow(NotFoundException);
+            expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
+                requestMock,
+                9999,
+                dtoUpdateMock,
             );
         });
     });
