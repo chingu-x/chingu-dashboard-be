@@ -55,6 +55,41 @@ describe("ResourcesService", () => {
         updatedAt: new Date(),
     };
 
+    const mockResourceArr = [
+        {
+            id: 1,
+            url: "https://chingu.com",
+            title: "Chingu",
+            teamMemberId: 1,
+            addedBy: {
+                member: {
+                    firstName: "Larry",
+                    lastName: "Castro",
+                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+                },
+            },
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
+        },
+        {
+            id: 2,
+            url: "https://Nestjs.com",
+            title: "Nestjs",
+            teamMemberId: 2,
+            addedBy: {
+                member: {
+                    firstName: "John",
+                    lastName: "Doe",
+                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+                },
+            },
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
+        },
+    ];
+
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -109,6 +144,62 @@ describe("ResourcesService", () => {
             });
             expect(prismaMock.teamResource.create).toHaveBeenCalledWith({
                 data: { ...dtoCreateMock, teamMemberId: mockTeamMemberId },
+            });
+        });
+    });
+
+    describe("findAllResources", () => {
+        it("should find all resources", async () => {
+            prismaMock.voyageTeam.findUnique.mockResolvedValue(mockVoyageTeam);
+            prismaMock.teamResource.findMany.mockResolvedValue(mockResourceArr);
+
+            const result = await service.findAllResources(
+                requestMock,
+                mockTeamId,
+            );
+            expect(result[0]).toEqual({
+                id: expect.any(Number),
+                url: expect.any(String),
+                title: expect.any(String),
+                teamMemberId: expect.any(Number),
+                addedBy: {
+                    member: {
+                        firstName: expect.any(String),
+                        lastName: expect.any(String),
+                        id: expect.any(String),
+                        avatar: expect.any(String),
+                    },
+                },
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+            });
+
+            expect(prismaMock.voyageTeam.findUnique).toHaveBeenCalledWith({
+                where: { id: mockTeamId },
+            });
+            expect(prismaMock.teamResource.findMany).toHaveBeenCalledWith({
+                where: {
+                    addedBy: {
+                        voyageTeam: {
+                            id: mockTeamId,
+                        },
+                    },
+                },
+                include: {
+                    addedBy: {
+                        select: {
+                            member: {
+                                select: {
+                                    firstName: true,
+                                    lastName: true,
+                                    id: true,
+                                    avatar: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: { createdAt: "desc" },
             });
         });
     });
