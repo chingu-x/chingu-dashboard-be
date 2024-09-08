@@ -19,9 +19,9 @@ describe("ResourcesController", () => {
     const dtoUpdateMock = {
         url: "https://chingu-2.com",
     } as UpdateResourceDto;
-    const teamIdMock: number = 1;
+    const mockTeamId: number = 1;
 
-    const singleResource = {
+    const mockResource = {
         id: 1,
         url: "https://chingu.com",
         title: "Chingu",
@@ -30,7 +30,7 @@ describe("ResourcesController", () => {
         updatedAt: new Date(Date.now()),
     };
 
-    const singleResourceUpdated = {
+    const mockUpdatedResource = {
         id: 1,
         url: "https://chingu-2.com",
         title: "Chingu",
@@ -39,7 +39,7 @@ describe("ResourcesController", () => {
         updatedAt: new Date(Date.now()),
     };
 
-    const allResources = [
+    const mockResourceArr = [
         {
             id: 1,
             url: "https://chingu.com",
@@ -103,20 +103,20 @@ describe("ResourcesController", () => {
 
         it("should create a new resource", async () => {
             mockResourcesService.createNewResource.mockResolvedValueOnce(
-                singleResource,
+                mockResource,
             );
 
             const result = await controller.createNewResource(
                 requestMock,
-                teamIdMock,
+                mockTeamId,
                 dtoCreateMock,
             );
 
-            expect(result).toEqual(singleResource);
+            expect(result).toEqual(mockResource);
             expect(mockResourcesService.createNewResource).toHaveBeenCalledWith(
                 requestMock,
                 dtoCreateMock,
-                teamIdMock,
+                mockTeamId,
             );
         });
         it("should throw badRequest exception for invalid dto", async () => {
@@ -124,14 +124,14 @@ describe("ResourcesController", () => {
                 new BadRequestException(),
             );
             expect(
-                controller.createNewResource(requestMock, teamIdMock, {
+                controller.createNewResource(requestMock, mockTeamId, {
                     url: "https://chingu.com",
                 } as CreateResourceDto),
             ).rejects.toThrow(BadRequestException);
             expect(mockResourcesService.createNewResource).toHaveBeenCalledWith(
                 requestMock,
                 dtoCreateMock,
-                teamIdMock,
+                mockTeamId,
             );
         });
         it("should throw notFound exception for invalid teamId", async () => {
@@ -155,12 +155,12 @@ describe("ResourcesController", () => {
 
         it("should find all resources", async () => {
             mockResourcesService.findAllResources.mockResolvedValueOnce(
-                allResources,
+                mockResourceArr,
             );
 
             const result = await controller.findAllResources(
                 requestMock,
-                teamIdMock,
+                mockTeamId,
             );
 
             expect(result).toBeArray;
@@ -183,7 +183,7 @@ describe("ResourcesController", () => {
             });
             expect(mockResourcesService.findAllResources).toHaveBeenCalledWith(
                 requestMock,
-                teamIdMock,
+                mockTeamId,
             );
         });
         it("should throw notFound exception for invalid teamId", async () => {
@@ -206,7 +206,7 @@ describe("ResourcesController", () => {
 
         it("should update a resource", async () => {
             mockResourcesService.updateResource.mockResolvedValueOnce(
-                singleResourceUpdated,
+                mockUpdatedResource,
             );
 
             const result = await controller.updateResource(
@@ -215,7 +215,7 @@ describe("ResourcesController", () => {
                 dtoUpdateMock,
             );
 
-            expect(result).toEqual(singleResourceUpdated);
+            expect(result).toEqual(mockUpdatedResource);
             expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
                 requestMock,
                 1,
@@ -244,12 +244,12 @@ describe("ResourcesController", () => {
 
         it("should delete a resource", async () => {
             mockResourcesService.removeResource.mockResolvedValueOnce(
-                singleResource,
+                mockResource,
             );
 
             const result = await controller.removeResource(requestMock, 1);
 
-            expect(result).toEqual(singleResource);
+            expect(result).toEqual(mockResource);
             expect(mockResourcesService.removeResource).toHaveBeenCalledWith(
                 requestMock,
                 1,
