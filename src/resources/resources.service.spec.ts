@@ -245,4 +245,28 @@ describe("ResourcesService", () => {
             });
         });
     });
+
+    describe("removeResource", () => {
+        it("should delete a resource", async () => {
+            prismaMock.teamResource.findUnique.mockResolvedValue(mockResource);
+            prismaMock.teamResource.delete.mockResolvedValue(mockResource);
+
+            const result = await service.removeResource(
+                requestMock,
+                mockResource.id,
+            );
+            expect(result).toEqual(mockResource);
+
+            expect(prismaMock.teamResource.findUnique).toHaveBeenCalledWith({
+                where: {
+                    id: mockResource.id,
+                },
+            });
+            expect(prismaMock.teamResource.delete).toHaveBeenCalledWith({
+                where: {
+                    id: mockResource.id,
+                },
+            });
+        });
+    });
 });
