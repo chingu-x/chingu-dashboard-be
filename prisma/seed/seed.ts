@@ -3,6 +3,7 @@ import { populateVoyages } from "./voyage";
 import { populateUsers } from "./users";
 import { populateSprints } from "./sprints";
 import { populateVoyageTeams } from "./voyage-teams";
+//import { populateTechStackCategories } from "./data/tech-stack-categories";
 import { populateTeamResourcesAndProjectIdeas } from "./resources-project-ideas";
 import { populateFormsAndResponses } from "./forms";
 import { populateMeetings } from "./meetings";
@@ -34,7 +35,7 @@ export const deleteAllTables = async () => {
 
 export const seed = async () => {
     await deleteAllTables();
-    await populateTables(); // tables with no relations
+    await populateTables();
     await populateVoyages();
     await populateUsers();
     await populateSprints();

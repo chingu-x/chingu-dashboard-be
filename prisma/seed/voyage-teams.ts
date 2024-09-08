@@ -1,4 +1,5 @@
 import { prisma } from "./prisma-client";
+import { techStackCategoriesData } from "./data/tech-stack-categories";
 
 export const populateVoyageTeams = async () => {
     const users = await prisma.user.findMany({});
@@ -1049,6 +1050,13 @@ export const populateVoyageTeams = async () => {
             },
         },
     });
+
+    //Add Tech Stack Categories
+    //await populateTechStackCategories();
+    for (const category of techStackCategoriesData) {
+        await prisma["TechStackCategory"].create({ data: category });
+    }
+    console.log("TechStackCategories populated");
 
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 

@@ -1,4 +1,4 @@
-export default [
+export const techStackCategoriesData = [
     {
         name: "Frontend",
         description: "Frontend Stuff",

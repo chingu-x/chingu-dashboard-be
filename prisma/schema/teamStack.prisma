@@ -5,7 +5,7 @@ model TechStackCategory {
   name        String @unique
   description String
   voyageTeam         VoyageTeam         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamId       Int
+  voyageTeamId       Int 
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
