@@ -12,7 +12,7 @@ describe("ResourcesService", () => {
     const userReq = {
         userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
         email: "test@test.com",
-        roles: ["admin"],
+        roles: ["voyager"],
         isVerified: true,
         voyageTeams: [{ teamId: 1, memberId: 1 }],
     };
@@ -32,6 +32,15 @@ describe("ResourcesService", () => {
     const mockResource = {
         id: 1,
         url: "https://chingu.com",
+        title: "Chingu",
+        teamMemberId: 1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    };
+
+    const mockUpdatedResource = {
+        id: 1,
+        url: "https://chingu-2.com",
         title: "Chingu",
         teamMemberId: 1,
         createdAt: new Date(Date.now()),
@@ -200,6 +209,39 @@ describe("ResourcesService", () => {
                     },
                 },
                 orderBy: { createdAt: "desc" },
+            });
+        });
+    });
+
+    describe("updateResource", () => {
+        it("should update a resource", async () => {
+            prismaMock.teamResource.findUnique.mockResolvedValue(mockResource);
+            prismaMock.teamResource.update.mockResolvedValue(
+                mockUpdatedResource,
+            );
+
+            const result = await service.updateResource(
+                requestMock,
+                mockUpdatedResource.id,
+                dtoCreateMock,
+            );
+            expect(result).toEqual({
+                id: expect.any(Number),
+                url: expect.any(String),
+                title: expect.any(String),
+                teamMemberId: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+            });
+
+            expect(prismaMock.teamResource.findUnique).toHaveBeenCalledWith({
+                where: {
+                    id: mockUpdatedResource.id,
+                },
+            });
+            expect(prismaMock.teamResource.update).toHaveBeenCalledWith({
+                where: { id: mockUpdatedResource.id },
+                data: dtoCreateMock,
             });
         });
     });
