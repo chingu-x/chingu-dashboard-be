@@ -5,6 +5,7 @@ interface AppConfig {
     app: {
         nodeEnv: string;
         port: number;
+        frontendUrl: string;
     };
 }
 
@@ -17,5 +18,10 @@ export class AppConfigService {
 
     get appPort() {
         return this.configService.get("app.port", { infer: true })!;
+    }
+    get FrontendUrl() {
+        return this.configService.get<string>("app.frontendUrl", {
+            infer: true,
+        })!;
     }
 }

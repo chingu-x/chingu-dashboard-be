@@ -45,13 +45,15 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
 import { MailConfigService } from "../config/mail/mailConfig.service";
-
+import { AppConfigService } from "../config/app/appConfig.service";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
     constructor(
         private authService: AuthService,
         private mailConfigService: MailConfigService,
+
+        private appConfigService: AppConfigService,
     ) {}
 
     @ApiOperation({
@@ -360,7 +362,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
     ) {
         await this.authService.returnTokensOnLoginSuccess(req, res);
-        const FRONTEND_URL = this.mailConfigService.FrontendUrl;
+        const FRONTEND_URL = this.appConfigService.FrontendUrl;
         res.redirect(`${FRONTEND_URL}`);
     }
 }

@@ -14,7 +14,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
 import { comparePassword, hashPassword } from "../global/auth/utils";
-import { EmailService } from "../utils/emails/sendEmail";
+import { EmailService } from "../utils/emails/email.service";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";

@@ -12,6 +12,7 @@ import { AppConfigService } from "./appConfig.service";
                     .valid("development", "production", "test")
                     .default("development"),
                 port: Joi.number().port(),
+                frontendUrl: Joi.string(),
             }),
         }),
     ],
