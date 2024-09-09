@@ -11,7 +11,6 @@ import { MailConfigService } from "./mailConfig.service";
             validationSchema: Joi.object({
                 mailjetApiPublic: Joi.string(),
                 mailjetApiPrivate: Joi.string(),
-                frontendUrl: Joi.string(),
             }),
         }),
     ],

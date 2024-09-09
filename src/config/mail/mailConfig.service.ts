@@ -12,8 +12,4 @@ export class MailConfigService {
     get MailjetApiPrivate() {
         return this.configService.get<string>("mail.mailjetApiPrivate");
     }
-
-    get FrontendUrl() {
-        return this.configService.get<string>("mail.frontendUrl");
-    }
 }
