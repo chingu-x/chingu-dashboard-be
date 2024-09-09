@@ -9,7 +9,7 @@ import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
 import { DiscordStrategy } from "./strategies/discord.strategy";
 import { DiscordAuthService } from "./discord-auth.service";
-import { EmailService } from "@/utils/emails/email.service";
+import { EmailService } from "../utils/emails/email.service";
 import { MailConfigModule } from "src/config/mail/mailConfig.module";
 import { AppConfigModule } from "src/config/app/appConfig.module";
 import { AuthConfigModule } from "src/config/auth/authConfig.module";
