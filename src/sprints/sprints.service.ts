@@ -336,7 +336,7 @@ export class SprintsService {
     async deleteMeetingAgenda(agendaId: number, req: CustomRequest) {
         await manageOwnTeamMeetingOrAgendaById({ user: req.user, agendaId });
 
-        return await this.prisma.agenda.delete({
+        return this.prisma.agenda.delete({
             where: {
                 id: agendaId,
             },
@@ -404,6 +404,8 @@ export class SprintsService {
                         );
                     }
                 }
+
+                throw e;
             }
         }
     }

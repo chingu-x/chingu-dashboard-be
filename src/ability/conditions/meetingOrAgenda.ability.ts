@@ -14,6 +14,7 @@ export const manageOwnTeamMeetingOrAgendaById = async ({
     subject?: TeamMeeting | Agenda; // If we want to extend some more permissions for any particular subject
 }) => {
     let meetingOrAgendaTeamId: number;
+    const voyagerTeamIds = user.voyageTeams.map((vt) => vt.teamId);
     if (meetingId) {
         const meeting = await prisma.teamMeeting.findUnique({
             where: {
@@ -29,7 +30,7 @@ export const manageOwnTeamMeetingOrAgendaById = async ({
             );
         }
 
-        meetingOrAgendaTeamId = meeting.voyageTeamId!;
+        meetingOrAgendaTeamId = meeting.voyageTeamId;
     }
 
     if (agendaId) {
@@ -54,13 +55,15 @@ export const manageOwnTeamMeetingOrAgendaById = async ({
         meetingOrAgendaTeamId = agenda.teamMeeting.voyageTeamId;
     }
 
-    if (user.roles?.includes("admin")) return;
+    if (!user.roles.includes("voyager") && !user.roles.includes("admin")) {
+        throw new ForbiddenException(
+            "Invalid user role for Sprint Meeting access control",
+        );
+    }
 
-    if (
-        !user.voyageTeams
-            .map((vt) => vt.teamId)
-            .includes(meetingOrAgendaTeamId!)
-    ) {
+    if (user.roles.includes("admin")) return;
+
+    if (!voyagerTeamIds.includes(meetingOrAgendaTeamId!)) {
         throw new ForbiddenException(
             "Sprint Meeting access control: You can only manage your own project features.",
         );
