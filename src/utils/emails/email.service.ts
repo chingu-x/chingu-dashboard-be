@@ -29,7 +29,7 @@ export class EmailService {
                     TemplateID: templateIds.verificationEmail,
                     TemplateLanguage: true,
                     Variables: {
-                        verificationLink: `${this.mailConfigService.FrontendUrl}/users/verify?token=${token}`,
+                        verificationLink: `${this.appConfigService.FrontendUrl}/users/verify?token=${token}`,
                     },
                 },
             ],
@@ -50,7 +50,7 @@ export class EmailService {
                     TemplateLanguage: true,
                     Variables: {
                         userEmail: email,
-                        passwordResetPage: `${this.mailConfigService.FrontendUrl}/users/reset-password`,
+                        passwordResetPage: `${this.appConfigService.FrontendUrl}/users/reset-password`,
                     },
                 },
             ],
@@ -69,7 +69,7 @@ export class EmailService {
                     TemplateID: templateIds.passwordResetEmail,
                     TemplateLanguage: true,
                     Variables: {
-                        passwordResetLink: `${this.mailConfigService.FrontendUrl}/users/reset-password?token=${token}`,
+                        passwordResetLink: `${this.appConfigService.FrontendUrl}/users/reset-password?token=${token}`,
                     },
                 },
             ],
