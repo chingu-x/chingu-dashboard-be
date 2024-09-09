@@ -55,13 +55,13 @@ export const manageOwnTeamMeetingOrAgendaById = async ({
         meetingOrAgendaTeamId = agenda.teamMeeting.voyageTeamId;
     }
 
-    if (!user.roles.includes("voyager") && !user.roles.includes("admin")) {
+    if (user.roles.includes("admin")) return;
+
+    if (!user.roles.includes("voyager")) {
         throw new ForbiddenException(
             "Invalid user role for Sprint Meeting access control",
         );
     }
-
-    if (user.roles.includes("admin")) return;
 
     if (!voyagerTeamIds.includes(meetingOrAgendaTeamId!)) {
         throw new ForbiddenException(
