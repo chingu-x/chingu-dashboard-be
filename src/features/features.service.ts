@@ -244,7 +244,7 @@ export class FeaturesService {
             //check if the user is part of the team that owns the feature
             if (
                 !req.user.voyageTeams.some(
-                    (vt) => vt.memberId === currFeature.teamMemberId,
+                    (vt) => vt.teamId == currFeature.addedBy?.voyageTeamId,
                 )
             ) {
                 throw new ForbiddenException(
@@ -252,9 +252,7 @@ export class FeaturesService {
                 );
             }
 
-            const teamId = req.user.voyageTeams.find(
-                (vt) => vt.memberId == currFeature.teamMemberId,
-            )!.teamId!;
+            const teamId = currFeature.addedBy!.voyageTeamId!;
 
             const verifyCategoryExists =
                 await this.prisma.featureCategory.findFirst({
@@ -437,6 +435,13 @@ export class FeaturesService {
     private async findFeature(featureId: number) {
         const feature = await this.prisma.projectFeature.findUnique({
             where: { id: featureId },
+            include: {
+                addedBy: {
+                    select: {
+                        voyageTeamId: true,
+                    },
+                },
+            },
         });
 
         if (!feature) {
