@@ -244,7 +244,7 @@ export class FeaturesService {
             //check if the user is part of the team that owns the feature
             if (
                 !req.user.voyageTeams.some(
-                    (vt) => vt.teamId == currFeature.addedBy?.voyageTeamId,
+                    (vt) => vt.teamId === currFeature.addedBy?.voyageTeamId,
                 )
             ) {
                 throw new ForbiddenException(
