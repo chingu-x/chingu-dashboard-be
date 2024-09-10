@@ -1,6 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FormsController } from "./forms.controller";
 import { FormsService } from "./forms.service";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { NotFoundException } from "@nestjs/common";
 
 describe("FormsController", () => {
     let controller: FormsController;
@@ -9,6 +11,8 @@ describe("FormsController", () => {
         getAllForms: jest.fn(),
         getFormById: jest.fn(),
     };
+
+    const mockRequest = {} as unknown as CustomRequest;
 
     const mockForms = [
         {
@@ -145,6 +149,37 @@ describe("FormsController", () => {
             const forms = await controller.getAllForms();
             expect(forms).toEqual(mockForms);
             expect(mockFormsService.getAllForms).toHaveBeenCalled();
+        });
+    });
+
+    describe("getFormById", () => {
+        it("should be defined", () => {
+            expect(controller.getFormById).toBeDefined();
+        });
+
+        it("should return a form by id", async () => {
+            mockFormsService.getFormById.mockResolvedValueOnce(mockForms[0]);
+
+            const form = await controller.getFormById(mockRequest, 1);
+            expect(form).toEqual(mockForms[0]);
+            expect(mockFormsService.getFormById).toHaveBeenCalledWith(
+                1,
+                mockRequest,
+            );
+        });
+
+        it("should throw an Not found error if form id is invalid", async () => {
+            mockFormsService.getFormById.mockRejectedValueOnce(
+                new NotFoundException(),
+            );
+
+            expect(controller.getFormById(mockRequest, 999)).rejects.toThrow(
+                NotFoundException,
+            );
+            expect(mockFormsService.getFormById).toHaveBeenCalledWith(
+                999,
+                mockRequest,
+            );
         });
     });
 });
