@@ -587,6 +587,23 @@ describe("Features Controller (e2e)", () => {
                     });
                 });
         });
+        it("should return 200 when a other user tries to update the order of features of same team", async () => {
+            const { access_token, refresh_token } = await loginAndGetTokens(
+                "leo.rowe@outlook.com",
+                "password",
+                app,
+            );
+            const featureId: number = 2;
+            const featureCategoryId: number = 2;
+            const order: number = 3;
+
+            await request(app.getHttpServer())
+                .patch(`/voyages/features/${featureId}/reorder`)
+                .send({ featureCategoryId, order })
+                .set("Cookie", [access_token, refresh_token])
+                .expect(200)
+                .expect("Content-Type", /json/);
+        });
         it("should return 400 for a invalid featureCategoryId", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "dan@random.com",
