@@ -16,7 +16,7 @@ export const populateCheckinFormSM = async () => {
             questions: {
                 create: [
                     {
-                        order: 1,
+                        order: 201,
                         inputType: {
                             connect: {
                                 name: "boolean",
@@ -26,7 +26,7 @@ export const populateCheckinFormSM = async () => {
                         answerRequired: true,
                     },
                     {
-                        order: 2,
+                        order: 202,
                         inputType: {
                             connect: {
                                 name: "boolean",
@@ -36,7 +36,7 @@ export const populateCheckinFormSM = async () => {
                         answerRequired: true,
                     },
                     {
-                        order: 3,
+                        order: 203,
                         inputType: {
                             connect: {
                                 name: "boolean",
@@ -46,7 +46,7 @@ export const populateCheckinFormSM = async () => {
                         answerRequired: true,
                     },
                     {
-                        order: 4,
+                        order: 204,
                         inputType: {
                             connect: {
                                 name: "text",

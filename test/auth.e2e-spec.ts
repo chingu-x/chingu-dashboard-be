@@ -635,4 +635,23 @@ describe("AuthController e2e Tests", () => {
             });
         });
     });
+
+    describe("Initiate Discord OAuth GET /auth/discord/login", () => {
+        it("should redirect ", async () => {
+            const res = await request(app.getHttpServer())
+                .get("/auth/discord/login")
+                .expect(302);
+
+            const clientId = process.env.DISCORD_CLIENT_ID;
+            const responseType = "code";
+            const redirectUrl = ".*auth%2Fdiscord%2Fredirect";
+            const scope = "identify%20email";
+
+            const re = new RegExp(
+                String.raw`https:\/\/discord\.com\/api\/oauth2\/authorize\?response_type=${responseType}&redirect_uri=${redirectUrl}&scope=${scope}&client_id=${clientId}`,
+            );
+
+            expect(res.headers.location).toMatch(re);
+        });
+    });
 });
