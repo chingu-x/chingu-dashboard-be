@@ -41,7 +41,6 @@ export class AbilityFactory {
                 },
             });
             can([Action.Submit, Action.Read], "Form");
-            can([Action.Submit], "FormResponseCheckin");
             can([Action.Manage], "TeamTechStackItem");
             can([Action.Manage], "Resource", {
                 teamMemberId: {
