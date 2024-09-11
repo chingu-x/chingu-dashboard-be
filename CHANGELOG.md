@@ -20,6 +20,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - revised 2 checkin questions for alpha test ([#192](https://github.com/chingu-x/chingu-dashboard-be/pull/192))
 - updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
 - Fix seed checkin form data for PO and SM , and voyage-role for team 6 ([#196](https://github.com/chingu-x/chingu-dashboard-be/pull/196))
+- Bug add check for team id in place memberId ([#197](https://github.com/chingu-x/chingu-dashboard-be/pull/197))
 
 ### Removed
 
