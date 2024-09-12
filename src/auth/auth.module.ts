@@ -28,7 +28,6 @@ import { AuthConfig } from "src/config/auth/auth.interface";
             imports: [AuthConfigModule],
             useFactory: async (authConfig: AuthConfig) => ({
                 secret: authConfig.secrets.JWT_SECRET,
-                signOptions: { expiresIn: "1d" },
             }),
             inject: ["Auth-Config"],
         }),
