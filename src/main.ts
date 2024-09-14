@@ -2,11 +2,13 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { PrismaClientExceptionFilter } from "./exception-filters/prisma-client-exception.filter";
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
+import { RequestLogging } from "./middleware/requests-logging";
 
 async function bootstrap() {
+    const requestLogger = new Logger("Requests");
     const app = await NestFactory.create(AppModule);
     app.enableCors({
         origin: [
@@ -18,6 +20,7 @@ async function bootstrap() {
         methods: ["GET", "POST", "PATCH", "DELETE"],
         credentials: true,
     });
+    RequestLogging(app, requestLogger);
     app.use(cookieParser());
     app.setGlobalPrefix("api/v1");
 
