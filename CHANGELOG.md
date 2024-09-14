@@ -13,14 +13,16 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add discord oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/194))
 
 ### Changed
+- updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
+- Update accepted localhost port and docker compose file for a custom network setup ([#199](https://github.com/chingu-x/chingu-dashboard-be/pull/199))
 
 ### Fixed
 - Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
 - Fix voyageNumber generation from sprintId for check-in submissions ([#186](https://github.com/chingu-x/chingu-dashboard-be/pull/186))
 - revised 2 checkin questions for alpha test ([#192](https://github.com/chingu-x/chingu-dashboard-be/pull/192))
-- updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
 - Fix seed checkin form data for PO and SM , and voyage-role for team 6 ([#196](https://github.com/chingu-x/chingu-dashboard-be/pull/196))
 - Bug add check for team id in place memberId ([#197](https://github.com/chingu-x/chingu-dashboard-be/pull/197))
+- Update check-in form question ids validation (`checkQuestionsInFormById`) to accept an array of form titles ([#198](https://github.com/chingu-x/chingu-dashboard-be/pull/198))
 
 ### Removed
 
