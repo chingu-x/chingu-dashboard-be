@@ -566,7 +566,11 @@ export class SprintsService {
             this.globalServices.responseDtoToArray(createCheckinForm);
 
         await this.globalServices.checkQuestionsInFormByTitle(
-            FormTitles.sprintCheckin,
+            [
+                FormTitles.sprintCheckin,
+                FormTitles.sprintCheckinPO,
+                FormTitles.sprintCheckinSM,
+            ],
             responsesArray,
         );
 

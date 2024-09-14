@@ -14,7 +14,7 @@
         "start:prod": "node dist/main",
         "docker:down": "docker compose down",
         "docker:clean": "docker compose down -v --remove-orphans",
-        "docker": "docker-compose up -d",
+        "docker": "docker compose up -d",
         "migrate": "npx prisma migrate dev",
         "migrate:test": "dotenv -e ./.env.test npx prisma migrate dev",
         "migrate:test:docker": "dotenv -v DATABASE_URL=postgresql://chingu:chingu@postgres-test:5434/dashboard?schema=public --  npx prisma migrate dev",

@@ -28,7 +28,7 @@ export class VoyagesService {
         );
 
         await this.globalServices.checkQuestionsInFormByTitle(
-            FormTitles.voyageProjectSubmission,
+            [FormTitles.voyageProjectSubmission],
             responseArray,
         );
 
