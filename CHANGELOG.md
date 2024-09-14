@@ -14,6 +14,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Changed
 - updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
+- Update accepted localhost port and docker compose file for a custom network setup ([#199](https://github.com/chingu-x/chingu-dashboard-be/pull/199))
 
 ### Fixed
 - Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
