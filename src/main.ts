@@ -6,6 +6,7 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
 import { RequestLogging } from "./middleware/requests-logging";
+import { AppConfigService } from "./config/app/appConfig.service";
 
 async function bootstrap() {
     const requestLogger = new Logger("Requests");
@@ -25,8 +26,8 @@ async function bootstrap() {
     app.setGlobalPrefix("api/v1");
 
     app.useGlobalPipes(new ValidationPipe());
-
-    if (process.env.NODE_ENV !== "production") {
+    const NODE_ENV = app.get(AppConfigService).nodeEnv;
+    if (NODE_ENV !== "production") {
         const config = new DocumentBuilder()
             .setTitle("Chingu Dashboard Project")
             .setDescription(
@@ -54,8 +55,9 @@ async function bootstrap() {
             transform: true,
         }),
     );
+    const appConfig = app.get(AppConfigService);
 
-    const port = parseInt(process.env.PORT as string);
+    const port = appConfig.appPort;
     await app.listen(port);
 }
 

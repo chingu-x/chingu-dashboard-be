@@ -70,6 +70,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add units tests for the users controller & services([#179](https://github.com/chingu-x/chingu-dashboard-be/pull/178))
 -  Add CASL permissions for Team features endpoint ([#184](https://github.com/chingu-x/chingu-dashboard-be/pull/184))
 - Add production seed for alpha test ([#185](https://github.com/chingu-x/chingu-dashboard-be/pull/185))
+- Add types and validation to env variables ([#187](https://github.com/chingu-x/chingu-dashboard-be/pull/187))
 
 
 
