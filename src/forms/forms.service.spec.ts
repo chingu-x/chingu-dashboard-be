@@ -3,11 +3,24 @@ import { formSelect, FormsService } from "./forms.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { prismaMock } from "../prisma/singleton";
 import { toBeOneOf, toBeArray } from "jest-extended";
+import { CustomRequest } from "../global/types/CustomRequest";
 
 expect.extend({ toBeOneOf, toBeArray });
 
 describe("FormsService", () => {
     let service: FormsService;
+
+    const userReq = {
+        userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
+        email: "test@test.com",
+        roles: ["admin"],
+        isVerified: true,
+        voyageTeams: [1],
+    };
+
+    const customReq = {
+        user: userReq,
+    } as any as CustomRequest;
 
     const mockForms = [
         {
@@ -195,6 +208,60 @@ describe("FormsService", () => {
                 ]),
             );
             expect(prismaMock.form.findMany).toHaveBeenCalledWith({
+                select: formSelect,
+            });
+        });
+    });
+    describe("getFormById", () => {
+        it("should return a form by id", async () => {
+            const formId = 1;
+            prismaMock.form.findUnique.mockResolvedValue(mockForms[0]);
+            const form = await service.getFormById(formId, customReq);
+            expect(form).toEqual(
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    formTypeId: expect.any(Number),
+                    formType: expect.objectContaining({
+                        id: expect.any(Number),
+                        name: expect.any(String),
+                    }),
+                    title: expect.any(String),
+                    description: expect.toBeOneOf([expect.any(String), null]),
+                    createdAt: expect.any(Date),
+                    updatedAt: expect.any(Date),
+                    questions: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            order: expect.any(Number),
+                            inputType: expect.objectContaining({
+                                id: expect.any(Number),
+                                name: expect.any(String),
+                            }),
+                            text: expect.any(String),
+                            description: expect.any(String),
+                            answerRequired: expect.any(Boolean),
+                            multipleAllowed: expect.toBeOneOf([
+                                expect.any(Boolean),
+                                null,
+                            ]),
+                            optionGroup: expect.toBeOneOf([
+                                expect.objectContaining({
+                                    optionChoices: expect.objectContaining({
+                                        id: expect.any(Number),
+                                        text: expect.any(String),
+                                    }),
+                                }),
+                                null,
+                            ]),
+                            subQuestions: expect.toBeArray(),
+                            createdAt: expect.any(Date),
+                            updatedAt: expect.any(Date),
+                        }),
+                    ]),
+                }),
+            );
+            expect(prismaMock.form.findUnique).toHaveBeenCalledWith({
+                where: { id: formId },
                 select: formSelect,
             });
         });
