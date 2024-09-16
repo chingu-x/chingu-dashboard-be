@@ -1,17 +1,20 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import {
+    Injectable,
+    Inject,
+    InternalServerErrorException,
+} from "@nestjs/common";
 import { IAuthProvider } from "../global/interfaces/oauth.interface";
 import { PrismaService } from "../prisma/prisma.service";
 import { DiscordUser } from "../global/types/auth.types";
-import { generatePasswordHash } from "../utils/auth";
-import { AuthService } from "./auth.service";
+import { generatePasswordHash } from "../global/auth/utils";
 
+import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
 @Injectable()
 export class DiscordAuthService implements IAuthProvider {
     constructor(
         private prisma: PrismaService,
-        private authService: AuthService,
+        @Inject("OAuth-Config") private oAuthConfig: OAuthConfig,
     ) {}
-
     async validateUser(user: DiscordUser) {
         const userInDb = await this.prisma.findUserByOAuthId(
             "discord",

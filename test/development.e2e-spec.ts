@@ -5,9 +5,11 @@ import * as cookieParser from "cookie-parser";
 import { loginAndGetTokens } from "./utils";
 import * as request from "supertest";
 import * as process from "node:process";
+import { AppConfigService } from "src/config/app/appConfig.service";
 
 describe("Development Controller (e2e)", () => {
     let app: INestApplication;
+    let config: AppConfigService;
     const OLD_ENV = process.env;
 
     beforeAll(async () => {
@@ -16,8 +18,18 @@ describe("Development Controller (e2e)", () => {
         process.env = { ...OLD_ENV };
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
+            providers: [
+                {
+                    provide: AppConfigService,
+                    useValue: {
+                        nodeEnv: jest.fn((key: string) =>
+                            key === "NODE_ENV" ? "development" : undefined,
+                        ),
+                    },
+                },
+            ],
         }).compile();
-
+        config = moduleFixture.get<AppConfigService>(AppConfigService);
         app = moduleFixture.createNestApplication();
         app.use(cookieParser());
         await app.init();
@@ -41,6 +53,7 @@ describe("Development Controller (e2e)", () => {
                 "password",
                 app,
             );
+
             await request(app.getHttpServer())
                 .put("/development/database/reseed")
                 .set("Cookie", [access_token, refresh_token])
@@ -48,6 +61,7 @@ describe("Development Controller (e2e)", () => {
         });
 
         it("should return 200 if NODE_ENV is development", async () => {
+            jest.spyOn(config, "nodeEnv", "get").mockReturnValue("development");
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
                 "password",
