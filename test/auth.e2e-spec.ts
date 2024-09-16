@@ -11,8 +11,11 @@ import {
     loginAndGetTokens,
 } from "./utils";
 import { PrismaService } from "../src/prisma/prisma.service";
-import { comparePassword } from "../src/utils/auth";
+import { comparePassword } from "../src/global/auth/utils";
 import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+
+import { AuthConfig } from "../src/config/auth/auth.interface";
+import { OAuthConfig } from "../src/config/Oauth/oauthConfig.interface";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";
@@ -58,17 +61,43 @@ const requestAndGetResetToken = async (
 describe("AuthController e2e Tests", () => {
     let app: INestApplication;
     let prisma: PrismaService;
+    let Oauth: OAuthConfig;
     let cookie: any;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
+            providers: [
+                {
+                    provide: "Auth-Config",
+                    useValue: {
+                        secrets: {
+                            JWT_SECRET: "jwt-secret",
+                            AT_SECRET: "at-secret",
+                            RT_SECRET: "rt-secret",
+                        },
+                        bcrypt: {
+                            hashingRounds: 10,
+                        },
+                    } as AuthConfig,
+                },
+                {
+                    provide: "OAuth-Config",
+                    useValue: {
+                        discord: {
+                            clientID: "discord-client-id",
+                            clientSecret: "dicord-client-secret",
+                        },
+                    } as unknown as OAuthConfig,
+                },
+            ],
         }).compile();
 
         await seed();
 
         app = moduleFixture.createNestApplication();
         prisma = moduleFixture.get<PrismaService>(PrismaService);
+        Oauth = moduleFixture.get<OAuthConfig>("OAuth-Config");
 
         app.useGlobalPipes(new ValidationPipe());
         app.useGlobalFilters(new CASLForbiddenExceptionFilter());
@@ -633,6 +662,25 @@ describe("AuthController e2e Tests", () => {
                     })
                     .expect(400);
             });
+        });
+    });
+
+    describe("Initiate Discord OAuth GET /auth/discord/login", () => {
+        it("should redirect ", async () => {
+            const res = await request(app.getHttpServer())
+                .get("/auth/discord/login")
+                .expect(302);
+
+            const clientId = Oauth.discord.clientId;
+            const responseType = "code";
+            const redirectUrl = ".*auth%2Fdiscord%2Fredirect";
+            const scope = "identify%20email";
+
+            const re = new RegExp(
+                String.raw`https:\/\/discord\.com\/api\/oauth2\/authorize\?response_type=${responseType}&redirect_uri=${redirectUrl}&scope=${scope}&client_id=${clientId}`,
+            );
+
+            expect(res.headers.location).toMatch(re);
         });
     });
 });

@@ -2,6 +2,7 @@ import {
     BadRequestException,
     ForbiddenException,
     Injectable,
+    Inject,
     InternalServerErrorException,
     Logger,
     NotFoundException,
@@ -12,19 +13,18 @@ import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "../prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
-import { comparePassword, hashPassword } from "../utils/auth";
-import {
-    sendAttemptedRegistrationEmail,
-    sendPasswordResetEmail,
-    sendSignupVerificationEmail,
-} from "../utils/emails/sendEmail";
+import { comparePassword, hashPassword } from "../global/auth/utils";
+import { EmailService } from "../utils/emails/email.service";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
-import * as process from "process";
+
 import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
+import { Response } from "express";
+import { CustomRequest } from "../global/types/CustomRequest";
+import { AuthConfig } from "../config/auth/auth.interface";
 
 @Injectable()
 export class AuthService {
@@ -32,6 +32,8 @@ export class AuthService {
         private usersService: UsersService,
         private jwtService: JwtService,
         private prisma: PrismaService,
+        private emailService: EmailService,
+        @Inject("Auth-Config") private authConfig: AuthConfig,
     ) {}
 
     private readonly logger = new Logger(AuthService.name);
@@ -48,13 +50,14 @@ export class AuthService {
 
     // access token and refresh token
     private generateAtRtTokens = async (payload: object) => {
+        const { AT_SECRET, RT_SECRET } = this.authConfig.secrets;
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync(payload, {
-                secret: process.env.AT_SECRET,
+                secret: AT_SECRET,
                 expiresIn: AT_MAX_AGE,
             }),
             this.jwtService.signAsync(payload, {
-                secret: process.env.RT_SECRET,
+                secret: RT_SECRET,
                 expiresIn: RT_MAX_AGE,
             }),
         ]);
@@ -68,7 +71,7 @@ export class AuthService {
         return crypto.createHash("sha256").update(jwt).digest("hex");
     };
 
-    private updateRtHash = async (
+    updateRtHash = async (
         userId: string,
         rt: string,
         oldRtInCookies?: string,
@@ -121,6 +124,23 @@ export class AuthService {
             });
         }
     };
+
+    async returnTokensOnLoginSuccess(req: CustomRequest, res: Response) {
+        const { access_token, refresh_token } = await this.login(
+            req.user,
+            req.cookies?.refresh_token,
+        );
+        res.cookie("access_token", access_token, {
+            maxAge: AT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+        res.cookie("refresh_token", refresh_token, {
+            maxAge: RT_MAX_AGE * 1000,
+            httpOnly: true,
+            secure: true,
+        });
+    }
 
     /**
      * Checks user email/username match database - for passport
@@ -226,8 +246,9 @@ export class AuthService {
 
     async logout(refreshToken: string) {
         try {
+            const { RT_SECRET } = this.authConfig.secrets;
             const payload = await this.jwtService.verifyAsync(refreshToken, {
-                secret: process.env.RT_SECRET,
+                secret: RT_SECRET,
             });
             if (!payload) {
                 throw new BadRequestException("refresh token error");
@@ -272,7 +293,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendSignupVerificationEmail(signupDto.email, token);
+            await this.emailService.sendSignupVerificationEmail(
+                signupDto.email,
+                token,
+            );
             return {
                 message: "Signup Success.",
                 statusCode: 200,
@@ -317,12 +341,17 @@ export class AuthService {
                     this.logger.debug(
                         `[Auth/Signup]: User account ${signupDto.email} is not verified, resending verification email.`,
                     );
-                    await sendSignupVerificationEmail(signupDto.email, token);
+                    await this.emailService.sendSignupVerificationEmail(
+                        signupDto.email,
+                        token,
+                    );
                 } else {
                     this.logger.debug(
                         `[Auth/Signup]: Email ${signupDto.email} already verified. Sending "attempt registration" email.`,
                     );
-                    await sendAttemptedRegistrationEmail(signupDto.email);
+                    await this.emailService.sendAttemptedRegistrationEmail(
+                        signupDto.email,
+                    );
                 }
             } else {
                 this.logger.debug(`[Auth/Signup]: Other signup errors: ${e}`);
@@ -367,7 +396,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendSignupVerificationEmail(resendEmailDto.email, token);
+            await this.emailService.sendSignupVerificationEmail(
+                resendEmailDto.email,
+                token,
+            );
             return {
                 message: "Email successfully re-sent",
                 statusCode: 200,
@@ -481,7 +513,10 @@ export class AuthService {
                     token,
                 },
             });
-            await sendPasswordResetEmail(passwordResetRequestDto.email, token);
+            await this.emailService.sendPasswordResetEmail(
+                passwordResetRequestDto.email,
+                token,
+            );
         }
         return {
             message:
