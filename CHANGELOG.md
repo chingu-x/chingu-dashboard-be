@@ -11,6 +11,8 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Added
 - Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
 - Add discord oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/194))
+- Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
+
 
 ### Changed
 - updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
