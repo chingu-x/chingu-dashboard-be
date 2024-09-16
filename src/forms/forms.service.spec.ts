@@ -2,6 +2,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { formSelect, FormsService } from "./forms.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { prismaMock } from "../prisma/singleton";
+import { toBeOneOf, toBeArray } from "jest-extended";
+
+expect.extend({ toBeOneOf, toBeArray });
 
 describe("FormsService", () => {
     let service: FormsService;
@@ -9,12 +12,15 @@ describe("FormsService", () => {
     const mockForms = [
         {
             id: 1,
+            formTypeId: 4,
             formType: {
                 id: 4,
                 name: "meeting",
             },
             title: "Retrospective & Review",
             description: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
             questions: [
                 {
                     id: 3,
@@ -29,8 +35,8 @@ describe("FormsService", () => {
                     multipleAllowed: null,
                     optionGroup: null,
                     subQuestions: [],
-                    createdAt: "2024-09-10T07:35:38.886Z",
-                    updatedAt: "2024-09-10T07:35:38.886Z",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     id: 2,
@@ -46,8 +52,8 @@ describe("FormsService", () => {
                     multipleAllowed: null,
                     optionGroup: null,
                     subQuestions: [],
-                    createdAt: "2024-09-10T07:35:38.886Z",
-                    updatedAt: "2024-09-10T07:35:38.886Z",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     id: 1,
@@ -63,19 +69,22 @@ describe("FormsService", () => {
                     multipleAllowed: null,
                     optionGroup: null,
                     subQuestions: [],
-                    createdAt: "2024-09-10T07:35:38.886Z",
-                    updatedAt: "2024-09-10T07:35:38.886Z",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
             ],
         },
         {
             id: 2,
+            formTypeId: 4,
             formType: {
                 id: 4,
                 name: "meeting",
             },
             title: "Sprint Planning",
             description: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
             questions: [
                 {
                     id: 5,
@@ -90,8 +99,8 @@ describe("FormsService", () => {
                     multipleAllowed: null,
                     optionGroup: null,
                     subQuestions: [],
-                    createdAt: "2024-09-10T07:35:38.907Z",
-                    updatedAt: "2024-09-10T07:35:38.907Z",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     id: 4,
@@ -107,8 +116,8 @@ describe("FormsService", () => {
                     multipleAllowed: null,
                     optionGroup: null,
                     subQuestions: [],
-                    createdAt: "2024-09-10T07:35:38.907Z",
-                    updatedAt: "2024-09-10T07:35:38.907Z",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
             ],
         },
@@ -134,9 +143,57 @@ describe("FormsService", () => {
 
     describe("getAllForms", () => {
         it("should return all forms", async () => {
-            prismaMock.form.findMany.mockResolvedValue(mockForms as any);
+            prismaMock.form.findMany.mockResolvedValue(mockForms);
             const forms = await service.getAllForms();
-            expect(forms).toBeArray;
+            expect(forms).toBeArray();
+            expect(forms).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number),
+                        formTypeId: expect.any(Number),
+                        formType: expect.objectContaining({
+                            id: expect.any(Number),
+                            name: expect.any(String),
+                        }),
+                        title: expect.any(String),
+                        description: expect.toBeOneOf([
+                            expect.any(String),
+                            null,
+                        ]),
+                        createdAt: expect.any(Date),
+                        updatedAt: expect.any(Date),
+                        questions: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.any(Number),
+                                order: expect.any(Number),
+                                inputType: expect.objectContaining({
+                                    id: expect.any(Number),
+                                    name: expect.any(String),
+                                }),
+                                text: expect.any(String),
+                                description: expect.any(String),
+                                answerRequired: expect.any(Boolean),
+                                multipleAllowed: expect.toBeOneOf([
+                                    expect.any(Boolean),
+                                    null,
+                                ]),
+                                optionGroup: expect.toBeOneOf([
+                                    expect.objectContaining({
+                                        optionChoices: expect.objectContaining({
+                                            id: expect.any(Number),
+                                            text: expect.any(String),
+                                        }),
+                                    }),
+                                    null,
+                                ]),
+                                subQuestions: expect.toBeArray(),
+                                createdAt: expect.any(Date),
+                                updatedAt: expect.any(Date),
+                            }),
+                        ]),
+                    }),
+                ]),
+            );
             expect(prismaMock.form.findMany).toHaveBeenCalledWith({
                 select: formSelect,
             });
