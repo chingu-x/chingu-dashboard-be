@@ -92,6 +92,10 @@ const mockResourceArr = [
     },
 ];
 
+const mockGlobalService = {
+    getVoyageTeamMemberId: jest.fn(),
+};
+
 describe("ResourcesService", () => {
     let service: ResourcesService;
 
@@ -103,7 +107,10 @@ describe("ResourcesService", () => {
                     provide: PrismaService,
                     useValue: prismaMock,
                 },
-                GlobalService,
+                {
+                    provide: GlobalService,
+                    useValue: mockGlobalService,
+                },
             ],
         }).compile();
 
@@ -119,6 +126,9 @@ describe("ResourcesService", () => {
             prismaMock.voyageTeam.findUnique.mockResolvedValue(mockVoyageTeam);
             prismaMock.teamResource.findFirst.mockResolvedValue(null);
             prismaMock.teamResource.create.mockResolvedValue(mockResource);
+            mockGlobalService.getVoyageTeamMemberId.mockReturnValue(
+                mockTeamMemberId,
+            );
 
             const result = await service.createNewResource(
                 requestMock,
@@ -137,6 +147,9 @@ describe("ResourcesService", () => {
             expect(prismaMock.voyageTeam.findUnique).toHaveBeenCalledWith({
                 where: { id: mockTeamId },
             });
+            expect(
+                mockGlobalService.getVoyageTeamMemberId,
+            ).toHaveBeenCalledWith(requestMock, mockTeamId);
             expect(prismaMock.teamResource.findFirst).toHaveBeenCalledWith({
                 where: {
                     url: dtoCreateMock.url,
