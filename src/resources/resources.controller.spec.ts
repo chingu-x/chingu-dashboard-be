@@ -6,80 +6,80 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 
+const requestMock = {} as unknown as CustomRequest;
+const dtoCreateMock = {
+    url: "https://chingu.com",
+    title: "Chingu",
+} as CreateResourceDto;
+
+//inavlid team id constant
+const invalidTeamId = 9999;
+
+// dto for updating a resource url
+const dtoUpdateMock = {
+    url: "https://chingu-2.com",
+} as UpdateResourceDto;
+const mockTeamId: number = 1;
+
+const mockResource = {
+    id: 1,
+    url: "https://chingu.com",
+    title: "Chingu",
+    teamMemberId: 1,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now()),
+};
+
+const mockUpdatedResource = {
+    ...mockResource,
+    url: "https://chingu-2.com",
+};
+
+const mockResourceArr = [
+    {
+        id: 1,
+        url: "https://chingu.com",
+        title: "Chingu",
+        teamMemberId: 1,
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+    {
+        id: 2,
+        url: "https://Nestjs.com",
+        title: "Nestjs",
+        teamMemberId: 2,
+        addedBy: {
+            member: {
+                firstName: "John",
+                lastName: "Doe",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+];
+
+const mockResourcesService = {
+    createNewResource: jest.fn(),
+    findAllResources: jest.fn(),
+    updateResource: jest.fn(),
+    removeResource: jest.fn(),
+};
+
 describe("ResourcesController", () => {
     let controller: ResourcesController;
 
-    const requestMock = {} as unknown as CustomRequest;
-    const dtoCreateMock = {
-        url: "https://chingu.com",
-        title: "Chingu",
-    } as CreateResourceDto;
-
-    // dto for updating a resource url
-    const dtoUpdateMock = {
-        url: "https://chingu-2.com",
-    } as UpdateResourceDto;
-    const mockTeamId: number = 1;
-
-    const mockResource = {
-        id: 1,
-        url: "https://chingu.com",
-        title: "Chingu",
-        teamMemberId: 1,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-    };
-
-    const mockUpdatedResource = {
-        id: 1,
-        url: "https://chingu-2.com",
-        title: "Chingu",
-        teamMemberId: 1,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-    };
-
-    const mockResourceArr = [
-        {
-            id: 1,
-            url: "https://chingu.com",
-            title: "Chingu",
-            teamMemberId: 1,
-            addedBy: {
-                member: {
-                    firstName: "Larry",
-                    lastName: "Castro",
-                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
-                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
-                },
-            },
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-        },
-        {
-            id: 2,
-            url: "https://Nestjs.com",
-            title: "Nestjs",
-            teamMemberId: 2,
-            addedBy: {
-                member: {
-                    firstName: "John",
-                    lastName: "Doe",
-                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
-                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
-                },
-            },
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-        },
-    ];
-
-    const mockResourcesService = {
-        createNewResource: jest.fn(),
-        findAllResources: jest.fn(),
-        updateResource: jest.fn(),
-        removeResource: jest.fn(),
-    };
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [ResourcesController],
@@ -123,7 +123,7 @@ describe("ResourcesController", () => {
             mockResourcesService.createNewResource.mockRejectedValueOnce(
                 new BadRequestException(),
             );
-            expect(
+            await expect(
                 controller.createNewResource(requestMock, mockTeamId, {
                     url: "https://chingu.com",
                 } as CreateResourceDto),
@@ -138,13 +138,13 @@ describe("ResourcesController", () => {
             mockResourcesService.createNewResource.mockRejectedValueOnce(
                 new NotFoundException(),
             );
-            expect(
+            await expect(
                 controller.createNewResource(requestMock, 9999, dtoCreateMock),
             ).rejects.toThrow(NotFoundException);
             expect(mockResourcesService.createNewResource).toHaveBeenCalledWith(
                 requestMock,
                 dtoCreateMock,
-                9999,
+                invalidTeamId,
             );
         });
     });
@@ -190,12 +190,12 @@ describe("ResourcesController", () => {
             mockResourcesService.findAllResources.mockRejectedValueOnce(
                 new NotFoundException(),
             );
-            expect(
-                controller.findAllResources(requestMock, 9999),
+            await expect(
+                controller.findAllResources(requestMock, invalidTeamId),
             ).rejects.toThrow(NotFoundException);
             expect(mockResourcesService.findAllResources).toHaveBeenCalledWith(
                 requestMock,
-                9999,
+                invalidTeamId,
             );
         });
     });
@@ -211,14 +211,14 @@ describe("ResourcesController", () => {
 
             const result = await controller.updateResource(
                 requestMock,
-                1,
+                mockResource.id,
                 dtoUpdateMock,
             );
 
             expect(result).toEqual(mockUpdatedResource);
             expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
                 requestMock,
-                1,
+                mockResource.id,
                 dtoUpdateMock,
             );
         });
@@ -226,12 +226,16 @@ describe("ResourcesController", () => {
             mockResourcesService.updateResource.mockRejectedValueOnce(
                 new NotFoundException(),
             );
-            expect(
-                controller.updateResource(requestMock, 9999, dtoUpdateMock),
+            await expect(
+                controller.updateResource(
+                    requestMock,
+                    invalidTeamId,
+                    dtoUpdateMock,
+                ),
             ).rejects.toThrow(NotFoundException);
             expect(mockResourcesService.updateResource).toHaveBeenCalledWith(
                 requestMock,
-                9999,
+                invalidTeamId,
                 dtoUpdateMock,
             );
         });
@@ -252,19 +256,19 @@ describe("ResourcesController", () => {
             expect(result).toEqual(mockResource);
             expect(mockResourcesService.removeResource).toHaveBeenCalledWith(
                 requestMock,
-                1,
+                mockResource.id,
             );
         });
         it("should throw notFound exception for invalid resourceId", async () => {
             mockResourcesService.removeResource.mockRejectedValueOnce(
                 new NotFoundException(),
             );
-            expect(
-                controller.removeResource(requestMock, 9999),
+            await expect(
+                controller.removeResource(requestMock, invalidTeamId),
             ).rejects.toThrow(NotFoundException);
             expect(mockResourcesService.removeResource).toHaveBeenCalledWith(
                 requestMock,
-                9999,
+                invalidTeamId,
             );
         });
     });

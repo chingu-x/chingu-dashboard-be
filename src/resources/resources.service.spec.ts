@@ -6,98 +6,94 @@ import { prismaMock } from "../prisma/singleton";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
 
+const userReq = {
+    userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
+    email: "test@test.com",
+    roles: ["voyager"],
+    isVerified: true,
+    voyageTeams: [{ teamId: 1, memberId: 1 }],
+};
+
+const mockTeamId: number = 1;
+const mockTeamMemberId: number = 1;
+
+const requestMock = {
+    user: userReq,
+} as any as CustomRequest;
+
+const dtoCreateMock = {
+    url: "https://chingu.com",
+    title: "Chingu",
+} as CreateResourceDto;
+
+const mockResource = {
+    id: 1,
+    url: "https://chingu.com",
+    title: "Chingu",
+    teamMemberId: 1,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now()),
+};
+
+const mockUpdatedResource = {
+    ...mockResource,
+    title: "Chingu",
+};
+
+const mockVoyageTeam = {
+    id: 1,
+    voyageId: 1,
+    name: "v47-tier2-team-4",
+    statusId: 1,
+    repoUrl:
+        "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+    repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+    deployedUrl: "https://www.chingu.io/",
+    deployedUrlBE:
+        "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+    tierId: 1,
+    endDate: new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+};
+
+const mockResourceArr = [
+    {
+        id: 1,
+        url: "https://chingu.com",
+        title: "Chingu",
+        teamMemberId: 1,
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+    {
+        id: 2,
+        url: "https://Nestjs.com",
+        title: "Nestjs",
+        teamMemberId: 2,
+        addedBy: {
+            member: {
+                firstName: "John",
+                lastName: "Doe",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+];
+
 describe("ResourcesService", () => {
     let service: ResourcesService;
-
-    const userReq = {
-        userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
-        email: "test@test.com",
-        roles: ["voyager"],
-        isVerified: true,
-        voyageTeams: [{ teamId: 1, memberId: 1 }],
-    };
-
-    const mockTeamId: number = 1;
-    const mockTeamMemberId: number = 1;
-
-    const requestMock = {
-        user: userReq,
-    } as any as CustomRequest;
-
-    const dtoCreateMock = {
-        url: "https://chingu.com",
-        title: "Chingu",
-    } as CreateResourceDto;
-
-    const mockResource = {
-        id: 1,
-        url: "https://chingu.com",
-        title: "Chingu",
-        teamMemberId: 1,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-    };
-
-    const mockUpdatedResource = {
-        id: 1,
-        url: "https://chingu-2.com",
-        title: "Chingu",
-        teamMemberId: 1,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-    };
-
-    const mockVoyageTeam = {
-        id: 1,
-        voyageId: 1,
-        name: "v47-tier2-team-4",
-        statusId: 1,
-        repoUrl:
-            "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
-        repoUrlBE: "https://github.com/chingu-voyages/Handbook",
-        deployedUrl: "https://www.chingu.io/",
-        deployedUrlBE:
-            "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
-        tierId: 1,
-        endDate: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    };
-
-    const mockResourceArr = [
-        {
-            id: 1,
-            url: "https://chingu.com",
-            title: "Chingu",
-            teamMemberId: 1,
-            addedBy: {
-                member: {
-                    firstName: "Larry",
-                    lastName: "Castro",
-                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
-                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
-                },
-            },
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-        },
-        {
-            id: 2,
-            url: "https://Nestjs.com",
-            title: "Nestjs",
-            teamMemberId: 2,
-            addedBy: {
-                member: {
-                    firstName: "John",
-                    lastName: "Doe",
-                    id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
-                    avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
-                },
-            },
-            createdAt: new Date(Date.now()),
-            updatedAt: new Date(Date.now()),
-        },
-    ];
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -166,6 +162,7 @@ describe("ResourcesService", () => {
                 requestMock,
                 mockTeamId,
             );
+            expect(result).toHaveLength(2);
             expect(result[0]).toEqual({
                 id: expect.any(Number),
                 url: expect.any(String),
