@@ -1,24 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
-
-type VoyageTeamMemberWithSprintIds = {
-    voyageTeam: {
-        voyage: {
-            sprints: {
-                id: number;
-            }[];
-        };
-    };
-};
-
-type ValidateOrGetDbItemGlobalFunc = <T>(
-    dbTableName: string,
-    searchValue: string | number | [number, string] | null | [string, string],
-    searchField?: string,
-    findOptions?: string,
-    whereOptions?: Record<string, any>,
-    queryOptions?: Record<string, any>,
-    customErrorMessage?: () => never,
-) => Promise<T | null>;
+import { VoyageTeamMemberWithSprintIds } from "src/global/types/voyage.types";
+import { ValidateOrGetDbItemGlobalFunc } from "src/global/types/global.types";
 
 // find voyage that team member is part of and make sure it matches the input sprint id's voyage
 export const canSubmitCheckin = async (
