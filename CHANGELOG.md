@@ -13,6 +13,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add discord oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/194))
 - Add morgan middleware for request logging with custom logger ([#200](https://github.com/chingu-x/chingu-dashboard-be/pull/200))
 - Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
+- Add units tests for the teams resource controller & services([#201](https://github.com/chingu-x/chingu-dashboard-be/pull/201))
 
 ### Changed
 - updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
