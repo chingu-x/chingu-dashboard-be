@@ -13,6 +13,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Changed
 
 ### Fixed
+- Fix cors localhost address ([#205](https://github.com/chingu-x/chingu-dashboard-be/pull/205))
 
 ### Removed
 
