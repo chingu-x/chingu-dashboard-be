@@ -7,134 +7,135 @@ import { CustomRequest } from "../global/types/CustomRequest";
 
 expect.extend({ toBeOneOf, toBeArray });
 
+const userReq = {
+    userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
+    email: "test@test.com",
+    roles: ["admin"],
+    isVerified: true,
+    voyageTeams: [{ teamId: 1, memberId: 1 }],
+};
+
+const mockFormId = 1;
+
+const customReq = {
+    user: userReq,
+} as any as CustomRequest;
+
+const mockForms = [
+    {
+        id: 1,
+        formTypeId: 4,
+        formType: {
+            id: 4,
+            name: "meeting",
+        },
+        title: "Retrospective & Review",
+        description: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        questions: [
+            {
+                id: 3,
+                order: 1,
+                inputType: {
+                    id: 1,
+                    name: "text",
+                },
+                text: "What went right?",
+                description: "Share your thoughts on what went right",
+                answerRequired: false,
+                multipleAllowed: null,
+                optionGroup: null,
+                subQuestions: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            {
+                id: 2,
+                order: 2,
+                inputType: {
+                    id: 1,
+                    name: "text",
+                },
+                text: "What could be improved?",
+                description:
+                    "Share your thoughts on what could be improved for the next sprint",
+                answerRequired: false,
+                multipleAllowed: null,
+                optionGroup: null,
+                subQuestions: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            {
+                id: 1,
+                order: 3,
+                inputType: {
+                    id: 1,
+                    name: "text",
+                },
+                text: "Changes to be made for the next sprint?",
+                description:
+                    "Share your thoughts on what could be changed for the next sprint",
+                answerRequired: false,
+                multipleAllowed: null,
+                optionGroup: null,
+                subQuestions: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        ],
+    },
+    {
+        id: 2,
+        formTypeId: 4,
+        formType: {
+            id: 4,
+            name: "meeting",
+        },
+        title: "Sprint Planning",
+        description: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        questions: [
+            {
+                id: 5,
+                order: 1,
+                inputType: {
+                    id: 1,
+                    name: "text",
+                },
+                text: "Sprint Goal",
+                description: "What is the primary goal of the next sprint?",
+                answerRequired: false,
+                multipleAllowed: null,
+                optionGroup: null,
+                subQuestions: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            {
+                id: 4,
+                order: 2,
+                inputType: {
+                    id: 1,
+                    name: "text",
+                },
+                text: "Timeline/Tasks",
+                description: "What are some of the goals we want to achieve",
+                answerRequired: false,
+                multipleAllowed: null,
+                optionGroup: null,
+                subQuestions: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        ],
+    },
+];
+
 describe("FormsService", () => {
     let service: FormsService;
-
-    const userReq = {
-        userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
-        email: "test@test.com",
-        roles: ["admin"],
-        isVerified: true,
-        voyageTeams: [1],
-    };
-
-    const customReq = {
-        user: userReq,
-    } as any as CustomRequest;
-
-    const mockForms = [
-        {
-            id: 1,
-            formTypeId: 4,
-            formType: {
-                id: 4,
-                name: "meeting",
-            },
-            title: "Retrospective & Review",
-            description: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            questions: [
-                {
-                    id: 3,
-                    order: 1,
-                    inputType: {
-                        id: 1,
-                        name: "text",
-                    },
-                    text: "What went right?",
-                    description: "Share your thoughts on what went right",
-                    answerRequired: false,
-                    multipleAllowed: null,
-                    optionGroup: null,
-                    subQuestions: [],
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                {
-                    id: 2,
-                    order: 2,
-                    inputType: {
-                        id: 1,
-                        name: "text",
-                    },
-                    text: "What could be improved?",
-                    description:
-                        "Share your thoughts on what could be improved for the next sprint",
-                    answerRequired: false,
-                    multipleAllowed: null,
-                    optionGroup: null,
-                    subQuestions: [],
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                {
-                    id: 1,
-                    order: 3,
-                    inputType: {
-                        id: 1,
-                        name: "text",
-                    },
-                    text: "Changes to be made for the next sprint?",
-                    description:
-                        "Share your thoughts on what could be changed for the next sprint",
-                    answerRequired: false,
-                    multipleAllowed: null,
-                    optionGroup: null,
-                    subQuestions: [],
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-            ],
-        },
-        {
-            id: 2,
-            formTypeId: 4,
-            formType: {
-                id: 4,
-                name: "meeting",
-            },
-            title: "Sprint Planning",
-            description: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            questions: [
-                {
-                    id: 5,
-                    order: 1,
-                    inputType: {
-                        id: 1,
-                        name: "text",
-                    },
-                    text: "Sprint Goal",
-                    description: "What is the primary goal of the next sprint?",
-                    answerRequired: false,
-                    multipleAllowed: null,
-                    optionGroup: null,
-                    subQuestions: [],
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                {
-                    id: 4,
-                    order: 2,
-                    inputType: {
-                        id: 1,
-                        name: "text",
-                    },
-                    text: "Timeline/Tasks",
-                    description:
-                        "What are some of the goals we want to achieve",
-                    answerRequired: false,
-                    multipleAllowed: null,
-                    optionGroup: null,
-                    subQuestions: [],
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-            ],
-        },
-    ];
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -214,9 +215,8 @@ describe("FormsService", () => {
     });
     describe("getFormById", () => {
         it("should return a form by id", async () => {
-            const formId = 1;
             prismaMock.form.findUnique.mockResolvedValue(mockForms[0]);
-            const form = await service.getFormById(formId, customReq);
+            const form = await service.getFormById(mockFormId, customReq);
             expect(form).toEqual(
                 expect.objectContaining({
                     id: expect.any(Number),
@@ -261,7 +261,7 @@ describe("FormsService", () => {
                 }),
             );
             expect(prismaMock.form.findUnique).toHaveBeenCalledWith({
-                where: { id: formId },
+                where: { id: mockFormId },
                 select: formSelect,
             });
         });
