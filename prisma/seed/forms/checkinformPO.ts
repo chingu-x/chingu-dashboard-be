@@ -16,7 +16,7 @@ export const populateCheckinFormPO = async () => {
             questions: {
                 create: [
                     {
-                        order: 1,
+                        order: 101,
                         inputType: {
                             connect: {
                                 name: "checkbox",
@@ -73,7 +73,7 @@ export const populateCheckinFormPO = async () => {
                         },
                     },
                     {
-                        order: 2,
+                        order: 102,
                         inputType: {
                             connect: {
                                 name: "text",

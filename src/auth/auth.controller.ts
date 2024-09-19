@@ -44,11 +44,17 @@ import { Action } from "../ability/ability.factory/ability.factory";
 import { CustomRequest } from "../global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
-
+import { MailConfigService } from "../config/mail/mailConfig.service";
+import { AppConfigService } from "../config/app/appConfig.service";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private mailConfigService: MailConfigService,
+
+        private appConfigService: AppConfigService,
+    ) {}
 
     @ApiOperation({
         summary: "Public Route: Signup, and send a verification email",
@@ -155,20 +161,7 @@ export class AuthController {
         @Request() req: CustomRequest,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const { access_token, refresh_token } = await this.authService.login(
-            req.user,
-            req.cookies?.refresh_token,
-        );
-        res.cookie("access_token", access_token, {
-            maxAge: AT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
-        res.cookie("refresh_token", refresh_token, {
-            maxAge: RT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
+        await this.authService.returnTokensOnLoginSuccess(req, res);
         res.status(HttpStatus.OK).send({ message: "Login Success" });
     }
 
@@ -358,15 +351,18 @@ export class AuthController {
     @Public()
     @Get("/discord/login")
     handleDiscordLogin() {
-        return { msg: "Discord Authentication" };
+        return;
     }
 
     @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/redirect")
-    handleDiscordRedirect() {
-        return { msg: "Discord Redirect" };
+    async handleDiscordRedirect(
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        await this.authService.returnTokensOnLoginSuccess(req, res);
+        const FRONTEND_URL = this.appConfigService.FrontendUrl;
+        res.redirect(`${FRONTEND_URL}`);
     }
-
-    // TODO: Discord logout, will probably just be in the normal logout route
 }
