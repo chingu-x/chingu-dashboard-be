@@ -571,6 +571,7 @@ export class SprintsService {
             responsesArray,
         );
 
+        // TODO: find way to inject globalServices directly
         await canSubmitCheckin(
             createCheckinForm.sprintId,
             createCheckinForm.voyageTeamMemberId,
