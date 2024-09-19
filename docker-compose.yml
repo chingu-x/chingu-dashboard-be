@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   postgres:
     container_name: postgres
@@ -57,7 +56,12 @@ services:
       - /usr/src/app/node_modules
       - .:/usr/src/app
     command: ['yarn', 'start:dev']
+
 volumes:
   pgdata:
   pgdata-test:
   pgadmin-data:
+
+networks:
+  default:
+    name: chingu-dashboard-be

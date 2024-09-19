@@ -7,19 +7,33 @@ import { LocalStrategy } from "./strategies/local.strategy";
 import { JwtModule } from "@nestjs/jwt";
 import { AtStrategy } from "./strategies/at.strategy";
 import { RtStrategy } from "./strategies/rt.strategy";
-import * as process from "process";
 import { DiscordStrategy } from "./strategies/discord.strategy";
 import { DiscordAuthService } from "./discord-auth.service";
+import { EmailService } from "../utils/emails/email.service";
+import { MailConfigModule } from "src/config/mail/mailConfig.module";
+import { AppConfigModule } from "src/config/app/appConfig.module";
+import { AuthConfigModule } from "src/config/auth/authConfig.module";
+import { OAuthConfigModule } from "../config/Oauth/oauthConfig.module";
+import { AuthConfig } from "src/config/auth/auth.interface";
 
 @Module({
     imports: [
+        AppConfigModule,
+        AuthConfigModule,
+        OAuthConfigModule,
         UsersModule,
         PassportModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET,
+        MailConfigModule,
+        JwtModule.registerAsync({
+            imports: [AuthConfigModule],
+            useFactory: async (authConfig: AuthConfig) => ({
+                secret: authConfig.secrets.JWT_SECRET,
+            }),
+            inject: ["Auth-Config"],
         }),
     ],
     providers: [
+        EmailService,
         AuthService,
         LocalStrategy,
         AtStrategy,
