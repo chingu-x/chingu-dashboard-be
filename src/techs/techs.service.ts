@@ -8,6 +8,8 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
+import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
@@ -309,6 +311,108 @@ export class TechsService {
                     id: teamTechItemId,
                 },
             });
+            return {
+                message: "The  tech stack item is deleted",
+                statusCode: 200,
+            };
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async addNewTechStackCategory(
+        req: CustomRequest,
+        createTechStackCategoryDto: CreateTechStackCategoryDto,
+    ) {
+        const teamId = createTechStackCategoryDto.voyageTeamId;
+
+        //check if category name with teamid aready exists
+        const categoryAlreadyExists =
+            await this.prisma.techStackCategory.findFirst({
+                where: {
+                    voyageTeamId: createTechStackCategoryDto.voyageTeamId,
+                    name: createTechStackCategoryDto.name,
+                },
+            });
+        if (categoryAlreadyExists) {
+            throw new ConflictException(
+                `${createTechStackCategoryDto.name} already exists in team ${teamId}'s tech stack.`,
+            );
+        }
+
+        try {
+            const categoryData = {
+                name: createTechStackCategoryDto.name,
+                description: createTechStackCategoryDto.description,
+                voyageTeamId: createTechStackCategoryDto.voyageTeamId,
+            };
+            const newTeamTechCategory =
+                await this.prisma.techStackCategory.create({
+                    data: { ...categoryData },
+                });
+            return newTeamTechCategory;
+        } catch (e) {
+            throw e;
+        }
+    }
+    //new
+    async updateTechStackCategory(
+        req: CustomRequest,
+        teamId: number,
+        updateTechStackCategoryDto: UpdateTechStackCategoryDto,
+    ) {
+        //check for valid teamId
+        await this.validateTeamId(teamId);
+
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
+        //check if category name with teamid aready exists
+        const newCategoryAlreadyExists =
+            await this.prisma.techStackCategory.findFirst({
+                where: {
+                    voyageTeamId: updateTechStackCategoryDto.voyageTeamId,
+                    name: updateTechStackCategoryDto.newName,
+                },
+            });
+        if (newCategoryAlreadyExists) {
+            throw new ConflictException(
+                `${updateTechStackCategoryDto.newName} already exists in team ${teamId}'s tech stack.`,
+            );
+        }
+
+        try {
+            // const categoryData = {  name: updateTechStackCategoryDto.newName,
+            //                 description: updateTechStackCategoryDto.description,
+            // };
+            const newTechStackCategory =
+                await this.prisma.techStackCategory.update({
+                    where: {
+                        id: updateTechStackCategoryDto.categoryId,
+                    },
+                    data: {
+                        name: updateTechStackCategoryDto.newName,
+                        description: updateTechStackCategoryDto.description,
+                        // ...categoryData
+                    },
+                });
+            return newTechStackCategory;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async deleteTechStackCategory(
+        req: CustomRequest,
+        teamId: number,
+        techStackCategoryId: number,
+    ) {
+        try {
+            //manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+
+            const deletedCategory = await this.prisma.techStackCategory.delete({
+                where: { id: techStackCategoryId },
+            });
+
             return {
                 message: "The  tech stack item is deleted",
                 statusCode: 200,

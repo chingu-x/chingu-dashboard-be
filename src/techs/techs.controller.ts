@@ -15,11 +15,14 @@ import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
+import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import {
     TeamTechResponse,
     TechItemResponse,
     TechItemDeleteResponse,
     TechItemUpdateResponse,
+    TechCategoryResponse,
 } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -230,13 +233,13 @@ export class TechsController {
     //****new */
     @ApiOperation({
         summary:
-            "[Permission: own_team] Adds a new tech (category to the team.",
+            "[Permission: own_team] Adds a new tech stack category to the team.",
         description: "Requires login",
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully added a new tech stack category",
-        type: TechItemResponse, //new dto
+        type: TechCategoryResponse, //todo: new response
     })
     @ApiResponse({
         status: HttpStatus.CONFLICT,
@@ -244,36 +247,31 @@ export class TechsController {
         type: ConflictErrorResponse,
     })
     @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "Forbidden - user is not a member of this team",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: "Invalid TeamId or userId",
+        description: "Invalid userId",
         type: BadRequestErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: "unauthorized access - user is not logged in",
+        description: "Unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
     })
-    @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "forbidden - user does not have the required permission",
-        type: ForbiddenErrorResponse,
-    })
-    @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
     //@CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
-    @Post("teams/:teamId/techCategory")
-    addNewTeamTechCategory(
+    @Post("teams/:teamId/techStackCategory")
+    addNewTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
         @Body(ValidationPipe, VoyageTeamMemberValidationPipe)
-        createTeamTechDto: CreateTeamTechDto,
+        createTechStackCategoryDto: CreateTechStackCategoryDto,
     ) {
-        return this.techsService.addNewTeamTech(req, teamId, createTeamTechDto);
+        return this.techsService.addNewTechStackCategory(
+            req,
+            createTechStackCategoryDto,
+        );
     }
 
     @ApiOperation({
@@ -311,30 +309,24 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    @ApiParam({
-        name: "teamTechItemId",
-        description: "team tech stack category Id",
-        type: "Integer",
-        required: true,
-        example: 1,
-    })
     //@CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
-    @Patch("techs/:teamTechCategoryId")
-    updateTeamTechCategory(
+    @Patch("teams/:teamId/techStackCategory/:techStackCategoryId")
+    updateTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
-        @Body(ValidationPipe) updateTeamTechDto: UpdateTeamTechDto,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
+        @Body(ValidationPipe)
+        updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
-        return this.techsService.updateExistingTeamTech(
+        return this.techsService.updateTechStackCategory(
             req,
-            updateTeamTechDto,
-            teamTechItemId,
+            teamId,
+            updateTechStackCategoryDto,
         );
     }
 
     @ApiOperation({
-        summary:
-            "[Permission: own_team] Delete a tech stack category of a team",
+        summary: "[Permission: own_team] Delete a team's tech stack category",
         description: "Requires login",
     })
     @ApiResponse({
@@ -362,20 +354,18 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    @ApiParam({
-        name: "teamTechItemId",
-        description: "team tech stack item Id",
-        type: "Integer",
-        required: true,
-        example: 1,
-    })
     //@CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
-    @Delete("techs/:teamTechCategoryId")
-    deleteTeamTechCategory(
+    @Delete("teams/:teamId/techStackCategory/:techStackCategoryId")
+    deleteTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
     ) {
-        return this.techsService.deleteTeamTech(req, teamTechItemId);
+        return this.techsService.deleteTechStackCategory(
+            req,
+            teamId,
+            techStackCategoryId,
+        );
     }
 
     @ApiOperation({

@@ -96,3 +96,23 @@ export class TechItemDeleteResponse {
     @ApiProperty({ example: 200 })
     statusCode: number;
 }
+
+export class TechCategoryResponse {
+    @ApiProperty({ example: 10 })
+    id: number;
+
+    @ApiProperty({ example: "CDN" })
+    name: string;
+
+    @ApiProperty({ example: "Static storage" })
+    description: string;
+
+    @ApiProperty({ example: 1 })
+    voyageTeamId: number;
+
+    @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
+    createdAt: Date;
+
+    @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
+    updatedAt: Date;
+}
