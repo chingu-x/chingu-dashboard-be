@@ -3,7 +3,6 @@ import { populateVoyages } from "./voyage";
 import { populateUsers } from "./users";
 import { populateSprints } from "./sprints";
 import { populateVoyageTeams } from "./voyage-teams";
-//import { populateTechStackCategories } from "./data/tech-stack-categories";
 import { populateTeamResourcesAndProjectIdeas } from "./resources-project-ideas";
 import { populateFormsAndResponses } from "./forms";
 import { populateMeetings } from "./meetings";
