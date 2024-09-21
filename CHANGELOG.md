@@ -9,6 +9,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ## [Unreleased]
 
 ### Added
+- Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
 
 ### Changed
 
