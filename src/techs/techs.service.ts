@@ -410,12 +410,12 @@ export class TechsService {
         await this.teamOwnsCategory(teamId, techStackCategoryId);
 
         try {
-            const deletedCategory = await this.prisma.techStackCategory.delete({
+            await this.prisma.techStackCategory.delete({
                 where: { id: techStackCategoryId },
             });
 
             return {
-                message: "The  tech stack icategory is deleted",
+                message: "The  tech stack category is deleted",
                 statusCode: 200,
             };
         } catch (e) {
