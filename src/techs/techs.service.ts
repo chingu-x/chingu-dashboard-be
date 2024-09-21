@@ -326,6 +326,8 @@ export class TechsService {
     ) {
         const teamId = createTechStackCategoryDto.voyageTeamId;
 
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
         //check if category name with teamid aready exists
         const categoryAlreadyExists =
             await this.prisma.techStackCategory.findFirst({
@@ -355,16 +357,18 @@ export class TechsService {
             throw e;
         }
     }
-    //new
+
     async updateTechStackCategory(
         req: CustomRequest,
-        teamId: number,
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
-        //check for valid teamId
-        await this.validateTeamId(teamId);
+        const teamId = updateTechStackCategoryDto.voyageTeamId;
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        await this.teamOwnsCategory(
+            teamId,
+            updateTechStackCategoryDto.categoryId,
+        );
 
         //check if category name with teamid aready exists
         const newCategoryAlreadyExists =
@@ -381,9 +385,6 @@ export class TechsService {
         }
 
         try {
-            // const categoryData = {  name: updateTechStackCategoryDto.newName,
-            //                 description: updateTechStackCategoryDto.description,
-            // };
             const newTechStackCategory =
                 await this.prisma.techStackCategory.update({
                     where: {
@@ -392,7 +393,6 @@ export class TechsService {
                     data: {
                         name: updateTechStackCategoryDto.newName,
                         description: updateTechStackCategoryDto.description,
-                        // ...categoryData
                     },
                 });
             return newTechStackCategory;
@@ -406,9 +406,10 @@ export class TechsService {
         teamId: number,
         techStackCategoryId: number,
     ) {
-        try {
-            //manageOwnVoyageTeamWithIdParam(req.user, teamTechItem.voyageTeamId);
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        await this.teamOwnsCategory(teamId, techStackCategoryId);
 
+        try {
             const deletedCategory = await this.prisma.techStackCategory.delete({
                 where: { id: techStackCategoryId },
             });
@@ -531,6 +532,20 @@ export class TechsService {
                 throw new NotFoundException(e.meta.cause);
             }
             throw e;
+        }
+    }
+
+    private async teamOwnsCategory(teamId: number, categoryId: number) {
+        const match = await this.prisma.techStackCategory.findFirst({
+            where: {
+                id: categoryId,
+                voyageTeamId: teamId,
+            },
+        });
+        if (!match) {
+            throw new BadRequestException(
+                `Category ${categoryId} does not belong to team ${teamId}`,
+            );
         }
     }
 }

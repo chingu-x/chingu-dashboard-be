@@ -230,7 +230,7 @@ export class TechsController {
     ) {
         return this.techsService.deleteTeamTech(req, teamTechItemId);
     }
-    //****new */
+
     @ApiOperation({
         summary:
             "[Permission: own_team] Adds a new tech stack category to the team.",
@@ -239,17 +239,12 @@ export class TechsController {
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: "Successfully added a new tech stack category",
-        type: TechCategoryResponse, //todo: new response
+        type: TechCategoryResponse,
     })
     @ApiResponse({
         status: HttpStatus.CONFLICT,
         description: "Tech stack category already exist for the team",
         type: ConflictErrorResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        description: "Forbidden - user is not a member of this team",
-        type: ForbiddenErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -265,6 +260,7 @@ export class TechsController {
     @Post("teams/:teamId/techStackCategory")
     addNewTechStackCategory(
         @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamTId: number,
         @Body(ValidationPipe, VoyageTeamMemberValidationPipe)
         createTechStackCategoryDto: CreateTechStackCategoryDto,
     ) {
@@ -282,7 +278,7 @@ export class TechsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Successfully updated a tech stack category",
-        type: TechItemUpdateResponse,
+        type: TechCategoryResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
@@ -310,17 +306,14 @@ export class TechsController {
         type: NotFoundErrorResponse,
     })
     //@CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
-    @Patch("teams/:teamId/techStackCategory/:techStackCategoryId")
+    @Patch("teams/techStackCategory")
     updateTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
         @Body(ValidationPipe)
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
         return this.techsService.updateTechStackCategory(
             req,
-            teamId,
             updateTechStackCategoryDto,
         );
     }
