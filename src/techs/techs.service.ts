@@ -415,7 +415,7 @@ export class TechsService {
             });
 
             return {
-                message: "The  tech stack item is deleted",
+                message: "The  tech stack icategory is deleted",
                 statusCode: 200,
             };
         } catch (e) {

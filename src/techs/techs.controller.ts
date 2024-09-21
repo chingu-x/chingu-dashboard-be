@@ -23,6 +23,7 @@ import {
     TechItemDeleteResponse,
     TechItemUpdateResponse,
     TechCategoryResponse,
+    TechCategoryDeleteResponse,
 } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -256,7 +257,6 @@ export class TechsController {
         description: "Unauthorized access - user is not logged in",
         type: UnauthorizedErrorResponse,
     })
-    //@CheckAbilities({ action: Action.Create, subject: "TeamTechStackItem" })
     @Post("teams/:teamId/techStackCategory")
     addNewTechStackCategory(
         @Request() req: CustomRequest,
@@ -305,7 +305,6 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    //@CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("teams/techStackCategory")
     updateTechStackCategory(
         @Request() req: CustomRequest,
@@ -325,7 +324,7 @@ export class TechsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: "Tech stack category was successfully deleted",
-        type: TechItemDeleteResponse,
+        type: TechCategoryDeleteResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
@@ -347,7 +346,6 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    //@CheckAbilities({ action: Action.Delete, subject: "TeamTechStackItem" })
     @Delete("teams/:teamId/techStackCategory/:techStackCategoryId")
     deleteTechStackCategory(
         @Request() req: CustomRequest,

@@ -116,3 +116,11 @@ export class TechCategoryResponse {
     @ApiProperty({ example: "2023-12-01T13:55:00.611Z" })
     updatedAt: Date;
 }
+
+export class TechCategoryDeleteResponse {
+    @ApiProperty({ example: "The tech stack category was deleted" })
+    message: string;
+
+    @ApiProperty({ example: 200 })
+    statusCode: number;
+}
