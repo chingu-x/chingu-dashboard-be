@@ -2,7 +2,6 @@ import Genders from "./data/genders";
 import Tiers from "./data/tiers";
 import VoyageRoles from "./data/voyage-roles";
 import VoyageStatus from "./data/voyage-status";
-//import TechStackCategories from "./data/tech-stack-categories";
 
 import FeatureCategories from "./data/feature-categories";
 
