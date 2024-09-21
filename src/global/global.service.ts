@@ -108,11 +108,11 @@ export class GlobalService {
     // Checks that questions submitted for update match the form questions
     // using the form title
     public checkQuestionsInFormByTitle = async (
-        title: string,
+        titles: string[],
         responsesArray: FormResponseDto[],
     ) => {
-        const form = await this.prisma.form.findUnique({
-            where: { title },
+        const forms = await this.prisma.form.findMany({
+            where: { title: { in: titles } },
             select: {
                 id: true,
                 questions: {
@@ -123,15 +123,19 @@ export class GlobalService {
             },
         });
 
-        if (!form)
-            throw new BadRequestException(`No form with form title = ${title}`);
+        if (!forms)
+            throw new BadRequestException(
+                `No form with form title(s) = ${titles.join(", ")}`,
+            );
 
-        const questionIds = form.questions.flatMap((question) => question.id);
+        const questionIds = forms.flatMap((form) =>
+            form.questions.flatMap((question) => question.id),
+        );
 
         responsesArray.forEach((response) => {
             if (questionIds.indexOf(response.questionId) === -1)
                 throw new BadRequestException(
-                    `Question Id ${response.questionId} is not in form ${title} (id: ${form.id})`,
+                    `Question Id ${response.questionId} is not in form(s) ${titles.join(", ")} (id: ${forms.flatMap((form) => form.id)})`,
                 );
         });
     };

@@ -488,7 +488,7 @@ export const populateVoyageTeams = async () => {
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[2].name,
+                                name: voyageRoles[1].name,
                             },
                         },
                         status: {
