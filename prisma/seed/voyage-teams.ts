@@ -1052,7 +1052,6 @@ export const populateVoyageTeams = async () => {
     });
 
     //Add Tech Stack Categories
-    //await populateTechStackCategories();
     for (let teamId = 1; teamId <= 11; teamId += 1) {
         for (const category of techStackCategoriesData) {
             category.voyageTeamId = teamId;

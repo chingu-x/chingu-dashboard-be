@@ -38,14 +38,14 @@ export class TechsService {
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
         return this.prisma.techStackCategory.findMany({
+            where: {
+                voyageTeamId: teamId,
+            },
             select: {
                 id: true,
                 name: true,
                 description: true,
                 teamTechStackItems: {
-                    where: {
-                        voyageTeamId: teamId,
-                    },
                     select: {
                         id: true,
                         name: true,
