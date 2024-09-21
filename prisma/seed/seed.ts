@@ -34,7 +34,7 @@ export const deleteAllTables = async () => {
 
 export const seed = async () => {
     await deleteAllTables();
-    await populateTables();
+    await populateTables(); //tables with no relations
     await populateVoyages();
     await populateUsers();
     await populateSprints();
