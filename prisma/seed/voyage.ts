@@ -100,7 +100,7 @@ export const populateVoyages = async () => {
             endDate: new Date("2024-12-15T04:59:59.000Z"),
             soloProjectDeadline: new Date("2024-10-25T06:59:59.000Z"),
             certificateIssueDate: new Date("2024-12-21T06:59:59.000Z"),
-            showcasePublishDate: new Date("2024-12-28T06:59:59.000Z"),
+            showcasePublishDate: new Date("2024-12-27T06:59:59.000Z"),
         },
     });
     await prisma.voyage.create({
@@ -111,11 +111,11 @@ export const populateVoyages = async () => {
                     name: "Upcoming",
                 },
             },
-            startDate: new Date("2024-11-04T17:00:00.000Z"),
-            endDate: new Date("2024-12-15T04:59:59.000Z"),
-            soloProjectDeadline: new Date("2024-10-25T06:59:59.000Z"),
-            certificateIssueDate: new Date("2024-12-21T06:59:59.000Z"),
-            showcasePublishDate: new Date("2024-12-28T06:59:59.000Z"),
+            startDate: new Date("2025-01-06T17:00:00.000Z"),
+            endDate: new Date("2025-02-16T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-10-29T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-02-23T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-03-02T06:59:59.000Z"),
         },
     });
 };

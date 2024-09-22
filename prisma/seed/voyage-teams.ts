@@ -1075,7 +1075,7 @@ export const populateVoyageTeams = async () => {
             tier: {
                 connect: { name: "Tier 1" },
             },
-            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
             voyageTeamMembers: {
                 create: [
                     {
@@ -1142,7 +1142,7 @@ export const populateVoyageTeams = async () => {
             tier: {
                 connect: { name: "Tier 1" },
             },
-            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
             voyageTeamMembers: {
                 create: [
                     {
@@ -1209,7 +1209,7 @@ export const populateVoyageTeams = async () => {
             tier: {
                 connect: { name: "Tier 2" },
             },
-            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
             voyageTeamMembers: {
                 create: [
                     {
@@ -1294,7 +1294,7 @@ export const populateVoyageTeams = async () => {
             tier: {
                 connect: { name: "Tier 2" },
             },
-            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
             voyageTeamMembers: {
                 create: [
                     {
@@ -1379,7 +1379,7 @@ export const populateVoyageTeams = async () => {
             tier: {
                 connect: { name: "Tier 3" },
             },
-            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
             voyageTeamMembers: {
                 create: [
                     {
