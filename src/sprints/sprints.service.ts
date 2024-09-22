@@ -104,6 +104,7 @@ export class SprintsService {
 
     async getSprintDatesByTeamId(teamId: number, req: CustomRequest) {
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
         const teamSprintDates = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -112,6 +113,12 @@ export class SprintsService {
                 id: true,
                 name: true,
                 endDate: true,
+                teamMeetings: {
+                    select: {
+                        id: true,
+                        sprintId: true,
+                    },
+                },
                 voyage: {
                     select: {
                         id: true,
@@ -127,22 +134,30 @@ export class SprintsService {
                                 number: true,
                                 startDate: true,
                                 endDate: true,
-                                teamMeetings: {
-                                    select: {
-                                        id: true,
-                                    },
-                                },
                             },
                         },
                     },
                 },
             },
         });
+
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
 
-        return teamSprintDates.voyage;
+        const newSprints = teamSprintDates.voyage?.sprints.map((sprint) => {
+            return {
+                ...sprint,
+                teamMeetings: teamSprintDates.teamMeetings
+                    .filter((meeting) => meeting.sprintId === sprint.id)
+                    .map((meeting) => meeting.id),
+            };
+        });
+
+        return {
+            ...teamSprintDates.voyage,
+            sprints: newSprints,
+        };
     }
 
     async getMeetingById(meetingId: number, req: CustomRequest) {
