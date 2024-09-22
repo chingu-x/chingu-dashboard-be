@@ -1050,6 +1050,487 @@ export const populateVoyageTeams = async () => {
         },
     });
 
+    //v52
+
+    // team with only PO
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "52",
+                },
+            },
+            name: "v52-tier1-team-1",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 1" },
+            },
+            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[0].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[1].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[1].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[1].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                ],
+            },
+        },
+    });
+
+    // team with only SM
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "52",
+                },
+            },
+            name: "v52-tier1-team-2",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 1" },
+            },
+            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[0].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[1].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                ],
+            },
+        },
+    });
+
+    // team with only developers
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "52",
+                },
+            },
+            name: "v52-tier2-team-2",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 2" },
+            },
+            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[0].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[4].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[6].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 20,
+                    },
+                ],
+            },
+        },
+    });
+
+    // team with 1 UI/UX designer and 1 data scientist and 1 voyage guide
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "52",
+                },
+            },
+            name: "v52-tier2-team-4",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 2" },
+            },
+            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[3].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[3].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[4].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[4].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[6].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[5].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 20,
+                    },
+                ],
+            },
+        },
+    });
+
+    // team with all roles
+    await prisma.voyageTeam.create({
+        data: {
+            voyage: {
+                connect: {
+                    number: "52",
+                },
+            },
+            name: "v52-tier3-team-3",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            repoUrl:
+                "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
+            repoUrlBE: "https://github.com/chingu-voyages/Handbook",
+            deployedUrl: "https://www.chingu.io/",
+            deployedUrlBE:
+                "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
+            tier: {
+                connect: { name: "Tier 3" },
+            },
+            endDate: new Date("2024-12-14T04:59:59.000Z"),
+            voyageTeamMembers: {
+                create: [
+                    {
+                        member: {
+                            connect: {
+                                email: users[0].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[1].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[2].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[0].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 20,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[3].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[1].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[4].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[2].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[6].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[3].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 20,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[7].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[4].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 10,
+                    },
+                    {
+                        member: {
+                            connect: {
+                                email: users[8].email,
+                            },
+                        },
+                        voyageRole: {
+                            connect: {
+                                name: voyageRoles[5].name,
+                            },
+                        },
+                        status: {
+                            connect: {
+                                name: "Active",
+                            },
+                        },
+                        hrPerSprint: 12,
+                    },
+                ],
+            },
+        },
+    });
+
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 
     /* ============== Add tech stack items, etc to teams ================== */

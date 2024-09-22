@@ -12,6 +12,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
 
 ### Changed
+- Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
 
 ### Fixed
 

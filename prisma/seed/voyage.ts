@@ -49,7 +49,7 @@ export const populateVoyages = async () => {
             number: "49",
             status: {
                 connect: {
-                    name: "Active",
+                    name: "Inactive",
                 },
             },
             startDate: new Date("2024-05-06T17:00:00.000Z"),
@@ -63,7 +63,7 @@ export const populateVoyages = async () => {
             number: "50",
             status: {
                 connect: {
-                    name: "Upcoming",
+                    name: "Inactive",
                 },
             },
             startDate: new Date("2024-07-01T17:00:00.000Z"),
@@ -78,7 +78,7 @@ export const populateVoyages = async () => {
             number: "51",
             status: {
                 connect: {
-                    name: "Upcoming",
+                    name: "Active",
                 },
             },
             startDate: new Date("2024-09-04T17:00:00.000Z"),
@@ -86,6 +86,36 @@ export const populateVoyages = async () => {
             soloProjectDeadline: new Date("2024-08-25T06:59:59.000Z"),
             certificateIssueDate: new Date("2024-10-21T06:59:59.000Z"),
             showcasePublishDate: new Date("2024-10-28T06:59:59.000Z"),
+        },
+    });
+    await prisma.voyage.create({
+        data: {
+            number: "52",
+            status: {
+                connect: {
+                    name: "Active",
+                },
+            },
+            startDate: new Date("2024-11-04T17:00:00.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-10-25T06:59:59.000Z"),
+            certificateIssueDate: new Date("2024-12-21T06:59:59.000Z"),
+            showcasePublishDate: new Date("2024-12-28T06:59:59.000Z"),
+        },
+    });
+    await prisma.voyage.create({
+        data: {
+            number: "53",
+            status: {
+                connect: {
+                    name: "Upcoming",
+                },
+            },
+            startDate: new Date("2024-11-04T17:00:00.000Z"),
+            endDate: new Date("2024-12-15T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-10-25T06:59:59.000Z"),
+            certificateIssueDate: new Date("2024-12-21T06:59:59.000Z"),
+            showcasePublishDate: new Date("2024-12-28T06:59:59.000Z"),
         },
     });
 };
