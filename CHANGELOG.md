@@ -9,12 +9,12 @@ Another example [here](https://co-pilot.dev/changelog)
 ## [Unreleased]
 
 ### Added
-- Add units tests for the forms controller and services([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
+- Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
 
 ### Changed
 
 ### Fixed
-- Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#203](https://github.com/chingu-x/chingu-dashboard-be/pull/203))
+- Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
 
 ### Removed
 
