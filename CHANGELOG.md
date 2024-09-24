@@ -9,10 +9,23 @@ Another example [here](https://co-pilot.dev/changelog)
 ## [Unreleased]
 
 ### Added
+- Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
+
+### Changed
+
+### Fixed
+
+### Removed
+
+
+## [v1.0.1-alpha]
+
+### Added
 - Add units tests for the teams controller & services([#189](https://github.com/chingu-x/chingu-dashboard-be/pull/189))
 - Add discord oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/194))
 - Add morgan middleware for request logging with custom logger ([#200](https://github.com/chingu-x/chingu-dashboard-be/pull/200))
 - Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
+- Add units tests for the teams resource controller & services([#201](https://github.com/chingu-x/chingu-dashboard-be/pull/201))
 
 ### Changed
 - updated changelog ([#195](https://github.com/chingu-x/chingu-dashboard-be/pull/195))
