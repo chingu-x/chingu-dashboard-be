@@ -10,11 +10,11 @@ import { RtStrategy } from "./strategies/rt.strategy";
 import { DiscordStrategy } from "./strategies/discord.strategy";
 import { DiscordAuthService } from "./discord-auth.service";
 import { EmailService } from "../utils/emails/email.service";
-import { MailConfigModule } from "src/config/mail/mailConfig.module";
-import { AppConfigModule } from "src/config/app/appConfig.module";
-import { AuthConfigModule } from "src/config/auth/authConfig.module";
+import { MailConfigModule } from "@/config/mail/mailConfig.module";
+import { AppConfigModule } from "@/config/app/appConfig.module";
+import { AuthConfigModule } from "@/config/auth/authConfig.module";
 import { OAuthConfigModule } from "../config/Oauth/oauthConfig.module";
-import { AuthConfig } from "src/config/auth/auth.interface";
+import { AuthConfig } from "@/config/auth/auth.interface";
 
 @Module({
     imports: [

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../src/app.module";
-import { PrismaService } from "../src/prisma/prisma.service";
+import { AppModule } from "@/app.module";
+import { PrismaService } from "@/prisma/prisma.service";
 import { seed } from "../prisma/seed/seed";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
-import { CASLForbiddenExceptionFilter } from "src/exception-filters/casl-forbidden-exception.filter";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 
 //Logged in user is Jessica Williamson for admin routes /teams and /teams/voyages/:voyageid
 //Logged in user is Dan ko for team member routes /teams/:teamid and /teams/:teamid/members
