@@ -14,6 +14,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Changed
 
 ### Fixed
+- Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
 
 ### Removed
 

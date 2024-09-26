@@ -122,6 +122,7 @@ export class SprintsController {
     ) {
         return this.sprintsService.getSprintDatesByTeamId(teamId, req);
     }
+
     @ApiOperation({
         summary: "[Permissions: Own Team] gets meeting detail given meeting ID",
         description:
