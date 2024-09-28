@@ -1052,7 +1052,7 @@ export const populateVoyageTeams = async () => {
 
     //v52
 
-    // team with only PO
+    // team with only PO and developer
     await prisma.voyageTeam.create({
         data: {
             voyage: {
@@ -1086,7 +1086,7 @@ export const populateVoyageTeams = async () => {
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[1].name,
+                                name: voyageRoles[0].name,
                             },
                         },
                         status: {
@@ -1119,7 +1119,7 @@ export const populateVoyageTeams = async () => {
         },
     });
 
-    // team with only SM
+    // team with only SM and developer
     await prisma.voyageTeam.create({
         data: {
             voyage: {
@@ -1153,7 +1153,7 @@ export const populateVoyageTeams = async () => {
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[2].name,
+                                name: voyageRoles[0].name,
                             },
                         },
                         status: {
@@ -1271,7 +1271,7 @@ export const populateVoyageTeams = async () => {
         },
     });
 
-    // team with 1 UI/UX designer and 1 data scientist and 1 voyage guide
+    // team with 1 developer and 1 data scientist and 1 voyage guide
     await prisma.voyageTeam.create({
         data: {
             voyage: {
@@ -1305,7 +1305,7 @@ export const populateVoyageTeams = async () => {
                         },
                         voyageRole: {
                             connect: {
-                                name: voyageRoles[3].name,
+                                name: voyageRoles[0].name,
                             },
                         },
                         status: {
