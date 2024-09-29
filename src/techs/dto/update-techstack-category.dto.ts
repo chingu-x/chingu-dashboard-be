@@ -15,10 +15,5 @@ export class UpdateTechStackCategoryDto {
     @IsInt()
     @IsNotEmpty()
     @ApiProperty({ example: 1 })
-    categoryId: number;
-
-    @IsInt()
-    @IsNotEmpty()
-    @ApiProperty({ example: 1 })
     voyageTeamId: number;
 }

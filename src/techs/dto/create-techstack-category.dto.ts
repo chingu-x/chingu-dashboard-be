@@ -11,14 +11,4 @@ export class CreateTechStackCategoryDto {
     @IsNotEmpty()
     @ApiProperty({ example: "Host for static resources" })
     description: string;
-
-    @IsInt()
-    @IsNotEmpty()
-    @ApiProperty({ example: 1 })
-    voyageTeamId: number;
-
-    @IsInt()
-    @IsNotEmpty()
-    @ApiProperty({ example: 4 })
-    voyageTeamMemberId: number;
 }

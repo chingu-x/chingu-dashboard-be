@@ -322,17 +322,16 @@ export class TechsService {
 
     async addNewTechStackCategory(
         req: CustomRequest,
+        teamId: number,
         createTechStackCategoryDto: CreateTechStackCategoryDto,
     ) {
-        const teamId = createTechStackCategoryDto.voyageTeamId;
-
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
         //check if category name with teamid aready exists
         const categoryAlreadyExists =
             await this.prisma.techStackCategory.findFirst({
                 where: {
-                    voyageTeamId: createTechStackCategoryDto.voyageTeamId,
+                    voyageTeamId: teamId,
                     name: createTechStackCategoryDto.name,
                 },
             });
@@ -346,7 +345,7 @@ export class TechsService {
             const categoryData = {
                 name: createTechStackCategoryDto.name,
                 description: createTechStackCategoryDto.description,
-                voyageTeamId: createTechStackCategoryDto.voyageTeamId,
+                voyageTeamId: teamId,
             };
             const newTeamTechCategory =
                 await this.prisma.techStackCategory.create({
@@ -360,15 +359,13 @@ export class TechsService {
 
     async updateTechStackCategory(
         req: CustomRequest,
+        techStackCategoryId: number,
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
         const teamId = updateTechStackCategoryDto.voyageTeamId;
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
-        await this.teamOwnsCategory(
-            teamId,
-            updateTechStackCategoryDto.categoryId,
-        );
+        await this.teamOwnsCategory(teamId, techStackCategoryId);
 
         //check if category name with teamid aready exists
         const newCategoryAlreadyExists =
@@ -388,7 +385,7 @@ export class TechsService {
             const newTechStackCategory =
                 await this.prisma.techStackCategory.update({
                     where: {
-                        id: updateTechStackCategoryDto.categoryId,
+                        id: techStackCategoryId,
                     },
                     data: {
                         name: updateTechStackCategoryDto.newName,

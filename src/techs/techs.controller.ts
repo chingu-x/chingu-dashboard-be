@@ -260,12 +260,13 @@ export class TechsController {
     @Post("teams/:teamId/techStackCategory")
     addNewTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamTId: number,
-        @Body(ValidationPipe, VoyageTeamMemberValidationPipe)
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body(ValidationPipe)
         createTechStackCategoryDto: CreateTechStackCategoryDto,
     ) {
         return this.techsService.addNewTechStackCategory(
             req,
+            teamId,
             createTechStackCategoryDto,
         );
     }
@@ -305,14 +306,16 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    @Patch("teams/techStackCategory")
+    @Patch("teams/techStackCategory/:techStackCategoryId")
     updateTechStackCategory(
         @Request() req: CustomRequest,
+        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
         @Body(ValidationPipe)
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
         return this.techsService.updateTechStackCategory(
             req,
+            techStackCategoryId,
             updateTechStackCategoryDto,
         );
     }
