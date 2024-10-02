@@ -8,6 +8,8 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
+import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
+import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest } from "../global/types/CustomRequest";
@@ -36,14 +38,14 @@ export class TechsService {
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
         return this.prisma.techStackCategory.findMany({
+            where: {
+                voyageTeamId: teamId,
+            },
             select: {
                 id: true,
                 name: true,
                 description: true,
                 teamTechStackItems: {
-                    where: {
-                        voyageTeamId: teamId,
-                    },
                     select: {
                         id: true,
                         name: true,
@@ -318,6 +320,106 @@ export class TechsService {
         }
     }
 
+    async addNewTechStackCategory(
+        req: CustomRequest,
+        teamId: number,
+        createTechStackCategoryDto: CreateTechStackCategoryDto,
+    ) {
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
+        //check if category name with teamid aready exists
+        const categoryAlreadyExists =
+            await this.prisma.techStackCategory.findFirst({
+                where: {
+                    voyageTeamId: teamId,
+                    name: createTechStackCategoryDto.name,
+                },
+            });
+        if (categoryAlreadyExists) {
+            throw new ConflictException(
+                `${createTechStackCategoryDto.name} already exists in team ${teamId}'s tech stack.`,
+            );
+        }
+
+        try {
+            const categoryData = {
+                name: createTechStackCategoryDto.name,
+                description: createTechStackCategoryDto.description,
+                voyageTeamId: teamId,
+            };
+            const newTeamTechCategory =
+                await this.prisma.techStackCategory.create({
+                    data: { ...categoryData },
+                });
+            return newTeamTechCategory;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async updateTechStackCategory(
+        req: CustomRequest,
+        techStackCategoryId: number,
+        updateTechStackCategoryDto: UpdateTechStackCategoryDto,
+    ) {
+        const teamId = updateTechStackCategoryDto.voyageTeamId;
+
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        await this.teamOwnsCategory(teamId, techStackCategoryId);
+
+        //check if category name with teamid aready exists
+        const newCategoryAlreadyExists =
+            await this.prisma.techStackCategory.findFirst({
+                where: {
+                    voyageTeamId: updateTechStackCategoryDto.voyageTeamId,
+                    name: updateTechStackCategoryDto.newName,
+                },
+            });
+        if (newCategoryAlreadyExists) {
+            throw new ConflictException(
+                `${updateTechStackCategoryDto.newName} already exists in team ${teamId}'s tech stack.`,
+            );
+        }
+
+        try {
+            const newTechStackCategory =
+                await this.prisma.techStackCategory.update({
+                    where: {
+                        id: techStackCategoryId,
+                    },
+                    data: {
+                        name: updateTechStackCategoryDto.newName,
+                        description: updateTechStackCategoryDto.description,
+                    },
+                });
+            return newTechStackCategory;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async deleteTechStackCategory(
+        req: CustomRequest,
+        teamId: number,
+        techStackCategoryId: number,
+    ) {
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        await this.teamOwnsCategory(teamId, techStackCategoryId);
+
+        try {
+            await this.prisma.techStackCategory.delete({
+                where: { id: techStackCategoryId },
+            });
+
+            return {
+                message: "The  tech stack category is deleted",
+                statusCode: 200,
+            };
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async addExistingTechVote(req: CustomRequest, teamTechItemId: number) {
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
@@ -427,6 +529,20 @@ export class TechsService {
                 throw new NotFoundException(e.meta.cause);
             }
             throw e;
+        }
+    }
+
+    private async teamOwnsCategory(teamId: number, categoryId: number) {
+        const match = await this.prisma.techStackCategory.findFirst({
+            where: {
+                id: categoryId,
+                voyageTeamId: teamId,
+            },
+        });
+        if (!match) {
+            throw new BadRequestException(
+                `Category ${categoryId} does not belong to team ${teamId}`,
+            );
         }
     }
 }
