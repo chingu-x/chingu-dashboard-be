@@ -13,7 +13,9 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Changed
 - refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
+
 ### Fixed
+- Fix cors localhost address ([#205](https://github.com/chingu-x/chingu-dashboard-be/pull/205))
 - Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
 
 ### Removed
