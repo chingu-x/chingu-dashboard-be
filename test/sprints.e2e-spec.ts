@@ -1573,7 +1573,7 @@ describe("Sprints Controller (e2e)", () => {
             // sprint id is for a voyage the team member isn't part of
             await request(app.getHttpServer())
                 .post(sprintCheckinUrl)
-                .set("Cookie", accessToken)
+                .set("Cookie", access_token)
                 .send({
                     sprintId: 25,
                     voyageTeamMemberId: 4,
