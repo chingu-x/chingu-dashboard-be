@@ -16,6 +16,7 @@ Another example [here](https://co-pilot.dev/changelog)
 - Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
 
 ### Fixed
+- Fix cors localhost address ([#205](https://github.com/chingu-x/chingu-dashboard-be/pull/205))
 - Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
 
 ### Removed
