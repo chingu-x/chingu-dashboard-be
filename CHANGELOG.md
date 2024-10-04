@@ -10,6 +10,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Added
 - Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
+- Add same site property to cookie ([#212](https://github.com/chingu-x/chingu-dashboard-be/pull/212))
 
 ### Changed
 - refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
