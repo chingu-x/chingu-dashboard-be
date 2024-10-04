@@ -134,7 +134,7 @@ export class AuthService {
             maxAge: AT_MAX_AGE * 1000,
             httpOnly: true,
             secure: true,
-            sameSite: "none",
+            sameSite: "none", // TODO: remove this in future when we use actual domains for the dashboard, they will likely be same-site
         });
         res.cookie("refresh_token", refresh_token, {
             maxAge: RT_MAX_AGE * 1000,
