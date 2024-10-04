@@ -113,9 +113,9 @@ export const populateVoyages = async () => {
             },
             startDate: new Date("2025-01-064T17:00:00.000Z"),
             endDate: new Date("2025-02-16T04:59:59.000Z"),
-            soloProjectDeadline: new Date("2024-10-27T06:59:59.000Z"),
-            certificateIssueDate: new Date("2025-02-23T06:59:59.000Z"),
-            showcasePublishDate: new Date("2025-02-28T06:59:59.000Z"),
+            soloProjectDeadline: new Date("2024-12-29T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-02-24T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-03-03T06:59:59.000Z"),
         },
     });
 };
