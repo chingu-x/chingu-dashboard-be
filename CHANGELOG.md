@@ -18,9 +18,9 @@ Another example [here](https://co-pilot.dev/changelog)
 
 ### Fixed
 
-- Fix one of the regex in cors origin list ([#211](https://github.com/chingu-x/chingu-dashboard-be/pull/211))
 - Fix cors localhost address ([#205](https://github.com/chingu-x/chingu-dashboard-be/pull/205))
 - Fix voyages/sprints/teams/{teamId} returning wrong meetingIds ([#209](https://github.com/chingu-x/chingu-dashboard-be/pull/209))
+- Fix one of the regex in cors origin list ([#211](https://github.com/chingu-x/chingu-dashboard-be/pull/211))
 
 ### Removed
 
