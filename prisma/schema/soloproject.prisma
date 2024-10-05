@@ -16,7 +16,6 @@ model SoloProject {
   evaluatorUserId   String?            @db.Uuid()
   evaluator         User?              @relation(fields: [evaluatorUserId], references: [id], name: "evaluators", onDelete: SetNull)
   evaluatorFeedback String?
-  adminComments     String?
   statusId          Int?
   status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
   formId            Int?
@@ -24,6 +23,16 @@ model SoloProject {
   responseGroupId   Int?               @unique
   responseGroup     ResponseGroup?     @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
 
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
+  createdAt DateTime             @default(now()) @db.Timestamptz()
+  updatedAt DateTime             @updatedAt
+  comments  SoloProjectComment[]
+}
+
+model SoloProjectComment {
+  comment       Comment     @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId     Int
+  soloProject   SoloProject @relation(fields: [soloProjectId], references: [id], onDelete: Restrict)
+  soloProjectId Int
+
+  @@id([soloProjectId, commentId])
 }

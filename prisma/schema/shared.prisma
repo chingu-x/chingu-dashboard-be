@@ -1,0 +1,13 @@
+// === Shared Schema ===
+model Comment {
+  id                  Int                  @id @default(autoincrement())
+  parentId            Int?
+  content             String
+  author              User?                @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+  authorUserId        String?              @db.Uuid()
+  path                String?
+  soloProjectComments SoloProjectComment[]
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}
