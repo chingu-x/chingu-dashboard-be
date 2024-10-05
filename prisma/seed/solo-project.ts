@@ -54,8 +54,30 @@ export const populateSoloProjects = async () => {
     await prisma.soloProject.create({
         data: {
             userId: users[0].id,
-            adminComments: "This is a tier 3 project, not tier 2",
+            comments: {
+                create: [
+                    {
+                        comment: "This is a tier 2 project, not tier 3",
+                    },
+                ],
+            },
             evaluatorUserId: users[1].id,
+            evaluatorFeedback: passedSampleFeedback,
+            statusId: (await prisma.soloProjectStatus.findUnique({
+                where: {
+                    status: "Waiting Evaluation",
+                },
+            }))!.id,
+            formId: soloProjectForm!.id,
+            responseGroupId: responseGroup.id,
+        },
+    });
+
+    await prisma.soloProject.create({
+        data: {
+            userId: users[7].id,
+            adminComments: "This is a tier 3 project, not tier 2",
+            evaluatorUserId: users[2].id,
             evaluatorFeedback: passedSampleFeedback,
             statusId: (await prisma.soloProjectStatus.findUnique({
                 where: {
