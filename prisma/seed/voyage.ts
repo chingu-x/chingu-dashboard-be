@@ -111,7 +111,7 @@ export const populateVoyages = async () => {
                     name: "Upcoming",
                 },
             },
-            startDate: new Date("2025-01-064T17:00:00.000Z"),
+            startDate: new Date("2025-01-06T17:00:00.000Z"),
             endDate: new Date("2025-02-16T04:59:59.000Z"),
             soloProjectDeadline: new Date("2024-12-29T06:59:59.000Z"),
             certificateIssueDate: new Date("2025-02-24T06:59:59.000Z"),
