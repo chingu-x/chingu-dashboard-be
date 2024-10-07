@@ -31,7 +31,7 @@ model SoloProject {
 
 model SoloProjectComment {
   id              Int                 @id @default(autoincrement())
-  commentText     Comment             @relation(fields: [id], references: [id], onDelete: Cascade)
+  commentText     String
   soloProject     SoloProject         @relation(fields: [soloProjectId], references: [id], onDelete: Restrict)
   soloProjectId   Int
   parentCommentId Int?
@@ -41,4 +41,6 @@ model SoloProjectComment {
   updatedAt DateTime @updatedAt
 
   childComments SoloProjectComment[] @relation("ParentChildComment")
+  Comment       Comment?             @relation(fields: [commentId], references: [id])
+  commentId     Int?
 }

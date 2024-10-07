@@ -55,11 +55,12 @@ export const populateSoloProjects = async () => {
         data: {
             userId: users[0].id,
             comments: {
-                create: [
-                    {
-                        comment: "This is a tier 2 project, not tier 3",
-                    },
-                ],
+                createMany: {
+                    data: [
+                        { commentText: "This is a tier 2 project, not tier 3" },
+                        { commentText: "ok", parentCommentId: 1 },
+                    ],
+                },
             },
             evaluatorUserId: users[1].id,
             evaluatorFeedback: passedSampleFeedback,
@@ -76,7 +77,6 @@ export const populateSoloProjects = async () => {
     await prisma.soloProject.create({
         data: {
             userId: users[7].id,
-            adminComments: "This is a tier 3 project, not tier 2",
             evaluatorUserId: users[2].id,
             evaluatorFeedback: passedSampleFeedback,
             statusId: (await prisma.soloProjectStatus.findUnique({
