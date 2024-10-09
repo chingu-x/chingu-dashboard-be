@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { TeamsController } from "./teams.controller";
 import { TeamsService } from "./teams.service";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { VoyageTeamMemberUpdateResponse } from "./teams.response";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 

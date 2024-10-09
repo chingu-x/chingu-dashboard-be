@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { formSelect, FormsService } from "./forms.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { prismaMock } from "../prisma/singleton";
+import { PrismaService } from "@/prisma/prisma.service";
+import { prismaMock } from "@/prisma/singleton";
 import { toBeOneOf, toBeArray } from "jest-extended";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 expect.extend({ toBeOneOf, toBeArray });
 

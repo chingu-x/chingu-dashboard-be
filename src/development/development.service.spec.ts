@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DevelopmentService } from "./development.service";
 import * as Seed from "../../prisma/seed/seed";
 import * as process from "node:process";
-import { AppConfigService } from "../config/app/appConfig.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
 
 describe("DevelopmentService", () => {
     let service: DevelopmentService;
