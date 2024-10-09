@@ -65,6 +65,13 @@ export const populateSoloProjects = async () => {
                             content: "ok",
                             parentCommentId: 1,
                             type: "SoloProject",
+                            path: "/1",
+                        },
+                        {
+                            content: "not ok",
+                            parentCommentId: 2,
+                            type: "SoloProject",
+                            path: "/1/2",
                         },
                     ],
                 },
