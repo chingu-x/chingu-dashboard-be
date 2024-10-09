@@ -68,6 +68,8 @@ $ yarn seed
 # run Prisma Studio
 $ yarn studio
 ```
+> [!TIP]
+> It is recommended to use `db push` to [prototype your schema](https://www.prisma.io/docs/orm/prisma-migrate/workflows/prototyping-your-schema)
 
 ## Running the app
 
@@ -83,6 +85,9 @@ $ yarn start:prod
 ```
 
 ## Test<a name="tests"></a>
+
+> [!IMPORTANT]
+> To prepare the test database, run `yarn push:test` or `yarn push:test:docker`
 
 ```bash
 # all tests (unit and e2e for now)
