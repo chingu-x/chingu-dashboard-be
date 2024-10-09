@@ -18,6 +18,7 @@ import { CustomRequest } from "../global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 import { manageOwnTeamMeetingOrAgendaById } from "../ability/conditions/meetingOrAgenda.ability";
+import { canSubmitCheckin } from "../ability/conditions/sprints.ability";
 
 @Injectable()
 export class SprintsService {
@@ -616,6 +617,13 @@ export class SprintsService {
                 FormTitles.sprintCheckinSM,
             ],
             responsesArray,
+        );
+
+        // TODO: find way to inject globalServices directly
+        await canSubmitCheckin(
+            createCheckinForm.sprintId,
+            createCheckinForm.voyageTeamMemberId,
+            this.globalServices.validateOrGetDbItem,
         );
 
         try {
