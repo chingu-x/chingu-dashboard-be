@@ -26,21 +26,5 @@ model SoloProject {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  comments SoloProjectComment[]
-}
-
-model SoloProjectComment {
-  id              Int                 @id @default(autoincrement())
-  commentText     String
-  soloProject     SoloProject         @relation(fields: [soloProjectId], references: [id], onDelete: Restrict)
-  soloProjectId   Int
-  parentCommentId Int?
-  parentComment   SoloProjectComment? @relation("ParentChildComment", fields: [parentCommentId], references: [id], onDelete: Restrict)
-
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt
-
-  childComments SoloProjectComment[] @relation("ParentChildComment")
-  Comment       Comment?             @relation(fields: [commentId], references: [id])
-  commentId     Int?
+  comments Comment[]
 }

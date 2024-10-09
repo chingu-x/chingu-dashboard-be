@@ -57,8 +57,15 @@ export const populateSoloProjects = async () => {
             comments: {
                 createMany: {
                     data: [
-                        { commentText: "This is a tier 2 project, not tier 3" },
-                        { commentText: "ok", parentCommentId: 1 },
+                        {
+                            content: "This is a tier 2 project, not tier 3",
+                            type: "SoloProject",
+                        },
+                        {
+                            content: "ok",
+                            parentCommentId: 1,
+                            type: "SoloProject",
+                        },
                     ],
                 },
             },
