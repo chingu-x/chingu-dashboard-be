@@ -190,5 +190,49 @@ export const populateUsers = async () => {
             },
         },
     });
+    // create two more users
+
+    user = await prisma.user.create({
+        data: {
+            email: "john@gmail.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
+            firstName: "John",
+            lastName: "Doe",
+            avatar: generateGravatarUrl("john@gmail.com"),
+            timezone: "America/New_York",
+            countryCode: "US",
+            gender: {
+                connect: {
+                    abbreviation: "M",
+                },
+            },
+        },
+    });
+
+    user = await prisma.user.create({
+        data: {
+            email: "luis@gmail.com",
+            password: await hashPassword("password"),
+            emailVerified: true,
+            firstName: "Luis",
+            lastName: " Garcia",
+            avatar: generateGravatarUrl("luis@gmail.com"),
+            timezone: "Spain/Madrid",
+            countryCode: "ESP",
+            gender: {
+                connect: {
+                    abbreviation: "M",
+                },
+            },
+        },
+    });
+
+    await prisma.userRole.create({
+        data: {
+            userId: user.id,
+            roleId: getRoleId(roles, "voyager"),
+        },
+    });
     console.log("Users Populated");
 };
