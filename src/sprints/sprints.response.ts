@@ -211,7 +211,7 @@ export class CheckinSubmissionResponse {
     @ApiProperty({ example: 1 })
     id: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 4 })
     voyageTeamMemberId: number;
 
     @ApiProperty({ example: 1 })
