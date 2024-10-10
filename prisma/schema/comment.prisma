@@ -1,0 +1,23 @@
+// === Comment ===
+model Comment {
+  id              Int      @id @default(autoincrement())
+  content         String
+  author          User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId        String?  @db.Uuid()
+  path            String?
+  parentCommentId Int?
+  parentComment   Comment? @relation("ParentChildComment", fields: [parentCommentId], references: [id], onDelete: Restrict)
+
+  type          CommentType
+  SoloProject   SoloProject? @relation(fields: [soloProjectId], references: [id], onDelete: Cascade)
+  soloProjectId Int?
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+
+  childComments Comment[] @relation("ParentChildComment")
+}
+
+enum CommentType {
+  SoloProject
+}
