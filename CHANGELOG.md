@@ -12,6 +12,7 @@ Another example [here](https://co-pilot.dev/changelog)
 
 - Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
 - Add same site property to cookie ([#212](https://github.com/chingu-x/chingu-dashboard-be/pull/212))
+- Add same site property to cookie in refresh endpoint ([#214](https://github.com/chingu-x/chingu-dashboard-be/pull/214))
 
 ### Changed
 

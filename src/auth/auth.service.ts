@@ -125,11 +125,7 @@ export class AuthService {
         }
     };
 
-    async returnTokensOnLoginSuccess(req: CustomRequest, res: Response) {
-        const { access_token, refresh_token } = await this.login(
-            req.user,
-            req.cookies?.refresh_token,
-        );
+    setCookie(res: Response, access_token: string, refresh_token: string) {
         res.cookie("access_token", access_token, {
             maxAge: AT_MAX_AGE * 1000,
             httpOnly: true,
@@ -142,6 +138,14 @@ export class AuthService {
             secure: true,
             sameSite: "none",
         });
+    }
+
+    async returnTokensOnLoginSuccess(req: CustomRequest, res: Response) {
+        const { access_token, refresh_token } = await this.login(
+            req.user,
+            req.cookies?.refresh_token,
+        );
+        this.setCookie(res, access_token, refresh_token);
     }
 
     /**
