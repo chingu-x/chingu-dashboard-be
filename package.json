@@ -117,11 +117,17 @@
             "node_modules",
             "src"
         ],
-        "rootDir": "./",
+        "rootDir": "src",
+        "moduleNameMapper": {
+            "@/(.*)": "<rootDir>/$1"
+        },
         "modulePaths": [
             "<rootDir>"
         ],
-        "testRegex": ".*\\.spec|.jest\\.ts$",
+        "testRegex": [
+            "spec.ts$",
+            "int-spec.ts$"
+        ],
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
         },
@@ -131,7 +137,7 @@
         "coverageDirectory": "../coverage",
         "testEnvironment": "node",
         "setupFilesAfterEnv": [
-            "<rootDir>/src/prisma/singleton.ts"
+            "<rootDir>/prisma/singleton.ts"
         ]
     },
     "prisma": {

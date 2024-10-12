@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { HealthCheckService } from "@/HealthCheck/health-check.service";
 import { PrismaService } from "@/prisma/prisma.service";
+import { ConfigService, ConfigModule } from "@nestjs/config";
 
 describe("HealthCheckService", () => {
     let healthCheckService: HealthCheckService;
@@ -8,11 +9,31 @@ describe("HealthCheckService", () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [HealthCheckService, PrismaService],
+            imports: [ConfigModule.forRoot()],
+            providers: [
+                HealthCheckService,
+                PrismaService,
+                {
+                    provide: "DB-Config",
+                    useFactory(configService: ConfigService) {
+                        return {
+                            db: {
+                                url: configService.get<string>("DATABASE_URL"),
+                            },
+                        };
+                    },
+                    inject: [ConfigService],
+                },
+            ],
         }).compile();
 
         healthCheckService = module.get<HealthCheckService>(HealthCheckService);
         prismaService = module.get<PrismaService>(PrismaService);
+    });
+
+    afterAll(async () => {
+        await prismaService.healthCheck.deleteMany();
+        await prismaService.$disconnect();
     });
 
     it("should be defined", () => {
