@@ -11,10 +11,14 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Added
 
 - Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
+- Add same site property to cookie ([#212](https://github.com/chingu-x/chingu-dashboard-be/pull/212))
+- Add same site property to cookie in refresh endpoint ([#214](https://github.com/chingu-x/chingu-dashboard-be/pull/214))
 
 ### Changed
 
+- Update PostgreSQL image to timescale/timescaledb-ha:pg16 to match railway postgres image ([#210](https://github.com/chingu-x/chingu-dashboard-be/pull/210))
 - refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
+- Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
 
 ### Fixed
 
@@ -43,6 +47,7 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Fixed
 
 - Fix seed data for alpha test (check in form question changes, gravatar) ([#190](https://github.com/chingu-x/chingu-dashboard-be/pull/190))
+- Fix voyageNumber generation from sprintId for check-in submissions ([#186](https://github.com/chingu-x/chingu-dashboard-be/pull/186))
 - revised 2 checkin questions for alpha test ([#192](https://github.com/chingu-x/chingu-dashboard-be/pull/192))
 - Fix seed checkin form data for PO and SM , and voyage-role for team 6 ([#196](https://github.com/chingu-x/chingu-dashboard-be/pull/196))
 - Bug add check for team id in place memberId ([#197](https://github.com/chingu-x/chingu-dashboard-be/pull/197))
