@@ -120,14 +120,13 @@
         "rootDir": ".",
         "moduleNameMapper": {
             "@/(.*)": "<rootDir>/src/$1",
-            "@Prisma/(.*)": "<rootDir>/$1"
+            "@Prisma/(.*)": "<rootDir>/prisma/$1"
         },
         "modulePaths": [
             "<rootDir>"
         ],
         "testRegex": [
-            "spec.ts$",
-            "int-spec.ts$"
+            ".*\\.spec|.jest\\.ts$"
         ],
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
