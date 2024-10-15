@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Optional } from "@nestjs/common";
-import { ResponseGroup } from "../forms/forms.response";
+import { ResponseGroup } from "@/forms/forms.response";
 
 class Sprint {
     @ApiProperty({ example: 1 })

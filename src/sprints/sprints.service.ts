@@ -9,16 +9,16 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
-import { FormsService } from "../forms/forms.service";
+import { FormsService } from "@/forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
-import { GlobalService } from "../global/global.service";
-import { FormTitles } from "../global/constants/formTitles";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { GlobalService } from "@/global/global.service";
+import { FormTitles } from "@/global/constants/formTitles";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
-import { manageOwnTeamMeetingOrAgendaById } from "../ability/conditions/meetingOrAgenda.ability";
-import { canSubmitCheckin } from "../ability/conditions/sprints.ability";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { manageOwnTeamMeetingOrAgendaById } from "@/ability/conditions/meetingOrAgenda.ability";
+import { canSubmitCheckin } from "@/ability/conditions/sprints.ability";
 
 @Injectable()
 export class SprintsService {
