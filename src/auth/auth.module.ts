@@ -13,7 +13,7 @@ import { EmailService } from "../utils/emails/email.service";
 import { MailConfigModule } from "@/config/mail/mailConfig.module";
 import { AppConfigModule } from "@/config/app/appConfig.module";
 import { AuthConfigModule } from "@/config/auth/authConfig.module";
-import { OAuthConfigModule } from "../config/Oauth/oauthConfig.module";
+import { OAuthConfigModule } from "@/config/Oauth/oauthConfig.module";
 import { AuthConfig } from "@/config/auth/auth.interface";
 
 @Module({
