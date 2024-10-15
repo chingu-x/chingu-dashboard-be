@@ -117,9 +117,10 @@
             "node_modules",
             "src"
         ],
-        "rootDir": "src",
+        "rootDir": ".",
         "moduleNameMapper": {
-            "@/(.*)": "<rootDir>/$1"
+            "@/(.*)": "<rootDir>/src/$1",
+            "@Prisma/(.*)": "<rootDir>/$1"
         },
         "modulePaths": [
             "<rootDir>"
@@ -137,7 +138,7 @@
         "coverageDirectory": "../coverage",
         "testEnvironment": "node",
         "setupFilesAfterEnv": [
-            "<rootDir>/prisma/singleton.ts"
+            "<rootDir>/src/prisma/singleton.ts"
         ]
     },
     "prisma": {
