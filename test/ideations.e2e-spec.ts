@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../src/app.module";
-import { PrismaService } from "../src/prisma/prisma.service";
+import { AppModule } from "@/app.module";
+import { PrismaService } from "@/prisma/prisma.service";
 import { loginAndGetTokens } from "./utils";
-import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
-import { seed } from "../prisma/seed/seed";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
+import { seed } from "@Prisma/seed/seed";
 import * as cookieParser from "cookie-parser";
 
 describe("IdeationsController (e2e)", () => {

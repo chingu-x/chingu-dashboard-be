@@ -1,12 +1,12 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "../src/app.module";
-import { seed } from "../prisma/seed/seed";
+import { AppModule } from "@/app.module";
+import { seed } from "@Prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
-import { PrismaService } from "../src/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { loginAndGetTokens } from "./utils";
-import { FormTitles } from "../src/global/constants/formTitles";
+import { FormTitles } from "@/global/constants/formTitles";
 
 describe("VoyagesController e2e Tests", () => {
     let app: INestApplication;
