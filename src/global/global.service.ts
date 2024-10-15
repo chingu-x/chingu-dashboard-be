@@ -4,7 +4,7 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
 import { FormResponseDto } from "./dtos/FormResponse.dto";
 
