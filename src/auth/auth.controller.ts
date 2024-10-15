@@ -24,7 +24,7 @@ import {
     LoginUnauthorizedErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
+} from "@/global/responses/errors";
 import {
     LoginResponse,
     LogoutResponse,
@@ -35,16 +35,16 @@ import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
-import { Public } from "../global/decorators/public.decorator";
-import { Unverified } from "../global/decorators/unverified.decorator";
+import { Public } from "@/global/decorators/public.decorator";
+import { Unverified } from "@/global/decorators/unverified.decorator";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
-import { MailConfigService } from "../config/mail/mailConfig.service";
-import { AppConfigService } from "../config/app/appConfig.service";
+import { MailConfigService } from "@/config/mail/mailConfig.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
