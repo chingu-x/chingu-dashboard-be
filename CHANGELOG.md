@@ -13,12 +13,15 @@ Another example [here](https://co-pilot.dev/changelog)
 - Add units tests for the forms controller and services([#204](https://github.com/chingu-x/chingu-dashboard-be/pull/204))
 - Add same site property to cookie ([#212](https://github.com/chingu-x/chingu-dashboard-be/pull/212))
 - Add same site property to cookie in refresh endpoint ([#214](https://github.com/chingu-x/chingu-dashboard-be/pull/214))
+- Add new comment model ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
 
 ### Changed
 
 - Update PostgreSQL image to timescale/timescaledb-ha:pg16 to match railway postgres image ([#210](https://github.com/chingu-x/chingu-dashboard-be/pull/210))
-- refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
 - Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
+- Refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
+- Update solo project model ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
+- Update readme to include more instructions for using the test database ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
 
 ### Fixed
 
