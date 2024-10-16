@@ -18,10 +18,12 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Changed
 
 - Update PostgreSQL image to timescale/timescaledb-ha:pg16 to match railway postgres image ([#210](https://github.com/chingu-x/chingu-dashboard-be/pull/210))
+- refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
 - Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
 - Refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
 - Update solo project model ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
 - Update readme to include more instructions for using the test database ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
+- refactored unit tests to use absolute import paths ([#215](https://github.com/chingu-x/chingu-dashboard-be/pull/215))
 
 ### Fixed
 

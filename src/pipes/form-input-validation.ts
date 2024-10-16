@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
-import { FormResponseDto } from "../global/dtos/FormResponse.dto";
+import { FormResponseDto } from "@/global/dtos/FormResponse.dto";
 
 const responseIndex = ["response", "responses"];
 

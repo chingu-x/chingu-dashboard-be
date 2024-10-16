@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { VoyagesService } from "./voyages.service";
-import { GlobalService } from "../global/global.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
-import { prismaMock } from "../prisma/singleton";
 import { toBeArray } from "jest-extended";
+import { VoyagesService } from "./voyages.service";
+import { GlobalService } from "@/global/global.service";
+import { PrismaService } from "@/prisma/prisma.service";
+import { prismaMock } from "@/prisma/singleton";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
 
 expect.extend({ toBeArray });
 

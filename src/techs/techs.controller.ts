@@ -27,12 +27,12 @@ import {
     ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
+} from "@/global/responses/errors";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { VoyageTeamMemberValidationPipe } from "@/pipes/voyage-team-member-validation";
 
 @Controller()
 @ApiTags("Voyage - Techs")

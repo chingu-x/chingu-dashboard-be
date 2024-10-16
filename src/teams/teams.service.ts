@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { PrismaService } from "../prisma/prisma.service";
-import { publicVoyageTeamUserSelect } from "../global/selects/teams.select";
-import { CustomRequest, UserReq } from "../global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
+import { PrismaService } from "@/prisma/prisma.service";
+import { publicVoyageTeamUserSelect } from "@/global/selects/teams.select";
+import { CustomRequest, UserReq } from "@/global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
 
 @Injectable()
 export class TeamsService {

@@ -3,7 +3,7 @@ import { IdeationsController } from "./ideations.controller";
 import { IdeationsService } from "./ideations.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 describe("IdeationsController", () => {
     let controller: IdeationsController;

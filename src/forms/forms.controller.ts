@@ -13,11 +13,11 @@ import {
     ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
+} from "@/global/responses/errors";
 
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 @Controller("forms")
 @ApiTags("Forms")

@@ -1,13 +1,13 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "../src/app.module";
-import { seed } from "../prisma/seed/seed";
+import { AppModule } from "@/app.module";
+import { seed } from "@Prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import { getNonAdminUser, loginAndGetTokens } from "./utils";
-import { PrismaService } from "../src/prisma/prisma.service";
-import { AbilityFactory } from "../src/ability/ability.factory/ability.factory";
-import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import { PrismaService } from "@/prisma/prisma.service";
+import { AbilityFactory } from "@/ability/ability.factory/ability.factory";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 
 describe("FormController e2e Tests", () => {
     let app: INestApplication;

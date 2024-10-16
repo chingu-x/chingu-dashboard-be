@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ResourcesService } from "./resources.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
-import { prismaMock } from "../prisma/singleton";
+import { PrismaService } from "@/prisma/prisma.service";
+import { GlobalService } from "@/global/global.service";
+import { prismaMock } from "@/prisma/singleton";
 import { CreateResourceDto } from "./dto/create-resource.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 const userReq = {
     userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",

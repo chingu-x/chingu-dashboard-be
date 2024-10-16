@@ -4,11 +4,11 @@ import {
     ForbiddenException,
     Injectable,
 } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
+import { PrismaService } from "@/prisma/prisma.service";
+import { GlobalService } from "@/global/global.service";
 import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { FormTitles } from "../global/constants/formTitles";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { FormTitles } from "@/global/constants/formTitles";
 
 // import { FormTitles } from "../global/constants/formTitles";
 

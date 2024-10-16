@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "../src/app.module";
-import { seed } from "../prisma/seed/seed";
+import { AppModule } from "@/app.module";
+import { seed } from "@Prisma/seed/seed";
 import * as request from "supertest";
 import * as cookieParser from "cookie-parser";
 import {
@@ -10,12 +10,12 @@ import {
     getNonAdminUser,
     loginAndGetTokens,
 } from "./utils";
-import { PrismaService } from "../src/prisma/prisma.service";
-import { comparePassword } from "../src/global/auth/utils";
-import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import { PrismaService } from "@/prisma/prisma.service";
+import { comparePassword } from "@/global/auth/utils";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 
-import { AuthConfig } from "../src/config/auth/auth.interface";
-import { OAuthConfig } from "../src/config/Oauth/oauthConfig.interface";
+import { AuthConfig } from "@/config/auth/auth.interface";
+import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";

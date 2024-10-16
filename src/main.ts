@@ -1,9 +1,9 @@
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { PrismaClientExceptionFilter } from "./exception-filters/prisma-client-exception.filter";
 import { Logger, ValidationPipe } from "@nestjs/common";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import * as cookieParser from "cookie-parser";
+import { AppModule } from "./app.module";
+import { PrismaClientExceptionFilter } from "./exception-filters/prisma-client-exception.filter";
 import { CASLForbiddenExceptionFilter } from "./exception-filters/casl-forbidden-exception.filter";
 import { RequestLogging } from "./middleware/requests-logging";
 import { AppConfigService } from "./config/app/appConfig.service";

@@ -4,8 +4,8 @@ import {
     InternalServerErrorException,
     UnprocessableEntityException,
 } from "@nestjs/common";
-import { seed } from "../../prisma/seed/seed";
-import { AppConfigService } from "../config/app/appConfig.service";
+import { seed } from "@Prisma/seed/seed";
+import { AppConfigService } from "@/config/app/appConfig.service";
 
 @Injectable()
 export class DevelopmentService {

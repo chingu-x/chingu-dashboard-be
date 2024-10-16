@@ -8,10 +8,10 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
-import { GlobalService } from "../global/global.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
-import { manageOwnFeaturesById } from "../ability/conditions/features.ability";
+import { GlobalService } from "@/global/global.service";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { manageOwnFeaturesById } from "@/ability/conditions/features.ability";
 
 @Injectable()
 export class FeaturesService {

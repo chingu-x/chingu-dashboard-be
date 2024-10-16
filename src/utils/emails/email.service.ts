@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { templateIds } from "./templateIds";
 import * as Mailjet from "node-mailjet";
-import { MailConfigService } from "../../config/mail/mailConfig.service";
-import { AppConfigService } from "../../config/app/appConfig.service";
+import { MailConfigService } from "@/config/mail/mailConfig.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
 
 @Injectable()
 export class EmailService {

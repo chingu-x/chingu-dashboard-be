@@ -113,8 +113,21 @@
             "json",
             "ts"
         ],
-        "rootDir": "src",
-        "testRegex": ".*\\.spec|.jest\\.ts$",
+        "moduleDirectories": [
+            "node_modules",
+            "src"
+        ],
+        "rootDir": ".",
+        "moduleNameMapper": {
+            "@/(.*)": "<rootDir>/src/$1",
+            "@Prisma/(.*)": "<rootDir>/prisma/$1"
+        },
+        "modulePaths": [
+            "<rootDir>"
+        ],
+        "testRegex": [
+            ".*\\.spec|.jest\\.ts$"
+        ],
         "transform": {
             "^.+\\.(t|j)s$": "ts-jest"
         },
@@ -124,11 +137,11 @@
         "coverageDirectory": "../coverage",
         "testEnvironment": "node",
         "setupFilesAfterEnv": [
-            "<rootDir>/prisma/singleton.ts"
+            "<rootDir>/src/prisma/singleton.ts"
         ]
     },
     "prisma": {
-        "seed": "ts-node prisma/seed/index.ts"
+        "seed": "ts-node -r tsconfig-paths/register prisma/seed/index.ts"
     },
     "lint-staged": {
         "src/**/*.ts": [

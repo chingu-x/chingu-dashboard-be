@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { JwtService } from "@nestjs/jwt";
 import { AuthService } from "./auth.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
-import { UsersService } from "../users/users.service";
-import { AppConfigService } from "../config/app/appConfig.service";
-import { EmailService } from "../utils/emails/email.service";
-import { AuthConfig } from "../config/auth/auth.interface";
+import { PrismaService } from "@/prisma/prisma.service";
+import { GlobalService } from "@/global/global.service";
+import { UsersService } from "@/users/users.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
+import { EmailService } from "@/utils/emails/email.service";
+import { AuthConfig } from "@/config/auth/auth.interface";
 
 describe("AuthService", () => {
     let service: AuthService;

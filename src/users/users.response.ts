@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { VoyageRoleEntity } from "../global/entities/voyage-role.entity";
-import { VoyageStatus } from "../global/responses/shared";
+import { VoyageRoleEntity } from "@/global/entities/voyage-role.entity";
+import { VoyageStatus } from "@/global/responses/shared";
 import { IsIn } from "class-validator";
 
 class Gender {

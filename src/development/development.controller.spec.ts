@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { DevelopmentController } from "./development.controller";
 import { DevelopmentService } from "./development.service";
 import { Response } from "express";
-import { AppConfigService } from "../config/app/appConfig.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
 
 describe("DevelopmentController", () => {
     let controller: DevelopmentController;

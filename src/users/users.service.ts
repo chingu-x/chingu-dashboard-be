@@ -1,10 +1,10 @@
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import {
     fullUserDetailSelect,
     privateUserDetailSelect,
-} from "../global/selects/users.select";
+} from "@/global/selects/users.select";
 
 @Injectable()
 export class UsersService {

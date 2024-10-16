@@ -6,7 +6,7 @@ import {
     Inject,
 } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
-import { CustomRequest } from "src/global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 @Injectable({ scope: Scope.REQUEST })
 export class VoyageTeamMemberValidationPipe implements PipeTransform {

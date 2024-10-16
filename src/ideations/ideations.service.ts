@@ -5,13 +5,13 @@ import {
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { CreateIdeationDto } from "./dto/create-ideation.dto";
 import { UpdateIdeationDto } from "./dto/update-ideation.dto";
-import { GlobalService } from "../global/global.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
-import { manageOwnIdeationById } from "../ability/conditions/ideations.ability";
+import { GlobalService } from "@/global/global.service";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { manageOwnIdeationById } from "@/ability/conditions/ideations.ability";
 
 @Injectable()
 export class IdeationsService {

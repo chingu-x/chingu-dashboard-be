@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
-import { seed } from "../prisma/seed/seed";
+import { seed } from "@Prisma/seed/seed";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";

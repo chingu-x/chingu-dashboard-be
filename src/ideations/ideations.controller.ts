@@ -19,15 +19,15 @@ import {
     ConflictErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
+} from "@/global/responses/errors";
 import {
     IdeationResponse,
     IdeationVoteResponse,
     TeamIdeationsResponse,
 } from "./ideations.response";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { Action } from "../ability/ability.factory/ability.factory";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
 
 @Controller()
 @ApiTags("Voyage - Ideations")

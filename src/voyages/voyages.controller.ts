@@ -8,18 +8,18 @@ import {
 } from "@nestjs/common";
 import { VoyagesService } from "./voyages.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { FormInputValidationPipe } from "../pipes/form-input-validation";
+import { FormInputValidationPipe } from "@/pipes/form-input-validation";
 import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
-import { CheckinSubmissionResponse } from "../sprints/sprints.response";
+import { CheckinSubmissionResponse } from "@/sprints/sprints.response";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
     ForbiddenErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
+} from "@/global/responses/errors";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
 
 @Controller("voyages")
 @ApiTags("voyages")

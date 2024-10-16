@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { toBeArray } from "jest-extended";
 import { VoyagesController } from "./voyages.controller";
 import { VoyagesService } from "./voyages.service";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateVoyageProjectSubmissionDto } from "./dto/create-voyage-project-submission.dto";
-import { toBeArray } from "jest-extended";
 
 expect.extend({ toBeArray });
 

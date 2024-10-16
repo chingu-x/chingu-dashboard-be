@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Form, Prisma, Question } from "@prisma/client";
-import { canReadAndSubmitForms } from "../ability/conditions/forms.ability";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { canReadAndSubmitForms } from "@/ability/conditions/forms.ability";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 export const formSelect = {
     id: true,

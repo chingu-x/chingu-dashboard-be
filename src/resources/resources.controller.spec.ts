@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ResourcesController } from "./resources.controller";
 import { ResourcesService } from "./resources.service";
 import { CreateResourceDto } from "./dto/create-resource.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
 
