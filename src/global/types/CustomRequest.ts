@@ -1,6 +1,6 @@
 import { Request } from "express";
 
-type VoyageTeam = {
+export type VoyageTeam = {
     teamId: number;
     memberId: number;
 };
