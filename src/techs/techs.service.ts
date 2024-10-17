@@ -327,23 +327,6 @@ export class TechsService {
     ) {
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
-        //check if category name with teamid aready exists
-        const categoryAlreadyExists =
-            await this.prisma.techStackCategory.findFirst({
-                where: {
-                    voyageTeamId: teamId,
-                    name: {
-                        equals: createTechStackCategoryDto.name,
-                        mode: "insensitive",
-                    },
-                },
-            });
-        if (categoryAlreadyExists) {
-            throw new ConflictException(
-                `${createTechStackCategoryDto.name}, or a case-insensitive match, already exists in team ${teamId}'s tech stack.`,
-            );
-        }
-
         try {
             const categoryData = {
                 name: createTechStackCategoryDto.name,
@@ -356,6 +339,11 @@ export class TechsService {
                 });
             return newTeamTechCategory;
         } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `Category ${createTechStackCategoryDto.name} already exists for this team.`,
+                );
+            }
             throw e;
         }
     }
@@ -375,23 +363,6 @@ export class TechsService {
             );
         }
 
-        //check if category name with teamid aready exists
-        const newCategoryAlreadyExists =
-            await this.prisma.techStackCategory.findFirst({
-                where: {
-                    voyageTeamId: updateTechStackCategoryDto.voyageTeamId,
-                    name: {
-                        equals: updateTechStackCategoryDto.newName,
-                        mode: "insensitive",
-                    },
-                },
-            });
-        if (newCategoryAlreadyExists) {
-            throw new ConflictException(
-                `${updateTechStackCategoryDto.newName}, or a case-insensitive match, already exists in team's tech stack.`,
-            );
-        }
-
         try {
             const newTechStackCategory =
                 await this.prisma.techStackCategory.update({
@@ -405,6 +376,11 @@ export class TechsService {
                 });
             return newTechStackCategory;
         } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `Category ${updateTechStackCategoryDto.newName} already exists for this team.`,
+                );
+            }
             throw e;
         }
     }

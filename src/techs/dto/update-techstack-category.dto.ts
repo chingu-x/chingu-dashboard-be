@@ -11,9 +11,4 @@ export class UpdateTechStackCategoryDto {
     @IsNotEmpty()
     @ApiProperty({ example: "DB interface" })
     description: string;
-
-    @IsInt()
-    @IsNotEmpty()
-    @ApiProperty({ example: 1 })
-    voyageTeamId: number;
 }

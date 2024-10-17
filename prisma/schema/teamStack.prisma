@@ -2,7 +2,7 @@
 
 model TechStackCategory {
   id          Int    @id @default(autoincrement())
-  name        String 
+  name               String             @db.Citext
   description String
   voyageTeam         VoyageTeam?         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId       Int? 
@@ -11,6 +11,8 @@ model TechStackCategory {
   updatedAt DateTime @updatedAt
 
   teamTechStackItems TeamTechStackItem[]
+
+  @@unique(fields: [name, voyageTeamId], name: "teamCategoryUniqueKey")
 }
 
 model TeamTechStackItem {
