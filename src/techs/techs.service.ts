@@ -7,7 +7,6 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma } from "@prisma/client";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
