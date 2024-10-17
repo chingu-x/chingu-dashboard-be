@@ -349,15 +349,13 @@ export class TechsController {
         description: "Invalid tech stack category id",
         type: NotFoundErrorResponse,
     })
-    @Delete("teams/:teamId/techStackCategory/:techStackCategoryId")
+    @Delete("teams/techStackCategory/:techStackCategoryId")
     deleteTechStackCategory(
         @Request() req: CustomRequest,
-        @Param("teamId", ParseIntPipe) teamId: number,
         @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
     ) {
         return this.techsService.deleteTechStackCategory(
             req,
-            teamId,
             techStackCategoryId,
         );
     }

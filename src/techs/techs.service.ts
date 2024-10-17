@@ -7,12 +7,13 @@ import {
     NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "@prisma/client";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest, VoyageTeam } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
@@ -332,12 +333,15 @@ export class TechsService {
             await this.prisma.techStackCategory.findFirst({
                 where: {
                     voyageTeamId: teamId,
-                    name: createTechStackCategoryDto.name,
+                    name: {
+                        equals: createTechStackCategoryDto.name,
+                        mode: "insensitive",
+                    },
                 },
             });
         if (categoryAlreadyExists) {
             throw new ConflictException(
-                `${createTechStackCategoryDto.name} already exists in team ${teamId}'s tech stack.`,
+                `${createTechStackCategoryDto.name}, or a case-insensitive match, already exists in team ${teamId}'s tech stack.`,
             );
         }
 
@@ -362,22 +366,30 @@ export class TechsService {
         techStackCategoryId: number,
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
-        const teamId = updateTechStackCategoryDto.voyageTeamId;
-
-        manageOwnVoyageTeamWithIdParam(req.user, teamId);
-        await this.teamOwnsCategory(teamId, techStackCategoryId);
+        const permission = await this.userCanChangeCategory(
+            techStackCategoryId,
+            req.user.voyageTeams,
+        );
+        if (!permission) {
+            throw new ForbiddenException(
+                `This user cannot change category ${techStackCategoryId}`,
+            );
+        }
 
         //check if category name with teamid aready exists
         const newCategoryAlreadyExists =
             await this.prisma.techStackCategory.findFirst({
                 where: {
                     voyageTeamId: updateTechStackCategoryDto.voyageTeamId,
-                    name: updateTechStackCategoryDto.newName,
+                    name: {
+                        equals: updateTechStackCategoryDto.newName,
+                        mode: "insensitive",
+                    },
                 },
             });
         if (newCategoryAlreadyExists) {
             throw new ConflictException(
-                `${updateTechStackCategoryDto.newName} already exists in team ${teamId}'s tech stack.`,
+                `${updateTechStackCategoryDto.newName}, or a case-insensitive match, already exists in team's tech stack.`,
             );
         }
 
@@ -400,11 +412,17 @@ export class TechsService {
 
     async deleteTechStackCategory(
         req: CustomRequest,
-        teamId: number,
         techStackCategoryId: number,
     ) {
-        manageOwnVoyageTeamWithIdParam(req.user, teamId);
-        await this.teamOwnsCategory(teamId, techStackCategoryId);
+        const permission = await this.userCanChangeCategory(
+            techStackCategoryId,
+            req.user.voyageTeams,
+        );
+        if (!permission) {
+            throw new ForbiddenException(
+                `This user cannot change category ${techStackCategoryId}`,
+            );
+        }
 
         try {
             await this.prisma.techStackCategory.delete({
@@ -532,17 +550,16 @@ export class TechsService {
         }
     }
 
-    private async teamOwnsCategory(teamId: number, categoryId: number) {
-        const match = await this.prisma.techStackCategory.findFirst({
+    private async userCanChangeCategory(
+        categoryId: number,
+        voyageTeams: VoyageTeam[],
+    ) {
+        const match = await this.prisma.techStackCategory.findUnique({
             where: {
                 id: categoryId,
-                voyageTeamId: teamId,
             },
         });
-        if (!match) {
-            throw new BadRequestException(
-                `Category ${categoryId} does not belong to team ${teamId}`,
-            );
-        }
+
+        return voyageTeams.some((team) => team.teamId === match?.voyageTeamId);
     }
 }
