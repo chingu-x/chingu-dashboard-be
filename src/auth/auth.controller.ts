@@ -37,7 +37,6 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtRefreshAuthGuard } from "./guards/jwt-rt-auth.guard";
 import { Public } from "../global/decorators/public.decorator";
 import { Unverified } from "../global/decorators/unverified.decorator";
-import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 import { CheckAbilities } from "../global/decorators/abilities.decorator";
 import { Action } from "../ability/ability.factory/ability.factory";
@@ -198,16 +197,7 @@ export class AuthController {
             req.user,
         );
 
-        res.cookie("access_token", access_token, {
-            maxAge: AT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
-        res.cookie("refresh_token", refresh_token, {
-            maxAge: RT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-        });
+        this.authService.setCookie(res, access_token, refresh_token);
         res.status(HttpStatus.OK).send({ message: "Refresh Success" });
     }
 

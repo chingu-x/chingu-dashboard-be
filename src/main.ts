@@ -11,10 +11,11 @@ import { AppConfigService } from "./config/app/appConfig.service";
 async function bootstrap() {
     const requestLogger = new Logger("Requests");
     const app = await NestFactory.create(AppModule);
+
     app.enableCors({
         origin: [
-            "http://localhost:*",
-            /^https:\/\/chingu-dashboard-[A-Za-z]+-chingu-dashboard\.vercel\.app$/,
+            /^http:\/\/localhost:\d+$/,
+            /^https:\/\/chingu-dashboard-[A-Za-z\-]+-chingu-dashboard\.vercel\.app$/,
             "https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app",
             "https://chingu-dashboard.vercel.app",
         ],
