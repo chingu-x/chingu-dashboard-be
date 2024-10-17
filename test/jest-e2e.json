@@ -1,11 +1,14 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
-  "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  },
-  "testTimeout": 70000,
-  "moduleDirectories": ["<rootDir>/../", "node_modules"]
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": "..",
+    "testEnvironment": "node",
+    "testRegex": ".e2e-spec.ts$",
+    "transform": {
+        "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "testTimeout": 70000,
+    "moduleDirectories": ["<rootDir>/../", "node_modules"],
+    "moduleNameMapper": {
+        "^@/(.*)$": "<rootDir>/src/$1"
+    }
 }

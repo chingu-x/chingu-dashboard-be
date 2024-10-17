@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { DevelopmentService } from "./development.service";
 import { DevelopmentController } from "./development.controller";
-import { AppConfigModule } from "src/config/app/appConfig.module";
+import { AppConfigModule } from "@/config/app/appConfig.module";
 
 @Module({
     imports: [AppConfigModule],
