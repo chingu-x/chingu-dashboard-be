@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { NotFoundException } from "@nestjs/common";
-import { TeamsService } from "./teams.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
-import { prismaMock } from "../prisma/singleton";
 import { toBeArray } from "jest-extended";
-import { publicVoyageTeamUserSelect } from "../global/selects/teams.select";
+import { TeamsService } from "./teams.service";
+import { PrismaService } from "@/prisma/prisma.service";
+import { prismaMock } from "@/prisma/singleton";
+import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { publicVoyageTeamUserSelect } from "@/global/selects/teams.select";
 
 expect.extend({ toBeArray });
 

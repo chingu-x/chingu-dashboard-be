@@ -1,14 +1,14 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UsersService } from "./users.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { prismaMock } from "../prisma/singleton";
 import { toBeArray } from "jest-extended";
+import { NotFoundException } from "@nestjs/common";
+import { User } from "@prisma/client";
+import { UsersService } from "./users.service";
+import { PrismaService } from "@/prisma/prisma.service";
+import { prismaMock } from "@/prisma/singleton";
 import {
     fullUserDetailSelect,
     privateUserDetailSelect,
-} from "../global/selects/users.select";
-import { NotFoundException } from "@nestjs/common";
-import { User } from "@prisma/client";
+} from "@/global/selects/users.select";
 
 // Extend Jest with custom matchers
 expect.extend({ toBeArray });

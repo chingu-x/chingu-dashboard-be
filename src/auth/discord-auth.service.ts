@@ -3,10 +3,10 @@ import {
     Inject,
     InternalServerErrorException,
 } from "@nestjs/common";
-import { IAuthProvider } from "../global/interfaces/oauth.interface";
-import { PrismaService } from "../prisma/prisma.service";
-import { DiscordUser } from "../global/types/auth.types";
-import { generatePasswordHash } from "../global/auth/utils";
+import { IAuthProvider } from "@/global/interfaces/oauth.interface";
+import { PrismaService } from "@/prisma/prisma.service";
+import { DiscordUser } from "@/global/types/auth.types";
+import { generatePasswordHash } from "@/global/auth/utils";
 
 import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
 @Injectable()

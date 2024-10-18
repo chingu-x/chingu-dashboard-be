@@ -1,6 +1,6 @@
 import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
-import { AuthConfigService } from "../../config/auth/authConfig.service";
+import { AuthConfigService } from "@/config/auth/authConfig.service";
 
 const roundsOfHashing = new AuthConfigService().getInt(
     "BCRYPT_HASHING_ROUNDS",

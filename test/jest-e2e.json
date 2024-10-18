@@ -9,6 +9,7 @@
     "testTimeout": 70000,
     "moduleDirectories": ["<rootDir>/../", "node_modules"],
     "moduleNameMapper": {
-        "^@/(.*)$": "<rootDir>/src/$1"
+        "^@/(.*)$": "<rootDir>/src/$1",
+        "^@Prisma/(.*)$": "<rootDir>/prisma/$1"
     }
 }
