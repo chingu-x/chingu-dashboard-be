@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Optional } from "@nestjs/common";
-import { ResponseGroup } from "../forms/forms.response";
+import { ResponseGroup } from "@/forms/forms.response";
 
 class Sprint {
     @ApiProperty({ example: 1 })
@@ -211,7 +211,7 @@ export class CheckinSubmissionResponse {
     @ApiProperty({ example: 1 })
     id: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 4 })
     voyageTeamMemberId: number;
 
     @ApiProperty({ example: 1 })

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
-import { seed } from "../prisma/seed/seed";
+import { seed } from "@Prisma/seed/seed";
 import * as request from "supertest";
-import { AppModule } from "../src/app.module";
-import { PrismaService } from "../src/prisma/prisma.service";
-import { CreateResourceDto } from "src/resources/dto/create-resource.dto";
-import { UpdateResourceDto } from "src/resources/dto/update-resource.dto";
+import { AppModule } from "@/app.module";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreateResourceDto } from "@/resources/dto/create-resource.dto";
+import { UpdateResourceDto } from "@/resources/dto/update-resource.dto";
 import { loginAndGetTokens } from "./utils";
-import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 import * as cookieParser from "cookie-parser";
 
 const findOwnResource = async (email: string, prisma: PrismaService) => {

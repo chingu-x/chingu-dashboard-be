@@ -5,11 +5,11 @@ import {
 } from "@nestjs/common";
 import { CreateResourceDto } from "./dto/create-resource.dto";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
-import { PrismaService } from "../prisma/prisma.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
-import { manageOwnResourceById } from "../ability/conditions/resource.ability";
-import { GlobalService } from "../global/global.service";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { manageOwnResourceById } from "@/ability/conditions/resource.ability";
+import { GlobalService } from "@/global/global.service";
 
 @Injectable()
 export class ResourcesService {

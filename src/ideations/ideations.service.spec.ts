@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { IdeationsService } from "./ideations.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { GlobalService } from "../global/global.service";
-import { CustomRequest } from "../global/types/CustomRequest";
-import * as IdeationAbility from "../ability/conditions/ideations.ability";
+import { PrismaService } from "@/prisma/prisma.service";
+import { GlobalService } from "@/global/global.service";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import * as IdeationAbility from "@/ability/conditions/ideations.ability";
 
 // TODO: these tests probably need to be updated, it shouldn't use prisma, should only use prismaMock
 describe("IdeationsService", () => {

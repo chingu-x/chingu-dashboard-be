@@ -1,15 +1,15 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
-import { AppModule } from "../src/app.module";
-import { PrismaService } from "../src/prisma/prisma.service";
-import { seed } from "../prisma/seed/seed";
+import { AppModule } from "@/app.module";
+import { PrismaService } from "@/prisma/prisma.service";
+import { seed } from "@Prisma/seed/seed";
 import { loginAndGetTokens } from "./utils";
-import { CreateAgendaDto } from "src/sprints/dto/create-agenda.dto";
+import { CreateAgendaDto } from "@/sprints/dto/create-agenda.dto";
 import { toBeOneOf } from "jest-extended";
 import * as cookieParser from "cookie-parser";
-import { FormTitles } from "../src/global/constants/formTitles";
-import { CASLForbiddenExceptionFilter } from "../src/exception-filters/casl-forbidden-exception.filter";
+import { FormTitles } from "@/global/constants/formTitles";
+import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 
 expect.extend({ toBeOneOf });
 
@@ -1565,6 +1565,22 @@ describe("Sprints Controller (e2e)", () => {
                         {
                             questionId: questions[0].id,
                             boolean: "not a boolean",
+                        },
+                    ],
+                })
+                .expect(400);
+
+            // sprint id is for a voyage the team member isn't part of
+            await request(app.getHttpServer())
+                .post(sprintCheckinUrl)
+                .set("Cookie", access_token)
+                .send({
+                    sprintId: 25,
+                    voyageTeamMemberId: 4,
+                    responses: [
+                        {
+                            questionId: questions[0].id,
+                            text: "Text input value",
                         },
                     ],
                 })

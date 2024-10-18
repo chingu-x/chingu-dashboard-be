@@ -1,11 +1,11 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { AppModule } from "../src/app.module";
+import { AppModule } from "@/app.module";
 import * as cookieParser from "cookie-parser";
 import { loginAndGetTokens } from "./utils";
 import * as request from "supertest";
 import * as process from "node:process";
-import { AppConfigService } from "src/config/app/appConfig.service";
+import { AppConfigService } from "@/config/app/appConfig.service";
 
 describe("Development Controller (e2e)", () => {
     let app: INestApplication;

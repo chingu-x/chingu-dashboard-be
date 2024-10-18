@@ -16,7 +16,6 @@ model SoloProject {
   evaluatorUserId   String?            @db.Uuid()
   evaluator         User?              @relation(fields: [evaluatorUserId], references: [id], name: "evaluators", onDelete: SetNull)
   evaluatorFeedback String?
-  adminComments     String?
   statusId          Int?
   status            SoloProjectStatus? @relation(fields: [statusId], references: [id], onDelete: SetNull)
   formId            Int?
@@ -26,4 +25,6 @@ model SoloProject {
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
+
+  comments Comment[]
 }

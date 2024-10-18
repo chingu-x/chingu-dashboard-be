@@ -9,15 +9,16 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamMeetingDto } from "./dto/create-team-meeting.dto";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
-import { FormsService } from "../forms/forms.service";
+import { FormsService } from "@/forms/forms.service";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
-import { GlobalService } from "../global/global.service";
-import { FormTitles } from "../global/constants/formTitles";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { GlobalService } from "@/global/global.service";
+import { FormTitles } from "@/global/constants/formTitles";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
-import { manageOwnTeamMeetingOrAgendaById } from "../ability/conditions/meetingOrAgenda.ability";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { manageOwnTeamMeetingOrAgendaById } from "@/ability/conditions/meetingOrAgenda.ability";
+import { canSubmitCheckin } from "@/ability/conditions/sprints.ability";
 
 @Injectable()
 export class SprintsService {
@@ -104,6 +105,7 @@ export class SprintsService {
 
     async getSprintDatesByTeamId(teamId: number, req: CustomRequest) {
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
         const teamSprintDates = await this.prisma.voyageTeam.findUnique({
             where: {
                 id: teamId,
@@ -112,6 +114,12 @@ export class SprintsService {
                 id: true,
                 name: true,
                 endDate: true,
+                teamMeetings: {
+                    select: {
+                        id: true,
+                        sprintId: true,
+                    },
+                },
                 voyage: {
                     select: {
                         id: true,
@@ -127,22 +135,30 @@ export class SprintsService {
                                 number: true,
                                 startDate: true,
                                 endDate: true,
-                                teamMeetings: {
-                                    select: {
-                                        id: true,
-                                    },
-                                },
                             },
                         },
                     },
                 },
             },
         });
+
         if (!teamSprintDates) {
             throw new NotFoundException(`Invalid teamId: ${teamId}`);
         }
 
-        return teamSprintDates.voyage;
+        const newSprints = teamSprintDates.voyage?.sprints.map((sprint) => {
+            return {
+                ...sprint,
+                teamMeetings: teamSprintDates.teamMeetings
+                    .filter((meeting) => meeting.sprintId === sprint.id)
+                    .map((meeting) => meeting.id),
+            };
+        });
+
+        return {
+            ...teamSprintDates.voyage,
+            sprints: newSprints,
+        };
     }
 
     async getMeetingById(meetingId: number, req: CustomRequest) {
@@ -601,6 +617,13 @@ export class SprintsService {
                 FormTitles.sprintCheckinSM,
             ],
             responsesArray,
+        );
+
+        // TODO: find way to inject globalServices directly
+        await canSubmitCheckin(
+            createCheckinForm.sprintId,
+            createCheckinForm.voyageTeamMemberId,
+            this.globalServices.validateOrGetDbItem,
         );
 
         try {

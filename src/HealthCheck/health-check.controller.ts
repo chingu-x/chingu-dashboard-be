@@ -1,5 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
-import { Public } from "../global/decorators/public.decorator";
+import { Public } from "@/global/decorators/public.decorator";
 import { ApiTags } from "@nestjs/swagger";
 
 @Public()

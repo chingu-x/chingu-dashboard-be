@@ -20,10 +20,10 @@ import {
     ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { CustomRequest } from "../global/types/CustomRequest";
+} from "@/global/responses/errors";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 @Controller("teams")
 @ApiTags("teams")
