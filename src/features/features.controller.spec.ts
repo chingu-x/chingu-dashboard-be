@@ -7,15 +7,39 @@ const requestMock = {} as unknown as CustomRequest;
 
 const mockFeature = {
     id: 1,
-    title: "Chingu",
     teamMemberId: 1,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now()),
     featureCategoryId: 1,
     order: 1,
-    description:
-        "Chingu is a global collaboration platform and coding-cohort generator.",
+    description: "It is a very good feature that is very useful for the team",
 };
+
+const mockFeatureCategory = [
+    {
+        name: "must have",
+        id: 1,
+        description: "features that define your MVP",
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+    {
+        name: "should have",
+        id: 2,
+        description:
+            '"stretch goals" to be worked on when you’ve implemented all the "Must Haves"',
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+    {
+        name: "nice to have",
+        id: 3,
+        description:
+            '"stretch goals" to be worked on when you’ve implemented all the "Must Haves" and "Should Haves"',
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+    },
+];
 
 const mockTeamId: number = 1;
 
@@ -27,6 +51,7 @@ const dtoCreateMock = {
 
 const mockFeatureService = {
     createFeature: jest.fn(),
+    findFeatureCategories: jest.fn(),
 };
 
 describe("FeaturesController", () => {
@@ -68,6 +93,23 @@ describe("FeaturesController", () => {
                 mockTeamId,
                 dtoCreateMock,
             );
+        });
+    });
+
+    describe("findFeatureCategory", () => {
+        it("findFeatureCategory service should be defined", async () => {
+            expect(controller.findFeatureCategory).toBeDefined();
+        });
+
+        it("should return all feature categories", async () => {
+            mockFeatureService.findFeatureCategories.mockResolvedValue(
+                mockFeatureCategory,
+            );
+
+            const result = await controller.findFeatureCategory();
+
+            expect(result).toEqual(mockFeatureCategory);
+            expect(mockFeatureService.findFeatureCategories).toHaveBeenCalled();
         });
     });
 });
