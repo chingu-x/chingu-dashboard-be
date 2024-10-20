@@ -15,6 +15,45 @@ const mockFeature = {
     description: "It is a very good feature that is very useful for the team",
 };
 
+const mockFeaturesArray = [
+    {
+        id: 1,
+        teamMemberId: 1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        featureCategoryId: 1,
+        order: 1,
+        description:
+            "It is a very good feature that is very useful for the team",
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+    },
+    {
+        id: 2,
+        teamMemberId: 2,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        featureCategoryId: 2,
+        order: 2,
+        description:
+            "It is a very good feature that is very useful for the team",
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+    },
+];
+
 const mockFeatureCategory = [
     {
         name: "must have",
@@ -52,6 +91,7 @@ const dtoCreateMock = {
 const mockFeatureService = {
     createFeature: jest.fn(),
     findFeatureCategories: jest.fn(),
+    findAllFeatures: jest.fn(),
 };
 
 describe("FeaturesController", () => {
@@ -110,6 +150,29 @@ describe("FeaturesController", () => {
 
             expect(result).toEqual(mockFeatureCategory);
             expect(mockFeatureService.findFeatureCategories).toHaveBeenCalled();
+        });
+    });
+
+    describe("findAllFeatures", () => {
+        it("findAllFeatures service should be defined", async () => {
+            expect(controller.findAllFeatures).toBeDefined();
+        });
+
+        it("should return all features", async () => {
+            mockFeatureService.findAllFeatures.mockResolvedValue(
+                mockFeaturesArray,
+            );
+
+            const result = await controller.findAllFeatures(
+                requestMock,
+                mockTeamId,
+            );
+
+            expect(result).toEqual(mockFeaturesArray);
+            expect(mockFeatureService.findAllFeatures).toHaveBeenCalledWith(
+                mockTeamId,
+                requestMock,
+            );
         });
     });
 });
