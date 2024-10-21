@@ -4,6 +4,7 @@ import { FeaturesService } from "./features.service";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
+import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 
 const requestMock = {} as unknown as CustomRequest;
 
@@ -20,6 +21,24 @@ const mockFeature = {
 const mockUpdatedFeature = {
     ...mockFeature,
     description: "It is the best feature",
+};
+
+const mockUpdatedFeatureOrderAndCategory = {
+    ...mockFeature,
+    order: 2,
+    featureCategoryId: 2,
+    addedBy: {
+        member: {
+            firstName: "Larry",
+            lastName: "Castro",
+            id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+            avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+        },
+    },
+    category: {
+        id: 2,
+        name: "should have",
+    },
 };
 
 const mockFeaturesArray = [
@@ -99,6 +118,11 @@ const dtoUpdateMock: UpdateFeatureDto = {
     description: "It is the best feature",
 };
 
+const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto = {
+    order: 2,
+    featureCategoryId: 2,
+};
+
 const mockFeatureService = {
     createFeature: jest.fn(),
     findFeatureCategories: jest.fn(),
@@ -106,6 +130,7 @@ const mockFeatureService = {
     findOneFeature: jest.fn(),
     updateFeature: jest.fn(),
     deleteFeature: jest.fn(),
+    updateFeatureOrderAndCategory: jest.fn(),
 };
 
 describe("FeaturesController", () => {
@@ -128,7 +153,7 @@ describe("FeaturesController", () => {
     });
 
     describe("createFeature", () => {
-        it("createNewFeature service should be defined", async () => {
+        it("createFeature controller should be defined", async () => {
             expect(controller.createFeature).toBeDefined();
         });
 
@@ -151,7 +176,7 @@ describe("FeaturesController", () => {
     });
 
     describe("findFeatureCategory", () => {
-        it("findFeatureCategory service should be defined", async () => {
+        it("findFeatureCategory controller should be defined", async () => {
             expect(controller.findFeatureCategory).toBeDefined();
         });
 
@@ -168,7 +193,7 @@ describe("FeaturesController", () => {
     });
 
     describe("findAllFeatures", () => {
-        it("findAllFeatures service should be defined", async () => {
+        it("findAllFeatures controller should be defined", async () => {
             expect(controller.findAllFeatures).toBeDefined();
         });
 
@@ -191,7 +216,7 @@ describe("FeaturesController", () => {
     });
 
     describe("findOneFeature", () => {
-        it("findOneFeature service should be defined", async () => {
+        it("findOneFeature controller should be defined", async () => {
             expect(controller.findOneFeature).toBeDefined();
         });
         it("should return one feature", async () => {
@@ -211,7 +236,7 @@ describe("FeaturesController", () => {
     });
 
     describe("updateFeature", () => {
-        it("updateFeature service should be defined", async () => {
+        it("updateFeature controller should be defined", async () => {
             expect(controller.updateFeature).toBeDefined();
         });
 
@@ -235,7 +260,7 @@ describe("FeaturesController", () => {
         });
     });
     describe("Delete Feature", () => {
-        it("deleteFeature service should be defined", async () => {
+        it("deleteFeature controller should be defined", async () => {
             expect(controller.deleteFeature).toBeDefined();
         });
 
@@ -257,6 +282,32 @@ describe("FeaturesController", () => {
             expect(mockFeatureService.deleteFeature).toHaveBeenCalledWith(
                 mockFeature.id,
                 requestMock,
+            );
+        });
+    });
+    describe("Update Feature Order and Category", () => {
+        it("updateFeatureOrderAndCategory controller should be defined", async () => {
+            expect(controller.updateFeatureOrderAndCategory).toBeDefined();
+        });
+
+        it("should update feature order and category", async () => {
+            mockFeatureService.updateFeatureOrderAndCategory.mockResolvedValue(
+                mockUpdatedFeatureOrderAndCategory,
+            );
+
+            const result = await controller.updateFeatureOrderAndCategory(
+                requestMock,
+                mockFeature.id,
+                dtoUpdateOrderAndCategoryMock,
+            );
+
+            expect(result).toEqual(mockUpdatedFeatureOrderAndCategory);
+            expect(
+                mockFeatureService.updateFeatureOrderAndCategory,
+            ).toHaveBeenCalledWith(
+                requestMock,
+                mockFeature.id,
+                dtoUpdateOrderAndCategoryMock,
             );
         });
     });
