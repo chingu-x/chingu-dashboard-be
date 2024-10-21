@@ -2,6 +2,8 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FeaturesController } from "./features.controller";
 import { FeaturesService } from "./features.service";
 import { CustomRequest } from "@/global/types/CustomRequest";
+import { UpdateFeatureDto } from "./dto/update-feature.dto";
+import { CreateFeatureDto } from "./dto/create-feature.dto";
 
 const requestMock = {} as unknown as CustomRequest;
 
@@ -13,6 +15,11 @@ const mockFeature = {
     featureCategoryId: 1,
     order: 1,
     description: "It is a very good feature that is very useful for the team",
+};
+
+const mockUpdatedFeature = {
+    ...mockFeature,
+    description: "It is the best feature",
 };
 
 const mockFeaturesArray = [
@@ -82,10 +89,14 @@ const mockFeatureCategory = [
 
 const mockTeamId: number = 1;
 
-const dtoCreateMock = {
-    description:
-        "Chingu is a global collaboration platform and coding-cohort generator.",
+const dtoCreateMock: CreateFeatureDto = {
+    description: "Chingu is a global collaboration platform",
     featureCategoryId: 1,
+};
+
+const dtoUpdateMock: UpdateFeatureDto = {
+    teamMemberId: 1,
+    description: "It is the best feature",
 };
 
 const mockFeatureService = {
@@ -93,6 +104,8 @@ const mockFeatureService = {
     findFeatureCategories: jest.fn(),
     findAllFeatures: jest.fn(),
     findOneFeature: jest.fn(),
+    updateFeature: jest.fn(),
+    deleteFeature: jest.fn(),
 };
 
 describe("FeaturesController", () => {
@@ -191,6 +204,57 @@ describe("FeaturesController", () => {
             );
             expect(result).toEqual(mockFeaturesArray[0]);
             expect(mockFeatureService.findOneFeature).toHaveBeenCalledWith(
+                mockFeature.id,
+                requestMock,
+            );
+        });
+    });
+
+    describe("updateFeature", () => {
+        it("updateFeature service should be defined", async () => {
+            expect(controller.updateFeature).toBeDefined();
+        });
+
+        it("should update a feature", async () => {
+            mockFeatureService.updateFeature.mockResolvedValue(
+                mockUpdatedFeature,
+            );
+
+            const result = await controller.updateFeature(
+                requestMock,
+                mockFeature.id,
+                dtoUpdateMock,
+            );
+
+            expect(result).toEqual(mockUpdatedFeature);
+            expect(mockFeatureService.updateFeature).toHaveBeenCalledWith(
+                mockFeature.id,
+                dtoUpdateMock,
+                requestMock,
+            );
+        });
+    });
+    describe("Delete Feature", () => {
+        it("deleteFeature service should be defined", async () => {
+            expect(controller.deleteFeature).toBeDefined();
+        });
+
+        it("should delete a feature", async () => {
+            mockFeatureService.deleteFeature.mockResolvedValue({
+                message: "Feature deleted successfully",
+                status: 200,
+            });
+
+            const result = await controller.deleteFeature(
+                requestMock,
+                mockFeature.id,
+            );
+
+            expect(result).toEqual({
+                message: expect.any(String),
+                status: expect.any(Number),
+            });
+            expect(mockFeatureService.deleteFeature).toHaveBeenCalledWith(
                 mockFeature.id,
                 requestMock,
             );
