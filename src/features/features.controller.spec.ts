@@ -92,6 +92,7 @@ const mockFeatureService = {
     createFeature: jest.fn(),
     findFeatureCategories: jest.fn(),
     findAllFeatures: jest.fn(),
+    findOneFeature: jest.fn(),
 };
 
 describe("FeaturesController", () => {
@@ -171,6 +172,26 @@ describe("FeaturesController", () => {
             expect(result).toEqual(mockFeaturesArray);
             expect(mockFeatureService.findAllFeatures).toHaveBeenCalledWith(
                 mockTeamId,
+                requestMock,
+            );
+        });
+    });
+
+    describe("findOneFeature", () => {
+        it("findOneFeature service should be defined", async () => {
+            expect(controller.findOneFeature).toBeDefined();
+        });
+        it("should return one feature", async () => {
+            mockFeatureService.findOneFeature.mockResolvedValue(
+                mockFeaturesArray[0],
+            );
+            const result = await controller.findOneFeature(
+                requestMock,
+                mockFeature.id,
+            );
+            expect(result).toEqual(mockFeaturesArray[0]);
+            expect(mockFeatureService.findOneFeature).toHaveBeenCalledWith(
+                mockFeature.id,
                 requestMock,
             );
         });
