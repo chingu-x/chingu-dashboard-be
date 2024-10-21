@@ -24,7 +24,7 @@ import {
 } from "@nestjs/swagger";
 import { CreateAgendaDto } from "./dto/create-agenda.dto";
 import { UpdateAgendaDto } from "./dto/update-agenda.dto";
-import { FormInputValidationPipe } from "../pipes/form-input-validation";
+import { FormInputValidationPipe } from "@/pipes/form-input-validation";
 import { UpdateMeetingFormResponseDto } from "./dto/update-meeting-form-response.dto";
 import {
     AgendaResponse,
@@ -42,14 +42,14 @@ import {
     ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
-} from "../global/responses/errors";
-import { FormResponse, ResponseResponse } from "../forms/forms.response";
+} from "@/global/responses/errors";
+import { FormResponse, ResponseResponse } from "@/forms/forms.response";
 import { CreateCheckinFormDto } from "./dto/create-checkin-form.dto";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { VoyageTeamMemberValidationPipe } from "../pipes/voyage-team-member-validation";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { VoyageTeamMemberValidationPipe } from "@/pipes/voyage-team-member-validation";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
-import { Action } from "../ability/ability.factory/ability.factory";
-import { CheckAbilities } from "../global/decorators/abilities.decorator";
+import { Action } from "@/ability/ability.factory/ability.factory";
+import { CheckAbilities } from "@/global/decorators/abilities.decorator";
 
 @Controller()
 @ApiTags("Voyage - Sprints")

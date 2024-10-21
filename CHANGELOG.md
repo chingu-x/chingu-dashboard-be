@@ -1,12 +1,29 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+> [!IMPORTANT]
+> All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-Another example [here](https://co-pilot.dev/changelog)
+> [!NOTE]
+> The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), <br/>
+> and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). <br/>
+> Another example [here](https://co-pilot.dev/changelog) <br/>
+
+> [!TIP]
+> MAJOR version when you make incompatible API changes <br/>
+> MINOR version when you add functionality in a backward compatible manner <br/>
+> PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [v1.0.2-alpha]
 
 ### Added
 
@@ -18,10 +35,12 @@ Another example [here](https://co-pilot.dev/changelog)
 ### Changed
 
 - Update PostgreSQL image to timescale/timescaledb-ha:pg16 to match railway postgres image ([#210](https://github.com/chingu-x/chingu-dashboard-be/pull/210))
+- refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
 - Updated seed data of user voyage roles and added new users([#206](https://github.com/chingu-x/chingu-dashboard-be/pull/206))
 - Refactored e2e tests to use absolute import paths ([#207](https://github.com/chingu-x/chingu-dashboard-be/pull/207))
 - Update solo project model ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
 - Update readme to include more instructions for using the test database ([#213](https://github.com/chingu-x/chingu-dashboard-be/pull/213))
+- refactored unit tests to use absolute import paths ([#215](https://github.com/chingu-x/chingu-dashboard-be/pull/215))
 
 ### Fixed
 

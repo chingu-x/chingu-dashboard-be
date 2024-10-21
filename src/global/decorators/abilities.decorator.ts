@@ -1,7 +1,4 @@
-import {
-    Action,
-    AppSubjects,
-} from "../../ability/ability.factory/ability.factory";
+import { Action, AppSubjects } from "@/ability/ability.factory/ability.factory";
 import { SetMetadata } from "@nestjs/common";
 
 export interface RequiredRule {

@@ -13,7 +13,7 @@ import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto"
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest, VoyageTeam } from "../global/types/CustomRequest";
-import { manageOwnVoyageTeamWithIdParam } from "../ability/conditions/voyage-teams.ability";
+import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
 

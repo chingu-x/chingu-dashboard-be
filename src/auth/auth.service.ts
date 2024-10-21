@@ -8,23 +8,23 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
+import { UsersService } from "@/users/users.service";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import * as crypto from "crypto";
 import { SignupDto } from "./dto/signup.dto";
-import { comparePassword, hashPassword } from "../global/auth/utils";
-import { EmailService } from "../utils/emails/email.service";
+import { comparePassword, hashPassword } from "@/global/auth/utils";
+import { EmailService } from "@/utils/emails/email.service";
 import { ResendEmailDto } from "./dto/resend-email.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 import { ResetPasswordRequestDto } from "./dto/reset-password-request.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 
-import { AT_MAX_AGE, RT_MAX_AGE } from "../global/constants";
+import { AT_MAX_AGE, RT_MAX_AGE } from "@/global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
 import { Response } from "express";
-import { CustomRequest } from "../global/types/CustomRequest";
-import { AuthConfig } from "../config/auth/auth.interface";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { AuthConfig } from "@/config/auth/auth.interface";
 
 @Injectable()
 export class AuthService {

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { FormsController } from "./forms.controller";
 import { FormsService } from "./forms.service";
-import { CustomRequest } from "../global/types/CustomRequest";
+import { CustomRequest } from "@/global/types/CustomRequest";
 import { NotFoundException } from "@nestjs/common";
 
 const mockRequest = {} as unknown as CustomRequest;
