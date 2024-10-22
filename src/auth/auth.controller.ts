@@ -275,8 +275,16 @@ export class AuthController {
         await this.authService.logout(cookies.refresh_token);
 
         res.status(HttpStatus.OK)
-            .clearCookie("access_token")
-            .clearCookie("refresh_token")
+            .clearCookie("access_token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+            })
+            .clearCookie("refresh_token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+            })
             .json({ message: "Logout Success" });
     }
 
