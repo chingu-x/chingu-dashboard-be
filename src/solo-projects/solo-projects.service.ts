@@ -2,18 +2,24 @@ import { Injectable } from "@nestjs/common";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-@Injectable()
-export class SoloProjectsService {
-    constructor(private prisma: PrismaService) {}
-    create(createSoloProjectDto: CreateSoloProjectDto) {
-        return "This action adds a new soloProject";
-    }
+// TODO: add to shared
+type UserWithProfile = Prisma.UserGetPayload<{
+    include: {
+        oAuthProfiles: {
+            select: {
+                provider: true;
+                providerId: true;
+                providerUsername: true;
+            };
+        };
+    };
+}>;
 
-    // TODO add to shared
-    private formatUser = (
-        userSelect: Prisma.UserGetPayload<{
+type SoloProjectWithPayload = Prisma.SoloProjectGetPayload<{
+    include: {
+        user: {
             include: {
                 oAuthProfiles: {
                     select: {
@@ -23,19 +29,52 @@ export class SoloProjectsService {
                     };
                 };
             };
-        }>,
-    ) => {
+        };
+        evaluator: {
+            include: {
+                oAuthProfiles: {
+                    select: {
+                        provider: true;
+                        providerId: true;
+                        providerUsername: true;
+                    };
+                };
+            };
+        };
+    };
+}>;
+
+@Injectable()
+export class SoloProjectsService {
+    constructor(private prisma: PrismaService) {}
+
+    create(_createSoloProjectDto: CreateSoloProjectDto) {
+        return "This action adds a new soloProject";
+    }
+
+    // TODO: add to shared
+    private formatUser = (user: UserWithProfile) => {
         return {
-            name: `${userSelect.firstName} ${userSelect.lastName}`,
-            email: userSelect.email,
-            discordId: userSelect.oAuthProfiles.find(
+            firstname: user.firstName,
+            lastname: user.lastName,
+            email: user.email,
+            discordId: user.oAuthProfiles?.find(
                 (profile) => profile.provider.name === "discord",
             )?.providerUsername,
         };
     };
 
-    getAllSoloProjects() {
-        return this.prisma.soloProject.findMany({
+    private formatSoloProject = (soloProject: SoloProjectWithPayload) => {
+        return {
+            id: soloProject.id,
+            user: this.formatUser(soloProject.user),
+            evaluator:
+                soloProject.evaluator && this.formatUser(soloProject.evaluator),
+        };
+    };
+
+    async getAllSoloProjects() {
+        const soloProjects = await this.prisma.soloProject.findMany({
             select: {
                 id: true,
                 user: {
@@ -48,7 +87,13 @@ export class SoloProjectsService {
                     select: {
                         firstName: true,
                         lastName: true,
-                        oAuthProfiles: true,
+                        oAuthProfiles: {
+                            select: {
+                                provider: true,
+                                providerId: true,
+                                providerUsername: true,
+                            },
+                        },
                     },
                 },
                 evaluatorFeedback: true,
@@ -60,13 +105,21 @@ export class SoloProjectsService {
                 createdAt: true,
             },
         });
+
+        return soloProjects.map((sp) => ({
+            // ...sp,
+            user: this.formatUser(sp.user as UserWithProfile),
+            evaluator:
+                sp.evaluator &&
+                this.formatUser(sp.evaluator as UserWithProfile),
+        }));
     }
 
     findOne(id: number) {
         return `This action returns a #${id} soloProject`;
     }
 
-    update(id: number, updateSoloProjectDto: UpdateSoloProjectDto) {
+    update(id: number, _updateSoloProjectDto: UpdateSoloProjectDto) {
         return `This action updates a #${id} soloProject`;
     }
 
