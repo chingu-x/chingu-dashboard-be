@@ -43,15 +43,12 @@ import { Action } from "@/ability/ability.factory/ability.factory";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
-import { MailConfigService } from "@/config/mail/mailConfig.service";
 import { AppConfigService } from "@/config/app/appConfig.service";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
     constructor(
         private authService: AuthService,
-        private mailConfigService: MailConfigService,
-
         private appConfigService: AppConfigService,
     ) {}
 
@@ -272,20 +269,7 @@ export class AuthController {
         if (!cookies?.refresh_token)
             throw new BadRequestException("No Refresh Token");
 
-        await this.authService.logout(cookies.refresh_token);
-
-        res.status(HttpStatus.OK)
-            .clearCookie("access_token", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-            })
-            .clearCookie("refresh_token", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-            })
-            .json({ message: "Logout Success" });
+        await this.authService.logout(res, cookies.refresh_token);
     }
 
     @ApiOperation({
