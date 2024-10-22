@@ -20,29 +20,27 @@ type UserWithProfile = Prisma.UserGetPayload<{
 type SoloProjectWithPayload = Prisma.SoloProjectGetPayload<{
     include: {
         user: {
-            include: {
-                oAuthProfiles: {
-                    select: {
-                        provider: true;
-                        providerId: true;
-                        providerUsername: true;
-                    };
-                };
-            };
+            include: typeof userSelectBasicWithSocial;
         };
         evaluator: {
-            include: {
-                oAuthProfiles: {
-                    select: {
-                        provider: true;
-                        providerId: true;
-                        providerUsername: true;
-                    };
-                };
-            };
+            include: typeof userSelectBasicWithSocial;
         };
+        status: true;
+        comments: true;
     };
 }>;
+
+const userSelectBasicWithSocial = {
+    firstName: true,
+    lastName: true,
+    oAuthProfiles: {
+        select: {
+            provider: true,
+            providerId: true,
+            providerUsername: true,
+        },
+    },
+};
 
 @Injectable()
 export class SoloProjectsService {
@@ -70,6 +68,10 @@ export class SoloProjectsService {
             user: this.formatUser(soloProject.user),
             evaluator:
                 soloProject.evaluator && this.formatUser(soloProject.evaluator),
+            //evaluatorFeedback: soloProject.evaluatorFeedback,
+            submissionTimestamp: soloProject.createdAt,
+            status: soloProject.status?.status,
+            comments: soloProject.comments,
         };
     };
 
@@ -78,23 +80,10 @@ export class SoloProjectsService {
             select: {
                 id: true,
                 user: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                    },
+                    select: userSelectBasicWithSocial,
                 },
                 evaluator: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                        oAuthProfiles: {
-                            select: {
-                                provider: true,
-                                providerId: true,
-                                providerUsername: true,
-                            },
-                        },
-                    },
+                    select: userSelectBasicWithSocial,
                 },
                 evaluatorFeedback: true,
                 status: {
@@ -102,17 +91,23 @@ export class SoloProjectsService {
                         status: true,
                     },
                 },
+                comments: {
+                    select: {
+                        id: true,
+                        content: true,
+                        author: {
+                            select: userSelectBasicWithSocial,
+                        },
+                    },
+                },
+                responseGroupId: true,
                 createdAt: true,
             },
         });
 
-        return soloProjects.map((sp) => ({
-            // ...sp,
-            user: this.formatUser(sp.user as UserWithProfile),
-            evaluator:
-                sp.evaluator &&
-                this.formatUser(sp.evaluator as UserWithProfile),
-        }));
+        return soloProjects.map((sp) =>
+            this.formatSoloProject(sp as unknown as SoloProjectWithPayload),
+        );
     }
 
     findOne(id: number) {

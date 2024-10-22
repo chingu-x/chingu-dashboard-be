@@ -58,10 +58,12 @@ export const populateSoloProjects = async () => {
                 createMany: {
                     data: [
                         {
+                            authorId: users[1].id,
                             content: "This is a tier 2 project, not tier 3",
                             type: "SoloProject",
                         },
                         {
+                            authorId: users[2].id,
                             content: "ok",
                             parentCommentId: 1,
                             type: "SoloProject",
