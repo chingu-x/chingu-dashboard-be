@@ -13,12 +13,6 @@ export class SoloProjectsService {
         private globalService: GlobalService,
     ) {}
 
-    create(_createSoloProjectDto: CreateSoloProjectDto) {
-        return "This action adds a new soloProject";
-    }
-
-    // TODO: add to shared
-
     private formatSoloProject = (soloProject: SoloProjectWithPayload) => {
         return {
             id: soloProject.id,
@@ -26,15 +20,22 @@ export class SoloProjectsService {
             evaluator:
                 soloProject.evaluator &&
                 this.globalService.formatUser(soloProject.evaluator),
-            //evaluatorFeedback: soloProject.evaluatorFeedback,
+            // TODO: uncomment below, commented out so results are easier to see
+            // evaluatorFeedback: soloProject.evaluatorFeedback,
             submissionTimestamp: soloProject.createdAt,
             status: soloProject.status?.status,
             comments: soloProject.comments,
         };
     };
 
-    async getAllSoloProjects() {
+    create(_createSoloProjectDto: CreateSoloProjectDto) {
+        return "This action adds a new soloProject";
+    }
+
+    async getAllSoloProjects(offset: number = 0, pageSize: number = 10) {
         const soloProjects = await this.prisma.soloProject.findMany({
+            skip: offset,
+            take: pageSize,
             select: {
                 id: true,
                 user: {
@@ -63,9 +64,17 @@ export class SoloProjectsService {
             },
         });
 
-        return soloProjects.map((sp) =>
+        const data = soloProjects.map((sp) =>
             this.formatSoloProject(sp as unknown as SoloProjectWithPayload),
         );
+
+        return {
+            data,
+            meta: {
+                pageSize,
+                offset,
+            },
+        };
     }
 
     findOne(id: number) {

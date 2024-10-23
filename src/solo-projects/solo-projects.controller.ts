@@ -6,11 +6,12 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
 } from "@nestjs/common";
 import { SoloProjectsService } from "./solo-projects.service";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 @Controller("solo-projects")
 @ApiTags("Solo Projects")
@@ -22,9 +23,27 @@ export class SoloProjectsController {
         return this.soloProjectsService.create(createSoloProjectDto);
     }
 
+    @ApiOperation({
+        summary: "[Permission: admin, evaluator] Get all solo projects",
+    })
     @Get()
-    findAll() {
-        return this.soloProjectsService.getAllSoloProjects();
+    @ApiQuery({
+        name: "offset",
+        type: Number,
+        description: "Offset for pagination",
+        required: false,
+    })
+    @ApiQuery({
+        name: "pageSize",
+        type: Number,
+        description: "page size (number of results) for pagination",
+        required: false,
+    })
+    getAllSoloProjects(
+        @Query("offset") offset?: number,
+        @Query("pageSize") pageSize?: number,
+    ) {
+        return this.soloProjectsService.getAllSoloProjects(offset, pageSize);
     }
 
     @Get(":id")

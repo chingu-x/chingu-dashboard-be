@@ -125,5 +125,25 @@ export const populateSoloProjects = async () => {
         },
     });
 
+    const statuses = await prisma.soloProjectStatus.findMany({});
+
+    for (let i = 0; i < 40; i++) {
+        await prisma.soloProject.create({
+            data: {
+                userId: users[5].id,
+                evaluatorUserId: users[2].id,
+                evaluatorFeedback: passedSampleFeedback,
+                statusId: (await prisma.soloProjectStatus.findUnique({
+                    where: {
+                        status: statuses[
+                            Math.floor(Math.random() * statuses.length)
+                        ].status,
+                    },
+                }))!.id,
+                formId: soloProjectForm!.id,
+            },
+        });
+    }
+
     console.log("Solo projects populated.");
 };
