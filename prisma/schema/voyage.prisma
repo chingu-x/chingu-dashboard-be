@@ -91,10 +91,7 @@ model VoyageTeam {
 
   voyageTeamMembers         VoyageTeamMember[]
   teamTechStackItems        TeamTechStackItem[]
-  techStackCategory         TechStackCategory[] @relation("Team")
-  techStackCategoryNew         TechStackCategory[] @relation("NewTeam")
-
-
+  techStackCategory         TechStackCategory[]
   teamMeetings              TeamMeeting[]
   FormResponseVoyageProject FormResponseVoyageProject?
 }

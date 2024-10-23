@@ -1,14 +1,11 @@
 // === Voyage - Tech stack ===
 
 model TechStackCategory {
-  id          Int    @id @default(autoincrement())
+  id                 Int    @id @default(autoincrement())
   name               String             @db.Citext
-  description String
-  voyageTeam         VoyageTeam?         @relation("Team", fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  description        String
+  voyageTeam         VoyageTeam?         @relation(fields: [voyageTeamId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   voyageTeamId       Int?
-
-  voyageTeamNew         VoyageTeam?         @relation("NewTeam", fields: [voyageTeamIdNew], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  voyageTeamIdNew       Int?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
