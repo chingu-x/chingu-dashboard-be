@@ -7,6 +7,7 @@ import {
 import { PrismaService } from "@/prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
 import { FormResponseDto } from "./dtos/FormResponse.dto";
+import { UserWithProfile } from "@/global/types/users.types";
 
 @Injectable()
 export class GlobalService {
@@ -192,5 +193,16 @@ export class GlobalService {
         }
 
         return dbItem;
+    };
+
+    public formatUser = (user: UserWithProfile) => {
+        return {
+            firstname: user.firstName,
+            lastname: user.lastName,
+            email: user.email,
+            discordId: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "discord",
+            )?.providerUsername,
+        };
     };
 }

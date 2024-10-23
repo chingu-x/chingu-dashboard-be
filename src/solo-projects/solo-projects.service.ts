@@ -2,72 +2,30 @@ import { Injectable } from "@nestjs/common";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Prisma } from "@prisma/client";
-
-// TODO: add to shared
-type UserWithProfile = Prisma.UserGetPayload<{
-    include: {
-        oAuthProfiles: {
-            select: {
-                provider: true;
-                providerId: true;
-                providerUsername: true;
-            };
-        };
-    };
-}>;
-
-type SoloProjectWithPayload = Prisma.SoloProjectGetPayload<{
-    include: {
-        user: {
-            include: typeof userSelectBasicWithSocial;
-        };
-        evaluator: {
-            include: typeof userSelectBasicWithSocial;
-        };
-        status: true;
-        comments: true;
-    };
-}>;
-
-const userSelectBasicWithSocial = {
-    firstName: true,
-    lastName: true,
-    oAuthProfiles: {
-        select: {
-            provider: true,
-            providerId: true,
-            providerUsername: true,
-        },
-    },
-};
+import { userSelectBasicWithSocial } from "@/global/selects/users.select";
+import { SoloProjectWithPayload } from "@/global/types/solo-project.types";
+import { GlobalService } from "@/global/global.service";
 
 @Injectable()
 export class SoloProjectsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private globalService: GlobalService,
+    ) {}
 
     create(_createSoloProjectDto: CreateSoloProjectDto) {
         return "This action adds a new soloProject";
     }
 
     // TODO: add to shared
-    private formatUser = (user: UserWithProfile) => {
-        return {
-            firstname: user.firstName,
-            lastname: user.lastName,
-            email: user.email,
-            discordId: user.oAuthProfiles?.find(
-                (profile) => profile.provider.name === "discord",
-            )?.providerUsername,
-        };
-    };
 
     private formatSoloProject = (soloProject: SoloProjectWithPayload) => {
         return {
             id: soloProject.id,
-            user: this.formatUser(soloProject.user),
+            user: this.globalService.formatUser(soloProject.user),
             evaluator:
-                soloProject.evaluator && this.formatUser(soloProject.evaluator),
+                soloProject.evaluator &&
+                this.globalService.formatUser(soloProject.evaluator),
             //evaluatorFeedback: soloProject.evaluatorFeedback,
             submissionTimestamp: soloProject.createdAt,
             status: soloProject.status?.status,
