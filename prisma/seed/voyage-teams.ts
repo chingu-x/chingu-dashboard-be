@@ -1,4 +1,5 @@
 import { prisma } from "./prisma-client";
+import { techStackCategoriesData } from "./data/tech-stack-categories";
 
 export const populateVoyageTeams = async () => {
     const users = await prisma.user.findMany({});
@@ -1531,6 +1532,15 @@ export const populateVoyageTeams = async () => {
         },
     });
 
+  //Add Tech Stack Categories
+    for (let teamId = 1; teamId <= 11; teamId += 1) {
+        for (const category of techStackCategoriesData) {
+            category.voyageTeamId = teamId;
+            await prisma["TechStackCategory"].create({ data: category });
+        }
+    }
+    console.log("TechStackCategories populated");
+
     const voyageTeamMembers = await prisma.voyageTeamMember.findMany({});
 
     /* ============== Add tech stack items, etc to teams ================== */
@@ -1547,7 +1557,7 @@ export const populateVoyageTeams = async () => {
                         name: "Javascript",
                         category: {
                             connect: {
-                                name: "Frontend",
+                                id: 7,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1581,7 +1591,7 @@ export const populateVoyageTeams = async () => {
                         name: "React",
                         category: {
                             connect: {
-                                name: "Frontend",
+                                id: 7,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1615,7 +1625,7 @@ export const populateVoyageTeams = async () => {
                         name: "Tailwind",
                         category: {
                             connect: {
-                                name: "CSS Library",
+                                id: 8,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1649,7 +1659,7 @@ export const populateVoyageTeams = async () => {
                         name: "Node",
                         category: {
                             connect: {
-                                name: "Backend",
+                                id: 9,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1683,7 +1693,7 @@ export const populateVoyageTeams = async () => {
                         name: "Jira",
                         category: {
                             connect: {
-                                name: "Project Management",
+                                id: 10,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1717,7 +1727,7 @@ export const populateVoyageTeams = async () => {
                         name: "Azure",
                         category: {
                             connect: {
-                                name: "Cloud Provider",
+                                id: 11,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1751,7 +1761,7 @@ export const populateVoyageTeams = async () => {
                         name: "Netlify",
                         category: {
                             connect: {
-                                name: "Hosting",
+                                id: 12,
                             },
                         },
                         teamTechStackItemVotes: {
@@ -1785,7 +1795,7 @@ export const populateVoyageTeams = async () => {
                         name: "Java",
                         category: {
                             connect: {
-                                name: "Backend",
+                                id: 9,
                             },
                         },
                         teamTechStackItemVotes: {

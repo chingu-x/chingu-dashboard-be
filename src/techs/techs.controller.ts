@@ -15,11 +15,15 @@ import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
+import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import {
     TeamTechResponse,
     TechItemResponse,
     TechItemDeleteResponse,
     TechItemUpdateResponse,
+    TechCategoryResponse,
+    TechCategoryDeleteResponse,
 } from "./techs.response";
 import {
     BadRequestErrorResponse,
@@ -226,6 +230,134 @@ export class TechsController {
         @Param("teamTechItemId", ParseIntPipe) teamTechItemId: number,
     ) {
         return this.techsService.deleteTeamTech(req, teamTechItemId);
+    }
+
+    @ApiOperation({
+        summary:
+            "[Permission: own_team] Adds a new tech stack category to the team.",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "Successfully added a new tech stack category",
+        type: TechCategoryResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack category already exist for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid userId",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @Post("teams/:teamId/techStackCategory")
+    addNewTechStackCategory(
+        @Request() req: CustomRequest,
+        @Param("teamId", ParseIntPipe) teamId: number,
+        @Body(ValidationPipe)
+        createTechStackCategoryDto: CreateTechStackCategoryDto,
+    ) {
+        return this.techsService.addNewTechStackCategory(
+            req,
+            teamId,
+            createTechStackCategoryDto,
+        );
+    }
+
+    @ApiOperation({
+        summary:
+            "[Permission: own_team] Updates an existing tech stack category in the team",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Successfully updated a tech stack category",
+        type: TechCategoryResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - tech stack category couldn't be updated",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "Tech stack category already exists for the team",
+        type: ConflictErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack category id",
+        type: NotFoundErrorResponse,
+    })
+    @Patch("teams/techStackCategory/:techStackCategoryId")
+    updateTechStackCategory(
+        @Request() req: CustomRequest,
+        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
+        @Body(ValidationPipe)
+        updateTechStackCategoryDto: UpdateTechStackCategoryDto,
+    ) {
+        return this.techsService.updateTechStackCategory(
+            req,
+            techStackCategoryId,
+            updateTechStackCategoryDto,
+        );
+    }
+
+    @ApiOperation({
+        summary: "[Permission: own_team] Delete a team's tech stack category",
+        description: "Requires login",
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: "Tech stack category was successfully deleted",
+        type: TechCategoryDeleteResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "unauthorized access - user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Bad Request - tech stack category couldn't be deleted",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: "Invalid tech stack category id",
+        type: NotFoundErrorResponse,
+    })
+    @Delete("teams/techStackCategory/:techStackCategoryId")
+    deleteTechStackCategory(
+        @Request() req: CustomRequest,
+        @Param("techStackCategoryId", ParseIntPipe) techStackCategoryId: number,
+    ) {
+        return this.techsService.deleteTechStackCategory(
+            req,
+            techStackCategoryId,
+        );
     }
 
     @ApiOperation({
