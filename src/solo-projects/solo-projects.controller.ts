@@ -12,6 +12,7 @@ import { SoloProjectsService } from "./solo-projects.service";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { IntDefaultValuePipe } from "@/pipes/int-default-value-pipe";
 
 @Controller("solo-projects")
 @ApiTags("Solo Projects")
@@ -30,18 +31,19 @@ export class SoloProjectsController {
     @ApiQuery({
         name: "offset",
         type: Number,
-        description: "Offset for pagination",
+        description: "Offset for pagination (default: 0",
         required: false,
     })
     @ApiQuery({
         name: "pageSize",
         type: Number,
-        description: "page size (number of results) for pagination",
+        description:
+            "page size (number of results) for pagination (default: 30)",
         required: false,
     })
     getAllSoloProjects(
-        @Query("offset") offset?: number,
-        @Query("pageSize") pageSize?: number,
+        @Query("offset", new IntDefaultValuePipe(0)) offset: number,
+        @Query("pageSize", new IntDefaultValuePipe(30)) pageSize: number,
     ) {
         return this.soloProjectsService.getAllSoloProjects(offset, pageSize);
     }

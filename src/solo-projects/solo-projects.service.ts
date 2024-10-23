@@ -32,7 +32,7 @@ export class SoloProjectsService {
         return "This action adds a new soloProject";
     }
 
-    async getAllSoloProjects(offset: number = 0, pageSize: number = 10) {
+    async getAllSoloProjects(offset: number, pageSize: number) {
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
