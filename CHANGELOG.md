@@ -16,9 +16,12 @@
 ## [Unreleased]
 
 ### Added
+
+- Added same site property to the clear cookies function ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 - Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
 
 ### Changed
+- Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 
 ### Fixed
 

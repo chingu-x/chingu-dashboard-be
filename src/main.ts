@@ -15,7 +15,7 @@ async function bootstrap() {
     app.enableCors({
         origin: [
             /^http:\/\/localhost:\d+$/,
-            /^https:\/\/chingu-dashboard-[A-Za-z\-]+-chingu-dashboard\.vercel\.app$/,
+            /^https:\/\/chingu-dashboard-[A-Za-z0-9\-_]+-chingu-dashboard\.vercel\.app$/,
             "https://chingu-dashboard-git-dev-chingu-dashboard.vercel.app",
             "https://chingu-dashboard.vercel.app",
         ],
