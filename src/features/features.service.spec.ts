@@ -5,7 +5,7 @@ import { GlobalService } from "@/global/global.service";
 import { prismaMock } from "@/prisma/singleton";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
-import { FeatureCategory, VoyageTeam } from "@prisma/client";
+import { FeatureCategory, ProjectFeature, VoyageTeam } from "@prisma/client";
 /* import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto"; */
 
@@ -45,6 +45,45 @@ const dtoCreateMock: CreateFeatureDto = {
     description: "Chingu is a global collaboration platform",
     featureCategoryId: 1,
 };
+
+const mockFeaturesArray = [
+    {
+        id: 1,
+        teamMemberId: 1,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        featureCategoryId: 1,
+        order: 1,
+        description:
+            "It is a very good feature that is very useful for the team",
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+    },
+    {
+        id: 2,
+        teamMemberId: 2,
+        createdAt: new Date(Date.now()),
+        updatedAt: new Date(Date.now()),
+        featureCategoryId: 2,
+        order: 2,
+        description:
+            "It is a very good feature that is very useful for the team",
+        addedBy: {
+            member: {
+                firstName: "Larry",
+                lastName: "Castro",
+                id: "18093ad0-88ef-4bcd-bee8-322749c876bd",
+                avatar: "https://gravatar.com/avatar/90383a4ee0fb891c1ec3374e6a593a6c6fd88166d4fd45f796dabeaba7af836d?s=200&r=g&d=wavatar\n",
+            },
+        },
+    },
+];
 
 const mockFeatureCategory = [
     {
@@ -164,6 +203,156 @@ describe("FeaturesService", () => {
                 updatedAt: expect.any(Date),
             });
             expect(prismaMock.featureCategory.findMany).toHaveBeenCalled();
+        });
+    });
+
+    describe("findAllFeatures", () => {
+        it("findAllFeatures service should be defined", async () => {
+            expect(service.findAllFeatures).toBeDefined();
+        });
+
+        it("should return all features", async () => {
+            prismaMock.projectFeature.findMany.mockResolvedValue(
+                mockFeaturesArray,
+            );
+            prismaMock.voyageTeam.findFirst.mockResolvedValue(
+                mockVoyageTeam as VoyageTeam,
+            );
+
+            const result = await service.findAllFeatures(
+                mockTeamId,
+                requestMock,
+            );
+
+            expect(result).toBeArray;
+            expect(result).toHaveLength(2);
+            expect(result[0]).toEqual({
+                id: expect.any(Number),
+                teamMemberId: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                featureCategoryId: expect.any(Number),
+                order: expect.any(Number),
+                description: expect.any(String),
+                addedBy: {
+                    member: {
+                        firstName: expect.any(String),
+                        lastName: expect.any(String),
+                        id: expect.any(String),
+                        avatar: expect.any(String),
+                    },
+                },
+            });
+            expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
+                where: {
+                    addedBy: {
+                        voyageTeamId: mockTeamId,
+                    },
+                },
+                select: {
+                    id: true,
+                    description: true,
+                    order: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    teamMemberId: true,
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    addedBy: {
+                        select: {
+                            member: {
+                                select: {
+                                    id: true,
+                                    avatar: true,
+                                    firstName: true,
+                                    lastName: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: [{ category: { id: "asc" } }, { order: "asc" }],
+            });
+        });
+    });
+    describe("findOneFeature", () => {
+        it("findOneFeature service should be defined", async () => {
+            expect(service.findOneFeature).toBeDefined();
+        });
+
+        it("should return a single feature", async () => {
+            prismaMock.projectFeature.findFirst.mockResolvedValue(
+                mockFeaturesArray[0],
+            );
+            prismaMock.projectFeature.findUnique.mockResolvedValue({
+                teamMemberId: mockTeamMemberId,
+            } as ProjectFeature);
+
+            const result = await service.findOneFeature(
+                mockFeaturesArray[0].id,
+                requestMock,
+            );
+
+            expect(result).toEqual({
+                id: expect.any(Number),
+                teamMemberId: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                featureCategoryId: expect.any(Number),
+                order: expect.any(Number),
+                description: expect.any(String),
+                addedBy: {
+                    member: {
+                        firstName: expect.any(String),
+                        lastName: expect.any(String),
+                        id: expect.any(String),
+                        avatar: expect.any(String),
+                    },
+                },
+            });
+            expect(prismaMock.projectFeature.findFirst).toHaveBeenCalledWith({
+                where: {
+                    id: mockFeature.id,
+                },
+                select: {
+                    id: true,
+                    description: true,
+                    order: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    teamMemberId: true,
+                    category: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    addedBy: {
+                        select: {
+                            member: {
+                                select: {
+                                    id: true,
+                                    avatar: true,
+                                    firstName: true,
+                                    lastName: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
+                where: {
+                    id: mockFeature.id,
+                },
+                select: {
+                    teamMemberId: true,
+                },
+            });
         });
     });
 });
