@@ -4,20 +4,24 @@
 > All notable changes to this project will be documented in this file.
 
 > [!NOTE]
-> The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-> and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-> Another example [here](https://co-pilot.dev/changelog)
+> The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), <br/>
+> and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). <br/>
+> Another example [here](https://co-pilot.dev/changelog) <br/>
 
 > [!TIP]
-> MAJOR version when you make incompatible API changes
-> MINOR version when you add functionality in a backward compatible manner
-> PATCH version when you make backward compatible bug fixes
+> MAJOR version when you make incompatible API changes <br/>
+> MINOR version when you add functionality in a backward compatible manner <br/>
+> PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
 
 ### Added
 
+- Added same site property to the clear cookies function ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
+- Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
+
 ### Changed
+- Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 
 ### Fixed
 
@@ -60,6 +64,7 @@
 - Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
 - Add units tests for the teams resource controller & services([#201](https://github.com/chingu-x/chingu-dashboard-be/pull/201))
 - Add github workflow for PR reminders ([#202](https://github.com/chingu-x/chingu-dashboard-be/pull/202))
+
 
 ### Changed
 
