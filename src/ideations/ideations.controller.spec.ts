@@ -18,7 +18,6 @@ describe("IdeationsController", () => {
         createdAt: mockDate,
         updatedAt: mockDate,
     };
-    const ideationArr = [ideationOne];
 
     const ideationVoteOne = { id: 1, projectIdeaId: 1 };
 

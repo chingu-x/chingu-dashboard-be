@@ -8,11 +8,7 @@ import * as VoyageTeamAbility from "@/ability/conditions/voyage-teams.ability";
 import { prismaMock } from "@/prisma/singleton";
 
 import { ProjectIdea, VoyageTeamMember, ProjectIdeaVote } from "@prisma/client";
-import {
-    ForbiddenException,
-    NotFoundException,
-    ConflictException,
-} from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 
 // TODO: these tests probably need to be updated, it shouldn't use prisma, should only use prismaMock
 describe("IdeationsService", () => {
@@ -44,8 +40,6 @@ describe("IdeationsService", () => {
         },
     };
 
-    const ideationArr = [ideationOne];
-
     const ideationVoteOne: ProjectIdeaVote = {
         id: 1,
         projectIdeaId: 1,
@@ -53,8 +47,6 @@ describe("IdeationsService", () => {
         createdAt: mockDate,
         updatedAt: mockDate,
     };
-
-    const ideationVoteArr = [ideationVoteOne];
 
     const memberOne: VoyageTeamMember = {
         id: 1,
