@@ -16,11 +16,13 @@
 ## [Unreleased]
 
 ### Added
+
 - Added same site property to the clear cookies function ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
+- Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
 
 ### Changed
 - Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
-
+- refactored unit tests for the ideations controller and services([#219](https://github.com/chingu-x/chingu-dashboard-be/pull/219))
 ### Fixed
 
 ### Removed
@@ -62,6 +64,7 @@
 - Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
 - Add units tests for the teams resource controller & services([#201](https://github.com/chingu-x/chingu-dashboard-be/pull/201))
 - Add github workflow for PR reminders ([#202](https://github.com/chingu-x/chingu-dashboard-be/pull/202))
+
 
 ### Changed
 
