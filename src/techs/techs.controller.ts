@@ -14,7 +14,7 @@ import {
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { TechCategoryDto } from "./dto/update-tech-selections.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import {
@@ -489,7 +489,7 @@ export class TechsController {
     updateTechStackSelections(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) updateTechSelectionsDto: UpdateTechSelectionsDto,
+        @Body(ValidationPipe) updateTechSelectionsDto: TechCategoryDto,
     ) {
         return this.techsService.updateTechStackSelections(
             req,

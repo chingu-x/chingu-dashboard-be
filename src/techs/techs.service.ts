@@ -10,7 +10,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
-import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { TechCategoryDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest, VoyageTeam } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
@@ -75,7 +75,7 @@ export class TechsService {
     async updateTechStackSelections(
         req: CustomRequest,
         teamId: number,
-        updateTechSelectionsDto: UpdateTechSelectionsDto,
+        updateTechSelectionsDto: TechCategoryDto,
     ) {
         //check for valid teamId
         await this.validateTeamId(teamId);
@@ -83,27 +83,37 @@ export class TechsService {
         //check if user is a member of the team
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
-        const categories = updateTechSelectionsDto.categories;
+        const techs = updateTechSelectionsDto.techs;
 
         //count selections in categories for exceeding MAX_SELECT_COUNT
-        categories.forEach((category) => {
-            const selectCount = category.techs.reduce(
-                (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
-                0,
+        // categories.forEach((category) => {
+        //     const selectCount = category.techs.reduce(
+        //         (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
+        //         0,
+        //     );
+        //     if (selectCount > MAX_SELECTION_COUNT)
+        //         throw new BadRequestException(
+        //             `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
+        //         );
+        // });
+        const selectCount = techs.reduce(
+            (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
+            0,
+        );
+        if (selectCount > MAX_SELECTION_COUNT)
+            throw new BadRequestException(
+                `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
             );
-            if (selectCount > MAX_SELECTION_COUNT)
-                throw new BadRequestException(
-                    `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
-                );
-        });
 
         //extract techs to an array for .map
-        const techsArray: any[] = [];
-        categories.forEach((category) => {
-            category.techs.forEach((tech) => techsArray.push(tech));
-        });
+        //const techsArray: any[] = [];
+        // categories.forEach((category) => {
+        //     category.techs.forEach((tech) => techsArray.push(tech));
+        // });
+        //techs.forEach((tech) => techsArray.push(tech)); //todo: skip this - not needed
+
         return this.prisma.$transaction(
-            techsArray.map((tech) => {
+            techs.map((tech) => {
                 return this.prisma.teamTechStackItem.update({
                     where: {
                         id: tech.techId,
