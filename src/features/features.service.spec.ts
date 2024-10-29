@@ -5,9 +5,14 @@ import { GlobalService } from "@/global/global.service";
 import { prismaMock } from "@/prisma/singleton";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
-import { FeatureCategory, ProjectFeature, VoyageTeam } from "@prisma/client";
-/* import { UpdateFeatureDto } from "./dto/update-feature.dto";
-import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto"; */
+import {
+    FeatureCategory,
+    ProjectFeature,
+    VoyageTeam,
+    VoyageTeamMember,
+} from "@prisma/client";
+import { UpdateFeatureDto } from "./dto/update-feature.dto";
+/* import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto"; */
 
 const userReq = {
     userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
@@ -22,7 +27,7 @@ const mockFeature = {
     teamMemberId: 1,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now()),
-    featureCategoryId: 1,
+    featureCategoryId: 2,
     order: 1,
     description: "It is a very good feature that is very useful for the team",
 };
@@ -52,7 +57,7 @@ const mockFeaturesArray = [
         teamMemberId: 1,
         createdAt: new Date(Date.now()),
         updatedAt: new Date(Date.now()),
-        featureCategoryId: 1,
+        featureCategoryId: 2,
         order: 1,
         description:
             "It is a very good feature that is very useful for the team",
@@ -111,12 +116,17 @@ const mockFeatureCategory = [
     },
 ];
 
-/* const dtoUpdateMock: UpdateFeatureDto = {
+const dtoUpdateMock: UpdateFeatureDto = {
     teamMemberId: 1,
     description: "It is the best feature",
 };
 
-const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto = {
+const mockUpdatedFeature = {
+    ...mockFeature,
+    description: "It is the best feature",
+};
+
+/* const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto = {
     order: 2,
     featureCategoryId: 2,
 }; */
@@ -353,6 +363,135 @@ describe("FeaturesService", () => {
                     teamMemberId: true,
                 },
             });
+        });
+    });
+    describe("updateFeature", () => {
+        it("updateFeature service should be defined", async () => {
+            expect(service.updateFeature).toBeDefined();
+        });
+
+        it("should update a feature", async () => {
+            prismaMock.projectFeature.findUnique.mockResolvedValue({
+                teamMemberId: mockTeamMemberId,
+            } as ProjectFeature);
+            prismaMock.projectFeature.update.mockResolvedValue(
+                mockUpdatedFeature,
+            );
+
+            const result = await service.updateFeature(
+                mockUpdatedFeature.id,
+                dtoUpdateMock,
+                requestMock,
+            );
+
+            expect(result).toEqual({
+                id: expect.any(Number),
+                teamMemberId: expect.any(Number),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                featureCategoryId: expect.any(Number),
+                order: expect.any(Number),
+                description: expect.any(String),
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: {
+                    id: mockUpdatedFeature.id,
+                    teamMemberId: mockTeamMemberId,
+                },
+                data: {
+                    description: dtoUpdateMock.description,
+                    teamMemberId: mockTeamMemberId,
+                },
+            });
+            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
+                where: {
+                    id: mockUpdatedFeature.id,
+                },
+                select: {
+                    teamMemberId: true,
+                },
+            });
+        });
+    });
+
+    describe("deleteFeature", () => {
+        it("deleteFeature service should be defined", async () => {
+            expect(service.deleteFeature).toBeDefined();
+        });
+
+        it("should delete a feature", async () => {
+            // Mocking the  private findFeature method
+            const findFeatureSpy = jest
+                .spyOn(service as any, "findFeature")
+                .mockResolvedValue({
+                    ...mockFeature,
+                    addedBy: {
+                        voyageTeamId: 1,
+                    },
+                });
+
+            prismaMock.projectFeature.findUnique.mockResolvedValue({
+                teamMemberId: mockTeamMemberId,
+            } as ProjectFeature);
+            prismaMock.projectFeature.delete.mockResolvedValue(mockFeature);
+            prismaMock.projectFeature.findMany.mockResolvedValue(
+                mockFeaturesArray,
+            );
+            prismaMock.projectFeature.update.mockResolvedValue({
+                ...mockFeaturesArray[1],
+                order: 1,
+            });
+            prismaMock.voyageTeamMember.findFirst.mockResolvedValue({
+                voyageTeamId: mockTeamId,
+            } as VoyageTeamMember);
+
+            const result = await service.deleteFeature(
+                mockFeature.id,
+                requestMock,
+            );
+
+            expect(result).toEqual({
+                message: expect.any(String),
+                status: expect.any(Number),
+            });
+            expect(findFeatureSpy).toHaveBeenCalledWith(mockFeature.id);
+            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
+                where: {
+                    id: mockFeature.id,
+                },
+                select: {
+                    teamMemberId: true,
+                },
+            });
+            expect(prismaMock.voyageTeamMember.findFirst).toHaveBeenCalledWith({
+                where: {
+                    id: mockTeamMemberId,
+                },
+                select: {
+                    voyageTeamId: true,
+                },
+            });
+
+            expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
+                where: {
+                    featureCategoryId: mockFeature.featureCategoryId,
+                    addedBy: { voyageTeamId: mockTeamId },
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: mockFeaturesArray[1].id },
+                data: {
+                    order: mockFeaturesArray[1].order - 1,
+                },
+            });
+            expect(prismaMock.projectFeature.delete).toHaveBeenCalledWith({
+                where: {
+                    id: mockFeature.id,
+                },
+            });
+
+            // Restore the original method of the private method findFeature
+            findFeatureSpy.mockRestore();
         });
     });
 });
