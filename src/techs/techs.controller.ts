@@ -14,7 +14,7 @@ import {
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { TechCategoryDto } from "./dto/update-tech-selections.dto";
+import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import {
@@ -453,9 +453,9 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "[Permission: own_team]  Updates arrays of tech stack items, grouped by categoryId, sets 'isSelected' values",
+            "[Permission: own_team]  Updates an array of tech stack items of same category, sets 'isSelected' values",
         description:
-            "Maximum of 3 selections per category allowed.  All tech items (isSelected === true/false) are required for updated categories. Login required.",
+            "Maximum of 3 selections per category allowed.  All tech items must be in same category.  All tech items (isSelected === true/false) are required for updated category. Login required.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -489,7 +489,7 @@ export class TechsController {
     updateTechStackSelections(
         @Request() req,
         @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) updateTechSelectionsDto: TechCategoryDto,
+        @Body(ValidationPipe) updateTechSelectionsDto: UpdateTechSelectionsDto,
     ) {
         return this.techsService.updateTechStackSelections(
             req,

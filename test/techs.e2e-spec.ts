@@ -685,15 +685,10 @@ describe("Techs Controller (e2e)", () => {
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Cookie", accessToken)
                 .send({
-                    categories: [
+                    techs: [
                         {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
+                            techId: 1,
+                            isSelected: true,
                         },
                     ],
                 })
@@ -719,27 +714,22 @@ describe("Techs Controller (e2e)", () => {
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Cookie", accessToken)
                 .send({
-                    categories: [
+                    techs: [
                         {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 2,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 3,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 4,
-                                    isSelected: true,
-                                },
-                            ],
+                            techId: 1,
+                            isSelected: true,
+                        },
+                        {
+                            techId: 2,
+                            isSelected: true,
+                        },
+                        {
+                            techId: 3,
+                            isSelected: true,
+                        },
+                        {
+                            techId: 4,
+                            isSelected: true,
                         },
                     ],
                 })
@@ -753,15 +743,10 @@ describe("Techs Controller (e2e)", () => {
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Cookie", accessToken)
                 .send({
-                    categories: [
+                    techs: [
                         {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
+                            techId: 1,
+                            isSelected: true,
                         },
                     ],
                 })
@@ -780,15 +765,10 @@ describe("Techs Controller (e2e)", () => {
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Cookie", access_token)
                 .send({
-                    categories: [
+                    techs: [
                         {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
+                            techId: 1,
+                            isSelected: true,
                         },
                     ],
                 })
@@ -802,15 +782,10 @@ describe("Techs Controller (e2e)", () => {
                 .patch(`/voyages/teams/${teamId}/techs/selections`)
                 .set("Authorization", `Bearer ${undefined}`)
                 .send({
-                    categories: [
+                    techs: [
                         {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
+                            techId: 1,
+                            isSelected: true,
                         },
                     ],
                 })

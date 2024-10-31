@@ -14,13 +14,7 @@ export class TechSelectionDto {
     isSelected: boolean;
 }
 
-export class TechCategoryDto {
-    @ApiProperty({
-        description: "category id",
-        example: 1,
-    })
-    categoryId: number;
-
+export class UpdateTechSelectionsDto {
     @ApiProperty({
         description: "Array of tech items to update 'isSelected'.",
         type: TechSelectionDto,
@@ -28,12 +22,3 @@ export class TechCategoryDto {
     })
     techs: TechSelectionDto[];
 }
-
-// export class UpdateTechSelectionsDto {
-//     @ApiProperty({
-//         description: "Array of categories with tech selection values",
-//         type: TechCategoryDto,
-//         isArray: true,
-//     })
-//     categories: TechCategoryDto[];
-// }
