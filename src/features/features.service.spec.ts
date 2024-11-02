@@ -5,12 +5,8 @@ import { GlobalService } from "@/global/global.service";
 import { prismaMock } from "@/prisma/singleton";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
-import {
-    FeatureCategory,
-    ProjectFeature,
-    VoyageTeam,
-    VoyageTeamMember,
-} from "@prisma/client";
+import * as FeaturesAbility from "@/ability/conditions/features.ability";
+import { FeatureCategory, VoyageTeamMember } from "@prisma/client";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 /* import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto"; */
 
@@ -30,10 +26,6 @@ const mockFeature = {
     featureCategoryId: 2,
     order: 1,
     description: "It is a very good feature that is very useful for the team",
-};
-
-const mockVoyageTeam = {
-    id: 1,
 };
 
 const mockTeamId: number = 1;
@@ -152,6 +144,10 @@ describe("FeaturesService", () => {
         service = module.get<FeaturesService>(FeaturesService);
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     it("should be defined", () => {
         expect(service).toBeDefined();
     });
@@ -162,14 +158,18 @@ describe("FeaturesService", () => {
         });
 
         it("should create a new feature", async () => {
-            prismaMock.projectFeature.findFirst.mockResolvedValue(null);
-            prismaMock.voyageTeam.findFirst.mockResolvedValue(
-                mockVoyageTeam as VoyageTeam,
-            );
+            const mockFeatureCategoryId: number = 1;
+
+            const checkTeamIdSpy = jest
+                .spyOn(service, "checkTeamId")
+                .mockResolvedValue();
             prismaMock.featureCategory.findFirst.mockResolvedValue({
-                id: 1,
+                id: mockFeatureCategoryId,
             } as FeatureCategory);
+
+            prismaMock.projectFeature.findFirst.mockResolvedValue(null);
             prismaMock.projectFeature.create.mockResolvedValue(mockFeature);
+
             mockGlobalService.getVoyageTeamMemberId.mockReturnValue(
                 mockTeamMemberId,
             );
@@ -189,6 +189,24 @@ describe("FeaturesService", () => {
                     order: 1,
                 },
             });
+            expect(prismaMock.featureCategory.findFirst).toHaveBeenCalledWith({
+                where: {
+                    id: dtoCreateMock.featureCategoryId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+            expect(prismaMock.projectFeature.findFirst).toHaveBeenCalledWith({
+                where: {
+                    featureCategoryId: dtoCreateMock.featureCategoryId,
+                    addedBy: { voyageTeamId: mockTeamId },
+                },
+                orderBy: {
+                    order: "desc",
+                },
+            });
+            expect(checkTeamIdSpy).toHaveBeenCalledWith(mockTeamId);
         });
     });
     describe("findFeatureCategories", () => {
@@ -222,11 +240,12 @@ describe("FeaturesService", () => {
         });
 
         it("should return all features", async () => {
+            const checkTeamIdSpy = jest
+                .spyOn(service, "checkTeamId")
+                .mockResolvedValue();
+
             prismaMock.projectFeature.findMany.mockResolvedValue(
                 mockFeaturesArray,
-            );
-            prismaMock.voyageTeam.findFirst.mockResolvedValue(
-                mockVoyageTeam as VoyageTeam,
             );
 
             const result = await service.findAllFeatures(
@@ -236,23 +255,7 @@ describe("FeaturesService", () => {
 
             expect(result).toBeArray;
             expect(result).toHaveLength(2);
-            expect(result[0]).toEqual({
-                id: expect.any(Number),
-                teamMemberId: expect.any(Number),
-                createdAt: expect.any(Date),
-                updatedAt: expect.any(Date),
-                featureCategoryId: expect.any(Number),
-                order: expect.any(Number),
-                description: expect.any(String),
-                addedBy: {
-                    member: {
-                        firstName: expect.any(String),
-                        lastName: expect.any(String),
-                        id: expect.any(String),
-                        avatar: expect.any(String),
-                    },
-                },
-            });
+            expect(result).toEqual(mockFeaturesArray);
             expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
                 where: {
                     addedBy: {
@@ -287,6 +290,7 @@ describe("FeaturesService", () => {
                 },
                 orderBy: [{ category: { id: "asc" } }, { order: "asc" }],
             });
+            expect(checkTeamIdSpy).toHaveBeenCalledWith(mockTeamId);
         });
     });
     describe("findOneFeature", () => {
@@ -295,35 +299,18 @@ describe("FeaturesService", () => {
         });
 
         it("should return a single feature", async () => {
+            const manageOwnFeaturesByIdSpy = jest
+                .spyOn(FeaturesAbility, "manageOwnFeaturesById")
+                .mockResolvedValue();
             prismaMock.projectFeature.findFirst.mockResolvedValue(
                 mockFeaturesArray[0],
             );
-            prismaMock.projectFeature.findUnique.mockResolvedValue({
-                teamMemberId: mockTeamMemberId,
-            } as ProjectFeature);
-
             const result = await service.findOneFeature(
                 mockFeaturesArray[0].id,
                 requestMock,
             );
 
-            expect(result).toEqual({
-                id: expect.any(Number),
-                teamMemberId: expect.any(Number),
-                createdAt: expect.any(Date),
-                updatedAt: expect.any(Date),
-                featureCategoryId: expect.any(Number),
-                order: expect.any(Number),
-                description: expect.any(String),
-                addedBy: {
-                    member: {
-                        firstName: expect.any(String),
-                        lastName: expect.any(String),
-                        id: expect.any(String),
-                        avatar: expect.any(String),
-                    },
-                },
-            });
+            expect(result).toEqual(mockFeaturesArray[0]);
             expect(prismaMock.projectFeature.findFirst).toHaveBeenCalledWith({
                 where: {
                     id: mockFeature.id,
@@ -355,14 +342,10 @@ describe("FeaturesService", () => {
                     },
                 },
             });
-            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
-                where: {
-                    id: mockFeature.id,
-                },
-                select: {
-                    teamMemberId: true,
-                },
-            });
+            expect(manageOwnFeaturesByIdSpy).toHaveBeenCalledWith(
+                requestMock.user,
+                mockUpdatedFeature.id,
+            );
         });
     });
     describe("updateFeature", () => {
@@ -371,9 +354,9 @@ describe("FeaturesService", () => {
         });
 
         it("should update a feature", async () => {
-            prismaMock.projectFeature.findUnique.mockResolvedValue({
-                teamMemberId: mockTeamMemberId,
-            } as ProjectFeature);
+            const manageOwnFeaturesByIdSpy = jest
+                .spyOn(FeaturesAbility, "manageOwnFeaturesById")
+                .mockResolvedValue();
             prismaMock.projectFeature.update.mockResolvedValue(
                 mockUpdatedFeature,
             );
@@ -403,14 +386,10 @@ describe("FeaturesService", () => {
                     teamMemberId: mockTeamMemberId,
                 },
             });
-            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
-                where: {
-                    id: mockUpdatedFeature.id,
-                },
-                select: {
-                    teamMemberId: true,
-                },
-            });
+            expect(manageOwnFeaturesByIdSpy).toHaveBeenCalledWith(
+                requestMock.user,
+                mockUpdatedFeature.id,
+            );
         });
     });
 
@@ -420,7 +399,10 @@ describe("FeaturesService", () => {
         });
 
         it("should delete a feature", async () => {
-            // Mocking the  private findFeature method
+            const mockVoyageTeamMember = {
+                voyageTeamId: mockTeamId,
+            } as VoyageTeamMember;
+
             const findFeatureSpy = jest
                 .spyOn(service as any, "findFeature")
                 .mockResolvedValue({
@@ -429,11 +411,12 @@ describe("FeaturesService", () => {
                         voyageTeamId: 1,
                     },
                 });
-
-            prismaMock.projectFeature.findUnique.mockResolvedValue({
-                teamMemberId: mockTeamMemberId,
-            } as ProjectFeature);
-            prismaMock.projectFeature.delete.mockResolvedValue(mockFeature);
+            const manageOwnFeaturesByIdSpy = jest
+                .spyOn(FeaturesAbility, "manageOwnFeaturesById")
+                .mockResolvedValue();
+            prismaMock.voyageTeamMember.findFirst.mockResolvedValue(
+                mockVoyageTeamMember,
+            );
             prismaMock.projectFeature.findMany.mockResolvedValue(
                 mockFeaturesArray,
             );
@@ -441,9 +424,7 @@ describe("FeaturesService", () => {
                 ...mockFeaturesArray[1],
                 order: 1,
             });
-            prismaMock.voyageTeamMember.findFirst.mockResolvedValue({
-                voyageTeamId: mockTeamId,
-            } as VoyageTeamMember);
+            prismaMock.projectFeature.delete.mockResolvedValue(mockFeature);
 
             const result = await service.deleteFeature(
                 mockFeature.id,
@@ -455,14 +436,6 @@ describe("FeaturesService", () => {
                 status: expect.any(Number),
             });
             expect(findFeatureSpy).toHaveBeenCalledWith(mockFeature.id);
-            expect(prismaMock.projectFeature.findUnique).toHaveBeenCalledWith({
-                where: {
-                    id: mockFeature.id,
-                },
-                select: {
-                    teamMemberId: true,
-                },
-            });
             expect(prismaMock.voyageTeamMember.findFirst).toHaveBeenCalledWith({
                 where: {
                     id: mockTeamMemberId,
@@ -489,9 +462,29 @@ describe("FeaturesService", () => {
                     id: mockFeature.id,
                 },
             });
-
-            // Restore the original method of the private method findFeature
-            findFeatureSpy.mockRestore();
+            expect(manageOwnFeaturesByIdSpy).toHaveBeenCalledWith(
+                requestMock.user,
+                mockFeature.id,
+            );
         });
     });
+    /* 
+    describe("updateFeatureOrderAndCategory", () => {
+        it("updateFeatureOrderAndCategory service should be defined", async () => {
+            expect(service.updateFeatureOrderAndCategory).toBeDefined();
+        });
+
+        it("should update a feature", async () => {
+            // Mocking the  private findFeature method
+            const findFeatureSpy = jest
+                .spyOn(service as any, "findFeature")
+                .mockResolvedValue({
+                    ...mockFeature,
+                    addedBy: {
+                        voyageTeamId: mockTeamId,
+                    },
+                });
+           
+        });
+    }); */
 });
