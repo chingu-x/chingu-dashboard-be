@@ -4,6 +4,6 @@ import { IsNotEmpty, IsString } from "class-validator";
 export class UpdateTeamTechDto {
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: "Typescipt" })
+    @ApiProperty({ example: "Typescript" })
     techName: string;
 }

@@ -7,6 +7,7 @@ import {
     Logger,
     NotFoundException,
     UnauthorizedException,
+    HttpStatus,
 } from "@nestjs/common";
 import { UsersService } from "@/users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -22,9 +23,15 @@ import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 import { AT_MAX_AGE, RT_MAX_AGE } from "@/global/constants";
 import { RevokeRTDto } from "./dto/revoke-refresh-token.dto";
-import { Response } from "express";
+import { CookieOptions, Response } from "express";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { AuthConfig } from "@/config/auth/auth.interface";
+
+const sharedCookieOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+} satisfies Partial<CookieOptions>;
 
 @Injectable()
 export class AuthService {
@@ -128,15 +135,11 @@ export class AuthService {
     setCookie(res: Response, access_token: string, refresh_token: string) {
         res.cookie("access_token", access_token, {
             maxAge: AT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            ...sharedCookieOptions,
         });
         res.cookie("refresh_token", refresh_token, {
             maxAge: RT_MAX_AGE * 1000,
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            ...sharedCookieOptions,
         });
     }
 
@@ -250,7 +253,7 @@ export class AuthService {
         }
     }
 
-    async logout(refreshToken: string) {
+    async logout(res: Response, refreshToken: string) {
         try {
             const { RT_SECRET } = this.authConfig.secrets;
             const payload = await this.jwtService.verifyAsync(refreshToken, {
@@ -282,6 +285,11 @@ export class AuthService {
             }
             throw e;
         }
+
+        res.status(HttpStatus.OK)
+            .clearCookie("access_token", sharedCookieOptions)
+            .clearCookie("refresh_token", sharedCookieOptions)
+            .json({ message: "Logout Success" });
     }
 
     async signup(signupDto: SignupDto) {
