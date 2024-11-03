@@ -8,7 +8,7 @@ import { CreateFeatureDto } from "./dto/create-feature.dto";
 import * as FeaturesAbility from "@/ability/conditions/features.ability";
 import { FeatureCategory, VoyageTeamMember } from "@prisma/client";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
-/* import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto"; */
+import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 
 const userReq = {
     userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
@@ -17,6 +17,9 @@ const userReq = {
     isVerified: true,
     voyageTeams: [{ teamId: 1, memberId: 1 }],
 };
+const requestMock = {
+    user: userReq,
+} as any as CustomRequest;
 
 const mockFeature = {
     id: 1,
@@ -30,17 +33,9 @@ const mockFeature = {
 
 const mockTeamId: number = 1;
 const mockTeamMemberId: number = 1;
-const requestMock = {
-    user: userReq,
-} as any as CustomRequest;
 
 const mockGlobalService = {
     getVoyageTeamMemberId: jest.fn(),
-};
-
-const dtoCreateMock: CreateFeatureDto = {
-    description: "Chingu is a global collaboration platform",
-    featureCategoryId: 1,
 };
 
 const mockFeaturesArray = [
@@ -108,21 +103,6 @@ const mockFeatureCategory = [
     },
 ];
 
-const dtoUpdateMock: UpdateFeatureDto = {
-    teamMemberId: 1,
-    description: "It is the best feature",
-};
-
-const mockUpdatedFeature = {
-    ...mockFeature,
-    description: "It is the best feature",
-};
-
-/* const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto = {
-    order: 2,
-    featureCategoryId: 2,
-}; */
-
 describe("FeaturesService", () => {
     let service: FeaturesService;
 
@@ -159,6 +139,10 @@ describe("FeaturesService", () => {
 
         it("should create a new feature", async () => {
             const mockFeatureCategoryId: number = 1;
+            const dtoCreateMock: CreateFeatureDto = {
+                description: "Chingu is a global collaboration platform",
+                featureCategoryId: 1,
+            };
 
             const checkTeamIdSpy = jest
                 .spyOn(service, "checkTeamId")
@@ -344,7 +328,7 @@ describe("FeaturesService", () => {
             });
             expect(manageOwnFeaturesByIdSpy).toHaveBeenCalledWith(
                 requestMock.user,
-                mockUpdatedFeature.id,
+                mockFeature.id,
             );
         });
     });
@@ -354,6 +338,15 @@ describe("FeaturesService", () => {
         });
 
         it("should update a feature", async () => {
+            const dtoUpdateMock: UpdateFeatureDto = {
+                teamMemberId: 1,
+                description: "It is the best feature",
+            };
+
+            const mockUpdatedFeature = {
+                ...mockFeature,
+                description: "It is the best feature",
+            };
             const manageOwnFeaturesByIdSpy = jest
                 .spyOn(FeaturesAbility, "manageOwnFeaturesById")
                 .mockResolvedValue();
@@ -468,23 +461,450 @@ describe("FeaturesService", () => {
             );
         });
     });
-    /* 
+
     describe("updateFeatureOrderAndCategory", () => {
         it("updateFeatureOrderAndCategory service should be defined", async () => {
             expect(service.updateFeatureOrderAndCategory).toBeDefined();
         });
 
-        it("should update a feature", async () => {
-            // Mocking the  private findFeature method
+        it("should update a feature to different feature category", async () => {
+            const FeaturesArray = [
+                {
+                    id: 1,
+                    teamMemberId: 1,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 1,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 2,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 2,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 3,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 2,
+                    order: 1,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 4,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 2,
+                    order: 2,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 5,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 2,
+                    order: 3,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+            ];
+            const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto =
+                {
+                    order: 2,
+                    featureCategoryId: 2,
+                };
+            const resultMock = [
+                {
+                    ...FeaturesArray[1],
+                    order: FeaturesArray[1].order - 1,
+                },
+                {
+                    ...FeaturesArray[2],
+                },
+                {
+                    ...FeaturesArray[0],
+                    order: dtoUpdateOrderAndCategoryMock.order,
+                    featureCategoryId:
+                        dtoUpdateOrderAndCategoryMock.featureCategoryId,
+                },
+                {
+                    ...FeaturesArray[3],
+                    order: FeaturesArray[3].order + 1,
+                },
+                {
+                    ...FeaturesArray[4],
+                    order: FeaturesArray[4].order + 1,
+                },
+            ];
+
+            const findAllFeaturesSpy = jest
+                .spyOn(service, "findAllFeatures")
+                .mockResolvedValue(resultMock as any);
+            const mockFeatureCategory = { id: 2 } as FeatureCategory;
+
             const findFeatureSpy = jest
                 .spyOn(service as any, "findFeature")
                 .mockResolvedValue({
-                    ...mockFeature,
+                    ...FeaturesArray[0],
                     addedBy: {
                         voyageTeamId: mockTeamId,
                     },
                 });
-           
+            prismaMock.featureCategory.findFirst.mockResolvedValueOnce(
+                mockFeatureCategory,
+            );
+            prismaMock.projectFeature.findMany
+                .mockResolvedValueOnce([
+                    { ...FeaturesArray[0] },
+                    { ...FeaturesArray[1] },
+                ])
+                .mockResolvedValueOnce([
+                    { ...FeaturesArray[2] },
+                    { ...FeaturesArray[3] },
+                    { ...FeaturesArray[4] },
+                ]);
+            prismaMock.projectFeature.update
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[1],
+                    order: FeaturesArray[1].order - 1,
+                })
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[3],
+                    order: FeaturesArray[3].order + 1,
+                })
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[4],
+                    order: FeaturesArray[4].order + 1,
+                })
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[0],
+                    order: 2,
+                    featureCategoryId: 2,
+                });
+
+            const result = await service.updateFeatureOrderAndCategory(
+                requestMock,
+                FeaturesArray[0].id,
+                dtoUpdateOrderAndCategoryMock,
+            );
+
+            expect(result).toEqual(resultMock);
+
+            expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
+                where: {
+                    featureCategoryId: mockFeature.featureCategoryId,
+                    addedBy: { voyageTeamId: mockTeamId },
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[1].id },
+                data: {
+                    order: FeaturesArray[1].order - 1,
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[3].id },
+                data: {
+                    order: FeaturesArray[3].order + 1,
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[4].id },
+                data: {
+                    order: FeaturesArray[4].order + 1,
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[0].id },
+                data: {
+                    order: dtoUpdateOrderAndCategoryMock.order,
+                    featureCategoryId:
+                        dtoUpdateOrderAndCategoryMock.featureCategoryId,
+                },
+            });
+            expect(findAllFeaturesSpy).toHaveBeenCalledWith(
+                mockTeamId,
+                requestMock,
+            );
+            expect(findFeatureSpy).toHaveBeenCalledWith(mockFeature.id);
         });
-    }); */
+        it("should update a feature order in the same feature category having new order less than current order", async () => {
+            const FeaturesArray = [
+                {
+                    id: 1,
+                    teamMemberId: 1,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 1,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 2,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 2,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 3,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 3,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 4,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 4,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+            ];
+            const resultMock = [
+                {
+                    ...FeaturesArray[0],
+                    order: 1,
+                },
+                {
+                    ...FeaturesArray[2],
+                    order: 2,
+                },
+                {
+                    ...FeaturesArray[1],
+                    order: 3,
+                },
+                {
+                    ...FeaturesArray[3],
+                    order: 4,
+                },
+            ];
+            const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto =
+                {
+                    order: 2,
+                    featureCategoryId: 1,
+                };
+            const mockFeatureCategory = { id: 1 } as FeatureCategory;
+
+            const findFeatureSpy = jest
+                .spyOn(service as any, "findFeature")
+                .mockResolvedValue({
+                    ...FeaturesArray[2],
+                    addedBy: {
+                        voyageTeamId: mockTeamId,
+                    },
+                });
+            const findAllFeaturesSpy = jest
+                .spyOn(service, "findAllFeatures")
+                .mockResolvedValue(resultMock as any);
+            prismaMock.featureCategory.findFirst.mockResolvedValueOnce(
+                mockFeatureCategory,
+            );
+            prismaMock.projectFeature.findMany.mockResolvedValueOnce(
+                FeaturesArray,
+            );
+            prismaMock.projectFeature.update
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[1],
+                    order: FeaturesArray[1].order + 1,
+                })
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[2],
+                    order: FeaturesArray[2].order - 1,
+                });
+            const result = await service.updateFeatureOrderAndCategory(
+                requestMock,
+                FeaturesArray[2].id,
+                dtoUpdateOrderAndCategoryMock,
+            );
+
+            expect(result).toEqual(resultMock);
+            expect(findFeatureSpy).toHaveBeenCalledWith(FeaturesArray[2].id);
+            expect(prismaMock.featureCategory.findFirst).toHaveBeenCalledWith({
+                where: {
+                    id: dtoUpdateOrderAndCategoryMock.featureCategoryId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+            expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
+                where: {
+                    featureCategoryId: mockFeatureCategory.id,
+                    addedBy: { voyageTeamId: mockTeamId },
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[1].id },
+                data: {
+                    order: FeaturesArray[1].order + 1,
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[2].id },
+                data: {
+                    order: dtoUpdateOrderAndCategoryMock.order,
+                },
+            });
+            expect(findAllFeaturesSpy).toHaveBeenCalledWith(
+                mockTeamId,
+                requestMock,
+            );
+        });
+        it("should update a feature order in the same feature category having new order greater than current order", async () => {
+            const FeaturesArray = [
+                {
+                    id: 1,
+                    teamMemberId: 1,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 1,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 2,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 2,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 3,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 3,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+                {
+                    id: 4,
+                    teamMemberId: 2,
+                    createdAt: new Date(Date.now()),
+                    updatedAt: new Date(Date.now()),
+                    featureCategoryId: 1,
+                    order: 4,
+                    description:
+                        "It is a very good feature that is very useful for the team",
+                },
+            ];
+            const resultMock = [
+                {
+                    ...FeaturesArray[0],
+                    order: 1,
+                },
+                {
+                    ...FeaturesArray[1],
+                    order: 2,
+                },
+                {
+                    ...FeaturesArray[3],
+                    order: 3,
+                },
+                {
+                    ...FeaturesArray[2],
+                    order: 4,
+                },
+            ];
+            const dtoUpdateOrderAndCategoryMock: UpdateFeatureOrderAndCategoryDto =
+                {
+                    order: 4,
+                    featureCategoryId: 1,
+                };
+            const mockFeatureCategory = { id: 1 } as FeatureCategory;
+
+            const findFeatureSpy = jest
+                .spyOn(service as any, "findFeature")
+                .mockResolvedValue({
+                    ...FeaturesArray[2],
+                    addedBy: {
+                        voyageTeamId: mockTeamId,
+                    },
+                });
+            const findAllFeaturesSpy = jest
+                .spyOn(service, "findAllFeatures")
+                .mockResolvedValue(resultMock as any);
+            prismaMock.featureCategory.findFirst.mockResolvedValueOnce(
+                mockFeatureCategory,
+            );
+            prismaMock.projectFeature.findMany.mockResolvedValueOnce(
+                FeaturesArray,
+            );
+            prismaMock.projectFeature.update
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[3],
+                    order: FeaturesArray[3].order - 1,
+                })
+                .mockResolvedValueOnce({
+                    ...FeaturesArray[2],
+                    order: FeaturesArray[2].order + 1,
+                });
+            const result = await service.updateFeatureOrderAndCategory(
+                requestMock,
+                FeaturesArray[2].id,
+                dtoUpdateOrderAndCategoryMock,
+            );
+
+            expect(result).toEqual(resultMock);
+            expect(findFeatureSpy).toHaveBeenCalledWith(FeaturesArray[2].id);
+            expect(prismaMock.featureCategory.findFirst).toHaveBeenCalledWith({
+                where: {
+                    id: dtoUpdateOrderAndCategoryMock.featureCategoryId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+            expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({
+                where: {
+                    featureCategoryId: mockFeatureCategory.id,
+                    addedBy: { voyageTeamId: mockTeamId },
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[3].id },
+                data: {
+                    order: FeaturesArray[3].order - 1,
+                },
+            });
+            expect(prismaMock.projectFeature.update).toHaveBeenCalledWith({
+                where: { id: FeaturesArray[2].id },
+                data: {
+                    order: dtoUpdateOrderAndCategoryMock.order,
+                },
+            });
+            expect(findAllFeaturesSpy).toHaveBeenCalledWith(
+                mockTeamId,
+                requestMock,
+            );
+        });
+    });
 });

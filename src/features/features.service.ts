@@ -265,6 +265,9 @@ export class FeaturesService {
                     where: {
                         id: newFeatureCategoryId,
                     },
+                    select: {
+                        id: true,
+                    },
                 });
 
             if (!verifyCategoryExists) {
