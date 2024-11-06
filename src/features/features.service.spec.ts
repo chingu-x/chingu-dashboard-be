@@ -21,11 +21,13 @@ const requestMock = {
     user: userReq,
 } as any as CustomRequest;
 
+const mockDate = new Date("2024-11-05T02:41:03.575Z");
+
 const mockFeature = {
     id: 1,
     teamMemberId: 1,
-    createdAt: new Date(Date.now()),
-    updatedAt: new Date(Date.now()),
+    createdAt: mockDate,
+    updatedAt: mockDate,
     featureCategoryId: 2,
     order: 1,
     description: "It is a very good feature that is very useful for the team",
@@ -42,8 +44,8 @@ const mockFeaturesArray = [
     {
         id: 1,
         teamMemberId: 1,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
+        createdAt: mockDate,
+        updatedAt: mockDate,
         featureCategoryId: 2,
         order: 1,
         description:
@@ -60,8 +62,8 @@ const mockFeaturesArray = [
     {
         id: 2,
         teamMemberId: 2,
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
+        createdAt: mockDate,
+        updatedAt: mockDate,
         featureCategoryId: 2,
         order: 2,
         description:
@@ -82,24 +84,24 @@ const mockFeatureCategory = [
         name: "must have",
         id: 1,
         description: "features that define your MVP",
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
+        createdAt: mockDate,
+        updatedAt: mockDate,
     },
     {
         name: "should have",
         id: 2,
         description:
             '"stretch goals" to be worked on when you’ve implemented all the "Must Haves"',
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
+        createdAt: mockDate,
+        updatedAt: mockDate,
     },
     {
         name: "nice to have",
         id: 3,
         description:
             '"stretch goals" to be worked on when you’ve implemented all the "Must Haves" and "Should Haves"',
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
+        createdAt: mockDate,
+        updatedAt: mockDate,
     },
 ];
 
@@ -472,8 +474,8 @@ describe("FeaturesService", () => {
                 {
                     id: 1,
                     teamMemberId: 1,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 1,
                     description:
@@ -482,8 +484,8 @@ describe("FeaturesService", () => {
                 {
                     id: 2,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 2,
                     description:
@@ -492,8 +494,8 @@ describe("FeaturesService", () => {
                 {
                     id: 3,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 2,
                     order: 1,
                     description:
@@ -502,8 +504,8 @@ describe("FeaturesService", () => {
                 {
                     id: 4,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 2,
                     order: 2,
                     description:
@@ -512,8 +514,8 @@ describe("FeaturesService", () => {
                 {
                     id: 5,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 2,
                     order: 3,
                     description:
@@ -645,8 +647,8 @@ describe("FeaturesService", () => {
                 {
                     id: 1,
                     teamMemberId: 1,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 1,
                     description:
@@ -655,8 +657,8 @@ describe("FeaturesService", () => {
                 {
                     id: 2,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 2,
                     description:
@@ -665,8 +667,8 @@ describe("FeaturesService", () => {
                 {
                     id: 3,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 3,
                     description:
@@ -675,8 +677,8 @@ describe("FeaturesService", () => {
                 {
                     id: 4,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 4,
                     description:
@@ -778,8 +780,8 @@ describe("FeaturesService", () => {
                 {
                     id: 1,
                     teamMemberId: 1,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 1,
                     description:
@@ -788,8 +790,8 @@ describe("FeaturesService", () => {
                 {
                     id: 2,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 2,
                     description:
@@ -798,8 +800,8 @@ describe("FeaturesService", () => {
                 {
                     id: 3,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 3,
                     description:
@@ -808,8 +810,8 @@ describe("FeaturesService", () => {
                 {
                     id: 4,
                     teamMemberId: 2,
-                    createdAt: new Date(Date.now()),
-                    updatedAt: new Date(Date.now()),
+                    createdAt: mockDate,
+                    updatedAt: mockDate,
                     featureCategoryId: 1,
                     order: 4,
                     description:
