@@ -41,11 +41,25 @@ export class SoloProjectsController {
             "page size (number of results) for pagination (default: 30)",
         required: false,
     })
+    @ApiQuery({
+        name: "sort",
+        type: String,
+        description:
+            "Sort. - for descending, + (or nothing) for ascending (default: -createdAt)" +
+            "<br/> Example: 'status,-createdAt' will sort by status ascending then createdAt descending" +
+            "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'",
+        required: false,
+    })
     getAllSoloProjects(
         @Query("offset", new IntDefaultValuePipe(0)) offset: number,
         @Query("pageSize", new IntDefaultValuePipe(30)) pageSize: number,
+        @Query("sort") sort: string,
     ) {
-        return this.soloProjectsService.getAllSoloProjects(offset, pageSize);
+        return this.soloProjectsService.getAllSoloProjects(
+            offset,
+            pageSize,
+            sort,
+        );
     }
 
     @Get(":id")
