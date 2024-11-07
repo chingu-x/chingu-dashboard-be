@@ -10,7 +10,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
-import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
 import { CustomRequest, VoyageTeam } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
@@ -74,37 +74,33 @@ export class TechsService {
 
     async updateTechStackSelections(
         req: CustomRequest,
-        teamId: number,
-        updateTechSelectionsDto: UpdateTechSelectionsDto,
+        techId: number,
+        updateTechSelectionsDto: UpdateTechSelectionDto,
     ) {
         //check for valid teamId
-        await this.validateTeamId(teamId);
+        //await this.validateTeamId(teamId);
 
         //check if user is a member of the team
-        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        //manageOwnVoyageTeamWithIdParam(req.user, teamId);
 
-        const techs = updateTechSelectionsDto.techs;
-        const selectCount = techs.reduce(
-            (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
-            0,
-        );
-        if (selectCount > MAX_SELECTION_COUNT)
-            throw new BadRequestException(
-                `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
-            );
+        //TODO: check if more than max selections
+        // const selectCount = techs.reduce(
+        //     (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
+        //     0,
+        // );
+        // if (selectCount > MAX_SELECTION_COUNT)
+        //     throw new BadRequestException(
+        //         `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
+        //     );
 
-        return this.prisma.$transaction(
-            techs.map((tech) => {
-                return this.prisma.teamTechStackItem.update({
-                    where: {
-                        id: tech.techId,
-                    },
-                    data: {
-                        isSelected: tech.isSelected,
-                    },
-                });
-            }),
-        );
+        return this.prisma.teamTechStackItem.update({
+            where: {
+                id: techId,
+            },
+            data: {
+                isSelected: updateTechSelectionsDto.isSelected,
+            },
+        });
     }
 
     async addNewTeamTech(

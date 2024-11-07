@@ -14,7 +14,7 @@ import {
 import { TechsService } from "./techs.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import {
@@ -453,13 +453,12 @@ export class TechsController {
 
     @ApiOperation({
         summary:
-            "[Permission: own_team]  Updates an array of tech stack items of same category, sets 'isSelected' values",
-        description:
-            "Maximum of 3 selections per category allowed.  All tech items must be in same category.  All tech items (isSelected === true/false) are required for updated category. Login required.",
+            "[Permission: own_team]  Updates a tech stack item selection, sets 'isSelected' value",
+        description: "Login required.",
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: "Successfully updated selected tech stack items",
+        description: "Successfully updated selected tech stack item",
         type: TechItemResponse,
     })
     @ApiResponse({
@@ -485,16 +484,16 @@ export class TechsController {
         example: 2,
     })
     @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
-    @Patch("teams/:teamId/techs/selections")
+    @Patch("teams/techs/:techId")
     updateTechStackSelections(
         @Request() req,
-        @Param("teamId", ParseIntPipe) teamId: number,
-        @Body(ValidationPipe) updateTechSelectionsDto: UpdateTechSelectionsDto,
+        @Param("techId", ParseIntPipe) techId: number,
+        @Body(ValidationPipe) techSelectionDto: UpdateTechSelectionDto,
     ) {
         return this.techsService.updateTechStackSelections(
             req,
-            teamId,
-            updateTechSelectionsDto,
+            techId,
+            techSelectionDto,
         );
     }
 }
