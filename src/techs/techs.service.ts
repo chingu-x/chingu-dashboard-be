@@ -77,30 +77,50 @@ export class TechsService {
         techId: number,
         updateTechSelectionsDto: UpdateTechSelectionDto,
     ) {
-        //check for valid teamId
-        //await this.validateTeamId(teamId);
-
-        //check if user is a member of the team
-        //manageOwnVoyageTeamWithIdParam(req.user, teamId);
-
-        //TODO: check if more than max selections
-        // const selectCount = techs.reduce(
-        //     (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
-        //     0,
-        // );
-        // if (selectCount > MAX_SELECTION_COUNT)
-        //     throw new BadRequestException(
-        //         `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
-        //     );
-
-        return this.prisma.teamTechStackItem.update({
+        const isSelected = updateTechSelectionsDto.isSelected;
+        const tech = await this.prisma.teamTechStackItem.findUnique({
             where: {
                 id: techId,
             },
-            data: {
-                isSelected: updateTechSelectionsDto.isSelected,
+            select: {
+                categoryId: true,
+                voyageTeamId: true,
             },
         });
+        if (!tech) {
+            throw new NotFoundException(
+                `Tech ${MAX_SELECTION_COUNT} not found.`,
+            );
+        }
+
+        //check if user is a member of the team
+        manageOwnVoyageTeamWithIdParam(req.user, tech.voyageTeamId);
+
+        //get all selected techs from this category
+        const teamTechs = await this.prisma.teamTechStackItem.findMany({
+            where: {
+                categoryId: tech.categoryId,
+                isSelected: true,
+            },
+            select: {
+                categoryId: true,
+            },
+        });
+
+        if (teamTechs.length >= MAX_SELECTION_COUNT && isSelected === true) {
+            throw new BadRequestException(
+                `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
+            );
+        } else {
+            return this.prisma.teamTechStackItem.update({
+                where: {
+                    id: techId,
+                },
+                data: {
+                    isSelected: isSelected,
+                },
+            });
+        }
     }
 
     async addNewTeamTech(

@@ -476,13 +476,6 @@ export class TechsController {
         description: "forbidden - user does not have the required permission",
         type: ForbiddenErrorResponse,
     })
-    @ApiParam({
-        name: "teamId",
-        description: "voyage team Id",
-        type: "Integer",
-        required: true,
-        example: 2,
-    })
     @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
     @Patch("teams/techs/:techId")
     updateTechStackSelections(
