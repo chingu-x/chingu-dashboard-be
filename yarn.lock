@@ -1176,7 +1176,6 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.5.tgz#1ef302e01cf7d2b5a0fa526790c9123bf1d06690"
   integrity sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==
 
-
 "@types/morgan@^1.9.9":
   version "1.9.9"
   resolved "https://registry.yarnpkg.com/@types/morgan/-/morgan-1.9.9.tgz#d60dec3979e16c203a000159daa07d3fb7270d7f"
@@ -1188,7 +1187,6 @@
   version "3.3.12"
   resolved "https://registry.yarnpkg.com/@types/node-mailjet/-/node-mailjet-3.3.12.tgz#07dba18d9a0299ebd6319696da93afe1a0d0a573"
   integrity sha512-M9HRtJSB64wfV9ZFOBHBKT67cV+rCjo3Rbc9A4Fv/CxHcjcXnVMEh2vUpRcqzO6Tx0TEbDq8Xzt6009SkG5Z+w==
-
 
 "@types/node@*", "@types/node@^20.3.1":
   version "20.11.30"
@@ -1208,6 +1206,15 @@
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@types/passport-discord/-/passport-discord-0.1.13.tgz#630ea9a5f3b5cb8af8c13a423c95ed85b44e277e"
   integrity sha512-A9fGTf69C19xQr4BQUHvK+/DpGuSLF/v/MEMdw4Z46sQd0dqeP+4ysBZqF5rXxaCWVcJKBxXUpV8MpW5jwWVIQ==
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
+    "@types/passport-oauth2" "*"
+
+"@types/passport-github2@^1.2.9":
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/@types/passport-github2/-/passport-github2-1.2.9.tgz#7e43b8529276cc8c429ac430f9de06d8406a17da"
+  integrity sha512-/nMfiPK2E6GKttwBzwj0Wjaot8eHrM57hnWxu52o6becr5/kXlH/4yE2v2rh234WGvSgEEzIII02Nc5oC5xEHA==
   dependencies:
     "@types/express" "*"
     "@types/passport" "*"
@@ -4706,6 +4713,13 @@ passport-discord@^0.1.4:
   dependencies:
     passport-oauth2 "^1.5.0"
 
+passport-github2@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/passport-github2/-/passport-github2-0.1.12.tgz#a72ebff4fa52a35bc2c71122dcf470d1116f772c"
+  integrity sha512-3nPUCc7ttF/3HSP/k9sAXjz3SkGv5Nki84I05kSQPo01Jqq1NzJACgMblCK0fGcv9pKCG/KXU3AJRDGLqHLoIw==
+  dependencies:
+    passport-oauth2 "1.x.x"
+
 passport-jwt@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/passport-jwt/-/passport-jwt-4.0.1.tgz#c443795eff322c38d173faa0a3c481479646ec3d"
@@ -4721,7 +4735,7 @@ passport-local@^1.0.0:
   dependencies:
     passport-strategy "1.x.x"
 
-passport-oauth2@^1.5.0:
+passport-oauth2@1.x.x, passport-oauth2@^1.5.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/passport-oauth2/-/passport-oauth2-1.8.0.tgz#55725771d160f09bbb191828d5e3d559eee079c8"
   integrity sha512-cjsQbOrXIDE4P8nNb3FQRCCmJJ/utnFKEz2NX209f7KOHPoX18gF7gBzBbLLsj2/je4KrgiwLLGjf0lm9rtTBA==
