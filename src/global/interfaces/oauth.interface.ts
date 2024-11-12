@@ -1,8 +1,12 @@
 import { DiscordUser } from "../types/auth.types";
+import { GithubUser } from "../types/auth.types";
+
+interface AuthUserResult {
+    id: string;
+    email: string | undefined;
+}
 
 export interface IAuthProvider {
-    // TODO: Maybe change it to OAuthUser: DiscordUser | GithubUser etc
-    //   Or change it to a more general type name
-    validateUser(user: DiscordUser): void;
-    createUser(user: DiscordUser): void;
+    validateUser(user: DiscordUser | GithubUser): Promise<AuthUserResult>;
+    createUser(user: DiscordUser | GithubUser): Promise<AuthUserResult>;
 }
