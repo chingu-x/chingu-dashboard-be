@@ -35,8 +35,6 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
             throw new InternalServerErrorException(
                 "[github-auth.service]: Cannot get email from GitHub.",
             );
-        } else {
-            console.log(email);
         }
 
         return this.githubAuthService.validateUser({
