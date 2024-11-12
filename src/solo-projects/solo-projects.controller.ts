@@ -31,7 +31,7 @@ export class SoloProjectsController {
     @ApiQuery({
         name: "offset",
         type: Number,
-        description: "Offset for pagination (default: 0",
+        description: "Offset for pagination (default: 0)",
         required: false,
     })
     @ApiQuery({
@@ -55,10 +55,12 @@ export class SoloProjectsController {
         @Query("pageSize", new IntDefaultValuePipe(30)) pageSize: number,
         @Query("sort") sort: string,
     ) {
+        // TODO: temp for testing
+        const sortString = sort || "-createdAt;+status";
         return this.soloProjectsService.getAllSoloProjects(
             offset,
             pageSize,
-            sort,
+            sortString,
         );
     }
 
