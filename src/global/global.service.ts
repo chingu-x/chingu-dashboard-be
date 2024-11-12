@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    InternalServerErrorException,
     NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -204,5 +205,31 @@ export class GlobalService {
                 (profile) => profile.provider.name === "discord",
             )?.providerUsername,
         };
+    };
+
+    /*
+         parse sort strings into format usable by prisma
+         sort string is in the from of "-createdAt;+status"
+         - for descending, + (or nothing) for ascending
+         valid sort fields are defined in /src/global/constants/sortMaps.ts
+     */
+    public parseSortString = (
+        sortString: string,
+        sortFieldMap: Map<string, string>,
+    ) => {
+        return sortString.split(";").map((field) => {
+            const direction = field[0] === "-" ? "desc" : "asc";
+            const fieldName =
+                field.charAt(0) === "+" || field.charAt(0) === "-"
+                    ? field.slice(1)
+                    : field;
+            if (!sortFieldMap.get(fieldName))
+                throw new InternalServerErrorException(
+                    `Sort field ${fieldName} is not valid.`,
+                );
+            return {
+                [sortFieldMap.get(fieldName)!]: direction,
+            };
+        });
     };
 }

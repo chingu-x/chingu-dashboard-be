@@ -5,6 +5,7 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { userSelectBasicWithSocial } from "@/global/selects/users.select";
 import { SoloProjectWithPayload } from "@/global/types/solo-project.types";
 import { GlobalService } from "@/global/global.service";
+import { soloProjectSortMap } from "@/global/constants/sortMaps";
 
 @Injectable()
 export class SoloProjectsService {
@@ -28,25 +29,6 @@ export class SoloProjectsService {
         };
     };
 
-    // TODO: maybe move to global, as this could be used by other endpoints
-    // parse sort strings into format usable by prisma
-    // sort string is in the from of "-createdAt;+status"
-    // - for descending, + (or nothing) for ascending
-    // valid sort fields are: 'status', 'createdAt', 'updatedAt'
-    // TODO: create a map of valid sort fields for different tables, and map things like status -> statusId
-    private parseSortString = (sortString: string) => {
-        return sortString.split(";").map((field) => {
-            const direction = field[0] === "-" ? "desc" : "asc";
-            const fieldName =
-                field.charAt(0) === "+" || field.charAt(0) === "-"
-                    ? field.slice(1)
-                    : field;
-            return {
-                [fieldName]: direction,
-            };
-        });
-    };
-
     create(_createSoloProjectDto: CreateSoloProjectDto) {
         return "This action adds a new soloProject";
     }
@@ -56,15 +38,13 @@ export class SoloProjectsService {
         pageSize: number,
         sort: string = "-createdAt",
     ) {
-        console.log(`solo-projects.service.ts (36): sort = ${sort}`);
-        this.parseSortString(sort);
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
-            // orderBy: this.parseSortString(sort),
-            orderBy: {
-                statusId: "desc",
-            },
+            orderBy: this.globalService.parseSortString(
+                sort,
+                soloProjectSortMap,
+            ),
             select: {
                 id: true,
                 user: {
