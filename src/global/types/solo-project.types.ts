@@ -11,5 +11,14 @@ export type SoloProjectWithPayload = Prisma.SoloProjectGetPayload<{
         };
         status: true;
         comments: true;
+        responseGroup: {
+            select: {
+                responses: {
+                    include: {
+                        question: true;
+                    };
+                };
+            };
+        };
     };
 }>;

@@ -26,6 +26,7 @@ export class SoloProjectsService {
             submissionTimestamp: soloProject.createdAt,
             status: soloProject.status?.status,
             comments: soloProject.comments,
+            responses: soloProject.responseGroup?.responses,
         };
     };
 
@@ -68,10 +69,32 @@ export class SoloProjectsService {
                         },
                     },
                 },
-                responseGroupId: true,
+                responseGroup: {
+                    select: {
+                        responses: {
+                            select: {
+                                question: {
+                                    select: {
+                                        text: true,
+                                    },
+                                },
+                                numeric: true,
+                                text: true,
+                                boolean: true,
+                                optionChoice: {
+                                    select: {
+                                        text: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 createdAt: true,
             },
         });
+
+        console.log(soloProjects);
 
         const data = soloProjects.map((sp) =>
             this.formatSoloProject(sp as unknown as SoloProjectWithPayload),
