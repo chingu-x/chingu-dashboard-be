@@ -165,7 +165,6 @@ export const populateQuestionResponses = async (
         }
         case "teamMembersCheckbox": {
             if (teamMemberId === 0) {
-                console.log(question);
                 throw new Error(
                     `teamMemberId required for input type ${question.inputType.name} (question id:${question.id}).`,
                 );

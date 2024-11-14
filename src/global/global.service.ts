@@ -207,6 +207,19 @@ export class GlobalService {
         };
     };
 
+    public formatResponses = (responses: any) => {
+        return responses?.map((response: any) => {
+            return {
+                question: response.question.text,
+                inputType: response.question.inputType.name,
+                text: response.text,
+                number: response.numeric,
+                boolean: response.boolean,
+                choice: response.optionChoice?.text || null,
+            };
+        });
+    };
+
     /*
          parse sort strings into format usable by prisma
          sort string is in the from of "-createdAt;+status"

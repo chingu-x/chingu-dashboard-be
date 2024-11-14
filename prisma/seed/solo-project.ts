@@ -24,6 +24,9 @@ export const populateSoloProjects = async () => {
         select: {
             id: true,
             questions: {
+                orderBy: {
+                    order: "asc",
+                },
                 select: {
                     id: true,
                 },
@@ -122,6 +125,45 @@ export const populateSoloProjects = async () => {
             }))!.id,
             formId: soloProjectForm!.id,
             responseGroupId: responseGroup2.id,
+        },
+    });
+
+    // Solo Project 3 (with option choices)
+    const responseGroup3 = await prisma.responseGroup.create({
+        data: {
+            responses: {
+                createMany: {
+                    data: [
+                        {
+                            questionId: soloProjectForm!.questions[0].id,
+                            text: "www.github.com/repo3",
+                        },
+                        {
+                            questionId: soloProjectForm!.questions[1].id,
+                            text: "www.vercel.com/3",
+                        },
+                        {
+                            questionId: soloProjectForm!.questions[2].id,
+                            optionChoiceId: 44,
+                        },
+                    ],
+                },
+            },
+        },
+    });
+
+    await prisma.soloProject.create({
+        data: {
+            userId: users[6].id,
+            evaluatorUserId: users[3].id,
+            evaluatorFeedback: passedSampleFeedback,
+            statusId: (await prisma.soloProjectStatus.findUnique({
+                where: {
+                    status: "Requested Changes",
+                },
+            }))!.id,
+            formId: soloProjectForm!.id,
+            responseGroupId: responseGroup3.id,
         },
     });
 

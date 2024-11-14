@@ -26,7 +26,9 @@ export class SoloProjectsService {
             submissionTimestamp: soloProject.createdAt,
             status: soloProject.status?.status,
             comments: soloProject.comments,
-            responses: soloProject.responseGroup?.responses,
+            responses: this.globalService.formatResponses(
+                soloProject.responseGroup?.responses,
+            ),
         };
     };
 
@@ -76,6 +78,11 @@ export class SoloProjectsService {
                                 question: {
                                     select: {
                                         text: true,
+                                        inputType: {
+                                            select: {
+                                                name: true,
+                                            },
+                                        },
                                     },
                                 },
                                 numeric: true,
@@ -94,7 +101,7 @@ export class SoloProjectsService {
             },
         });
 
-        console.log(soloProjects);
+        // console.log(soloProjects);
 
         const data = soloProjects.map((sp) =>
             this.formatSoloProject(sp as unknown as SoloProjectWithPayload),
