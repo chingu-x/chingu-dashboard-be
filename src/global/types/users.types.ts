@@ -6,6 +6,7 @@ export type UserWithProfile = Prisma.UserGetPayload<{
             select: {
                 provider: true;
                 providerId: true;
+                providerUserId: true;
                 providerUsername: true;
             };
         };

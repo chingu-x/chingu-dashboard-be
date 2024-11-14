@@ -23,12 +23,13 @@ export class SoloProjectsService {
                 this.globalService.formatUser(soloProject.evaluator),
             // TODO: uncomment below, commented out so results are easier to see
             // evaluatorFeedback: soloProject.evaluatorFeedback,
-            submissionTimestamp: soloProject.createdAt,
             status: soloProject.status?.status,
             comments: soloProject.comments,
             responses: this.globalService.formatResponses(
                 soloProject.responseGroup?.responses,
             ),
+            createdAt: soloProject.createdAt,
+            updatedAt: soloProject.updatedAt,
         };
     };
 
@@ -66,6 +67,7 @@ export class SoloProjectsService {
                     select: {
                         id: true,
                         content: true,
+                        parentCommentId: true,
                         author: {
                             select: userSelectBasicWithSocial,
                         },
@@ -98,6 +100,7 @@ export class SoloProjectsService {
                     },
                 },
                 createdAt: true,
+                updatedAt: true,
             },
         });
 

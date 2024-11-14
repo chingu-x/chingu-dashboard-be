@@ -7,12 +7,14 @@ import {
     Param,
     Delete,
     Query,
+    HttpStatus,
 } from "@nestjs/common";
 import { SoloProjectsService } from "./solo-projects.service";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
-import { ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { IntDefaultValuePipe } from "@/pipes/int-default-value-pipe";
+import { SoloProjectsResponse } from "@/solo-projects/solo-projects.response";
 
 @Controller("solo-projects")
 @ApiTags("Solo Projects")
@@ -46,21 +48,26 @@ export class SoloProjectsController {
         type: String,
         description:
             "Sort. - for descending, + (or nothing) for ascending (default: -createdAt)" +
-            "<br/> Example: 'status,-createdAt' will sort by status ascending then createdAt descending" +
+            "<br/> Example: '+status;-createdAt' will sort by status ascending then createdAt descending" +
             "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'",
         required: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description:
+            "Successfully gets all solo projects based on query params",
+        isArray: true,
+        type: SoloProjectsResponse,
     })
     getAllSoloProjects(
         @Query("offset", new IntDefaultValuePipe(0)) offset: number,
         @Query("pageSize", new IntDefaultValuePipe(30)) pageSize: number,
         @Query("sort") sort: string,
     ) {
-        // TODO: temp for testing
-        const sortString = sort || "-createdAt;+status";
         return this.soloProjectsService.getAllSoloProjects(
             offset,
             pageSize,
-            sortString,
+            sort,
         );
     }
 

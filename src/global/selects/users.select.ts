@@ -144,6 +144,7 @@ export const userSelectBasicWithSocial = {
         select: {
             provider: true,
             providerId: true,
+            providerUserId: true,
             providerUsername: true,
         },
     },

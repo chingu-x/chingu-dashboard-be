@@ -203,6 +203,12 @@ export class GlobalService {
             email: user.email,
             discordId: user.oAuthProfiles?.find(
                 (profile) => profile.provider.name === "discord",
+            )?.providerUserId,
+            discordUsername: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "discord",
+            )?.providerUsername,
+            github: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "github",
             )?.providerUsername,
         };
     };
@@ -222,7 +228,7 @@ export class GlobalService {
 
     /*
          parse sort strings into format usable by prisma
-         sort string is in the from of "-createdAt;+status"
+         sort string is in the form of "-createdAt;+status"
          - for descending, + (or nothing) for ascending
          valid sort fields are defined in /src/global/constants/sortMaps.ts
      */
