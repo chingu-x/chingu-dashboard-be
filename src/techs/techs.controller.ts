@@ -477,16 +477,16 @@ export class TechsController {
         type: ForbiddenErrorResponse,
     })
     @CheckAbilities({ action: Action.Update, subject: "TeamTechStackItem" })
-    @Patch("teams/techs/:techId")
+    @Patch("techs/:techId/selection")
     updateTechStackSelections(
         @Request() req,
         @Param("techId", ParseIntPipe) techId: number,
-        @Body(ValidationPipe) techSelectionDto: UpdateTechSelectionDto,
+        @Body(ValidationPipe) upateTechSelectionDto: UpdateTechSelectionDto,
     ) {
         return this.techsService.updateTechStackSelections(
             req,
             techId,
-            techSelectionDto,
+            upateTechSelectionDto,
         );
     }
 }

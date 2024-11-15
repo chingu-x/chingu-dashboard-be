@@ -196,7 +196,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${undefined}`)
+                .set("Cookie", "undefined")
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
@@ -226,8 +226,8 @@ describe("Techs Controller (e2e)", () => {
                 .post(`/voyages/teams/${teamId}/techs`)
                 .set("Cookie", access_token)
                 .send({
-                    techName: newTechName,
-                    techCategoryId: 1,
+                    techName: newTechName + "678",
+                    techCategoryId: 7,
                     voyageTeamMemberId: teamMemberId,
                 })
                 .expect(403);
@@ -677,12 +677,12 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH voyages/teams/:teamId/techs/selections - updates isSelected value of a tech stack tems", () => {
+    describe("PATCH voyages/techs/selections - updates isSelected value of a tech stack items", () => {
         it("should return 200 and an updated tech, if successful", async () => {
             const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/techs/${techId}`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", accessToken)
                 .send({
                     isSelected: true,
@@ -750,7 +750,7 @@ describe("Techs Controller (e2e)", () => {
             });
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/techs/${techId}`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", accessToken)
                 .send({
                     isSelected: true,
@@ -768,7 +768,7 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/techs/${techId}`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", access_token)
                 .send({
                     isSelected: true,
@@ -780,8 +780,8 @@ describe("Techs Controller (e2e)", () => {
             const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/techs/${techId}`)
-                .set("Authorization", `Bearer ${undefined}`)
+                .patch(`/voyages/techs/${techId}/selection`)
+                .set("Cookie", "undefined")
                 .send({
                     isSelected: true,
                 })
