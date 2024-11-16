@@ -1,7 +1,7 @@
 import { DiscordUser } from "../types/auth.types";
 import { GithubUser } from "../types/auth.types";
 
-interface AuthUserResult {
+export interface AuthUserResult {
     id: string;
     email: string | undefined;
 }
