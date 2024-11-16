@@ -84,8 +84,6 @@ export class GithubAuthService implements IAuthProvider {
                 },
             });
         } catch (e) {
-            console.log("Error type:", e.constructor.name);
-            console.log("Error message:", e.message);
             if (e.code === "P2025") {
                 if (e.message.includes("OAuthProvider")) {
                     throw new NotFoundException(
