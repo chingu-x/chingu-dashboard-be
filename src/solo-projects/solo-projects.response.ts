@@ -29,8 +29,11 @@ class UserWithSocials {
 }
 
 class Comment {
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 2 })
     id: number;
+
+    @ApiProperty({ example: 1 })
+    parentCommentId: number | null;
 
     @ApiProperty({ example: "This is a tier 2 project, not tier 3" })
     content: number;
@@ -59,7 +62,7 @@ class Response {
     choice: string | null;
 }
 
-export class SoloProjectsResponse {
+class SoloProjectsResponseData {
     @ApiProperty({ example: 1 })
     id: number;
 
@@ -83,4 +86,20 @@ export class SoloProjectsResponse {
 
     @ApiProperty({ example: "2024-01-08T00:00:00.000Z" })
     updatedAt: Date;
+}
+
+class SoloProjectResponseMeta {
+    @ApiProperty({ example: 30 })
+    pageSize: number;
+
+    @ApiProperty({ example: 0 })
+    offset: number;
+}
+
+export class SoloProjectsResponse {
+    @ApiProperty({ example: SoloProjectsResponseData, isArray: true })
+    data: SoloProjectsResponseData;
+
+    @ApiProperty({ example: SoloProjectResponseMeta })
+    meta: SoloProjectResponseMeta;
 }
