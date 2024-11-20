@@ -25,6 +25,9 @@ export class FeaturesService {
             where: {
                 id: teamId,
             },
+            select: {
+                id: true,
+            },
         });
 
         if (!team) {
@@ -47,6 +50,9 @@ export class FeaturesService {
         const validCategory = await this.prisma.featureCategory.findFirst({
             where: {
                 id: featureCategoryId,
+            },
+            select: {
+                id: true,
             },
         });
 
@@ -258,6 +264,9 @@ export class FeaturesService {
                 await this.prisma.featureCategory.findFirst({
                     where: {
                         id: newFeatureCategoryId,
+                    },
+                    select: {
+                        id: true,
                     },
                 });
 
