@@ -1,7 +1,6 @@
 import {
     BadRequestException,
     Injectable,
-    InternalServerErrorException,
     NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
@@ -243,7 +242,7 @@ export class GlobalService {
                     ? field.slice(1)
                     : field;
             if (!sortFieldMap.get(fieldName))
-                throw new InternalServerErrorException(
+                throw new BadRequestException(
                     `Sort field ${fieldName} is not valid.`,
                 );
             return {

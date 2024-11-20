@@ -104,8 +104,6 @@ export class SoloProjectsService {
             },
         });
 
-        // console.log(soloProjects);
-
         const data = soloProjects.map((sp) =>
             this.formatSoloProject(sp as unknown as SoloProjectWithPayload),
         );

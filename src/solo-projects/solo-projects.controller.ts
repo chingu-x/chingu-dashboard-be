@@ -13,8 +13,13 @@ import { SoloProjectsService } from "./solo-projects.service";
 import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
 import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { IntDefaultValuePipe } from "@/pipes/int-default-value-pipe";
+import { NonNegativeIntDefaultValuePipe } from "@/pipes/non-negative-int-default-value-pipe";
 import { SoloProjectsResponse } from "@/solo-projects/solo-projects.response";
+import {
+    BadRequestErrorResponse,
+    ForbiddenErrorResponse,
+    UnauthorizedErrorResponse,
+} from "@/global/responses/errors";
 
 @Controller("solo-projects")
 @ApiTags("Solo Projects")
@@ -29,7 +34,28 @@ export class SoloProjectsController {
     @ApiOperation({
         summary: "[Permission: admin, evaluator] Get all solo projects",
     })
-    @Get()
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description:
+            "Successfully gets all solo projects based on query params",
+        isArray: true,
+        type: SoloProjectsResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid input/query params",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "Unauthorized access: user is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: "Forbidden - user does not have the required permission",
+        type: ForbiddenErrorResponse,
+    })
     @ApiQuery({
         name: "offset",
         type: Number,
@@ -52,16 +78,11 @@ export class SoloProjectsController {
             "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'",
         required: false,
     })
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description:
-            "Successfully gets all solo projects based on query params",
-        isArray: true,
-        type: SoloProjectsResponse,
-    })
+    @Get()
     getAllSoloProjects(
-        @Query("offset", new IntDefaultValuePipe(0)) offset: number,
-        @Query("pageSize", new IntDefaultValuePipe(30)) pageSize: number,
+        @Query("offset", new NonNegativeIntDefaultValuePipe(0)) offset: number,
+        @Query("pageSize", new NonNegativeIntDefaultValuePipe(30))
+        pageSize: number,
         @Query("sort") sort: string,
     ) {
         return this.soloProjectsService.getAllSoloProjects(
