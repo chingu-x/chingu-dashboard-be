@@ -17,7 +17,6 @@ import { GlobalService } from "@/global/global.service";
 import { PrismaService } from "@/prisma/prisma.service";
 import { TestingModule, Test } from "@nestjs/testing";
 import { SprintsService } from "./sprints.service";
-import { VoyageResponse } from "./sprints.response";
 
 // Define types with relations using Prisma's type helpers
 type TeamMeetingWithRelations = Prisma.TeamMeetingGetPayload<{
@@ -89,15 +88,6 @@ type VoyageWithRelations = Prisma.VoyageGetPayload<{
         sprints: true;
     };
 }>;
-
-type MockFormResponseMeetingWithRelations = Omit<
-    FormResponseMeetingWithRelations,
-    "meeting" | "form" | "responseGroup"
-> & {
-    meeting?: FormResponseMeetingWithRelations["meeting"] | null;
-    form?: FormResponseMeetingWithRelations["form"] | null;
-    responseGroup?: FormResponseMeetingWithRelations["responseGroup"] | null;
-};
 
 type MockAgendaWithRelations = Omit<AgendaWithRelations, "teamMeeting"> & {
     teamMeeting?: AgendaWithRelations["teamMeeting"] | null;

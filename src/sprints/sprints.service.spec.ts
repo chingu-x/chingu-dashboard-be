@@ -1,4 +1,3 @@
-import { Test, TestingModule } from "@nestjs/testing";
 import { toBeArray } from "jest-extended";
 import { SprintsService } from "./sprints.service";
 import { createMockData, helpers, mockDate } from "./mock-data";
@@ -9,8 +8,7 @@ import {
     TeamMeeting,
     FormResponseMeeting,
   FormResponseCheckin,
-    Response,
-    Prisma,
+  Response,
   Agenda,
 } from "@prisma/client";
 import { GlobalService } from "@/global/global.service";
@@ -1678,7 +1676,7 @@ describe("SprintsService", () => {
 
             // Mock transaction responses
             const mockUpdatedResponses = multipleResponsesDto.responses.map(
-                (resp, index) =>
+              (resp) =>
                     createMockData.response(resp.questionId, resp.text),
             );
 
