@@ -4,15 +4,11 @@ import { SprintsService } from "./sprints.service";
 import { createMockData, helpers, mockDate } from "./mock-data";
 import { prismaMock } from "@/prisma/singleton";
 import {
-    Voyage,
-    Sprint,
     VoyageTeam,
     Form,
     TeamMeeting,
     FormResponseMeeting,
-    FormResponseCheckin,
-    ResponseGroup,
-    Agenda,
+  FormResponseCheckin,
     Response,
     Prisma,
 } from "@prisma/client";
