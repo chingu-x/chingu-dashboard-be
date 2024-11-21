@@ -1716,16 +1716,7 @@ describe("SprintsService", () => {
             );
         });
     });
-    describe("addCheckinFormResponse", () => {
-        const mockRequest = {
-            user: {
-                userId: "1",
-                email: "test@test.com",
-                roles: ["admin"],
-                isVerified: true,
-                voyageTeams: [1],
-            },
-        } as unknown as CustomRequest;
+  describe("addCheckinFormResponse", () => {
 
         const mockCreateCheckinFormDto = {
             voyageTeamMemberId: 1,

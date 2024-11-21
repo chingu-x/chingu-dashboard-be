@@ -41,23 +41,6 @@ type TeamMeetingWithRelations = Prisma.TeamMeetingGetPayload<{
     };
 }>;
 
-type FormResponseMeetingWithRelations = Prisma.FormResponseMeetingGetPayload<{
-    include: {
-        form: true;
-        meeting: true;
-        responseGroup: {
-            include: {
-                responses: {
-                    include: {
-                        question: true;
-                        optionChoice: true;
-                    };
-                };
-            };
-        };
-    };
-}>;
-
 type FormResponseWithRelations = Prisma.FormResponseMeetingGetPayload<{
     include: {
         form: true;
