@@ -11,6 +11,7 @@ import {
   FormResponseCheckin,
     Response,
     Prisma,
+  Agenda,
 } from "@prisma/client";
 import { GlobalService } from "@/global/global.service";
 import { FormsService } from "@/forms/forms.service";
