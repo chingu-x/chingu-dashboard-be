@@ -5,8 +5,6 @@ import { NotFoundException, UnauthorizedException, ForbiddenException, ConflictE
 import { CustomRequest } from '@/global/types/CustomRequest';
 import { createMockData, mockDate } from './mock-data';
 import { CreateTeamMeetingDto } from './dto/create-team-meeting.dto';
-import { create } from 'domain';
-
 
 describe('SprintsController', () => {
   let sprintsController: SprintsController;
