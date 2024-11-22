@@ -6,8 +6,6 @@ import { TechsService } from "./techs.service";
 describe("TechsController", () => {
     let controller: TechsController;
 
-    //const requestMock = {} as unknown as CustomRequest;
-
     const mockTechsService = {
         getAllTechItemsByTeamId: jest.fn(() => {}),
         addNewTeamTech: jest.fn(() => {}),
