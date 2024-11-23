@@ -21,7 +21,7 @@
 -   Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
 -   Added unit tests for Features controller and services ([#220](https://github.com/chingu-x/chingu-dashboard-be/pull/220))
 -   Added GET endpoint for solo project ([#223](https://github.com/chingu-x/chingu-dashboard-be/pull/223))
--   Updated readme for installation part([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
+-   Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Changed
 
