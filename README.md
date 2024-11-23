@@ -52,11 +52,7 @@ NODE_ENV=test
 
 ## Installation
 
-If you don't have yarn installed, make sure you have a package manager like npm installed first, and then install yarn:
-
-```bash
-$ npm install --global yarn
-```
+If you don't have yarn installed, make sure to install it first. Some useful steps are available in the [official Yarn documentation](https://yarnpkg.com/getting-started/install).
 
 To install all the project's dependencies run the following command in the project root:
 
