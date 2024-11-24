@@ -337,6 +337,11 @@ export class AuthController {
         return;
     }
 
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid code",
+        type: BadRequestErrorResponse,
+    })
     @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/redirect")
