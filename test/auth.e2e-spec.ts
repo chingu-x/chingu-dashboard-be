@@ -88,6 +88,10 @@ describe("AuthController e2e Tests", () => {
                             clientID: "discord-client-id",
                             clientSecret: "dicord-client-secret",
                         },
+                        github: {
+                            clientID: "github-client-id",
+                            clientSecret: "github-client-secret",
+                        },
                     } as unknown as OAuthConfig,
                 },
             ],
