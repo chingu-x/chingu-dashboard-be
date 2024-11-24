@@ -41,7 +41,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
             githubId: id,
             username: username ? username : "",
             avatar,
-            email,
+            email: email ? email : "",
         });
     }
 }
