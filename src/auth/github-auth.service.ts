@@ -90,9 +90,9 @@ export class GithubAuthService implements IAuthProvider {
                         "OAuth provider not found in the database",
                     );
                 }
-                console.error("Unexpected error during upsert:", e);
-                throw e;
             }
+            console.error("Unexpected error during upsert:", e);
+            throw e;
         }
         return upsertResult;
     }
