@@ -667,7 +667,7 @@ export class SprintsService {
                     `Bad request - type error in responses array`,
                 );
             } else {
-              console.error(e);
+              console.log(e);
                 throw e;
             }
         }
