@@ -17,7 +17,7 @@ export class DiscordAuthGuard extends AuthGuard("discord") {
         try {
             activate = (await super.canActivate(context)) as boolean;
         } catch (e) {
-            if (e.message.includes("Invalid code")) {
+            if (e.code == "invalid_grant") {
                 throw new BadRequestException(
                     `Invalid code in redirect query param.`,
                 );
