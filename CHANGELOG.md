@@ -20,11 +20,13 @@
 - Added same site property to the clear cookies function ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 - Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
 - Added unit tests for Features controller and services ([#220](https://github.com/chingu-x/chingu-dashboard-be/pull/220))
+- Added GET endpoint for solo project ([#223](https://github.com/chingu-x/chingu-dashboard-be/pull/223))
 
 ### Changed
 - Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 - refactored unit tests for the ideations controller and services([#219](https://github.com/chingu-x/chingu-dashboard-be/pull/219))
 - revised tech selections route to update only one tech per request([#221](https://github.com/chingu-x/chingu-dashboard-be/pull/221))
+
 ### Fixed
 
 ### Removed
