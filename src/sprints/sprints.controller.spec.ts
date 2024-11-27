@@ -44,10 +44,10 @@ describe('SprintsController', () => {
 
   const mockUpdatedMeetingDto: UpdateTeamMeetingDto = {
     title: "Updated Sprint Meeting",
-    description: "Updated Planning session for sprint 1" ?? null,
-    meetingLink: "http://meet.google.com/123Updated" ?? null,
-    dateTime: mockDate ?? null,
-    notes: "Updated Please come prepared" ?? null,
+    description: "Updated Planning session for sprint 1",
+    meetingLink: "http://meet.google.com/123Updated",
+    dateTime: mockDate,
+    notes: "Updated Please come prepared",
   };
 
   const mockCreateAgendaDto: CreateAgendaDto = {
