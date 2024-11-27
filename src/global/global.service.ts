@@ -7,6 +7,7 @@ import {
 import { PrismaService } from "@/prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
 import { FormResponseDto } from "./dtos/FormResponse.dto";
+import { UserWithProfile } from "@/global/types/users.types";
 
 @Injectable()
 export class GlobalService {
@@ -192,5 +193,61 @@ export class GlobalService {
         }
 
         return dbItem;
+    };
+
+    public formatUser = (user: UserWithProfile) => {
+        return {
+            firstname: user.firstName,
+            lastname: user.lastName,
+            email: user.email,
+            discordId: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "discord",
+            )?.providerUserId,
+            discordUsername: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "discord",
+            )?.providerUsername,
+            github: user.oAuthProfiles?.find(
+                (profile) => profile.provider.name === "github",
+            )?.providerUsername,
+        };
+    };
+
+    public formatResponses = (responses: any) => {
+        return responses?.map((response: any) => {
+            return {
+                question: response.question.text,
+                inputType: response.question.inputType.name,
+                text: response.text,
+                number: response.numeric,
+                boolean: response.boolean,
+                choice: response.optionChoice?.text || null,
+            };
+        });
+    };
+
+    /*
+         parse sort strings into format usable by prisma
+         sort string is in the form of "-createdAt;+status"
+         - for descending, + (or nothing) for ascending
+         valid sort fields are defined in /src/global/constants/sortMaps.ts
+     */
+    public parseSortString = (
+        sortString: string,
+        sortFieldMap: Map<string, string>,
+    ) => {
+        return sortString.split(";").map((field) => {
+            const direction = field[0] === "-" ? "desc" : "asc";
+            const fieldName =
+                field.charAt(0) === "+" || field.charAt(0) === "-"
+                    ? field.slice(1)
+                    : field;
+            if (!sortFieldMap.get(fieldName))
+                throw new BadRequestException(
+                    `Sort field ${fieldName} is not valid.`,
+                );
+            return {
+                [sortFieldMap.get(fieldName)!]: direction,
+            };
+        });
     };
 }
