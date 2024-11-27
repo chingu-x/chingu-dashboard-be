@@ -22,7 +22,6 @@ import { manageOwnTeamMeetingOrAgendaById } from "@/ability/conditions/meetingOr
 import { FormTitles } from "@/global/constants/formTitles";
 import { CustomRequest } from "@/global/types/CustomRequest";
 
-
 expect.extend({ toBeArray });
 
 jest.mock("@/ability/conditions/meetingOrAgenda.ability", () => ({
@@ -1676,8 +1675,7 @@ describe("SprintsService", () => {
 
             // Mock transaction responses
             const mockUpdatedResponses = multipleResponsesDto.responses.map(
-              (resp) =>
-                    createMockData.response(resp.questionId, resp.text),
+              (resp) => createMockData.response(resp.questionId, resp.text),
             );
 
             // Mock meeting and form response checks
@@ -1717,7 +1715,6 @@ describe("SprintsService", () => {
         });
     });
   describe("addCheckinFormResponse", () => {
-
         const mockCreateCheckinFormDto = {
             voyageTeamMemberId: 1,
             sprintId: 1,
@@ -1834,8 +1831,14 @@ describe("SprintsService", () => {
                 const formattedResponses = mockResponses.map((response) => ({
                     ...response,
                     text: response.text !== null ? response.text : undefined,
-                    boolean: response.boolean !== null ? response.boolean : undefined,
-                    numeric: response.numeric !== null ? response.numeric : undefined,
+                  boolean:
+                    response.boolean !== null
+                      ? response.boolean
+                      : undefined,
+                  numeric:
+                    response.numeric !== null
+                      ? response.numeric
+                      : undefined,
                     optionChoiceId:
                         response.optionChoiceId !== null
                             ? response.optionChoiceId
@@ -1981,6 +1984,9 @@ describe("SprintsService", () => {
             });
 
             it("should handle database errors during response group creation", async () => {
+              const consoleSpy = jest
+                .spyOn(console, "log")
+                .mockImplementation();
                 // Mock transaction failing during response group creation
                 prismaMock.$transaction.mockImplementation(async () => {
                     throw new Error(
@@ -1993,6 +1999,7 @@ describe("SprintsService", () => {
                 ).rejects.toThrow(
                     "Database error during response group creation",
                 );
+              consoleSpy.mockRestore();
             });
 
             it("should handle empty responses array", async () => {
