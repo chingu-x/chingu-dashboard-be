@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SprintsController } from './sprints.controller';
 import { SprintsService } from './sprints.service';
 import { CustomRequest } from '@/global/types/CustomRequest';
-import { createMockData, mockDate } from './mock-data';
+import { createMockData, mockDate } from '../global/mocks/mock-data';
 import { CreateTeamMeetingDto } from './dto/create-team-meeting.dto';
 import { UpdateTeamMeetingDto } from './dto/update-team-meeting.dto';
 import { CreateAgendaDto } from './dto/create-agenda.dto';

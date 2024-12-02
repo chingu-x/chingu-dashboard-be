@@ -1,6 +1,6 @@
 import { toBeArray } from "jest-extended";
 import { SprintsService } from "./sprints.service";
-import { createMockData, helpers, mockDate } from "./mock-data";
+import { createMockData, helpers, mockDate } from "../global/mocks/mock-data";
 import { prismaMock } from "@/prisma/singleton";
 import {
   VoyageTeam,
