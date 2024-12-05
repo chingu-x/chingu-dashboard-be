@@ -32,7 +32,7 @@ async function bootstrap() {
         const config = new DocumentBuilder()
             .setTitle("Chingu Dashboard Project")
             .setDescription(
-                "Chingu Dashboard API<br> default access: logged in (user)",
+                "Chingu Dashboard API ( <a href='https://github.com/chingu-x/chingu-dashboard-be/releases/tag/1.1.0-alpha'>Version: v1.1.0-alpha</a> ) <br> default access: logged in (user)",
             )
             .setVersion("1.0")
             .addBearerAuth()
