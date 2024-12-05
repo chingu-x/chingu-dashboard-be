@@ -41,6 +41,10 @@ DISCORD_CLIENT_ID=
 DISCORD_CLIENT_SECRET=
 DISCORD_CALLBACK_URL=http://localhost:8000/api/v1/auth/discord/redirect
 
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_CALLBACK_URL=http://localhost:8000/api/v1/auth/github/redirect 
+
 # .env.test
 DATABASE_URL={your test database connection string}
 NODE_ENV=test
