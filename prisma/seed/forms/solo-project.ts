@@ -32,6 +32,16 @@ export const populateSoloProjectForm = async () => {
                         text: "Deployed Url",
                         answerRequired: true,
                     },
+                    {
+                        order: 3,
+                        inputType: {
+                            connect: {
+                                name: "radio",
+                            },
+                        },
+                        text: "Tier",
+                        answerRequired: true,
+                    },
                 ],
             },
         },

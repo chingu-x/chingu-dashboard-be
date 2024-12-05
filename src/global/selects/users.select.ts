@@ -136,3 +136,16 @@ export const publicUserDetailSelect = {
     countryCode: true,
     timezone: true,
 };
+
+export const userSelectBasicWithSocial = {
+    firstName: true,
+    lastName: true,
+    oAuthProfiles: {
+        select: {
+            provider: true,
+            providerId: true,
+            providerUserId: true,
+            providerUsername: true,
+        },
+    },
+};

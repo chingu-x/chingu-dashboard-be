@@ -8,9 +8,11 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
-import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
+import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
+import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest } from "@/global/types/CustomRequest";
+import { CustomRequest, UserReq } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
@@ -36,14 +38,14 @@ export class TechsService {
 
         manageOwnVoyageTeamWithIdParam(req.user, teamId);
         return this.prisma.techStackCategory.findMany({
+            where: {
+                voyageTeamId: teamId,
+            },
             select: {
                 id: true,
                 name: true,
                 description: true,
                 teamTechStackItems: {
-                    where: {
-                        voyageTeamId: teamId,
-                    },
                     select: {
                         id: true,
                         name: true,
@@ -72,65 +74,73 @@ export class TechsService {
 
     async updateTechStackSelections(
         req: CustomRequest,
-        teamId: number,
-        updateTechSelectionsDto: UpdateTechSelectionsDto,
+        techId: number,
+        updateTechSelectionsDto: UpdateTechSelectionDto,
     ) {
-        //check for valid teamId
-        await this.validateTeamId(teamId);
+        const isSelected = updateTechSelectionsDto.isSelected;
+        const tech = await this.prisma.teamTechStackItem.findUnique({
+            where: {
+                id: techId,
+            },
+            select: {
+                categoryId: true,
+                voyageTeamId: true,
+            },
+        });
+        if (!tech) {
+            throw new NotFoundException(`Tech ${techId} not found.`);
+        }
 
         //check if user is a member of the team
-        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        manageOwnVoyageTeamWithIdParam(req.user, tech.voyageTeamId);
 
-        const categories = updateTechSelectionsDto.categories;
+        //get all selected techs from this category
+        const teamTechs = await this.prisma.teamTechStackItem.findMany({
+            where: {
+                categoryId: tech.categoryId,
+                isSelected: true,
+            },
+            select: {
+                categoryId: true,
+            },
+        });
 
-        //count selections in categories for exceeding MAX_SELECT_COUNT
-        categories.forEach((category) => {
-            const selectCount = category.techs.reduce(
-                (acc: number, tech) => acc + (tech.isSelected ? 1 : 0),
-                0,
+        if (teamTechs.length >= MAX_SELECTION_COUNT && isSelected === true) {
+            throw new BadRequestException(
+                `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
             );
-            if (selectCount > MAX_SELECTION_COUNT)
-                throw new BadRequestException(
-                    `Only ${MAX_SELECTION_COUNT} selections allowed per category`,
-                );
-        });
-
-        //extract techs to an array for .map
-        const techsArray: any[] = [];
-        categories.forEach((category) => {
-            category.techs.forEach((tech) => techsArray.push(tech));
-        });
-        return this.prisma.$transaction(
-            techsArray.map((tech) => {
-                return this.prisma.teamTechStackItem.update({
-                    where: {
-                        id: tech.techId,
-                    },
-                    data: {
-                        isSelected: tech.isSelected,
-                    },
-                });
-            }),
-        );
+        } else {
+            return this.prisma.teamTechStackItem.update({
+                where: {
+                    id: techId,
+                },
+                data: {
+                    isSelected: isSelected,
+                },
+            });
+        }
     }
 
     async addNewTeamTech(
         req: CustomRequest,
         teamId: number,
-        createTechVoteDto: CreateTeamTechDto,
+        createTeamTechDto: CreateTeamTechDto,
     ) {
         //check for valid teamId
         await this.validateTeamId(teamId);
 
-        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+        await this.userCanChangeCategory(
+            createTeamTechDto.techCategoryId,
+            req.user,
+        );
 
         try {
             const newTeamTechItem = await this.prisma.teamTechStackItem.create({
                 data: {
-                    name: createTechVoteDto.techName,
-                    categoryId: createTechVoteDto.techCategoryId,
+                    name: createTeamTechDto.techName,
+                    categoryId: createTeamTechDto.techCategoryId,
                     voyageTeamId: teamId,
-                    voyageTeamMemberId: createTechVoteDto.voyageTeamMemberId,
+                    voyageTeamMemberId: createTeamTechDto.voyageTeamMemberId,
                 },
             });
 
@@ -138,7 +148,7 @@ export class TechsService {
                 await this.prisma.teamTechStackItemVote.create({
                     data: {
                         teamTechId: newTeamTechItem.id,
-                        teamMemberId: createTechVoteDto.voyageTeamMemberId,
+                        teamMemberId: createTeamTechDto.voyageTeamMemberId,
                     },
                 });
             return {
@@ -151,7 +161,7 @@ export class TechsService {
         } catch (e) {
             if (e.code === "P2002") {
                 throw new ConflictException(
-                    `${createTechVoteDto.techName} already exists in the available team tech stack.`,
+                    `${createTeamTechDto.techName} already exists in the available team tech stack.`,
                 );
             }
             throw e;
@@ -318,6 +328,83 @@ export class TechsService {
         }
     }
 
+    async addNewTechStackCategory(
+        req: CustomRequest,
+        teamId: number,
+        createTechStackCategoryDto: CreateTechStackCategoryDto,
+    ) {
+        manageOwnVoyageTeamWithIdParam(req.user, teamId);
+
+        try {
+            const categoryData = {
+                name: createTechStackCategoryDto.name,
+                description: createTechStackCategoryDto.description,
+                voyageTeamId: teamId,
+            };
+            const newTeamTechCategory =
+                await this.prisma.techStackCategory.create({
+                    data: { ...categoryData },
+                });
+            return newTeamTechCategory;
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `Category ${createTechStackCategoryDto.name} already exists for this team.`,
+                );
+            }
+            throw e;
+        }
+    }
+
+    async updateTechStackCategory(
+        req: CustomRequest,
+        techStackCategoryId: number,
+        updateTechStackCategoryDto: UpdateTechStackCategoryDto,
+    ) {
+        await this.userCanChangeCategory(techStackCategoryId, req.user);
+
+        try {
+            const newTechStackCategory =
+                await this.prisma.techStackCategory.update({
+                    where: {
+                        id: techStackCategoryId,
+                    },
+                    data: {
+                        name: updateTechStackCategoryDto.newName,
+                        description: updateTechStackCategoryDto.description,
+                    },
+                });
+            return newTechStackCategory;
+        } catch (e) {
+            if (e.code === "P2002") {
+                throw new ConflictException(
+                    `Category ${updateTechStackCategoryDto.newName} already exists for this team.`,
+                );
+            }
+            throw e;
+        }
+    }
+
+    async deleteTechStackCategory(
+        req: CustomRequest,
+        techStackCategoryId: number,
+    ) {
+        await this.userCanChangeCategory(techStackCategoryId, req.user);
+
+        try {
+            await this.prisma.techStackCategory.delete({
+                where: { id: techStackCategoryId },
+            });
+
+            return {
+                message: "The  tech stack category is deleted",
+                statusCode: 200,
+            };
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async addExistingTechVote(req: CustomRequest, teamTechItemId: number) {
         // check if team tech item exists
         const teamTechItem = await this.prisma.teamTechStackItem.findUnique({
@@ -427,6 +514,26 @@ export class TechsService {
                 throw new NotFoundException(e.meta.cause);
             }
             throw e;
+        }
+    }
+
+    private async userCanChangeCategory(categoryId: number, user: UserReq) {
+        if (user.roles?.includes("admin")) return;
+
+        const userVoyageTeams = user.voyageTeams;
+        const match = await this.prisma.techStackCategory.findUnique({
+            where: {
+                id: categoryId,
+            },
+        });
+
+        const permission = userVoyageTeams.some(
+            (team) => team.teamId === match?.voyageTeamId,
+        );
+        if (!permission) {
+            throw new ForbiddenException(
+                `This user cannot change category ${categoryId}`,
+            );
         }
     }
 }

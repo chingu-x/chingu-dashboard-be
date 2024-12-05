@@ -8,28 +8,35 @@ import { CustomRequest } from "@/global/types/CustomRequest";
 describe("IdeationsController", () => {
     let controller: IdeationsController;
     let service: IdeationsService;
+    // Mock data
+    const mockDate = new Date("2024-10-23T02:41:03.575Z");
+    const ideationOne = {
+        id: 1,
+        title: "Ideation 1",
+        description: "Ideation 1 description",
+        vision: "Ideation 1 vision",
+        createdAt: mockDate,
+        updatedAt: mockDate,
+    };
 
-    const ideationArr = [
-        {
-            id: 1,
-            title: "Ideation 1",
-            description: "Ideation 1 description",
-            vision: "Ideation 1 vision",
-        },
-    ];
-    const ideationOne = ideationArr[0];
+    const ideationVoteOne = { id: 1, projectIdeaId: 1 };
 
-    const ideationVoteArr = [{ id: 1, projectIdeaId: 1 }];
-    const ideationVoteOne = ideationVoteArr[0];
-
+    // Create complete mock service matching IdeationsService exactly
     const mockIdeationsService = {
         createIdeation: jest.fn().mockResolvedValue(ideationOne),
-        createIdeationVote: jest.fn().mockResolvedValue(ideationVoteOne),
-        getIdeationsByVoyageTeam: jest.fn().mockResolvedValue(ideationArr),
+        getIdeationsByVoyageTeam: jest.fn().mockResolvedValue([ideationOne]),
         updateIdeation: jest.fn().mockResolvedValue(ideationOne),
-        deleteIdeation: jest.fn().mockResolvedValue(true),
-        deleteIdeationVote: jest.fn().mockResolvedValue(true),
-    };
+        deleteIdeation: jest.fn().mockResolvedValue(ideationOne),
+        createIdeationVote: jest.fn().mockResolvedValue(ideationVoteOne),
+        deleteIdeationVote: jest.fn().mockResolvedValue(ideationVoteOne),
+        getSelectedIdeation: jest.fn().mockResolvedValue(ideationOne),
+        setIdeationSelection: jest.fn().mockResolvedValue(ideationOne),
+        resetIdeationSelection: jest.fn().mockResolvedValue(ideationOne),
+        hasIdeationVote: jest.fn().mockResolvedValue(false),
+        checkIdeationAndVotes: jest.fn().mockResolvedValue(1),
+        removeIdeation: jest.fn().mockResolvedValue(ideationOne),
+        removeVote: jest.fn().mockResolvedValue(ideationVoteOne),
+    } as unknown as IdeationsService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -44,119 +51,198 @@ describe("IdeationsController", () => {
 
         controller = module.get<IdeationsController>(IdeationsController);
         service = module.get<IdeationsService>(IdeationsService);
+
+        // Reset all mocks
+        jest.clearAllMocks();
     });
 
     it("should be defined", () => {
         expect(controller).toBeDefined();
+        expect(service).toBeDefined();
+    });
+    describe("createIdeation", () => {
+        it("should have createIdeation defined", () => {
+            expect(service.createIdeation).toBeDefined();
+        });
+        it("should call service.createIdeation with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const teamId = 1;
+            const createIdeationDto: CreateIdeationDto = {
+                title: "Ideation 1",
+                description: "Ideation 1 description",
+                vision: "Ideation 1 vision",
+            };
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+            await controller.createIdeation(req, teamId, createIdeationDto);
+            expect(service.createIdeation).toHaveBeenCalledWith(
+                req,
+                teamId,
+                createIdeationDto,
+            );
+        });
+    });
+    describe("createIdeationVote", () => {
+        it("should have createIdeationVote defined", () => {
+            expect(service.createIdeationVote).toBeDefined();
+        });
+        it("should call service.createIdeationVote with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const ideationId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+            await controller.createIdeationVote(req, ideationId);
+
+            expect(service.createIdeationVote).toHaveBeenCalledWith(
+                req,
+                ideationId,
+            );
+        });
+    });
+    describe("getIdeationsByVoyageTeam", () => {
+        it("should have getIdeationsByVoyageTeam defined", () => {
+            expect(service.getIdeationsByVoyageTeam).toBeDefined();
+        });
+        it("should call service.getIdeationsByVoyageTeam with correct parameters", async () => {
+            const teamId = 1;
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const req = {
+                user: {
+                    userId,
+                    voyageTeams: [{ teamId, memberId: 1 }],
+                },
+            } as CustomRequest;
+            await controller.getIdeationsByVoyageTeam(teamId, req);
+
+            expect(service.getIdeationsByVoyageTeam).toHaveBeenCalled();
+        });
     });
 
-    it("should create an ideation", async () => {
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const teamId = 1;
-        const createIdeationDto: CreateIdeationDto = {
-            title: "Ideation 1",
-            description: "Ideation 1 description",
-            vision: "Ideation 1 vision",
-        };
-        const req = {
-            user: {
-                userId: userId,
-            },
-        } as CustomRequest;
-        const ideation = await controller.createIdeation(
-            req,
-            teamId,
-            createIdeationDto,
-        );
-        expect(service.createIdeation).toHaveBeenCalled();
-        expect(ideation).toBe(ideationOne);
+    describe("updateIdeation", () => {
+        it("should have updateIdeation method", () => {
+            expect(controller.updateIdeation).toBeDefined();
+        });
+
+        it("should call service.updateIdeation with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const ideationId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+            const updateIdeationDto: UpdateIdeationDto = {
+                title: "Ideation 1",
+                description: "Ideation 1 description",
+                vision: "Ideation 1 vision",
+            };
+
+            await controller.updateIdeation(req, ideationId, updateIdeationDto);
+
+            expect(service.updateIdeation).toHaveBeenCalledWith(
+                req,
+                ideationId,
+                updateIdeationDto,
+            );
+        });
+    });
+    describe("deleteIdeation", () => {
+        it("should have deleteIdeation method", () => {
+            expect(controller.deleteIdeation).toBeDefined();
+        });
+
+        it("should call service.deleteIdeation with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const ideationId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+
+            await controller.deleteIdeation(req, ideationId);
+
+            expect(service.deleteIdeation).toHaveBeenCalledWith(
+                req,
+                ideationId,
+            );
+        });
     });
 
-    it("should create an ideation vote", async () => {
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const ideationId = 1;
-        const req = {
-            user: {
-                userId: userId,
-            },
-        } as CustomRequest;
-        const ideationVote = await controller.createIdeationVote(
-            req,
-            ideationId,
-        );
+    describe("deleteIdeationVote", () => {
+        it("should have deleteIdeationVote method", () => {
+            expect(controller.deleteIdeationVote).toBeDefined();
+        });
 
-        expect(service.createIdeationVote).toHaveBeenCalled();
-        expect(ideationVote).toBe(ideationVoteOne);
+        it("should call service.deleteIdeationVote with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const ideationId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+
+            await controller.deleteIdeationVote(req, ideationId);
+
+            expect(service.deleteIdeationVote).toHaveBeenCalledWith(
+                req,
+                ideationId,
+            );
+        });
     });
 
-    it("should get ideations by voyage team", async () => {
-        const teamId = 1;
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const req = {
-            user: {
-                userId,
-                voyageTeams: [{ teamId, memberId: 1 }],
-            },
-        } as CustomRequest;
-        const ideations = await controller.getIdeationsByVoyageTeam(
-            teamId,
-            req,
-        );
+    describe("setIdeationSelection", () => {
+        it("should have setIdeationSelection method", () => {
+            expect(controller.setIdeationSelection).toBeDefined();
+        });
 
-        expect(service.getIdeationsByVoyageTeam).toHaveBeenCalled();
-        expect(ideations).toBe(ideationArr);
+        it("should call service.setIdeationSelection with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const teamId = 1;
+            const ideationId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
+
+            await controller.setIdeationSelection(req, teamId, ideationId);
+
+            expect(service.setIdeationSelection).toHaveBeenCalledWith(
+                req,
+                teamId,
+                ideationId,
+            );
+        });
     });
 
-    it("should update an ideation", async () => {
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const ideationId = 1;
-        const req = {
-            user: {
-                userId: userId,
-            },
-        } as CustomRequest;
-        const updateIdeationDto: UpdateIdeationDto = {
-            title: "Ideation 1",
-            description: "Ideation 1 description",
-            vision: "Ideation 1 vision",
-        };
-        const ideation = await controller.updateIdeation(
-            req,
-            ideationId,
-            updateIdeationDto,
-        );
-        expect(service.updateIdeation).toHaveBeenCalled();
-        expect(ideation).toEqual(ideationOne);
-    });
+    describe("resetIdeationSelection", () => {
+        it("should have resetIdeationSelection method", () => {
+            expect(controller.resetIdeationSelection).toBeDefined();
+        });
 
-    it("should delete an ideation", async () => {
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const ideationId = 1;
-        const req = {
-            user: {
-                userId: userId,
-            },
-        } as CustomRequest;
-        const ideation = await controller.deleteIdeation(req, ideationId);
+        it("should call service.resetIdeationSelection with correct parameters", async () => {
+            const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
+            const teamId = 1;
+            const req = {
+                user: {
+                    userId: userId,
+                },
+            } as CustomRequest;
 
-        expect(service.deleteIdeation).toHaveBeenCalled();
-        expect(ideation).toBe(true);
-    });
+            await controller.resetIdeationSelection(req, teamId);
 
-    it("should delete an ideation vote", async () => {
-        const userId = "cc1b7a12-72f6-11ee-b962-0242ac120002";
-        const ideationId = 1;
-        const req = {
-            user: {
-                userId: userId,
-            },
-        } as CustomRequest;
-        const ideationVote = await controller.deleteIdeationVote(
-            req,
-            ideationId,
-        );
-
-        expect(service.deleteIdeationVote).toHaveBeenCalled();
-        expect(ideationVote).toBe(true);
+            expect(service.resetIdeationSelection).toHaveBeenCalledWith(
+                req,
+                teamId,
+            );
+        });
     });
 });

@@ -196,7 +196,7 @@ describe("Techs Controller (e2e)", () => {
 
             return request(app.getHttpServer())
                 .post(`/voyages/teams/${teamId}/techs`)
-                .set("Authorization", `Bearer ${undefined}`)
+                .set("Cookie", "undefined")
                 .send({
                     techName: newTechName,
                     techCategoryId: 1,
@@ -226,8 +226,8 @@ describe("Techs Controller (e2e)", () => {
                 .post(`/voyages/teams/${teamId}/techs`)
                 .set("Cookie", access_token)
                 .send({
-                    techName: newTechName,
-                    techCategoryId: 1,
+                    techName: newTechName + "678",
+                    techCategoryId: 7,
                     voyageTeamMemberId: teamMemberId,
                 })
                 .expect(403);
@@ -677,96 +677,87 @@ describe("Techs Controller (e2e)", () => {
         });
     });
 
-    describe("PATCH voyages/teams/:teamId/techs/selections - updates isSelected value of tech stack items", () => {
-        it("should return 200 and an array of updated techs, if successful", async () => {
-            const teamId: number = 2;
+    describe("PATCH voyages/techs/selections - updates isSelected value of a tech stack items", () => {
+        it("should return 200 and an updated tech, if successful", async () => {
+            const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", accessToken)
                 .send({
-                    categories: [
-                        {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
-                        },
-                    ],
+                    isSelected: true,
                 })
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
                     expect(res.body).toEqual(
-                        expect.arrayContaining([
-                            expect.objectContaining({
-                                categoryId: expect.any(Number),
-                                isSelected: expect.any(Boolean),
-                                name: expect.any(String),
-                            }),
-                        ]),
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            categoryId: expect.any(Number),
+                            isSelected: expect.any(Boolean),
+                            name: expect.any(String),
+                            voyageTeamId: expect.any(Number),
+                            voyageTeamMemberId: expect.any(Number),
+                            createdAt: expect.any(String),
+                            updatedAt: expect.any(String),
+                        }),
                     );
                 });
         });
 
         it("should return 400 if more than 3 selections in a category", async () => {
-            const teamId: number = 2;
+            const techId: number = 23;
+
+            //create 4 tech items , select 3
+            await prisma.teamTechStackItem.create({
+                data: {
+                    id: 20,
+                    name: "Test1",
+                    categoryId: 1,
+                    voyageTeamId: 1,
+                    isSelected: true,
+                },
+            });
+
+            await prisma.teamTechStackItem.create({
+                data: {
+                    id: 21,
+                    name: "Test2",
+                    categoryId: 1,
+                    voyageTeamId: 1,
+                    isSelected: true,
+                },
+            });
+
+            await prisma.teamTechStackItem.create({
+                data: {
+                    id: 22,
+                    name: "Test3",
+                    categoryId: 1,
+                    voyageTeamId: 1,
+                    isSelected: true,
+                },
+            });
+
+            await prisma.teamTechStackItem.create({
+                data: {
+                    id: 23,
+                    name: "Test4",
+                    categoryId: 1,
+                    voyageTeamId: 1,
+                    isSelected: false,
+                },
+            });
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", accessToken)
                 .send({
-                    categories: [
-                        {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 2,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 3,
-                                    isSelected: true,
-                                },
-                                {
-                                    techId: 4,
-                                    isSelected: true,
-                                },
-                            ],
-                        },
-                    ],
+                    isSelected: true,
                 })
                 .expect(400);
         });
 
-        it("should return 404 invalid team id provided", async () => {
-            const teamId: number = 999999;
-
-            return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Cookie", accessToken)
-                .send({
-                    categories: [
-                        {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
-                        },
-                    ],
-                })
-                .expect(404);
-        });
         it("should return 403 if a user does not belong to the same team", async () => {
             const { access_token } = await loginAndGetTokens(
                 "dan@random.com",
@@ -774,45 +765,25 @@ describe("Techs Controller (e2e)", () => {
                 app,
             );
 
-            const teamId: number = 2;
+            const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs/selections`)
+                .patch(`/voyages/techs/${techId}/selection`)
                 .set("Cookie", access_token)
                 .send({
-                    categories: [
-                        {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
-                        },
-                    ],
+                    isSelected: true,
                 })
                 .expect(403);
         });
 
         it("should return 401 unauthorized if not logged in", async () => {
-            const teamId: number = 2;
+            const techId: number = 1;
 
             return request(app.getHttpServer())
-                .patch(`/voyages/teams/${teamId}/techs/selections`)
-                .set("Authorization", `Bearer ${undefined}`)
+                .patch(`/voyages/techs/${techId}/selection`)
+                .set("Cookie", "undefined")
                 .send({
-                    categories: [
-                        {
-                            categoryId: 1,
-                            techs: [
-                                {
-                                    techId: 1,
-                                    isSelected: true,
-                                },
-                            ],
-                        },
-                    ],
+                    isSelected: true,
                 })
                 .expect(401);
         });
