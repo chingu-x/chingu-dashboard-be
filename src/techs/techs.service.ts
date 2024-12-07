@@ -132,6 +132,7 @@ export class TechsService {
         await this.userCanChangeCategory(
             createTeamTechDto.techCategoryId,
             req.user,
+            teamId,
         );
 
         try {
@@ -517,19 +518,37 @@ export class TechsService {
         }
     }
 
-    private async userCanChangeCategory(categoryId: number, user: UserReq) {
+    private async userCanChangeCategory(
+        categoryId: number,
+        user: UserReq,
+        teamId: number | undefined = undefined,
+    ) {
         if (user.roles?.includes("admin")) return;
 
-        const userVoyageTeams = user.voyageTeams;
-        const match = await this.prisma.techStackCategory.findUnique({
-            where: {
-                id: categoryId,
-            },
-        });
+        let match;
+        try {
+            match = await this.prisma.techStackCategory.findUnique({
+                where: {
+                    id: categoryId,
+                },
+            });
+        } catch {
+            throw new NotFoundException(`Category ${categoryId} not found`);
+        }
 
-        const permission = userVoyageTeams.some(
-            (team) => team.teamId === match?.voyageTeamId,
-        );
+        if (teamId && match) {
+            if (teamId != match.voyageTeamId) {
+                throw new ForbiddenException(
+                    `Team ${teamId} cannot change category ${categoryId}`,
+                );
+            }
+        }
+
+        let permission = false;
+        for (let team of user.voyageTeams) {
+            if (team.teamId === match?.voyageTeamId) permission = true;
+        }
+
         if (!permission) {
             throw new ForbiddenException(
                 `This user cannot change category ${categoryId}`,
