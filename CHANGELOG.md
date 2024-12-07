@@ -28,6 +28,7 @@
 - revised tech selections route to update only one tech per request([#221](https://github.com/chingu-x/chingu-dashboard-be/pull/221))
 
 ### Fixed
+- fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#228](https://github.com/chingu-x/chingu-dashboard-be/pull/228))
 
 ### Removed
 
