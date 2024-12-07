@@ -34,20 +34,28 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
     }
 
     async validate(payload: any) {
-        const userInDb = await this.usersService.getUserRolesById(payload.sub);
+        //Check if user id provided in payload exists in db
+        const userInDb = await this.usersService.findUserById(payload.sub);
 
-        // Note: Update global/types/CustomRequest when updating this
-        return {
-            userId: payload.sub,
-            email: payload.email,
-            roles: userInDb.roles,
-            isVerified: userInDb.emailVerified,
-            voyageTeams: userInDb.voyageTeamMembers?.map((t) => {
-                return {
-                    teamId: t.voyageTeamId,
-                    memberId: t.id,
-                };
-            }),
-        };
+        //Get user roles if userInDb exists & return
+        if (userInDb) {
+            const userRoles = await this.usersService.getUserRolesById(
+                payload.sub,
+            );
+
+            // Note: Update global/types/CustomRequest when updating this
+            return {
+                userId: userInDb.id,
+                email: userInDb.email,
+                roles: userRoles.roles,
+                isVerified: userRoles.emailVerified,
+                voyageTeams: userRoles.voyageTeamMembers?.map((t) => {
+                    return {
+                        teamId: t.voyageTeamId,
+                        memberId: t.id,
+                    };
+                }),
+            };
+        }
     }
 }
