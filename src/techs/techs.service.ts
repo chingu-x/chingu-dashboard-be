@@ -545,7 +545,7 @@ export class TechsService {
         }
 
         let permission = false;
-        for (let team of user.voyageTeams) {
+        for (const team of user.voyageTeams) {
             if (team.teamId === match?.voyageTeamId) permission = true;
         }
 
