@@ -4,7 +4,7 @@ import { TechsService } from "./techs.service";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateTeamTechDto } from "./dto/create-tech.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-//import { UpdateTechSelectionsDto } from "./dto/update-tech-selections.dto";
+import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto";
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 
@@ -127,6 +127,18 @@ describe("TechsController", () => {
     const mockDeleteVoteResponse = {
         message: "The vote and tech stack item were deleted",
         statusCode: 200,
+    };
+
+    const updateTechSelectionDto = {
+        isSelected: true,
+    } as UpdateTechSelectionDto;
+
+    const mockTechSelectionResponse = {
+        teamTechStackItemVotedId: 10,
+        teamTechId: 11,
+        teamMemberId: 8,
+        createdAt: "2023-12-01T13:55:00.611Z",
+        updatedAt: "2023-12-01T13:55:00.611Z",
     };
 
     beforeEach(async () => {
@@ -376,21 +388,25 @@ describe("TechsController", () => {
             expect(controller.updateTechStackSelections).toBeDefined();
         });
 
-        it("should ", async () => {
-            mockTechsService.removeVote.mockResolvedValueOnce(
-                mockDeleteVoteResponse,
+        it("should update isSelected value of a tech stack item", async () => {
+            mockTechsService.updateTechStackSelections.mockResolvedValueOnce(
+                mockTechSelectionResponse,
             );
 
-            const result = await mockTechsService.removeVote(
+            const result = await mockTechsService.updateTechStackSelections(
                 requestMock,
                 teamTechItemId,
+                updateTechSelectionDto,
             );
 
-            expect(result).toEqual(mockDeleteVoteResponse);
+            expect(result).toEqual(mockTechSelectionResponse);
 
-            expect(mockTechsService.removeVote).toHaveBeenCalledWith(
+            expect(
+                mockTechsService.updateTechStackSelections,
+            ).toHaveBeenCalledWith(
                 requestMock,
                 teamTechItemId,
+                updateTechSelectionDto,
             );
         });
     });
