@@ -14,6 +14,7 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+-   Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Added
 
@@ -27,7 +28,7 @@
 -   Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 -   refactored unit tests for the ideations controller and services([#219](https://github.com/chingu-x/chingu-dashboard-be/pull/219))
 -   revised tech selections route to update only one tech per request([#221](https://github.com/chingu-x/chingu-dashboard-be/pull/221))
--   Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
+
 
 ### Fixed
 
