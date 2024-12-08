@@ -14,6 +14,7 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+- Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Added
 
