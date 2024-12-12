@@ -14,6 +14,7 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+- Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
 
 ### Added
 
@@ -39,7 +40,7 @@
 - revised tech selections route to update only one tech per request([#221](https://github.com/chingu-x/chingu-dashboard-be/pull/221))
 
 ### Fixed
-- Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
+
 
 ### Removed
 
