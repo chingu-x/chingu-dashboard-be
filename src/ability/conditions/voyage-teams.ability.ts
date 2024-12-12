@@ -21,7 +21,7 @@ export const manageOwnVoyageTeamWithIdParam = (
 export const userCanChangeCategory = async (
     categoryId: number,
     user: UserReq,
-    teamId: number | undefined = undefined,
+    teamId?: number,
 ) => {
     if (user.roles?.includes("admin")) return;
 
@@ -36,12 +36,10 @@ export const userCanChangeCategory = async (
         throw new NotFoundException(`Category ${categoryId} not found`);
     }
 
-    if (teamId && match) {
-        if (teamId != match.voyageTeamId) {
-            throw new ForbiddenException(
-                `Team ${teamId} cannot change category ${categoryId}`,
-            );
-        }
+    if (teamId && teamId !== match?.voyageTeamId) {
+        throw new ForbiddenException(
+            `Team ${teamId} cannot change category ${categoryId}`,
+        );
     }
 
     let permission = false;
