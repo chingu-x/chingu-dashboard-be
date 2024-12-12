@@ -6,6 +6,7 @@ interface AppConfig {
         nodeEnv: string;
         port: number;
         frontendUrl: string;
+        latestReleaseLink: string;
     };
 }
 
@@ -21,6 +22,12 @@ export class AppConfigService {
     }
     get FrontendUrl() {
         return this.configService.get<string>("app.frontendUrl", {
+            infer: true,
+        })!;
+    }
+
+    get latestReleaseLink() {
+        return this.configService.get<string>("app.latestReleaseLink", {
             infer: true,
         })!;
     }
