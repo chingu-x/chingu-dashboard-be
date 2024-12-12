@@ -213,6 +213,7 @@ describe("Techs Controller (e2e)", () => {
                     );
                 });
         });
+
         it("should return 403 if a user of other team tries to add a tech stack item", async () => {
             const { access_token } = await loginAndGetTokens(
                 "dan@random.com",
@@ -228,6 +229,27 @@ describe("Techs Controller (e2e)", () => {
                 .send({
                     techName: newTechName + "678",
                     techCategoryId: 7,
+                    voyageTeamMemberId: teamMemberId,
+                })
+                .expect(403);
+        });
+
+        it("should return 403 if a user tries to add a tech stack item to a category for another team", async () => {
+            const { access_token } = await loginAndGetTokens(
+                "dan@random.com",
+                "password",
+                app,
+            );
+            const teamId: number = 1;
+            const teamMemberId: number = 1;
+            const categoryId: number = 51;
+
+            return request(app.getHttpServer())
+                .post(`/voyages/teams/${teamId}/techs`)
+                .set("Cookie", access_token)
+                .send({
+                    techName: newTechName + "678",
+                    techCategoryId: categoryId,
                     voyageTeamMemberId: teamMemberId,
                 })
                 .expect(403);
