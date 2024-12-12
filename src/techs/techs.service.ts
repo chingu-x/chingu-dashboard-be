@@ -12,7 +12,7 @@ import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto"
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest, UserReq } from "../global/types/CustomRequest";
+import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
 import { userCanChangeCategory } from "@/ability/conditions/voyage-teams.ability";
 
@@ -518,42 +518,4 @@ export class TechsService {
             throw e;
         }
     }
-
-    // private async userCanChangeCategory(
-    //     categoryId: number,
-    //     user: UserReq,
-    //     teamId: number | undefined = undefined,
-    // ) {
-    //     if (user.roles?.includes("admin")) return;
-
-    //     let match;
-    //     try {
-    //         match = await this.prisma.techStackCategory.findUnique({
-    //             where: {
-    //                 id: categoryId,
-    //             },
-    //         });
-    //     } catch {
-    //         throw new NotFoundException(`Category ${categoryId} not found`);
-    //     }
-
-    //     if (teamId && match) {
-    //         if (teamId != match.voyageTeamId) {
-    //             throw new ForbiddenException(
-    //                 `Team ${teamId} cannot change category ${categoryId}`,
-    //             );
-    //         }
-    //     }
-
-    //     let permission = false;
-    //     for (const team of user.voyageTeams) {
-    //         if (team.teamId === match?.voyageTeamId) permission = true;
-    //     }
-
-    //     if (!permission) {
-    //         throw new ForbiddenException(
-    //             `This user cannot change category ${categoryId}`,
-    //         );
-    //     }
-    // }
 }
