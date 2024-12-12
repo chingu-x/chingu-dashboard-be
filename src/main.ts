@@ -28,11 +28,12 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe());
     const NODE_ENV = app.get(AppConfigService).nodeEnv;
+    const LATEST_RELEASE = app.get(AppConfigService).latestReleaseLink;
     if (NODE_ENV !== "production") {
         const config = new DocumentBuilder()
             .setTitle("Chingu Dashboard Project")
             .setDescription(
-                "Chingu Dashboard API<br> default access: logged in (user)",
+                `Chingu Dashboard API <a href='${LATEST_RELEASE}'> Version: ${LATEST_RELEASE.split("tag/")[1]} (Latest-dev) </a> <br> default access: logged in (user)`,
             )
             .setVersion("1.0")
             .addBearerAuth()

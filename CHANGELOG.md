@@ -14,6 +14,7 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
 
 ### Added
 
