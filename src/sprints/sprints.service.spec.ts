@@ -3,13 +3,13 @@ import { SprintsService } from "./sprints.service";
 import { createMockData, helpers, mockDate } from "../global/mocks/mock-data";
 import { prismaMock } from "@/prisma/singleton";
 import {
-  VoyageTeam,
-  Form,
-  TeamMeeting,
-  FormResponseMeeting,
-  FormResponseCheckin,
-  Response,
-  Agenda,
+    VoyageTeam,
+    Form,
+    TeamMeeting,
+    FormResponseMeeting,
+    FormResponseCheckin,
+    Response,
+    Agenda,
 } from "@prisma/client";
 import { GlobalService } from "@/global/global.service";
 import { FormsService } from "@/forms/forms.service";
@@ -1675,7 +1675,7 @@ describe("SprintsService", () => {
 
             // Mock transaction responses
             const mockUpdatedResponses = multipleResponsesDto.responses.map(
-              (resp) => createMockData.response(resp.questionId, resp.text),
+                (resp) => createMockData.response(resp.questionId, resp.text),
             );
 
             // Mock meeting and form response checks
@@ -1714,7 +1714,7 @@ describe("SprintsService", () => {
             );
         });
     });
-  describe("addCheckinFormResponse", () => {
+    describe("addCheckinFormResponse", () => {
         const mockCreateCheckinFormDto = {
             voyageTeamMemberId: 1,
             sprintId: 1,
@@ -1831,14 +1831,14 @@ describe("SprintsService", () => {
                 const formattedResponses = mockResponses.map((response) => ({
                     ...response,
                     text: response.text !== null ? response.text : undefined,
-                  boolean:
-                    response.boolean !== null
-                      ? response.boolean
-                      : undefined,
-                  numeric:
-                    response.numeric !== null
-                      ? response.numeric
-                      : undefined,
+                    boolean:
+                        response.boolean !== null
+                            ? response.boolean
+                            : undefined,
+                    numeric:
+                        response.numeric !== null
+                            ? response.numeric
+                            : undefined,
                     optionChoiceId:
                         response.optionChoiceId !== null
                             ? response.optionChoiceId
@@ -1984,9 +1984,9 @@ describe("SprintsService", () => {
             });
 
             it("should handle database errors during response group creation", async () => {
-              const consoleSpy = jest
-                .spyOn(console, "log")
-                .mockImplementation();
+                const consoleSpy = jest
+                    .spyOn(console, "log")
+                    .mockImplementation();
                 // Mock transaction failing during response group creation
                 prismaMock.$transaction.mockImplementation(async () => {
                     throw new Error(
@@ -1999,7 +1999,7 @@ describe("SprintsService", () => {
                 ).rejects.toThrow(
                     "Database error during response group creation",
                 );
-              consoleSpy.mockRestore();
+                consoleSpy.mockRestore();
             });
 
             it("should handle empty responses array", async () => {
