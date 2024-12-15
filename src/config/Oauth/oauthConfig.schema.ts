@@ -4,5 +4,9 @@ export const oauthValidationSchema = Joi.object({
     DISCORD_CLIENT_ID: Joi.string().required(),
     DISCORD_CLIENT_SECRET: Joi.string().required(),
     DISCORD_CALLBACK_URL: Joi.string().required(),
+
+    GITHUB_CLIENT_ID: Joi.string().required(),
+    GITHUB_CLIENT_SECRET: Joi.string().required(),
+    GITHUB_CALLBACK_URL: Joi.string().required(),
     // Add other OAuth providers as needed
 });
