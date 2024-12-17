@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 interface AppConfig {
     app: {
         nodeEnv: string;
         port: number;
         frontendUrl: string;
-        latestReleaseLink: string;
+        latestReleaseVersion: string;
     };
 }
 
@@ -26,9 +28,10 @@ export class AppConfigService {
         })!;
     }
 
-    get latestReleaseLink() {
-        return this.configService.get<string>("app.latestReleaseLink", {
-            infer: true,
-        })!;
+    get latestReleaseVersion() {
+        //retrieve the latest version from package.json
+        const packageJsonPath = join(__dirname, "../../../../", "package.json");
+        const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+        return packageJson.version;
     }
 }
