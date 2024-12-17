@@ -14,6 +14,7 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
 
 ### Added
 
