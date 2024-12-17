@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { EmailService } from "./email.service";
 import { MailConfigService } from "@/config/mail/mailConfig.service";
 import { AppConfigService } from "@/config/app/appConfig.service";
-import * as Mailjet from "node-mailjet";
 import { templateIds } from "./templateIds";
 
 jest.mock("node-mailjet", () => ({
@@ -15,14 +14,12 @@ jest.mock("node-mailjet", () => ({
 
 describe("EmailService", () => {
     let emailService: EmailService;
-    let mockMailjetPost: jest.Mock;
-    let mockMailjetRequest: jest.Mock;
 
     const mockMailConfigService = {
         MailjetApiPublic: "public-key",
         MailjetApiPrivate: "private-key",
     };
-    let mockAppConfigService = {
+    const mockAppConfigService = {
         nodeEnv: "development",
         FrontendUrl: "https://dashboard-example.com",
     };
@@ -37,12 +34,6 @@ describe("EmailService", () => {
         }).compile();
 
         emailService = module.get<EmailService>(EmailService);
-        const mockMailjet = new Mailjet.Client({
-            apiKey: mockMailConfigService.MailjetApiPublic,
-            apiSecret: mockMailConfigService.MailjetApiPrivate,
-        });
-        mockMailjetPost = mockMailjet.post as jest.Mock;
-        mockMailjetRequest = mockMailjetPost().request as jest.Mock;
     });
 
     it("should be defined", () => {

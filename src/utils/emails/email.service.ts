@@ -17,7 +17,11 @@ export class EmailService {
         });
     }
 
-    private async sendEmail(email: string, templateId: number, variables: {}) {
+    private async sendEmail(
+        email: string,
+        templateId: number,
+        variables: Record<string, any>,
+    ) {
         if (this.appConfigService.nodeEnv === "test") return;
         await this.mailjet.post("send", { version: "v3.1" }).request({
             Messages: [
