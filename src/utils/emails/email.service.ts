@@ -16,63 +16,43 @@ export class EmailService {
             apiSecret: this.mailConfigService.MailjetApiPrivate,
         });
     }
-    async sendSignupVerificationEmail(email: string, token: string) {
+
+    private async sendEmail(
+        email: string,
+        templateId: number,
+        variables: Record<string, any>,
+    ) {
         if (this.appConfigService.nodeEnv === "test") return;
         await this.mailjet.post("send", { version: "v3.1" }).request({
             Messages: [
                 {
-                    To: [
-                        {
-                            Email: email,
-                        },
-                    ],
-                    TemplateID: templateIds.verificationEmail,
+                    To: [{ Email: email }],
+                    TemplateID: templateId,
                     TemplateLanguage: true,
-                    Variables: {
-                        verificationLink: `${this.appConfigService.FrontendUrl}/users/verify?token=${token}`,
-                    },
+                    Variables: variables,
                 },
             ],
+        });
+    }
+    async sendSignupVerificationEmail(email: string, token: string) {
+        const verificationLink = `${this.appConfigService.FrontendUrl}/users/verify?token=${token}`;
+        await this.sendEmail(email, templateIds.verificationEmail, {
+            verificationLink,
         });
     }
 
     async sendAttemptedRegistrationEmail(email: string) {
-        if (this.appConfigService.nodeEnv === "test") return;
-        await this.mailjet.post("send", { version: "v3.1" }).request({
-            Messages: [
-                {
-                    To: [
-                        {
-                            Email: email,
-                        },
-                    ],
-                    TemplateID: templateIds.attemptRegistrationEmail,
-                    TemplateLanguage: true,
-                    Variables: {
-                        userEmail: email,
-                        passwordResetPage: `${this.appConfigService.FrontendUrl}/users/reset-password`,
-                    },
-                },
-            ],
+        const passwordResetPage = `${this.appConfigService.FrontendUrl}/users/reset-password`;
+        await this.sendEmail(email, templateIds.attemptRegistrationEmail, {
+            userEmail: email,
+            passwordResetPage,
         });
     }
 
     async sendPasswordResetEmail(email: string, token: string) {
-        await this.mailjet.post("send", { version: "v3.1" }).request({
-            Messages: [
-                {
-                    To: [
-                        {
-                            Email: email,
-                        },
-                    ],
-                    TemplateID: templateIds.passwordResetEmail,
-                    TemplateLanguage: true,
-                    Variables: {
-                        passwordResetLink: `${this.appConfigService.FrontendUrl}/users/reset-password?token=${token}`,
-                    },
-                },
-            ],
+        const passwordResetLink = `${this.appConfigService.FrontendUrl}/users/reset-password?token=${token}`;
+        await this.sendEmail(email, templateIds.passwordResetEmail, {
+            passwordResetLink,
         });
     }
 }
