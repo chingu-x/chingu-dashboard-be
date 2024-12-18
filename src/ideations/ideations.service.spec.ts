@@ -986,7 +986,7 @@ describe("IdeationsService", () => {
 
             // Verify result
             expect(result).toEqual(updatedIdeation);
-            expect(result.isSelected).toBe(false);
+            expect(result.isSelected).toBeFalse();
         });
 
         it("should throw NotFoundException when no selected ideation exists", async () => {
