@@ -39,8 +39,8 @@ export default [{
         sourceType: "module",
 
         parserOptions: {
-            project: "./tsconfig.json",
-            tsconfigRootDir: "/Users/timothydehof/Dev/chingu/chingu-dashboard-be",
+            project: "tsconfig.json",
+            tsconfigRootDir: __dirname,
         },
     },
 
