@@ -5,7 +5,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
-// Fix the import name (no spaces)
 import jestExtended from 'eslint-plugin-jest-extended';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,12 +21,10 @@ export default [{
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "prettier",
-    // Fix the plugin name (no spaces)
     "plugin:jest-extended/all"
 ), {
     plugins: {
         "@typescript-eslint": typescriptEslintEslintPlugin,
-        // Fix the plugin name (no spaces)
         "jest-extended": jestExtended
     },
 
@@ -42,7 +39,7 @@ export default [{
         sourceType: "module",
 
         parserOptions: {
-            project: "tsconfig.json",
+            project: "./tsconfig.json",
             tsconfigRootDir: "/Users/timothydehof/Dev/chingu/chingu-dashboard-be",
         },
     },
