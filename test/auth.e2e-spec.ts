@@ -16,6 +16,9 @@ import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden
 
 import { AuthConfig } from "@/config/auth/auth.interface";
 import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
+import { toBeTrue, toBeFalse } from "jest-extended";
+
+expect.extend({ toBeTrue, toBeFalse });
 
 const signupUrl = "/auth/signup";
 const loginUrl = "/auth/login";

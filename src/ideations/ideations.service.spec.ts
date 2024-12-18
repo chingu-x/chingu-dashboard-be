@@ -10,6 +10,9 @@ import { prismaMock } from "@/prisma/singleton";
 import { ProjectIdea, VoyageTeamMember, ProjectIdeaVote } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 
+import { toBeFalse } from "jest-extended";
+
+expect.extend({ toBeFalse });
 // TODO: these tests probably need to be updated, it shouldn't use prisma, should only use prismaMock
 describe("IdeationsService", () => {
     let service: IdeationsService;

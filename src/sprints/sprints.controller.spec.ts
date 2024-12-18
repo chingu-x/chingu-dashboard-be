@@ -17,6 +17,14 @@ import {
     MeetingResponse,
 } from "./sprints.response";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
+import {
+    toBeArray,
+    toHaveBeenCalledOnce,
+    toBeTrue,
+    toBeFalse,
+} from "jest-extended";
+
+expect.extend({ toBeArray, toHaveBeenCalledOnce, toBeTrue, toBeFalse });
 
 describe("SprintsController", () => {
     let sprintsController: SprintsController;

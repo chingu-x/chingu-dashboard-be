@@ -1,4 +1,3 @@
-import { toBeArray } from "jest-extended";
 import { SprintsService } from "./sprints.service";
 import { createMockData, helpers, mockDate } from "../global/mocks/mock-data";
 import { prismaMock } from "@/prisma/singleton";
@@ -21,8 +20,14 @@ import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { manageOwnTeamMeetingOrAgendaById } from "@/ability/conditions/meetingOrAgenda.ability";
 import { FormTitles } from "@/global/constants/formTitles";
 import { CustomRequest } from "@/global/types/CustomRequest";
+import {
+    toBeArray,
+    toHaveBeenCalledOnce,
+    toBeTrue,
+    toBeFalse,
+} from "jest-extended";
 
-expect.extend({ toBeArray });
+expect.extend({ toBeArray, toHaveBeenCalledOnce, toBeTrue, toBeFalse });
 
 jest.mock("@/ability/conditions/meetingOrAgenda.ability", () => ({
     manageOwnTeamMeetingOrAgendaById: jest.fn(),
