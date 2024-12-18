@@ -17,6 +17,14 @@ import {
     MeetingResponse,
 } from "./sprints.response";
 import { CheckinQueryDto } from "./dto/get-checkin-form-response";
+import {
+    toBeArray,
+    toHaveBeenCalledOnce,
+    toBeTrue,
+    toBeFalse,
+} from "jest-extended";
+
+expect.extend({ toBeArray, toHaveBeenCalledOnce, toBeTrue, toBeFalse });
 
 describe("SprintsController", () => {
     let sprintsController: SprintsController;
@@ -61,7 +69,7 @@ describe("SprintsController", () => {
 
     const mockUpdatedAgendaDto: UpdateAgendaDto = {
         title: "Updated Sprint Planning",
-        description: "Updated Planning session for sprint 1" ?? null,
+        description: "Updated Planning session for sprint 1",
         status: true,
     };
 
@@ -217,7 +225,7 @@ describe("SprintsController", () => {
 
             // Assert
             expect(result).toEqual([mockVoyageResponse]);
-            expect(Array.isArray(result[0].sprints)).toBe(true);
+            expect(result[0].sprints).toBeArray();
             expect(result[0].sprints[0]).toHaveProperty("id");
             expect(result[0].sprints[0]).toHaveProperty("number");
             expect(result[0].sprints[0]).toHaveProperty("startDate");
@@ -240,9 +248,7 @@ describe("SprintsController", () => {
             await sprintsController.getVoyagesAndSprints();
 
             // Assert
-            expect(sprintsService.getVoyagesAndSprints).toHaveBeenCalledTimes(
-                1,
-            );
+            expect(sprintsService.getVoyagesAndSprints).toHaveBeenCalledOnce();
         });
     });
 
@@ -730,7 +736,7 @@ describe("SprintsController", () => {
             // Assert
             expect(result.title).toBe(minimalAgendaDto.title);
             expect(result.description).toBe(minimalAgendaDto.description);
-            expect(result.status).toBe(true);
+            expect(result.status).toBeTrue();
             expect(sprintsService.createMeetingAgenda).toHaveBeenCalledWith(
                 meetingId,
                 minimalAgendaDto,
@@ -828,7 +834,7 @@ describe("SprintsController", () => {
             );
 
             // Assert
-            expect(result.status).toBe(true);
+            expect(result.status).toBeTrue();
             expect(sprintsService.updateMeetingAgenda).toHaveBeenCalledWith(
                 agendaId,
                 statusUpdateDto,
@@ -948,7 +954,7 @@ describe("SprintsController", () => {
             );
 
             // Assert
-            expect(result.status).toBe(false);
+            expect(result.status).toBeFalse();
             expect(sprintsService.deleteMeetingAgenda).toHaveBeenCalledWith(
                 agendaId,
                 mockRequest,
@@ -1005,9 +1011,9 @@ describe("SprintsController", () => {
             );
 
             // Assert
-            expect(sprintsService.addMeetingFormResponse).toHaveBeenCalledTimes(
-                1,
-            );
+            expect(
+                sprintsService.addMeetingFormResponse,
+            ).toHaveBeenCalledOnce();
         });
 
         it("should verify service method is called with numeric parameters", async () => {
@@ -1090,7 +1096,7 @@ describe("SprintsController", () => {
             // Assert
             expect(
                 sprintsService.getMeetingFormQuestionsWithResponses,
-            ).toHaveBeenCalledTimes(1);
+            ).toHaveBeenCalledOnce();
         });
 
         it("should verify service method is called with numeric parameters", async () => {
@@ -1215,7 +1221,7 @@ describe("SprintsController", () => {
             // Assert
             expect(
                 sprintsService.updateMeetingFormResponse,
-            ).toHaveBeenCalledTimes(1);
+            ).toHaveBeenCalledOnce();
         });
 
         it("should verify service method is called with numeric meetingId and formId", async () => {
@@ -1349,9 +1355,9 @@ describe("SprintsController", () => {
             );
 
             // Assert
-            expect(sprintsService.addCheckinFormResponse).toHaveBeenCalledTimes(
-                1,
-            );
+            expect(
+                sprintsService.addCheckinFormResponse,
+            ).toHaveBeenCalledOnce();
         });
 
         it("should verify DTO is passed unmodified to service", async () => {
@@ -1448,9 +1454,9 @@ describe("SprintsController", () => {
             await sprintsController.getCheckinFormResponse(mockQuery);
 
             // Assert
-            expect(sprintsService.getCheckinFormResponse).toHaveBeenCalledTimes(
-                1,
-            );
+            expect(
+                sprintsService.getCheckinFormResponse,
+            ).toHaveBeenCalledOnce();
         });
 
         it("should handle empty query parameters", async () => {

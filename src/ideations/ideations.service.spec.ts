@@ -10,6 +10,9 @@ import { prismaMock } from "@/prisma/singleton";
 import { ProjectIdea, VoyageTeamMember, ProjectIdeaVote } from "@prisma/client";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 
+import { toBeFalse } from "jest-extended";
+
+expect.extend({ toBeFalse });
 // TODO: these tests probably need to be updated, it shouldn't use prisma, should only use prismaMock
 describe("IdeationsService", () => {
     let service: IdeationsService;
@@ -986,7 +989,7 @@ describe("IdeationsService", () => {
 
             // Verify result
             expect(result).toEqual(updatedIdeation);
-            expect(result.isSelected).toBe(false);
+            expect(result.isSelected).toBeFalse();
         });
 
         it("should throw NotFoundException when no selected ideation exists", async () => {

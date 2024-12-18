@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FeaturesService } from "./features.service";
 import { PrismaService } from "@/prisma/prisma.service";
 import { GlobalService } from "@/global/global.service";
+import { toBeArray } from "jest-extended";
 import { prismaMock } from "@/prisma/singleton";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -9,6 +10,8 @@ import * as FeaturesAbility from "@/ability/conditions/features.ability";
 import { FeatureCategory, VoyageTeamMember } from "@prisma/client";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
+
+expect.extend({ toBeArray });
 
 const userReq = {
     userId: "aa9d050e-5756-4c3c-bc04-071f39f53663",
@@ -207,7 +210,7 @@ describe("FeaturesService", () => {
 
             const result = await service.findFeatureCategories();
 
-            expect(result).toBeArray;
+            expect(result).toBeArray();
             expect(result).toHaveLength(3);
             expect(result[0]).toEqual({
                 name: expect.any(String),
@@ -239,7 +242,7 @@ describe("FeaturesService", () => {
                 requestMock,
             );
 
-            expect(result).toBeArray;
+            expect(result).toBeArray();
             expect(result).toHaveLength(2);
             expect(result).toEqual(mockFeaturesArray);
             expect(prismaMock.projectFeature.findMany).toHaveBeenCalledWith({

@@ -1,4 +1,3 @@
-import { toBeArray } from "jest-extended";
 import { SprintsService } from "./sprints.service";
 import { createMockData, helpers, mockDate } from "../global/mocks/mock-data";
 import { prismaMock } from "@/prisma/singleton";
@@ -21,8 +20,14 @@ import { CheckinQueryDto } from "./dto/get-checkin-form-response";
 import { manageOwnTeamMeetingOrAgendaById } from "@/ability/conditions/meetingOrAgenda.ability";
 import { FormTitles } from "@/global/constants/formTitles";
 import { CustomRequest } from "@/global/types/CustomRequest";
+import {
+    toBeArray,
+    toHaveBeenCalledOnce,
+    toBeTrue,
+    toBeFalse,
+} from "jest-extended";
 
-expect.extend({ toBeArray });
+expect.extend({ toBeArray, toHaveBeenCalledOnce, toBeTrue, toBeFalse });
 
 jest.mock("@/ability/conditions/meetingOrAgenda.ability", () => ({
     manageOwnTeamMeetingOrAgendaById: jest.fn(),
@@ -56,7 +61,7 @@ describe("SprintsService", () => {
                 },
             } as any);
             const result = await (service as any)["isMeetingForm"](formId);
-            expect(result).toBe(true);
+            expect(result).toBeTrue();
             expect(prismaMock.form.findUnique).toHaveBeenCalledWith({
                 where: {
                     id: formId,
@@ -937,7 +942,7 @@ describe("SprintsService", () => {
                 mockRequest,
             );
 
-            expect(result.status).toBe(false);
+            expect(result.status).toBeFalse();
             expect(prismaMock.agenda.create).toHaveBeenCalledWith({
                 data: {
                     teamMeetingId: meetingId,
@@ -1145,7 +1150,7 @@ describe("SprintsService", () => {
             });
 
             // Verify it was called exactly once
-            expect(prismaMock.agenda.update).toHaveBeenCalledTimes(1);
+            expect(prismaMock.agenda.update).toHaveBeenCalledOnce();
         });
     });
     describe("deleteMeetingAgenda", () => {
@@ -1218,7 +1223,7 @@ describe("SprintsService", () => {
             expect(prismaMock.agenda.delete).toHaveBeenCalledWith({
                 where: { id: agendaId },
             });
-            expect(prismaMock.agenda.delete).toHaveBeenCalledTimes(1);
+            expect(prismaMock.agenda.delete).toHaveBeenCalledOnce();
         });
 
         it("should handle Prisma error for non-existent agenda", async () => {
@@ -1259,7 +1264,7 @@ describe("SprintsService", () => {
                 user: mockRequest.user,
                 agendaId,
             });
-            expect(manageOwnTeamMeetingOrAgendaById).toHaveBeenCalledTimes(1);
+            expect(manageOwnTeamMeetingOrAgendaById).toHaveBeenCalledOnce();
         });
     });
     describe("getMeetingFormQuestionsWithResponses", () => {

@@ -5,6 +5,9 @@ import { CreateResourceDto } from "./dto/create-resource.dto";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { UpdateResourceDto } from "./dto/update-resource.dto";
+import { toBeArray } from "jest-extended";
+
+expect.extend({ toBeArray });
 
 const requestMock = {} as unknown as CustomRequest;
 const dtoCreateMock = {
@@ -163,7 +166,7 @@ describe("ResourcesController", () => {
                 mockTeamId,
             );
 
-            expect(result).toBeArray;
+            expect(result).toBeArray();
             expect(result).toHaveLength(2);
             expect(result[0]).toEqual({
                 id: expect.any(Number),
