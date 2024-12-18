@@ -273,7 +273,7 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify?.emailVerified).toBe(true);
+            expect(userAfterVerify?.emailVerified).toBeTrue();
             expect(userAfterVerify?.emailVerificationToken).toBe(null);
         });
 
@@ -309,7 +309,7 @@ describe("AuthController e2e Tests", () => {
                 },
             });
 
-            expect(userAfterVerify?.emailVerified).toBe(false);
+            expect(userAfterVerify?.emailVerified).toBeFalse();
             expect(userAfterVerify?.emailVerificationToken).toBeDefined();
         });
 
