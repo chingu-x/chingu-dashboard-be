@@ -21,6 +21,7 @@
 ### Changed
 
 ### Fixed
+- fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
 
 ### Removed
 
@@ -52,7 +53,6 @@
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Fixed
-- fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#228](https://github.com/chingu-x/chingu-dashboard-be/pull/228))
 
 ### Removed
 

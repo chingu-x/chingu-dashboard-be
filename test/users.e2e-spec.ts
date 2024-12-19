@@ -7,6 +7,9 @@ import { seed } from "@Prisma/seed/seed";
 import { getUseridFromEmail, loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
+import { toBeObject, toBeArray } from "jest-extended";
+
+expect.extend({ toBeObject, toBeArray });
 
 //Logged in user is Jessica Williamson for admin routes
 //Logged in user is Dan ko for non admin routes
@@ -50,7 +53,7 @@ describe("Users Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeArray;
+                    expect(res.body).toBeArray();
                 });
         });
         it("should return 401 when user is not logged in", async () => {
@@ -86,7 +89,7 @@ describe("Users Controller (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body).toBeObject();
                 });
         });
         it("should return 401 when user is not logged in", async () => {

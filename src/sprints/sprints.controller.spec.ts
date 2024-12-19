@@ -61,7 +61,7 @@ describe("SprintsController", () => {
 
     const mockUpdatedAgendaDto: UpdateAgendaDto = {
         title: "Updated Sprint Planning",
-        description: "Updated Planning session for sprint 1" ?? null,
+        description: "Updated Planning session for sprint 1",
         status: true,
     };
 
