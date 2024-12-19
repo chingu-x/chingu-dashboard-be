@@ -12,8 +12,9 @@ import { CreateTechStackCategoryDto } from "./dto/create-techstack-category.dto"
 import { UpdateTechStackCategoryDto } from "./dto/update-techstack-category.dto";
 import { UpdateTechSelectionDto } from "./dto/update-tech-selections.dto";
 import { UpdateTeamTechDto } from "./dto/update-tech.dto";
-import { CustomRequest, UserReq } from "../global/types/CustomRequest";
+import { CustomRequest } from "../global/types/CustomRequest";
 import { manageOwnVoyageTeamWithIdParam } from "@/ability/conditions/voyage-teams.ability";
+import { userCanChangeCategory } from "@/ability/conditions/voyage-teams.ability";
 
 const MAX_SELECTION_COUNT = 3;
 
@@ -129,9 +130,10 @@ export class TechsService {
         //check for valid teamId
         await this.validateTeamId(teamId);
 
-        await this.userCanChangeCategory(
+        await userCanChangeCategory(
             createTeamTechDto.techCategoryId,
             req.user,
+            teamId,
         );
 
         try {
@@ -361,7 +363,7 @@ export class TechsService {
         techStackCategoryId: number,
         updateTechStackCategoryDto: UpdateTechStackCategoryDto,
     ) {
-        await this.userCanChangeCategory(techStackCategoryId, req.user);
+        await userCanChangeCategory(techStackCategoryId, req.user);
 
         try {
             const newTechStackCategory =
@@ -389,7 +391,7 @@ export class TechsService {
         req: CustomRequest,
         techStackCategoryId: number,
     ) {
-        await this.userCanChangeCategory(techStackCategoryId, req.user);
+        await userCanChangeCategory(techStackCategoryId, req.user);
 
         try {
             await this.prisma.techStackCategory.delete({
@@ -514,26 +516,6 @@ export class TechsService {
                 throw new NotFoundException(e.meta.cause);
             }
             throw e;
-        }
-    }
-
-    private async userCanChangeCategory(categoryId: number, user: UserReq) {
-        if (user.roles?.includes("admin")) return;
-
-        const userVoyageTeams = user.voyageTeams;
-        const match = await this.prisma.techStackCategory.findUnique({
-            where: {
-                id: categoryId,
-            },
-        });
-
-        const permission = userVoyageTeams.some(
-            (team) => team.teamId === match?.voyageTeamId,
-        );
-        if (!permission) {
-            throw new ForbiddenException(
-                `This user cannot change category ${categoryId}`,
-            );
         }
     }
 }
