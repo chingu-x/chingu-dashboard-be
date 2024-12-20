@@ -99,7 +99,7 @@ describe("UsersService", () => {
         it("should be defined", () => {
             expect(usersService.getUserRolesById).toBeDefined();
         });
-        it("should return user roles by id", async () => {
+        it("should return user roles by id when user exists", async () => {
             const userWithRoles = {
                 ...userOne,
                 roles: [{ role: { name: "admin" } }],
@@ -110,6 +110,23 @@ describe("UsersService", () => {
             expect(formatUserSpy).toHaveBeenCalledWith(userWithRoles);
             expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
                 where: { id: userOne.id },
+                select: {
+                    roles: { select: { role: { select: { name: true } } } },
+                    voyageTeamMembers: {
+                        select: { id: true, voyageTeamId: true },
+                    },
+                    emailVerified: true,
+                },
+            });
+        });
+        it("should return undefined if userId does not exist", async () => {
+            prismaMock.user.findUnique.mockResolvedValue(null);
+            const result =
+                await usersService.getUserRolesById("inexistentUserId");
+            expect(result).toBeUndefined();
+            expect(formatUserSpy).not.toHaveBeenCalledWith();
+            expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+                where: { id: "inexistentUserId" },
                 select: {
                     roles: { select: { role: { select: { name: true } } } },
                     voyageTeamMembers: {

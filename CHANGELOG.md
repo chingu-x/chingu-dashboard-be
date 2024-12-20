@@ -16,6 +16,7 @@
 ## [Unreleased]
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
+- Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
 ### Added
 
 ### Changed
@@ -25,6 +26,7 @@
 ### Removed
 
 ## [v1.1.0-alpha]
+
 
 ### Added
 
@@ -52,6 +54,7 @@
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Fixed
+
 
 ### Removed
 
