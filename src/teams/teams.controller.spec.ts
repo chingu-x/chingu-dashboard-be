@@ -5,7 +5,9 @@ import { CustomRequest } from "@/global/types/CustomRequest";
 import { VoyageTeamMemberUpdateResponse } from "./teams.response";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
 import { toBeArray } from "jest-extended";
+
 expect.extend({ toBeArray });
+
 describe("TeamsController", () => {
     let controller: TeamsController;
 

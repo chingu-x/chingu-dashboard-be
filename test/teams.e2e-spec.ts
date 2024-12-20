@@ -8,6 +8,9 @@ import { toBeArray } from "jest-extended";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
+import { toBeArray } from "jest-extended";
+
+expect.extend({ toBeArray });
 
 //Logged in user is Jessica Williamson for admin routes /teams and /teams/voyages/:voyageid
 //Logged in user is Dan ko for team member routes /teams/:teamid and /teams/:teamid/members

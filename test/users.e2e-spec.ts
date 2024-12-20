@@ -7,9 +7,10 @@ import { seed } from "@Prisma/seed/seed";
 import { getUseridFromEmail, loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
-import { toBeArray, toBeObject } from "jest-extended";
+import { toBeObject, toBeArray } from "jest-extended";
 
-expect.extend({ toBeArray, toBeObject });
+expect.extend({ toBeObject, toBeArray });
+
 //Logged in user is Jessica Williamson for admin routes
 //Logged in user is Dan ko for non admin routes
 
