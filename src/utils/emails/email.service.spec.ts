@@ -14,6 +14,7 @@ jest.mock("node-mailjet", () => ({
 
 describe("EmailService", () => {
     let emailService: EmailService;
+    let sendEmailSpy: jest.SpyInstance;
     const mockMailConfigService = {
         MailjetApiPublic: "some-public-key",
         MailjetApiPrivate: "some-private-key",
@@ -22,6 +23,12 @@ describe("EmailService", () => {
         nodeEnv: "development",
         FrontendUrl: "https://dashboard-example.com",
     };
+
+    const createTestData = () => ({
+        email: "test@chingu.com",
+        token: "test-token",
+        templateId: 56789,
+    });
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -33,19 +40,23 @@ describe("EmailService", () => {
         }).compile();
 
         emailService = module.get<EmailService>(EmailService);
+        sendEmailSpy = jest.spyOn(emailService as any, "sendEmail");
     });
 
     it("should be defined", () => {
         expect(emailService).toBeDefined();
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
     describe("sendSignupVerificationEmail", () => {
         it("should call sendEmail with the correct parameters", async () => {
-            const email = "test@chingu.com";
-            const token = "test-token";
+            const { email, token } = createTestData();
+
             const verificationLink = `${mockAppConfigService.FrontendUrl}/users/verify?token=${token}`;
 
-            const sendEmailSpy = jest.spyOn(emailService as any, "sendEmail");
             await emailService.sendSignupVerificationEmail(email, token);
 
             expect(sendEmailSpy).toHaveBeenCalledWith(
@@ -58,10 +69,9 @@ describe("EmailService", () => {
 
     describe("sendAttemptedRegistrationEmail", () => {
         it("should call sendEmail with the correct parameters", async () => {
-            const email = "test@chingu.com";
+            const { email } = createTestData();
             const passwordResetPage = `${mockAppConfigService.FrontendUrl}/users/reset-password`;
 
-            const sendEmailSpy = jest.spyOn(emailService as any, "sendEmail");
             await emailService.sendAttemptedRegistrationEmail(email);
 
             expect(sendEmailSpy).toHaveBeenCalledWith(
@@ -74,11 +84,9 @@ describe("EmailService", () => {
 
     describe("sendPasswordResetEmail", () => {
         it("should call sendEmail with the correct parameters", async () => {
-            const email = "test@chingu.com";
-            const token = "test-token";
+            const { email, token } = createTestData();
             const passwordResetLink = `${mockAppConfigService.FrontendUrl}/users/reset-password?token=${token}`;
 
-            const sendEmailSpy = jest.spyOn(emailService as any, "sendEmail");
             await emailService.sendPasswordResetEmail(email, token);
 
             expect(sendEmailSpy).toHaveBeenCalledWith(
@@ -91,8 +99,7 @@ describe("EmailService", () => {
 
     describe("sendEmail", () => {
         it("should not send email in test environment", async () => {
-            const email = "test@chingu.com";
-            const templateId = 56789;
+            const { email, templateId } = createTestData();
             const verificationLink = `${mockAppConfigService.FrontendUrl}/emails`;
 
             mockAppConfigService.nodeEnv = "test";
