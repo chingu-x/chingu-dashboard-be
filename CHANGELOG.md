@@ -16,6 +16,7 @@
 ## [Unreleased]
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
+- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
 ### Added
 
 ### Changed
@@ -25,6 +26,7 @@
 ### Removed
 
 ## [v1.1.0-alpha]
+
 
 ### Added
 
