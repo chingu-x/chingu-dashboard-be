@@ -4,6 +4,7 @@ import * as request from "supertest";
 import { AppModule } from "@/app.module";
 import { PrismaService } from "@/prisma/prisma.service";
 import { seed } from "@Prisma/seed/seed";
+import { toBeArray } from "jest-extended";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
@@ -14,7 +15,7 @@ expect.extend({ toBeArray });
 //Logged in user is Jessica Williamson for admin routes /teams and /teams/voyages/:voyageid
 //Logged in user is Dan ko for team member routes /teams/:teamid and /teams/:teamid/members
 //Dan Ko is part of the team with team id 4
-
+expect.extend({ toBeArray });
 describe("Teams Controller (e2e)", () => {
     let app: INestApplication;
     let prisma: PrismaService;

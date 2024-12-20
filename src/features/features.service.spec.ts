@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { FeaturesService } from "./features.service";
 import { PrismaService } from "@/prisma/prisma.service";
 import { GlobalService } from "@/global/global.service";
+import { toBeArray } from "jest-extended";
 import { prismaMock } from "@/prisma/singleton";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { CreateFeatureDto } from "./dto/create-feature.dto";
@@ -10,6 +11,8 @@ import { FeatureCategory, VoyageTeamMember } from "@prisma/client";
 import { UpdateFeatureDto } from "./dto/update-feature.dto";
 import { UpdateFeatureOrderAndCategoryDto } from "./dto/update-feature-order-and-category.dto";
 import { toBeArray } from "jest-extended";
+
+expect.extend({ toBeArray });
 
 expect.extend({ toBeArray });
 
