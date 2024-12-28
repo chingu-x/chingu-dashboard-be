@@ -16,6 +16,7 @@
 ## [Unreleased]
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
+- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
 - Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
 ### Added
 
@@ -26,6 +27,7 @@
 ### Removed
 
 ## [v1.1.0-alpha]
+- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
 
 
 ### Added
