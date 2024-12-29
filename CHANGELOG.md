@@ -14,12 +14,16 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+
+### Added
+
+- Added release please github actions ([#235])(https://github.com/chingu-x/chingu-dashboard-be/pull/235)
+
+### Changed
+
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
 - Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
-### Added
-
-### Changed
 
 ### Fixed
 
