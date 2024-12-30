@@ -18,6 +18,7 @@
 ### Added
 
 - Added release please github actions ([#235])(https://github.com/chingu-x/chingu-dashboard-be/pull/235)
+- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
 
 ### Changed
 
@@ -31,6 +32,7 @@
 
 ## [v1.1.0-alpha]
 - Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
+
 
 ### Added
 
