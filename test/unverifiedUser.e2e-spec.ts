@@ -8,7 +8,9 @@ import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
 import { toBeObject } from "jest-extended";
+
 expect.extend({ toBeObject });
+
 //Logged in user is Yoshi Amano
 //Tests are for routes that are accessible to unverified users
 // - route /auth/resend-email is not tested, since this case is already covered in existing e2e test
