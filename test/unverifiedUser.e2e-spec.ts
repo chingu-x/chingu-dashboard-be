@@ -7,6 +7,9 @@ import { seed } from "@Prisma/seed/seed";
 import { loginAndGetTokens } from "./utils";
 import * as cookieParser from "cookie-parser";
 import { CASLForbiddenExceptionFilter } from "@/exception-filters/casl-forbidden-exception.filter";
+import { toBeObject } from "jest-extended";
+
+expect.extend({ toBeObject });
 
 //Logged in user is Yoshi Amano
 //Tests are for routes that are accessible to unverified users
@@ -51,7 +54,7 @@ describe("Unverified user routes (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body).toBeObject();
                 });
         });
     });
@@ -69,7 +72,7 @@ describe("Unverified user routes (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body).toBeObject();
                 });
         });
     });
@@ -88,7 +91,7 @@ describe("Unverified user routes (e2e)", () => {
                 .expect(200)
                 .expect("Content-Type", /json/)
                 .expect((res) => {
-                    expect(res.body).toBeObject;
+                    expect(res.body).toBeObject();
                 });
         });
     });

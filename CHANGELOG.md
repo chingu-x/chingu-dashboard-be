@@ -14,6 +14,34 @@
 > PATCH version when you make backward compatible bug fixes <br/>
 
 ## [Unreleased]
+- Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
+- Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
+- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
+- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
+- Fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
+### Added
+
+### Changed
+
+### Fixed
+
+
+- fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
+### Removed
+
+## [v1.1.0-alpha]
+- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
+
+
+### Added
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [v1.1.0-alpha]
 
 ### Added
 
@@ -22,11 +50,14 @@
 - Added unit tests for Features controller and services ([#220](https://github.com/chingu-x/chingu-dashboard-be/pull/220))
 - Add github oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/222))
 - Added GET endpoint for solo project ([#223](https://github.com/chingu-x/chingu-dashboard-be/pull/223))
+- Added units test for sprints ([#224](https://github.com/chingu-x/chingu-dashboard-be/pull/224))
 
 ### Changed
+
 - Updated cors origin list ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 - refactored unit tests for the ideations controller and services([#219](https://github.com/chingu-x/chingu-dashboard-be/pull/219))
 - revised tech selections route to update only one tech per request([#221](https://github.com/chingu-x/chingu-dashboard-be/pull/221))
+- Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 
 ### Fixed
 
@@ -69,7 +100,6 @@
 - Add CASL permissions for Team Sprint endpoint ([#193](https://github.com/chingu-x/chingu-dashboard-be/pull/193))
 - Add units tests for the teams resource controller & services([#201](https://github.com/chingu-x/chingu-dashboard-be/pull/201))
 - Add github workflow for PR reminders ([#202](https://github.com/chingu-x/chingu-dashboard-be/pull/202))
-
 
 ### Changed
 

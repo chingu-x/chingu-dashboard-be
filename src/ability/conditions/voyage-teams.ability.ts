@@ -2,8 +2,9 @@ import { UserReq } from "../../global/types/CustomRequest";
 import { Action } from "../ability.factory/ability.factory";
 import { ForbiddenError } from "@casl/ability";
 import { VoyageTeam } from "@prisma/client";
-import { ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { abilityFactory } from "./shared.ability";
+import prisma from "../../prisma/client";
 
 export const manageOwnVoyageTeamWithIdParam = (
     user: UserReq,
@@ -17,6 +18,41 @@ export const manageOwnVoyageTeamWithIdParam = (
     }
 };
 
+export const userCanChangeCategory = async (
+    categoryId: number,
+    user: UserReq,
+    teamId?: number,
+) => {
+    if (user.roles?.includes("admin")) return;
+
+    let match;
+    try {
+        match = await prisma.techStackCategory.findUnique({
+            where: {
+                id: categoryId,
+            },
+        });
+    } catch {
+        throw new NotFoundException(`Category ${categoryId} not found`);
+    }
+
+    if (teamId && teamId !== match?.voyageTeamId) {
+        throw new ForbiddenException(
+            `Team ${teamId} cannot change category ${categoryId}`,
+        );
+    }
+
+    let permission = false;
+    for (const team of user.voyageTeams) {
+        if (team.teamId === match?.voyageTeamId) permission = true;
+    }
+
+    if (!permission) {
+        throw new ForbiddenException(
+            `This user cannot change category ${categoryId}`,
+        );
+    }
+};
 /***
  For future reference, this works, but it has to be of voyageTeamType *** without a special select statement ***
  So it should be used for cases when a team Id is not supplied (this would be an extra database query in most cases)
