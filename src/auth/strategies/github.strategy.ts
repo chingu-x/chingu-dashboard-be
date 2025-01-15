@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, Profile } from "passport-github2";
+import { Strategy } from "passport-github2";
+import { GithubProfile } from "@/global/types/auth.types";
 import { IAuthProvider } from "../../global/interfaces/oauth.interface";
 import { OAuthConfig } from "../../config/Oauth/oauthConfig.interface";
 import { InternalServerErrorException } from "@nestjs/common";
@@ -24,14 +25,12 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
     async validate(
         accessToken: string,
         refreshToken: string,
-        profile: Profile,
+        profile: GithubProfile,
     ): Promise<any> {
         const { username, id, photos, emails } = profile;
-
         const avatar = photos && photos.length > 0 ? photos[0].value : null;
-        const email = emails && emails.length > 0 ? emails[0].value : null;
 
-        if (!email) {
+        if (!emails || emails.length === 0) {
             throw new InternalServerErrorException(
                 "[github-auth.service]: Cannot get email from GitHub.",
             );
@@ -39,9 +38,9 @@ export class GithubStrategy extends PassportStrategy(Strategy, "github") {
 
         return this.githubAuthService.validateUser({
             githubId: id,
-            username: username ? username : "",
+            username: username || "",
             avatar,
-            email: email ? email : "",
+            email: emails[0],
         });
     }
 }
