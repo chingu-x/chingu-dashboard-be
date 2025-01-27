@@ -22,6 +22,7 @@
 ### Added
 
 ### Changed
+- Updated database/reseed endpoint to public ([#236])(https://github.com/chingu-x/chingu-dashboard-be/pull/236)
 
 ### Fixed
 

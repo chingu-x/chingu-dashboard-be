@@ -5,9 +5,9 @@ import { Response } from "express";
 import { ReSeedSuccessResponse } from "./development.response";
 import {
     ServerErrorResponse,
-    UnauthorizedErrorResponse,
     UnprocessableEntityErrorResponse,
 } from "../global/responses/errors";
+import { Public } from "@/global/decorators/public.decorator";
 
 @Controller("development")
 @ApiTags("Development")
@@ -15,7 +15,7 @@ export class DevelopmentController {
     constructor(private readonly developmentService: DevelopmentService) {}
 
     @ApiOperation({
-        summary: "Reseed the database",
+        summary: "Public Route:Reseed the database",
         description:
             "It will take a while, maybe minutes. Then you'll be logged out.",
     })
@@ -23,11 +23,6 @@ export class DevelopmentController {
         status: HttpStatus.OK,
         description: "Successfully reseeded the database",
         type: ReSeedSuccessResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: "unauthorized access - not logged in",
-        type: UnauthorizedErrorResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -39,6 +34,7 @@ export class DevelopmentController {
         description: "Reseeding failed.",
         type: ServerErrorResponse,
     })
+    @Public()
     @Put("database/reseed")
     reseedDatabase(@Res() res: Response) {
         return this.developmentService.reseedDatabase(res);
