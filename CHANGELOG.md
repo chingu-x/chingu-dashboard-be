@@ -24,27 +24,14 @@
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
 - Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
 - Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
-- Fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
+
 ### Added
 
 ### Changed
 
 ### Fixed
 - Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
-
-
 - fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
-### Removed
-
-## [v1.1.0-alpha]
-- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
-
-
-### Added
-
-### Changed
-
-### Fixed
 
 ### Removed
 
