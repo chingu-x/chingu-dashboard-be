@@ -15,22 +15,18 @@
 
 ## [Unreleased]
 
-
 ### Added
+
+- Added release please github actions ([#235])(https://github.com/chingu-x/chingu-dashboard-be/pull/235)
 - Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
 
 ### Changed
+
 - Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
 - Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
 - Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
-- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
-
-### Added
-
-### Changed
 
 ### Fixed
-- Bug when user attempts to access a non-public endpoint after database reseed ([#230])(https://github.com/chingu-x/chingu-dashboard-be/pull/230)
 - fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
 
 ### Removed
