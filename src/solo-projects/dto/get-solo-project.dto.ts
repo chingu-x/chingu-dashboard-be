@@ -2,7 +2,7 @@ import { IsIn, IsNumber, IsOptional, IsPositive, Min } from "class-validator";
 import { Type } from "class-transformer";
 import { soloProjectStatuses } from "@/global/constants/statuses";
 import { ApiProperty } from "@nestjs/swagger";
-import { soloProjectVoyageRoles, voyageRoles } from "@/global/constants/roles";
+import { soloProjectVoyageRoles } from "@/global/constants/roles";
 
 export class GetSoloProjectDto {
     @IsOptional()

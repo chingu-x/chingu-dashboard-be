@@ -46,6 +46,9 @@ export class SoloProjectsService {
         voyageRoles: string | undefined;
     }) {
         console.log(`solo-projects.service.ts (48): status = ${status}`);
+        console.log(
+            `solo-projects.service.ts (49): voyageRoles = ${voyageRoles}`,
+        );
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
