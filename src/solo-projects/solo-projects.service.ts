@@ -4,6 +4,7 @@ import { userSelectBasicWithSocial } from "@/global/selects/users.select";
 import { SoloProjectWithPayload } from "@/global/types/solo-project.types";
 import { GlobalService } from "@/global/global.service";
 import { soloProjectSortMap } from "@/global/constants/sortMaps";
+import { soloProjectStatuses } from "@/global/constants/statuses";
 
 @Injectable()
 export class SoloProjectsService {
@@ -31,7 +32,12 @@ export class SoloProjectsService {
         };
     };
 
-    async getAllSoloProjects(offset: number, pageSize: number, sort: string) {
+    async getAllSoloProjects(
+        offset: number,
+        pageSize: number,
+        sort: string,
+        status: (typeof soloProjectStatuses)[number] | undefined,
+    ) {
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
@@ -91,6 +97,11 @@ export class SoloProjectsService {
                 },
                 createdAt: true,
                 updatedAt: true,
+            },
+            where: {
+                status: {
+                    status,
+                },
             },
         });
 

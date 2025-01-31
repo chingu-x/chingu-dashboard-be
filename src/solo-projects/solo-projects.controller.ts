@@ -45,6 +45,7 @@ export class SoloProjectsController {
             query.offset,
             query.pageSize,
             query.sort,
+            query.status,
         );
     }
 }
