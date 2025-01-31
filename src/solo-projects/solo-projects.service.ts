@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
-import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { PrismaService } from "@/prisma/prisma.service";
 import { userSelectBasicWithSocial } from "@/global/selects/users.select";
 import { SoloProjectWithPayload } from "@/global/types/solo-project.types";
@@ -32,10 +30,6 @@ export class SoloProjectsService {
             updatedAt: soloProject.updatedAt,
         };
     };
-
-    create(_createSoloProjectDto: CreateSoloProjectDto) {
-        return "This action adds a new soloProject";
-    }
 
     async getAllSoloProjects(
         offset: number,
@@ -115,17 +109,5 @@ export class SoloProjectsService {
                 offset,
             },
         };
-    }
-
-    findOne(id: number) {
-        return `This action returns a #${id} soloProject`;
-    }
-
-    update(id: number, _updateSoloProjectDto: UpdateSoloProjectDto) {
-        return `This action updates a #${id} soloProject`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} soloProject`;
     }
 }
