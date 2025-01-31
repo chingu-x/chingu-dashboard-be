@@ -35,10 +35,11 @@ export class GetSoloProjectDto {
         description:
             "Sort. - for descending, + (or nothing) for ascending (default: -createdAt)" +
             "<br/> Example: '+status;-createdAt' will sort by status ascending then createdAt descending" +
-            "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'",
+            "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'" +
+            "<br/> Default: '-createdAt'",
         required: false,
     })
-    sort?: string;
+    sort: string = "-createdAt";
 
     @ApiProperty({
         enum: soloProjectStatuses,

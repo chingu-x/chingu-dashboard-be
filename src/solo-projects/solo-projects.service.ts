@@ -31,11 +31,7 @@ export class SoloProjectsService {
         };
     };
 
-    async getAllSoloProjects(
-        offset: number,
-        pageSize: number,
-        sort: string = "-createdAt",
-    ) {
+    async getAllSoloProjects(offset: number, pageSize: number, sort: string) {
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
