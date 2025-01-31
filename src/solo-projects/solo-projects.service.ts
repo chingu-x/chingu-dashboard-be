@@ -32,12 +32,20 @@ export class SoloProjectsService {
         };
     };
 
-    async getAllSoloProjects(
-        offset: number,
-        pageSize: number,
-        sort: string,
-        status: (typeof soloProjectStatuses)[number] | undefined,
-    ) {
+    async getAllSoloProjects({
+        offset,
+        pageSize,
+        sort,
+        status,
+        voyageRoles,
+    }: {
+        offset: number;
+        pageSize: number;
+        sort: string;
+        status: (typeof soloProjectStatuses)[number] | undefined;
+        voyageRoles: string | undefined;
+    }) {
+        console.log(`solo-projects.service.ts (48): status = ${status}`);
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,

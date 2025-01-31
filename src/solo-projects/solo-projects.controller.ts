@@ -41,11 +41,6 @@ export class SoloProjectsController {
     })
     @Get()
     getAllSoloProjects(@Query() query: GetSoloProjectDto) {
-        return this.soloProjectsService.getAllSoloProjects(
-            query.offset,
-            query.pageSize,
-            query.sort,
-            query.status,
-        );
+        return this.soloProjectsService.getAllSoloProjects(query);
     }
 }
