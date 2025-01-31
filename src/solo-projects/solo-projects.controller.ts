@@ -1,6 +1,6 @@
 import { Controller, Get, Query, HttpStatus } from "@nestjs/common";
 import { SoloProjectsService } from "./solo-projects.service";
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SoloProjectsResponse } from "@/solo-projects/solo-projects.response";
 import {
     BadRequestErrorResponse,
@@ -39,44 +39,7 @@ export class SoloProjectsController {
         description: "Forbidden - user does not have the required permission",
         type: ForbiddenErrorResponse,
     })
-    @ApiQuery({
-        name: "offset",
-        type: Number,
-        description: "Offset for pagination (default: 0)",
-        required: false,
-    })
-    @ApiQuery({
-        name: "pageSize",
-        type: Number,
-        description:
-            "page size (number of results) for pagination (default: 30)",
-        required: false,
-    })
-    @ApiQuery({
-        name: "sort",
-        type: String,
-        description:
-            "Sort. - for descending, + (or nothing) for ascending (default: -createdAt)" +
-            "<br/> Example: '+status;-createdAt' will sort by status ascending then createdAt descending" +
-            "<br/> Valid sort fields are: 'status', 'createdAt', 'updatedAt'",
-        required: false,
-    })
     @Get()
-    /*
-    getAllSoloProjects(
-        @Query("offset", new NonNegativeIntDefaultValuePipe(0)) offset: number,
-        @Query("pageSize", new NonNegativeIntDefaultValuePipe(30))
-        pageSize: number,
-        @Query("sort") sort: string,
-    ) {
-        return this.soloProjectsService.getAllSoloProjects(
-            offset,
-            pageSize,
-            sort,
-        );
-    }
-
-     */
     getAllSoloProjects(@Query() query: GetSoloProjectDto) {
         return this.soloProjectsService.getAllSoloProjects(
             query.offset,
