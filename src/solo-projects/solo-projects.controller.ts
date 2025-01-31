@@ -1,13 +1,13 @@
 import { Controller, Get, Query, HttpStatus } from "@nestjs/common";
 import { SoloProjectsService } from "./solo-projects.service";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { NonNegativeIntDefaultValuePipe } from "@/pipes/non-negative-int-default-value-pipe";
 import { SoloProjectsResponse } from "@/solo-projects/solo-projects.response";
 import {
     BadRequestErrorResponse,
     ForbiddenErrorResponse,
     UnauthorizedErrorResponse,
 } from "@/global/responses/errors";
+import { GetSoloProjectDto } from "@/solo-projects/dto/get-solo-project.dto";
 
 @Controller("solo-projects")
 @ApiTags("Solo Projects")
@@ -62,6 +62,7 @@ export class SoloProjectsController {
         required: false,
     })
     @Get()
+    /*
     getAllSoloProjects(
         @Query("offset", new NonNegativeIntDefaultValuePipe(0)) offset: number,
         @Query("pageSize", new NonNegativeIntDefaultValuePipe(30))
@@ -72,6 +73,15 @@ export class SoloProjectsController {
             offset,
             pageSize,
             sort,
+        );
+    }
+
+     */
+    getAllSoloProjects(@Query() query: GetSoloProjectDto) {
+        return this.soloProjectsService.getAllSoloProjects(
+            query.offset,
+            query.pageSize,
+            query.sort,
         );
     }
 }
