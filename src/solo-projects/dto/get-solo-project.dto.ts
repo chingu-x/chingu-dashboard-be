@@ -1,4 +1,12 @@
-import { IsIn, IsNumber, IsOptional, IsPositive, Min } from "class-validator";
+import {
+    IsEmail,
+    IsIn,
+    IsNumber,
+    IsOptional,
+    IsPositive,
+    IsString,
+    Min,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { soloProjectStatuses } from "@/global/constants/statuses";
 import { ApiProperty } from "@nestjs/swagger";
@@ -57,4 +65,20 @@ export class GetSoloProjectDto {
     @IsOptional()
     @IsIn(soloProjectVoyageRoles)
     voyageRoles: string;
+
+    @ApiProperty({
+        required: false,
+        description: "User email",
+    })
+    @IsOptional()
+    @IsEmail()
+    email: string;
+
+    @ApiProperty({
+        required: false,
+        description: "Discord ID, not discord nickname",
+    })
+    @IsOptional()
+    @IsString()
+    discordId: string;
 }

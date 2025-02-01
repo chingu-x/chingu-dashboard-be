@@ -37,18 +37,18 @@ export class SoloProjectsService {
         pageSize,
         sort,
         status,
-        voyageRoles,
+        // voyageRoles, // TODO: need to add voyageRoles to the table or extract from responses
+        email,
+        discordId,
     }: {
         offset: number;
         pageSize: number;
         sort: string;
         status: (typeof soloProjectStatuses)[number] | undefined;
-        voyageRoles: string | undefined;
+        // voyageRoles: string | undefined;
+        email: string | undefined;
+        discordId: string | undefined;
     }) {
-        console.log(`solo-projects.service.ts (48): status = ${status}`);
-        console.log(
-            `solo-projects.service.ts (49): voyageRoles = ${voyageRoles}`,
-        );
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
@@ -112,6 +112,19 @@ export class SoloProjectsService {
             where: {
                 status: {
                     status,
+                },
+                user: {
+                    email,
+                    ...(discordId && {
+                        oAuthProfiles: {
+                            some: {
+                                providerUserId: discordId,
+                                provider: {
+                                    name: "discord",
+                                },
+                            },
+                        },
+                    }),
                 },
             },
         });
