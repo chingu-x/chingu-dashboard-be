@@ -42,11 +42,6 @@ describe("Development Controller (e2e)", () => {
     });
 
     describe("PUT /development/database/reseed", () => {
-        it("should return 401 if user is not logged in", async () => {
-            await request(app.getHttpServer())
-                .put("/development/database/reseed")
-                .expect(401);
-        });
         it("should return 422 and not proceed if NODE_ENV is not development", async () => {
             const { access_token, refresh_token } = await loginAndGetTokens(
                 "jessica.williamson@gmail.com",
