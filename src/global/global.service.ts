@@ -8,6 +8,7 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { CustomRequest } from "./types/CustomRequest";
 import { FormResponseDto } from "./dtos/FormResponse.dto";
 import { UserWithProfile } from "@/global/types/users.types";
+import { soloProjectSortMapKeys } from "@/global/constants/sortMaps";
 
 @Injectable()
 export class GlobalService {
@@ -243,7 +244,7 @@ export class GlobalService {
                     : field;
             if (!sortFieldMap.get(fieldName))
                 throw new BadRequestException(
-                    `Sort field ${fieldName} is not valid.`,
+                    `Sort field '${fieldName}' is not valid. Valid sort fields: ${soloProjectSortMapKeys.join(", ")}`,
                 );
             return {
                 [sortFieldMap.get(fieldName)!]: direction,
