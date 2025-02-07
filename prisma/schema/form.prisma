@@ -23,7 +23,6 @@ model Form {
   formResponseMeetings FormResponseMeeting[]
   soloProjects         SoloProject[]
   voyageApplications   VoyageApplication[]
-  parseConfig    Json?
 }
 
 model Question {
@@ -69,7 +68,7 @@ model OptionGroup {
 
   optionChoices OptionChoice[]
   questions     Question[]
-  parseConfig   Json?
+
 }
 
 model OptionChoice {
@@ -82,6 +81,7 @@ model OptionChoice {
   updatedAt DateTime @updatedAt
 
   responses Response[]
+  parseConfig Json?
 }
 
 model Response {
