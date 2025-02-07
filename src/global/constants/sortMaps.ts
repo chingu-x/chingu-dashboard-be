@@ -10,3 +10,7 @@ export const soloProjectSortMap: Map<string, string> = new Map(
         updatedAt: "updatedAt",
     }),
 );
+
+export const soloProjectSortMapKeys: string[] = Array.from(
+    soloProjectSortMap.keys(),
+);
