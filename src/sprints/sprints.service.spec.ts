@@ -284,6 +284,7 @@ describe("SprintsService", () => {
                             formTypeId: 1,
                             createdAt: mockDate,
                             updatedAt: mockDate,
+                            parseConfig: null,
                         },
                         responseGroup: {
                             id: 1,
@@ -313,6 +314,7 @@ describe("SprintsService", () => {
                                         parentQuestionId: null,
                                         createdAt: mockDate,
                                         updatedAt: mockDate,
+                                        parseConfig: null,
                                     },
                                     optionChoice: null,
                                 },

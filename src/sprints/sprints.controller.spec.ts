@@ -304,6 +304,7 @@ describe("SprintsController", () => {
                         formTypeId: 1,
                         createdAt: mockDate,
                         updatedAt: mockDate,
+                        parseConfig: null,
                     },
                     responseGroup: {
                         id: 1,
@@ -320,6 +321,7 @@ describe("SprintsController", () => {
                                 optionChoiceId: null,
                                 createdAt: mockDate,
                                 updatedAt: mockDate,
+
                                 question: {
                                     id: 1,
                                     text: "Question 1",
@@ -333,7 +335,9 @@ describe("SprintsController", () => {
                                     parentQuestionId: null,
                                     createdAt: mockDate,
                                     updatedAt: mockDate,
+                                    parseConfig: null,
                                 },
+
                                 optionChoice: null,
                             },
                         ],

@@ -23,6 +23,7 @@ model Form {
   formResponseMeetings FormResponseMeeting[]
   soloProjects         SoloProject[]
   voyageApplications   VoyageApplication[]
+  parseConfig    Json?
 }
 
 model Question {
@@ -46,6 +47,7 @@ model Question {
 
   responses    Response[]
   subQuestions Question[] @relation("QuestionSubQuestion")
+  parseConfig  Json?
 }
 
 model InputType {
@@ -67,6 +69,7 @@ model OptionGroup {
 
   optionChoices OptionChoice[]
   questions     Question[]
+  parseConfig   Json?
 }
 
 model OptionChoice {

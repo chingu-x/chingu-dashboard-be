@@ -183,6 +183,7 @@ export const createMockData = {
             formTypeId: 1,
             createdAt: mockDate,
             updatedAt: mockDate,
+            parseConfig: null,
         },
         responseGroup: {
             id: 1,
@@ -203,6 +204,7 @@ export const createMockData = {
         multipleAllowed: null,
         optionGroupId: null,
         parentQuestionId: null,
+        parseConfig: null,
         createdAt: mockDate,
         updatedAt: mockDate,
         ...partial,
