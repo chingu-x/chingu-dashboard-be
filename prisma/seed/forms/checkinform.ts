@@ -74,12 +74,21 @@ export const populateCheckinForm = async () => {
                                         data: [
                                             {
                                                 text: "{{greenRocket}} We have had a good start!",
+                                                parseConfig: {
+                                                    greenRocket: "🚀",
+                                                },
                                             },
                                             {
                                                 text: "{{amberRocket}} I'm nervous we won't finish",
+                                                parseConfig: {
+                                                    amberRocket: "🚀",
+                                                },
                                             },
                                             {
                                                 text: "{{redRocket}} It doesn't look good right now",
+                                                parseConfig: {
+                                                    redRocket: "🚀",
+                                                },
                                             },
                                         ],
                                     },
@@ -158,6 +167,10 @@ export const populateCheckinForm = async () => {
                             },
                         },
                         text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint?",
+                        parseConfig: {
+                            Yes: "Yes",
+                            No: "No",
+                        },
                         answerRequired: true,
                     },
                     {

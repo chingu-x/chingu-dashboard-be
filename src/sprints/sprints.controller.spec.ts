@@ -304,7 +304,6 @@ describe("SprintsController", () => {
                         formTypeId: 1,
                         createdAt: mockDate,
                         updatedAt: mockDate,
-                        parseConfig: null,
                     },
                     responseGroup: {
                         id: 1,
