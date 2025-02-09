@@ -75,19 +75,25 @@ export const populateCheckinForm = async () => {
                                             {
                                                 text: "{{greenRocket}} We have had a good start!",
                                                 parseConfig: {
-                                                    greenRocket: "🚀",
+                                                    icon: "greenRocket",
+                                                    iconUrl:
+                                                        ".../greenRocket.png",
                                                 },
                                             },
                                             {
                                                 text: "{{amberRocket}} I'm nervous we won't finish",
                                                 parseConfig: {
-                                                    amberRocket: "🚀",
+                                                    icon: "amberRocket",
+                                                    iconUrl:
+                                                        ".../amberRocket.png",
                                                 },
                                             },
                                             {
                                                 text: "{{redRocket}} It doesn't look good right now",
                                                 parseConfig: {
-                                                    redRocket: "🚀",
+                                                    icon: "redRocket",
+                                                    iconUrl:
+                                                        ".../redRocket.png",
                                                 },
                                             },
                                         ],
@@ -166,10 +172,10 @@ export const populateCheckinForm = async () => {
                                 name: "boolean",
                             },
                         },
-                        text: "{{Yes,No}}Did you deploy to Production at the end of this Sprint?",
+                        text: "{{yes,no}}Did you deploy to Production at the end of this Sprint?",
                         parseConfig: {
-                            Yes: "Yes",
-                            No: "No",
+                            yes: "Yes",
+                            no: "No",
                         },
                         answerRequired: true,
                     },
