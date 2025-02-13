@@ -46,6 +46,7 @@ model Question {
 
   responses    Response[]
   subQuestions Question[] @relation("QuestionSubQuestion")
+  parseConfig  Json?
 }
 
 model InputType {
@@ -67,6 +68,7 @@ model OptionGroup {
 
   optionChoices OptionChoice[]
   questions     Question[]
+
 }
 
 model OptionChoice {
@@ -79,6 +81,7 @@ model OptionChoice {
   updatedAt DateTime @updatedAt
 
   responses Response[]
+  parseConfig Json?
 }
 
 model Response {
