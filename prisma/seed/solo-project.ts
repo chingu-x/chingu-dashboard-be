@@ -4,6 +4,7 @@ import { prisma } from "./prisma-client";
 
 export const populateSoloProjects = async () => {
     // solo project status
+    // TODO update this to generate from global/constants/statuses
     await prisma.soloProjectStatus.createMany({
         data: [
             { status: "Waiting Evaluation" },

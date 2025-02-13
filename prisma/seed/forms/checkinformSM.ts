@@ -23,6 +23,10 @@ export const populateCheckinFormSM = async () => {
                             },
                         },
                         text: "{{Yes,No}} Did your Scrum Master provide any Scrum training or coaching, either during events or through Discord?",
+                        parseConfig: {
+                            Yes: "Yes",
+                            No: "No",
+                        },
                         answerRequired: true,
                     },
                     {
@@ -33,6 +37,10 @@ export const populateCheckinFormSM = async () => {
                             },
                         },
                         text: "{{Yes,No}} Was your Scrum Master effective in resolving issues and removing impediments during sprints?",
+                        parseConfig: {
+                            Yes: "Yes",
+                            No: "No",
+                        },
                         answerRequired: true,
                     },
                     {
@@ -43,6 +51,10 @@ export const populateCheckinFormSM = async () => {
                             },
                         },
                         text: "{{Yes,No}} Did your Scrum Master work to ensure that all Scrum events ran smoothly, stayed positive and productive, and stayed within the designated timebox?",
+                        parseConfig: {
+                            Yes: "Yes",
+                            No: "No",
+                        },
                         answerRequired: true,
                     },
                     {

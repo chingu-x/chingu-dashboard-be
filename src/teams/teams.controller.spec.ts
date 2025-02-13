@@ -4,6 +4,9 @@ import { TeamsService } from "./teams.service";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { VoyageTeamMemberUpdateResponse } from "./teams.response";
 import { UpdateTeamMemberDto } from "./dto/update-team-member.dto";
+import { toBeArray } from "jest-extended";
+
+expect.extend({ toBeArray });
 
 describe("TeamsController", () => {
     let controller: TeamsController;
@@ -99,7 +102,7 @@ describe("TeamsController", () => {
         it("should return all voyage teams", async () => {
             const teams = await controller.findAll();
             expect(teams).toHaveLength(2);
-            expect(teams).toBeArray;
+            expect(teams).toBeArray();
             expect(teams[0]).toEqual({
                 id: expect.any(Number),
                 voyageId: expect.any(Number),
@@ -127,7 +130,7 @@ describe("TeamsController", () => {
         it("should return all teams in a single voyage", async () => {
             const teams = await controller.findTeamsByVoyageId(1);
             expect(teams).toHaveLength(1);
-            expect(teams).toBeArray;
+            expect(teams).toBeArray();
             expect(teams[0]).toEqual({
                 id: expect.any(Number),
                 voyageId: expect.any(Number),
