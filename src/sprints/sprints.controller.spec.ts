@@ -320,6 +320,7 @@ describe("SprintsController", () => {
                                 optionChoiceId: null,
                                 createdAt: mockDate,
                                 updatedAt: mockDate,
+
                                 question: {
                                     id: 1,
                                     text: "Question 1",
@@ -333,7 +334,9 @@ describe("SprintsController", () => {
                                     parentQuestionId: null,
                                     createdAt: mockDate,
                                     updatedAt: mockDate,
+                                    parseConfig: null,
                                 },
+
                                 optionChoice: null,
                             },
                         ],

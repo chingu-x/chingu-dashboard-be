@@ -313,6 +313,7 @@ describe("SprintsService", () => {
                                         parentQuestionId: null,
                                         createdAt: mockDate,
                                         updatedAt: mockDate,
+                                        parseConfig: null,
                                     },
                                     optionChoice: null,
                                 },

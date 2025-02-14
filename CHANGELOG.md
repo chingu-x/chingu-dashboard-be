@@ -13,26 +13,31 @@
 > MINOR version when you add functionality in a backward compatible manner <br/>
 > PATCH version when you make backward compatible bug fixes <br/>
 
-## [Unreleased]
+## [1.2.0-alpha](https://github.com/chingu-x/chingu-dashboard-be/compare/1.1.0-alpha...v1.2.0-alpha) (2025-02-13)
 
-### Added
 
-- Added release please github actions ([#235])(https://github.com/chingu-x/chingu-dashboard-be/pull/235)
-- Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
-- Added status, email, discordId query to solo project get endpoint ([#237](https://github.com/chingu-x/chingu-dashboard-be/pull/237))
+### Features
 
-### Changed
+* (solo project) Add solo project status, email and discordId query params to GET endpoint ([06e8d63](https://github.com/chingu-x/chingu-dashboard-be/commit/06e8d63d6128f5224b9f7897918d3fdfbe34b721))
+* Stage 1 - add parseConfig field to Question and OptionChoice models ([#238](https://github.com/chingu-x/chingu-dashboard-be/issues/238)) ([5890679](https://github.com/chingu-x/chingu-dashboard-be/commit/58906790430ec9ac61f30e387aab8b6da200b70c))
+* **tests:** extend Jest with additional matchers for better testing ([ea49075](https://github.com/chingu-x/chingu-dashboard-be/commit/ea49075481a5f8a48115005908d74407be028ab8))
+* Added release please github actions ([#235])(https://github.com/chingu-x/chingu-dashboard-be/pull/235)
+* Added version release link to Swagger docs ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/231))
+* Added status, email, discordId query to solo project get endpoint ([#237](https://github.com/chingu-x/chingu-dashboard-be/pull/237))
 
-- Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
-- Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
-- Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
-- Refactored solo project get endpoint input validation ([#237](https://github.com/chingu-x/chingu-dashboard-be/pull/237))
+### Improvements / Refactoring
+* Updated readme for installation part ([#225])(https://github.com/chingu-x/chingu-dashboard-be/pull/225)
+* Updated nestjs packages to latest version ([#233])(https://github.com/chingu-x/chingu-dashboard-be/pull/233)
+* Refactoring of email service + unit tests ([#232](https://github.com/chingu-x/chingu-dashboard-be/pull/232))
+* Refactored solo project get endpoint input validation ([#237](https://github.com/chingu-x/chingu-dashboard-be/pull/237))
 
-### Fixed
-- fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
+### Bug Fixes
 
-### Removed
-
+* **eslint.config.mjs:** correct import and plugin names, adjust tsconfig.json path ([feadabd](https://github.com/chingu-x/chingu-dashboard-be/commit/feadabd38759c3fd09f20ae2732401bdad812f3f))
+* **package.json:** downgrade several packages to ensure compatibility ([cf9e090](https://github.com/chingu-x/chingu-dashboard-be/commit/cf9e0900874274aad6a3f7a60e3e1ccef41e81e2))
+* **tests:** correct usage of jest-extended matchers in various test files ([2361bb0](https://github.com/chingu-x/chingu-dashboard-be/commit/2361bb07973f0cd6bb4da3ec3e040ef3917560b5))
+* **tests:** corrected 'toBeArray' and 'toBeObject' to be called as functions instead as a property access. ([249c8dc](https://github.com/chingu-x/chingu-dashboard-be/commit/249c8dc51ddd9e4aeb51b98178b551fd58e3835a))
+* fixed POST voyages/teams/{teamId}/techs bug , verify that categoryId is owned by correct team ([#229](https://github.com/chingu-x/chingu-dashboard-be/pull/229))
 
 ## [v1.1.0-alpha]
 
