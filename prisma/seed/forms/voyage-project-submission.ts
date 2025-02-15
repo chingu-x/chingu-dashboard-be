@@ -94,6 +94,10 @@ export const populateVoyageSubmissionForm = async () => {
                             },
                         },
                         text: "{{Not Likely,Extremely Likely}}On a scale of 0-10, how likely are you to suggest Chingu to a friend or colleague?",
+                        parseConfig: {
+                            min: "Not Likely",
+                            max: "Extremely Likely",
+                        },
                         answerRequired: true,
                         optionGroup: {
                             create: {

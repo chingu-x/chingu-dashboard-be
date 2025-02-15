@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateSoloProjectDto } from "./dto/create-solo-project.dto";
-import { UpdateSoloProjectDto } from "./dto/update-solo-project.dto";
 import { PrismaService } from "@/prisma/prisma.service";
 import { userSelectBasicWithSocial } from "@/global/selects/users.select";
 import { SoloProjectWithPayload } from "@/global/types/solo-project.types";
 import { GlobalService } from "@/global/global.service";
 import { soloProjectSortMap } from "@/global/constants/sortMaps";
+import { soloProjectStatuses } from "@/global/constants/statuses";
 
 @Injectable()
 export class SoloProjectsService {
@@ -33,15 +32,23 @@ export class SoloProjectsService {
         };
     };
 
-    create(_createSoloProjectDto: CreateSoloProjectDto) {
-        return "This action adds a new soloProject";
-    }
-
-    async getAllSoloProjects(
-        offset: number,
-        pageSize: number,
-        sort: string = "-createdAt",
-    ) {
+    async getAllSoloProjects({
+        offset,
+        pageSize,
+        sort,
+        status,
+        // voyageRoles, // TODO: need to add voyageRoles to the table or extract from responses
+        email,
+        discordId,
+    }: {
+        offset: number;
+        pageSize: number;
+        sort: string;
+        status: (typeof soloProjectStatuses)[number] | undefined;
+        // voyageRoles: string | undefined;
+        email: string | undefined;
+        discordId: string | undefined;
+    }) {
         const soloProjects = await this.prisma.soloProject.findMany({
             skip: offset,
             take: pageSize,
@@ -102,6 +109,24 @@ export class SoloProjectsService {
                 createdAt: true,
                 updatedAt: true,
             },
+            where: {
+                status: {
+                    status,
+                },
+                user: {
+                    email,
+                    ...(discordId && {
+                        oAuthProfiles: {
+                            some: {
+                                providerUserId: discordId,
+                                provider: {
+                                    name: "discord",
+                                },
+                            },
+                        },
+                    }),
+                },
+            },
         });
 
         const data = soloProjects.map((sp) =>
@@ -115,17 +140,5 @@ export class SoloProjectsService {
                 offset,
             },
         };
-    }
-
-    findOne(id: number) {
-        return `This action returns a #${id} soloProject`;
-    }
-
-    update(id: number, _updateSoloProjectDto: UpdateSoloProjectDto) {
-        return `This action updates a #${id} soloProject`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} soloProject`;
     }
 }

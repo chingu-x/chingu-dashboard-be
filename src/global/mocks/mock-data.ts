@@ -203,6 +203,7 @@ export const createMockData = {
         multipleAllowed: null,
         optionGroupId: null,
         parentQuestionId: null,
+        parseConfig: null,
         createdAt: mockDate,
         updatedAt: mockDate,
         ...partial,
