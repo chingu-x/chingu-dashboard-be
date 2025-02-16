@@ -34,31 +34,33 @@ export class UsersService {
     }
 
     async getUserRolesById(userId: string) {
-        return this.formatUser(
-            await this.prisma.user.findUnique({
-                where: {
-                    id: userId,
-                },
-                select: {
-                    roles: {
-                        select: {
-                            role: {
-                                select: {
-                                    name: true,
-                                },
+        //Return user roles only when userDd actually exists
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                roles: {
+                    select: {
+                        role: {
+                            select: {
+                                name: true,
                             },
                         },
                     },
-                    voyageTeamMembers: {
-                        select: {
-                            id: true,
-                            voyageTeamId: true,
-                        },
-                    },
-                    emailVerified: true,
                 },
-            }),
-        );
+                voyageTeamMembers: {
+                    select: {
+                        id: true,
+                        voyageTeamId: true,
+                    },
+                },
+                emailVerified: true,
+            },
+        });
+        if (user) {
+            return this.formatUser(user);
+        }
     }
 
     async findAll() {
