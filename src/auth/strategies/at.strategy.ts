@@ -4,6 +4,7 @@ import { Request } from "express";
 import { Injectable, Inject } from "@nestjs/common";
 import { UsersService } from "../../users/users.service";
 import { AuthConfig } from "../../config/auth/auth.interface";
+import { UserReq } from "@/global/types/CustomRequest";
 
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
@@ -33,21 +34,25 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
         return null;
     }
 
-    async validate(payload: any) {
-        const userInDb = await this.usersService.getUserRolesById(payload.sub);
+    async validate(payload: any): Promise<UserReq | undefined> {
+        //Get user roles
+        const userRoles = await this.usersService.getUserRolesById(payload.sub);
 
         // Note: Update global/types/CustomRequest when updating this
-        return {
-            userId: payload.sub,
-            email: payload.email,
-            roles: userInDb.roles,
-            isVerified: userInDb.emailVerified,
-            voyageTeams: userInDb.voyageTeamMembers?.map((t) => {
-                return {
-                    teamId: t.voyageTeamId,
-                    memberId: t.id,
-                };
-            }),
-        };
+        //Check if userRoles actually returns user details before returning
+        if (userRoles) {
+            return {
+                userId: payload.sub,
+                email: payload.email,
+                roles: userRoles.roles,
+                isVerified: userRoles.emailVerified,
+                voyageTeams: userRoles.voyageTeamMembers?.map((t) => {
+                    return {
+                        teamId: t.voyageTeamId,
+                        memberId: t.id,
+                    };
+                }),
+            };
+        }
     }
 }
