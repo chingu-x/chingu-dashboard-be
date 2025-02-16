@@ -4,6 +4,7 @@ import { Request } from "express";
 import { Injectable, Inject } from "@nestjs/common";
 import { UsersService } from "../../users/users.service";
 import { AuthConfig } from "../../config/auth/auth.interface";
+import { UserReq } from "@/global/types/CustomRequest";
 
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
@@ -33,7 +34,7 @@ export class AtStrategy extends PassportStrategy(Strategy, "jwt-at") {
         return null;
     }
 
-    async validate(payload: any) {
+    async validate(payload: any): Promise<UserReq | undefined> {
         //Get user roles
         const userRoles = await this.usersService.getUserRolesById(payload.sub);
 
