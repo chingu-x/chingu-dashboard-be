@@ -26,6 +26,21 @@ class OptionChoice {
 
     @ApiProperty({ example: "Tier 1" })
     text: string;
+
+    @Optional()
+    @ApiProperty({
+        examples: {
+            iconConfig: {
+                value: {
+                    icon: "greenRocket",
+                    iconUrl: ".../greenRocket.png",
+                },
+                description: "Configuration for icon-based radio buttons",
+            },
+        },
+        required: false,
+    })
+    parseConfig?: Record<string, any>;
 }
 
 class OptionGroup {
@@ -101,6 +116,21 @@ class BaseQuestion {
     @Optional()
     @ApiProperty({ example: null })
     optionGroup: OptionGroup;
+
+    @Optional()
+    @ApiProperty({
+        examples: {
+            scaleConfig: {
+                value: {
+                    min: "Not Likely",
+                    max: "Extremely Likely",
+                },
+                description: "Configuration for scale questions",
+            },
+        },
+        required: false,
+    })
+    parseConfig?: Record<string, any>;
 
     @ApiProperty()
     createdAt: Date;

@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+    IsBoolean,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsObject,
+} from "class-validator";
 
 export class FormResponseDto {
     @ApiProperty({
@@ -37,4 +43,28 @@ export class FormResponseDto {
     @IsNumber()
     @IsOptional()
     numeric?: number;
+
+    @ApiProperty({
+        description: "configuration for parsing the response",
+        examples: {
+            iconConfig: {
+                value: {
+                    icon: "greenRocket",
+                    iconUrl: ".../greenRocket.png",
+                },
+                description: "Configuration for icon-based radio buttons",
+            },
+            booleanConfig: {
+                value: {
+                    yes: "Yes",
+                    no: "No",
+                },
+                description: "Configuration for boolean questions",
+            },
+        },
+        required: false,
+    })
+    @IsOptional()
+    @IsObject()
+    parseConfig?: Record<string, any>;
 }
