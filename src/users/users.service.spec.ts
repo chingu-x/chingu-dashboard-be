@@ -25,7 +25,6 @@ describe("UsersService", () => {
             emailVerified: true,
             firstName: "Jessica",
             lastName: "Williamson",
-            hasCompletedAssessment: true,
             avatar: "https://gravatar.com/avatar/3bfaef00e02a22f99e17c66e7a9fdd31?s=400&d=robohash&r=x",
             timezone: "Australia/Melbourne",
             countryCode: "AU",
@@ -198,14 +197,6 @@ describe("UsersService", () => {
                         },
                     },
                 ],
-                soloProjects: [
-                    {
-                        id: 1,
-                        status: {
-                            status: "Passed",
-                        },
-                    },
-                ],
             };
             const mockSprintCheckIns = [
                 {
@@ -246,12 +237,6 @@ describe("UsersService", () => {
                             FormResponseVoyageProject: false,
                             projectSubmitted: false,
                         },
-                    },
-                ],
-                soloProjects: [
-                    {
-                        id: 1,
-                        status: "Passed",
                     },
                 ],
             };

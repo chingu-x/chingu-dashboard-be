@@ -88,8 +88,6 @@ export const privateUserDetailSelect = {
         },
     },
     email: true,
-    emailVerified: true,
-    hasCompletedAssessment: true,
     countryCode: true,
     timezone: true,
     voyageTeamMembers: {
@@ -115,16 +113,6 @@ export const privateUserDetailSelect = {
             voyageRole: {
                 select: {
                     name: true,
-                },
-            },
-        },
-    },
-    soloProjects: {
-        select: {
-            id: true,
-            status: {
-                select: {
-                    status: true,
                 },
             },
         },

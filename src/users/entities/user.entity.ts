@@ -25,9 +25,6 @@ export class UserEntity implements User {
     avatar: string;
 
     @ApiProperty()
-    hasCompletedAssessment: boolean;
-
-    @ApiProperty()
     githubId: string;
 
     @ApiProperty()
