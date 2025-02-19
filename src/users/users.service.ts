@@ -123,6 +123,10 @@ export class UsersService {
                     };
                 }
             }),
+            soloProjects: user.soloProjects.map((soloProject) => ({
+                id: soloProject.id,
+                status: soloProject.status?.status,
+            })),
         };
 
         return this.formatUser(updatedUser);
