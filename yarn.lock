@@ -1173,10 +1173,17 @@
   resolved "https://registry.yarnpkg.com/@types/node-mailjet/-/node-mailjet-3.3.12.tgz#07dba18d9a0299ebd6319696da93afe1a0d0a573"
   integrity sha512-M9HRtJSB64wfV9ZFOBHBKT67cV+rCjo3Rbc9A4Fv/CxHcjcXnVMEh2vUpRcqzO6Tx0TEbDq8Xzt6009SkG5Z+w==
 
+<<<<<<< HEAD
+"@types/node@*", "@types/node@^20.3.1":
+  version "20.11.30"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.30.tgz#9c33467fc23167a347e73834f788f4b9f399d66f"
+  integrity sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==
+=======
 "@types/node@*", "@types/node@^22.10.2":
   version "22.10.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.10.2.tgz#a485426e6d1fdafc7b0d4c7b24e2c78182ddabb9"
   integrity sha512-Xxr6BBRCAOQixvonOye19wnzyDiUtTeqldOOmj3CkeblonbccA12PFwlufvRdrpjXxqnmUaeiU5EOA+7s5diUQ==
+>>>>>>> origin/dev
   dependencies:
     undici-types "~6.20.0"
 
@@ -4798,6 +4805,13 @@ passport-discord@^0.1.4:
   dependencies:
     passport-oauth2 "^1.5.0"
 
+passport-github2@^0.1.12:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/passport-github2/-/passport-github2-0.1.12.tgz#a72ebff4fa52a35bc2c71122dcf470d1116f772c"
+  integrity sha512-3nPUCc7ttF/3HSP/k9sAXjz3SkGv5Nki84I05kSQPo01Jqq1NzJACgMblCK0fGcv9pKCG/KXU3AJRDGLqHLoIw==
+  dependencies:
+    passport-oauth2 "1.x.x"
+
 passport-jwt@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/passport-jwt/-/passport-jwt-4.0.1.tgz#c443795eff322c38d173faa0a3c481479646ec3d"
@@ -4813,7 +4827,7 @@ passport-local@^1.0.0:
   dependencies:
     passport-strategy "1.x.x"
 
-passport-oauth2@^1.5.0:
+passport-oauth2@1.x.x, passport-oauth2@^1.5.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/passport-oauth2/-/passport-oauth2-1.8.0.tgz#55725771d160f09bbb191828d5e3d559eee079c8"
   integrity sha512-cjsQbOrXIDE4P8nNb3FQRCCmJJ/utnFKEz2NX209f7KOHPoX18gF7gBzBbLLsj2/je4KrgiwLLGjf0lm9rtTBA==

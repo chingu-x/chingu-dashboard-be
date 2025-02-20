@@ -7,8 +7,8 @@ import { IAuthProvider } from "@/global/interfaces/oauth.interface";
 import { PrismaService } from "@/prisma/prisma.service";
 import { DiscordUser } from "@/global/types/auth.types";
 import { generatePasswordHash } from "@/global/auth/utils";
-
 import { OAuthConfig } from "@/config/Oauth/oauthConfig.interface";
+
 @Injectable()
 export class DiscordAuthService implements IAuthProvider {
     constructor(
@@ -40,10 +40,12 @@ export class DiscordAuthService implements IAuthProvider {
                 "[discord-auth.service]: Cannot get email from discord to create a new Chingu account",
             );
 
+        const existingUser = await this.findUserByEmails([user.email]);
+
         // check if email is in the database, add oauth profile to existing account, otherwise, create a new user account
         return this.prisma.user.upsert({
             where: {
-                email: user.email,
+                id: existingUser.id,
             },
             update: {
                 emailVerified: true,
@@ -74,6 +76,21 @@ export class DiscordAuthService implements IAuthProvider {
                         providerUserId: user.discordId,
                         providerUsername: user.username,
                     },
+                },
+            },
+        });
+    }
+
+    async findUserByEmails(emails): Promise<any | null> {
+        // collect emails as strings
+        const emailStrings = emails.map((email) =>
+            typeof email === "string" ? email : email.value,
+        );
+
+        return this.prisma.user.findFirst({
+            where: {
+                email: {
+                    in: emailStrings,
                 },
             },
         });

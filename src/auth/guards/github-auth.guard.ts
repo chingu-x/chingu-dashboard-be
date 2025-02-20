@@ -6,7 +6,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 
 @Injectable()
-export class DiscordAuthGuard extends AuthGuard("discord") {
+export class GithubAuthGuard extends AuthGuard("github") {
     constructor() {
         super({
             session: false,
@@ -17,9 +17,9 @@ export class DiscordAuthGuard extends AuthGuard("discord") {
         try {
             activate = (await super.canActivate(context)) as boolean;
         } catch (e) {
-            if (e.code == "invalid_grant") {
+            if (e.message.includes("Failed to obtain access token")) {
                 throw new BadRequestException(
-                    `Invalid code in redirect query param.`,
+                    `Failed to obtain access token. Possibly because of invalid redirect code.`,
                 );
             }
             throw e;

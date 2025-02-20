@@ -91,6 +91,10 @@ describe("AuthController e2e Tests", () => {
                             clientID: "discord-client-id",
                             clientSecret: "dicord-client-secret",
                         },
+                        github: {
+                            clientID: "github-client-id",
+                            clientSecret: "github-client-secret",
+                        },
                     } as unknown as OAuthConfig,
                 },
             ],
@@ -681,6 +685,26 @@ describe("AuthController e2e Tests", () => {
 
             const re = new RegExp(
                 String.raw`https:\/\/discord\.com\/api\/oauth2\/authorize\?response_type=${responseType}&redirect_uri=${redirectUrl}&scope=${scope}&client_id=${clientId}`,
+            );
+
+            expect(res.headers.location).toMatch(re);
+        });
+    });
+
+    describe("Initiate Github OAuth GET /auth/github/login", () => {
+        it("should redirect ", async () => {
+            const res = await request(app.getHttpServer())
+                .get("/auth/github/login")
+                .expect(302);
+
+            const clientId = Oauth.github.clientId;
+            const responseType = "code";
+            const redirectUrl =
+                "http%3A%2F%2F127\\.0\\.0\\.1%3A[0-9]+%2Fapi%2Fv1%2Fauth%2Fgithub%2Fredirect";
+            const scope = "identify%2Cuser%3Aemail";
+
+            const re = new RegExp(
+                String.raw`https:\/\/github\.com\/login\/oauth\/authorize\?response_type=${responseType}&redirect_uri=${redirectUrl}&scope=${scope}&client_id=${clientId}`,
             );
 
             expect(res.headers.location).toMatch(re);
