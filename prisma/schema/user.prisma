@@ -24,6 +24,7 @@ model User {
   countryCode   String?
   timezone      String?
   comment       String?
+  hasCompletedAssessment Boolean @default(false)
   refreshToken  String[]
 
   createdAt DateTime @default(now()) @db.Timestamptz()
