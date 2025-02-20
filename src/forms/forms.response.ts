@@ -30,13 +30,11 @@ class OptionChoice {
     @Optional()
     @ApiProperty({
         examples: {
-            iconConfig: {
-                value: {
-                    icon: "greenRocket",
-                    iconUrl: ".../greenRocket.png",
-                },
-                description: "Configuration for icon-based radio buttons",
+            parseConfig: {
+                icon: "greenRocket",
+                iconUrl: ".../greenRocket.png",
             },
+            description: "Configuration for icon-based radio buttons",
         },
         required: false,
     })
@@ -120,13 +118,11 @@ class BaseQuestion {
     @Optional()
     @ApiProperty({
         examples: {
-            scaleConfig: {
-                value: {
-                    min: "Not Likely",
-                    max: "Extremely Likely",
-                },
-                description: "Configuration for scale questions",
+            parseConfig: {
+                min: "Not Likely",
+                max: "Extremely Likely",
             },
+            description: "Configuration for scale questions",
         },
         required: false,
     })
