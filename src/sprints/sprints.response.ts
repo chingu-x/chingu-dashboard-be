@@ -205,6 +205,15 @@ export class MeetingFormResponse {
 
     @ApiProperty({ example: 5 })
     responseGroupId: number;
+
+    @ApiProperty({
+        example: {
+            min: "Not Likely",
+            max: "Extremely Likely",
+        },
+    })
+    @Optional()
+    parseConfig?: Record<string, any>;
 }
 
 export class CheckinSubmissionResponse {
