@@ -29,12 +29,20 @@ class OptionChoice {
 
     @Optional()
     @ApiProperty({
-        examples: {
-            parseConfig: {
-                icon: "greenRocket",
-                iconUrl: ".../greenRocket.png",
+        description: "configuration for parsing the response",
+        example: {
+            example1: {
+                parseConfig: {
+                    icon: "greenRocket",
+                    iconUrl: ".../greenRocket.png",
+                },
             },
-            description: "Configuration for icon-based radio buttons",
+            example2: {
+                parseConfig: {
+                    yes: "Yes",
+                    no: "No",
+                },
+            },
         },
         required: false,
     })

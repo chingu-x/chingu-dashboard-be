@@ -46,23 +46,21 @@ export class FormResponseDto {
 
     @ApiProperty({
         description: "configuration for parsing the response",
-        examples: {
-            iconConfig: {
-                value: {
+        required: false,
+        example: {
+            example1: {
+                parseConfig: {
                     icon: "greenRocket",
                     iconUrl: ".../greenRocket.png",
                 },
-                description: "Configuration for icon-based radio buttons",
             },
-            booleanConfig: {
-                value: {
+            example2: {
+                parseConfig: {
                     yes: "Yes",
                     no: "No",
                 },
-                description: "Configuration for boolean questions",
             },
         },
-        required: false,
     })
     @IsOptional()
     @IsObject()
