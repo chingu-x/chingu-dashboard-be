@@ -125,12 +125,12 @@ class BaseQuestion {
 
     @Optional()
     @ApiProperty({
-        examples: {
+        description: "configuration for parsing the response",
+        example: {
             parseConfig: {
                 min: "Not Likely",
                 max: "Extremely Likely",
             },
-            description: "Configuration for scale questions",
         },
         required: false,
     })

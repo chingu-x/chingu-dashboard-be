@@ -48,17 +48,9 @@ export class FormResponseDto {
         description: "configuration for parsing the response",
         required: false,
         example: {
-            example1: {
-                parseConfig: {
-                    icon: "greenRocket",
-                    iconUrl: ".../greenRocket.png",
-                },
-            },
-            example2: {
-                parseConfig: {
-                    yes: "Yes",
-                    no: "No",
-                },
+            parseConfig: {
+                icon: "greenRocket",
+                iconUrl: ".../greenRocket.png",
             },
         },
     })
