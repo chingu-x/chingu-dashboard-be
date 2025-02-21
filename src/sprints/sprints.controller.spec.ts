@@ -37,6 +37,7 @@ describe("SprintsController", () => {
         meetingId: 1,
         formId: 1,
         responseGroupId: 1,
+        parseConfig: {},
         createdAt: mockDate,
         updatedAt: mockDate,
     };

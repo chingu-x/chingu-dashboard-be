@@ -31,18 +31,8 @@ class OptionChoice {
     @ApiProperty({
         description: "configuration for parsing the response",
         example: {
-            example1: {
-                parseConfig: {
-                    icon: "greenRocket",
-                    iconUrl: ".../greenRocket.png",
-                },
-            },
-            example2: {
-                parseConfig: {
-                    yes: "Yes",
-                    no: "No",
-                },
-            },
+            icon: "greenRocket",
+            iconUrl: ".../greenRocket.png",
         },
         required: false,
     })
@@ -127,10 +117,8 @@ class BaseQuestion {
     @ApiProperty({
         description: "configuration for parsing the response",
         example: {
-            parseConfig: {
-                min: "Not Likely",
-                max: "Extremely Likely",
-            },
+            min: "Not Likely",
+            max: "Extremely Likely",
         },
         required: false,
     })
