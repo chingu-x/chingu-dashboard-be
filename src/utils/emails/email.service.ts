@@ -55,4 +55,12 @@ export class EmailService {
             passwordResetLink,
         });
     }
+
+    async sendOnboardingChecklistEmail(email: string) {
+        console.log("Sending onboarding checklist email");
+        const onboardingChecklistLink = `${this.appConfigService.FrontendUrl}/users/onboarding-checklist`;
+        await this.sendEmail(email, templateIds.onboardingEmail, {
+            onboardingChecklistLink,
+        });
+    }
 }
