@@ -25,6 +25,7 @@ import { AppConfigModule } from "./config/app/appConfig.module";
 import { MailConfigModule } from "./config/mail/mailConfig.module";
 import { DbConfigModule } from "./config/database/dbConfig.module";
 import { SoloProjectsModule } from "./solo-projects/solo-projects.module";
+import { DebugModule } from "@/debug/debug.module";
 
 @Module({
     imports: [
@@ -66,6 +67,7 @@ import { SoloProjectsModule } from "./solo-projects/solo-projects.module";
         AbilityModule,
         DevelopmentModule,
         SoloProjectsModule,
+        DebugModule,
     ],
     controllers: [HealthCheckController],
     providers: [
