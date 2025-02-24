@@ -26,6 +26,17 @@ class OptionChoice {
 
     @ApiProperty({ example: "Tier 1" })
     text: string;
+
+    @Optional()
+    @ApiProperty({
+        description: "configuration for parsing the response",
+        example: {
+            icon: "greenRocket",
+            iconUrl: ".../greenRocket.png",
+        },
+        required: false,
+    })
+    parseConfig?: Record<string, any>;
 }
 
 class OptionGroup {
@@ -101,6 +112,17 @@ class BaseQuestion {
     @Optional()
     @ApiProperty({ example: null })
     optionGroup: OptionGroup;
+
+    @Optional()
+    @ApiProperty({
+        description: "configuration for parsing the response",
+        example: {
+            min: "Not Likely",
+            max: "Extremely Likely",
+        },
+        required: false,
+    })
+    parseConfig?: Record<string, any>;
 
     @ApiProperty()
     createdAt: Date;

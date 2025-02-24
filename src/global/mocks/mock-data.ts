@@ -287,6 +287,7 @@ export const createMockData = {
                 },
                 text: "Question 1",
                 description: "Description 1",
+                parseConfig: null,
                 answerRequired: true,
                 multipleAllowed: null,
                 optionGroup: {
