@@ -489,12 +489,14 @@ export class SprintsService {
                         description: true,
                         answerRequired: true,
                         multipleAllowed: true,
+                        parseConfig: true,
                         optionGroup: {
                             select: {
                                 optionChoices: {
                                     select: {
                                         id: true,
                                         text: true,
+                                        parseConfig: true,
                                     },
                                 },
                             },

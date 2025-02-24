@@ -1362,11 +1362,13 @@ describe("SprintsService", () => {
                                         optionChoices: {
                                             select: {
                                                 id: true,
+                                                parseConfig: true,
                                                 text: true,
                                             },
                                         },
                                     },
                                 },
+                                parseConfig: true,
                                 responses: {
                                     where: {
                                         responseGroupId:
