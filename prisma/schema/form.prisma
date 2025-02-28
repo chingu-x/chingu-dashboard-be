@@ -76,6 +76,8 @@ model OptionChoice {
   optionGroupId Int
   optionGroup   OptionGroup @relation(fields: [optionGroupId], references: [id], onDelete: Cascade)
   text          String
+  order         Int?
+  description   String?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt

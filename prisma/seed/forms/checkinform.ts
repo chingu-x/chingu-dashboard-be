@@ -17,11 +17,7 @@ export const populateCheckinForm = async () => {
                 create: [
                     {
                         order: 1,
-                        inputType: {
-                            connect: {
-                                name: "checkbox",
-                            },
-                        },
+                        inputType: { connect: { name: "checkbox" } },
                         text: "Which Scrum events did your team hold in the prior sprint? Please answer 'yes' to any you did even if they were combined in another meeting.",
                         answerRequired: true,
                         optionGroup: {
@@ -61,11 +57,14 @@ export const populateCheckinForm = async () => {
                         order: 2,
                         inputType: {
                             connect: {
-                                name: "radioIcon",
+                                name: "radio",
                             },
                         },
                         text: "How would you rate your team's progress right now?",
                         answerRequired: true,
+                        parseConfig: {
+                            icon: true,
+                        },
                         optionGroup: {
                             create: {
                                 name: "checkin-form-team-progress",
@@ -79,6 +78,7 @@ export const populateCheckinForm = async () => {
                                                     iconUrl:
                                                         ".../greenRocket.png",
                                                 },
+                                                order: 1,
                                             },
                                             {
                                                 text: "{{amberRocket}} I'm nervous we won't finish",
@@ -87,6 +87,7 @@ export const populateCheckinForm = async () => {
                                                     iconUrl:
                                                         ".../amberRocket.png",
                                                 },
+                                                order: 2,
                                             },
                                             {
                                                 text: "{{redRocket}} It doesn't look good right now",
@@ -95,6 +96,7 @@ export const populateCheckinForm = async () => {
                                                     iconUrl:
                                                         ".../redRocket.png",
                                                 },
+                                                order: 3,
                                             },
                                         ],
                                     },
