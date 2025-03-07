@@ -12,7 +12,7 @@ export const populateVoyageApplicationForm = async () => {
     });
 
     const noInputTextType = await prisma.inputType.findUnique({
-        where: { name: "no-input-text" },
+        where: { name: "noInputText" },
     });
 
     if (!radioInputType || !textInputType || !noInputTextType) {
