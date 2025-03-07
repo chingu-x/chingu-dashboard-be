@@ -58,7 +58,6 @@ export class EmailService {
 
     async sendOnboardingChecklistEmail(email: string) {
         console.log("Sending onboarding checklist email");
-        console.log(templateIds.onboardingEmail);
         const onboardingChecklistLink = `${this.appConfigService.FrontendUrl}/users/onboarding-checklist`;
         await this.sendEmail(email, templateIds.onboardingEmail, {
             onboardingChecklistLink,
