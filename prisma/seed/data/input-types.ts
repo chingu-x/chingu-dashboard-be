@@ -30,9 +30,9 @@ export default [
         name: "scale",
     },
     {
-        name: "no-input-image",
+        name: "noInputImage",
     },
     {
-        name: "no-input-text",
+        name: "noInputText",
     },
 ];
