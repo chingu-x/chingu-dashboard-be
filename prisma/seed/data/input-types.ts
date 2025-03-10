@@ -12,9 +12,6 @@ export default [
         name: "radio",
     },
     {
-        name: "radioIcon",
-    },
-    {
         name: "radioGroup",
     },
     {
@@ -31,5 +28,11 @@ export default [
     },
     {
         name: "scale",
+    },
+    {
+        name: "noInputImage",
+    },
+    {
+        name: "noInputText",
     },
 ];

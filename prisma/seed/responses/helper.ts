@@ -97,7 +97,6 @@ export const populateQuestionResponses = async (
             break;
         }
         case "scale":
-        case "radioIcon":
         case "radio": {
             const radioChoices = await getRandomOptionId(
                 question.optionGroupId,
