@@ -82,7 +82,7 @@ export const populateUserApplicationForm = async () => {
                         order: 5,
                         inputType: {
                             connect: {
-                                name: "no-input-image",
+                                name: "noInputImage",
                             },
                         },
                         text: "When something is important enough, you do it even if the odds are not in your favor",
@@ -166,7 +166,7 @@ export const populateUserApplicationForm = async () => {
                         order: 7,
                         inputType: {
                             connect: {
-                                name: "no-input-image",
+                                name: "noInputImage",
                             },
                         },
                         text: "I think it's possible for ordinary people to choose to be extraordinary",
@@ -245,7 +245,7 @@ export const populateUserApplicationForm = async () => {
                         order: 9,
                         inputType: {
                             connect: {
-                                name: "no-input-image",
+                                name: "noInputImage",
                             },
                         },
                         text: "I learned to always take on things I'd never done before. Growth and comfort do not coexist",
