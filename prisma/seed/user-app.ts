@@ -45,6 +45,43 @@ export const populateUserApplications = async () => {
                             questionId: userApplicationForm!.questions[1].id,
                             text: "Williamson",
                         },
+                        {
+                            // gender
+                            questionId: userApplicationForm!.questions[2].id,
+                            optionChoiceId:
+                                userApplicationForm!.questions[2].optionGroup
+                                    ?.optionChoices[0].id,
+                        },
+                        {
+                            // country code, dropdown populated by frontend, returning a string
+                            questionId: userApplicationForm!.questions[3].id,
+                            text: "AU",
+                        },
+                        // "What features are you most excited about" (max 3 choices)
+                        {
+                            questionId: userApplicationForm!.questions[5].id,
+                            optionChoiceId:
+                                userApplicationForm!.questions[5].optionGroup
+                                    ?.optionChoices[0].id,
+                        },
+                        {
+                            questionId: userApplicationForm!.questions[5].id,
+                            optionChoiceId:
+                                userApplicationForm!.questions[5].optionGroup
+                                    ?.optionChoices[1].id,
+                        },
+                        // how did you hear about us
+                        {
+                            questionId: userApplicationForm!.questions[7].id,
+                            optionChoiceId:
+                                userApplicationForm!.questions[7].optionGroup
+                                    ?.optionChoices[1].id,
+                        },
+                        // linkedIn
+                        {
+                            questionId: userApplicationForm!.questions[9].id,
+                            text: "http://www.linkedIn/profile",
+                        },
                     ],
                 },
             },
