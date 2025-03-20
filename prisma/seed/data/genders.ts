@@ -9,7 +9,7 @@ export default [
     },
     {
         abbreviation: "T",
-        description: "trans",
+        description: "transgender",
     },
     {
         abbreviation: "NB",

@@ -34,6 +34,7 @@ describe("UsersService", () => {
             refreshToken: ["refresh-token"],
             updatedAt: new Date(),
             createdAt: new Date(),
+            userApplicationId: null,
         },
     ];
     const userOne = users[0];
