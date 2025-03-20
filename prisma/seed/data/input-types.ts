@@ -35,4 +35,10 @@ export default [
     {
         name: "noInputText",
     },
+    {
+        name: "dropdown",
+    },
+    {
+        name: "dropdownCountryCode",
+    },
 ];

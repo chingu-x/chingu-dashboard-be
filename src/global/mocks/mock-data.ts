@@ -204,6 +204,7 @@ export const createMockData = {
         optionGroupId: null,
         parentQuestionId: null,
         parseConfig: null,
+        pageNumber: null,
         createdAt: mockDate,
         updatedAt: mockDate,
         ...partial,

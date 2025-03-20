@@ -8,6 +8,7 @@ import { populateVoyageSubmissionForm } from "./voyage-project-submission";
 import { prisma } from "../prisma-client";
 import { populateCheckinFormResponse } from "../responses/checkinform-responses";
 import { populateVoyageProjectSubmissionFormResponses } from "../responses/voyage-project-form-response";
+import { populateUserApplicationForm } from "@Prisma/seed/forms/user-app";
 
 export const populateFormsAndResponses = async () => {
     // test option choices for Voyage Application form
@@ -63,6 +64,7 @@ export const populateFormsAndResponses = async () => {
     await populateVoyageApplicationForm();
     await populateVoyageSubmissionForm();
     await populateVoyageProjectSubmissionFormResponses();
+    await populateUserApplicationForm();
 
     console.log("Forms, Questions and Responses populated.");
 };
