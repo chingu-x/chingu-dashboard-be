@@ -118,4 +118,52 @@ export const populateVoyages = async () => {
             showcasePublishDate: new Date("2025-03-03T06:59:59.000Z"),
         },
     });
+
+    await prisma.voyage.create({
+        data: {
+            number: "54",
+            status: {
+                connect: {
+                    name: "Upcoming",
+                },
+            },
+            startDate: new Date("2025-03-03T17:00:00.000Z"),
+            endDate: new Date("2025-04-13T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-02-23T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-04-20T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-05-04T06:59:59.000Z"),
+        },
+    });
+
+    await prisma.voyage.create({
+        data: {
+            number: "55",
+            status: {
+                connect: {
+                    name: "Upcoming",
+                },
+            },
+            startDate: new Date("2025-05-05T17:00:00.000Z"),
+            endDate: new Date("2025-06-15T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-04-27T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-06-22T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-06-29T06:59:59.000Z"),
+        },
+    });
+
+    await prisma.voyage.create({
+        data: {
+            number: "56",
+            status: {
+                connect: {
+                    name: "Upcoming",
+                },
+            },
+            startDate: new Date("2025-07-07T17:00:00.000Z"),
+            endDate: new Date("2025-08-17T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-06-29T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-08-24T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-08-31T06:59:59.000Z"),
+        },
+    });
 };

@@ -30,6 +30,9 @@ export class VoyageTeamEntity implements VoyageTeam {
     tierId: number;
 
     @ApiProperty()
+    hasSelectedDefaultProject: boolean;
+
+    @ApiProperty()
     endDate: Date;
 
     @ApiProperty()
