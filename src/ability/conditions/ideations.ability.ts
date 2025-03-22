@@ -10,14 +10,16 @@ export const manageOwnIdeationById = async (
     ideationId: number,
 ) => {
     if (user.roles?.includes("admin")) return;
+
     const ideation = await prisma.projectIdea.findUnique({
-        where: {
-            id: ideationId,
-        },
+        where: { id: ideationId },
+        select: { voyageTeamMemberId: true },
     });
+
     if (!ideation) {
         throw new NotFoundException(`Ideation (id:${ideationId}) not found`);
     }
+
     // ideation is not linked to any members, this should never happen unless the user gets deleted
     // or removed from the team?
     // in this case we should let the rest of the team manage it
@@ -26,6 +28,7 @@ export const manageOwnIdeationById = async (
             `Ideation access control: You do not have sufficient permission to access this resource.`,
         );
     }
+
     if (
         !user.voyageTeams
             .map((vt) => vt.memberId)
