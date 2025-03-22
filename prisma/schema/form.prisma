@@ -23,6 +23,7 @@ model Form {
   formResponseMeetings FormResponseMeeting[]
   soloProjects         SoloProject[]
   voyageApplications   VoyageApplication[]
+  userApplications     UserApplication[]
 }
 
 model Question {
@@ -40,13 +41,14 @@ model Question {
   optionGroup      OptionGroup? @relation(fields: [optionGroupId], references: [id])
   parentQuestionId Int?
   parentQuestion   Question?    @relation("QuestionSubQuestion", fields: [parentQuestionId], references: [id])
+  pageNumber       Int?
+  parseConfig      Json?
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
   responses    Response[]
   subQuestions Question[] @relation("QuestionSubQuestion")
-  parseConfig  Json?
 }
 
 model InputType {
@@ -68,7 +70,6 @@ model OptionGroup {
 
   optionChoices OptionChoice[]
   questions     Question[]
-
 }
 
 model OptionChoice {
@@ -76,14 +77,15 @@ model OptionChoice {
   optionGroupId Int
   optionGroup   OptionGroup @relation(fields: [optionGroupId], references: [id], onDelete: Cascade)
   text          String
-  order         Int?
   description   String?
+  order         Int?
+  parseConfig   Json?
+
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
   responses Response[]
-  parseConfig Json?
 }
 
 model Response {
@@ -114,6 +116,8 @@ model ResponseGroup {
   formResponseMeeting       FormResponseMeeting?
   formResponseCheckin       FormResponseCheckin?
   formResponseVoyageProject FormResponseVoyageProject?
+
+  UserApplication UserApplication[]
 }
 
 model FormResponseMeeting {

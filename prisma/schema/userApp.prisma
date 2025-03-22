@@ -1,0 +1,13 @@
+// === User Application ===
+model UserApplication {
+  id              Int            @id @default(autoincrement())
+  userId          String         @unique @db.Uuid()
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formId          Int?
+  form            Form?          @relation(fields: [formId], references: [id], onDelete: SetNull)
+  responseGroupId Int?           @unique
+  responseGroup   ResponseGroup? @relation(fields: [responseGroupId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
+}

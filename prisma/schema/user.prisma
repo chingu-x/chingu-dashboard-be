@@ -12,20 +12,20 @@ model Gender {
 }
 
 model User {
-  id            String   @id @default(uuid()) @db.Uuid
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  password      String
-  firstName     String?
-  lastName      String?
-  avatar        String?
-  gender        Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  genderId      Int?
-  countryCode   String?
-  timezone      String?
-  comment       String?
-  hasCompletedAssessment Boolean @default(false)
-  refreshToken  String[]
+  id                     String   @id @default(uuid()) @db.Uuid
+  email                  String   @unique
+  emailVerified          Boolean  @default(false)
+  password               String
+  firstName              String?
+  lastName               String?
+  avatar                 String?
+  gender                 Gender?  @relation(fields: [genderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  genderId               Int?
+  countryCode            String?
+  timezone               String?
+  comment                String?
+  hasCompletedAssessment Boolean  @default(false)
+  refreshToken           String[]
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -40,6 +40,8 @@ model User {
   roles                  UserRole[]
   oAuthProfiles          UserOAuthProfile[]
   comments               Comment[]
+  userApplicationId      Int?                    @unique
+  userApplication        UserApplication?
 }
 
 model Role {

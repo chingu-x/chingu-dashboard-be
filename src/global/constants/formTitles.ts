@@ -6,5 +6,6 @@ export const FormTitles = {
     sprintCheckinSM: "Sprint Check-in (Scrum Master)",
     soloProjectSubmission: "Solo Project Submission Form",
     voyageApplication: "Voyage Application Form",
+    userApplication: "User Application Form",
     voyageProjectSubmission: "Voyage Project Submission Form",
 };

@@ -36,6 +36,7 @@ BCRYPT_HASHING_ROUNDS=10
 
 MJ_APIKEY_PRIVATE={check Important Resources page}
 MJ_APIKEY_PUBLIC={check Important Resources page}
+MJ_ENV=local
 
 NODE_ENV=development
 
