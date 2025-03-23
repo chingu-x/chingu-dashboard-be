@@ -29,6 +29,17 @@ import { OAuthConfig } from "./oauthConfig.interface";
                         "DISCORD_CALLBACK_URL",
                     ) as string,
                 },
+                github: {
+                    clientId: configService.get<string>(
+                        "GITHUB_CLIENT_ID",
+                    ) as string,
+                    clientSecret: configService.get<string>(
+                        "GITHUB_CLIENT_SECRET",
+                    ) as string,
+                    callbackUrl: configService.get<string>(
+                        "GITHUB_CALLBACK_URL",
+                    ) as string,
+                },
                 // Add other OAuth providers as needed
             }),
             inject: [ConfigService],

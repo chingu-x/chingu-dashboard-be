@@ -44,6 +44,7 @@ import { CustomRequest } from "@/global/types/CustomRequest";
 import { Response } from "express";
 import { DiscordAuthGuard } from "./guards/discord-auth.guard";
 import { AppConfigService } from "@/config/app/appConfig.service";
+import { GithubAuthGuard } from "./guards/github-auth.guard";
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
@@ -336,10 +337,44 @@ export class AuthController {
         return;
     }
 
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid code",
+        type: BadRequestErrorResponse,
+    })
     @UseGuards(DiscordAuthGuard)
     @Public()
     @Get("/discord/redirect")
     async handleDiscordRedirect(
+        @Request() req: CustomRequest,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        await this.authService.returnTokensOnLoginSuccess(req, res);
+        const FRONTEND_URL = this.appConfigService.FrontendUrl;
+        res.redirect(`${FRONTEND_URL}`);
+    }
+
+    @ApiOperation({
+        summary: "Github oauth",
+        description:
+            "This does not work on swagger. Open `{BaseURL}/api/v1/auth/github/login` in a browser to see the GitHub popup.",
+    })
+    @UseGuards(GithubAuthGuard)
+    @Public()
+    @Get("/github/login")
+    handleGithubLogin() {
+        return;
+    }
+
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: "Invalid code",
+        type: BadRequestErrorResponse,
+    })
+    @UseGuards(GithubAuthGuard)
+    @Public()
+    @Get("/github/redirect")
+    async handleGithubRedirect(
         @Request() req: CustomRequest,
         @Res({ passthrough: true }) res: Response,
     ) {

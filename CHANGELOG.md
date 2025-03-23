@@ -46,6 +46,7 @@
 - Added same site property to the clear cookies function ([#218](https://github.com/chingu-x/chingu-dashboard-be/pull/218))
 - Added routes for teams to create own tech stack categories([#208](https://github.com/chingu-x/chingu-dashboard-be/pull/208))
 - Added unit tests for Features controller and services ([#220](https://github.com/chingu-x/chingu-dashboard-be/pull/220))
+- Add github oauth and e2e test ([#194](https://github.com/chingu-x/chingu-dashboard-be/pull/222))
 - Added GET endpoint for solo project ([#223](https://github.com/chingu-x/chingu-dashboard-be/pull/223))
 - Added units test for sprints ([#224](https://github.com/chingu-x/chingu-dashboard-be/pull/224))
 
