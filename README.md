@@ -79,6 +79,14 @@ $ yarn studio
 > [!TIP]
 > It is recommended to use `db push` to [prototype your schema](https://www.prisma.io/docs/orm/prisma-migrate/workflows/prototyping-your-schema)
 
+### Troubleshooting Prisma not detecting openssl
+  If you get this message after running any of the prisma command:
+```bash
+prisma:warn Prisma failed to detect the libssl/openssl version to use, and may not work as expected. Defaulting to "openssl-1.1.x".
+Please manually install OpenSSL and try installing Prisma again.
+```
+try running `yarn install` command to install all the dependencies in docker
+
 ## Running the app
 
 ```bash
@@ -152,6 +160,9 @@ Docker will run in detached mode, meaning it's effectively running in the backgr
 Once the services are spun up, go to your docker desktop, chingu-dashboard-be container, click into it and then locate the chingu-dashboard-be_api container.
 
 Using the container actions, select 'Open in terminal'.
+
+> [!IMPORTANT]
+> After spinning up the Docker services, run `yarn install`
 
 From here, type all the commands [above](#prismaStudio).
 
