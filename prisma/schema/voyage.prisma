@@ -17,7 +17,7 @@ model Voyage {
   voyageTeams          VoyageTeam[]
   sprints              Sprint[]
   voyageApplications   VoyageApplication[]
-  DefaultVoyageProject DefaultVoyageProject[]
+  defaultVoyageProjects DefaultVoyageProject[]
 }
 
 model Sprint {
@@ -59,7 +59,7 @@ model Tier {
   updatedAt DateTime @updatedAt
 
   voyageTeams          VoyageTeam[]
-  DefaultVoyageProject DefaultVoyageProject[]
+  defaultVoyageProjects DefaultVoyageProject[]
 }
 
 model VoyageRole {
