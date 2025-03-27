@@ -163,4 +163,8 @@ export class UsersService {
 
         return this.formatUser(user);
     }
+
+    async submitUserApplication() {
+        return "User application submitted";
+    }
 }

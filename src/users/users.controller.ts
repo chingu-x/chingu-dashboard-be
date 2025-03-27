@@ -171,4 +171,16 @@ export class UsersController {
         }
         return userDetails;
     }
+
+    @ApiOperation({
+        summary:
+            "[Permission: All registered users, can be unverified] Gets more information from the user after the initial registration",
+        description:
+            "User submits a form containing more information such as their name, country, goals, etc, using this endpoint. " +
+            "<br/>This is part of the requirement for participating in most Chingu services like voyages",
+    })
+    @Post("/application")
+    async submitUserApplication() {
+        return this.usersService.submitUserApplication();
+    }
 }
