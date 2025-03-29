@@ -128,10 +128,10 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2025-03-03T17:00:00.000Z"),
-            endDate: new Date("2025-04-13T04:59:59.000Z"),
-            soloProjectDeadline: new Date("2025-02-23T06:59:59.000Z"),
-            certificateIssueDate: new Date("2025-04-20T06:59:59.000Z"),
-            showcasePublishDate: new Date("2025-05-04T06:59:59.000Z"),
+            endDate: new Date("2025-04-14T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-02-24T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-04-21T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-05-05T06:59:59.000Z"),
         },
     });
 
@@ -144,10 +144,10 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2025-05-05T17:00:00.000Z"),
-            endDate: new Date("2025-06-15T04:59:59.000Z"),
-            soloProjectDeadline: new Date("2025-04-27T06:59:59.000Z"),
-            certificateIssueDate: new Date("2025-06-22T06:59:59.000Z"),
-            showcasePublishDate: new Date("2025-06-29T06:59:59.000Z"),
+            endDate: new Date("2025-06-16T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-04-28T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-06-23T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-06-30T06:59:59.000Z"),
         },
     });
 
@@ -160,10 +160,10 @@ export const populateVoyages = async () => {
                 },
             },
             startDate: new Date("2025-07-07T17:00:00.000Z"),
-            endDate: new Date("2025-08-17T04:59:59.000Z"),
-            soloProjectDeadline: new Date("2025-06-29T06:59:59.000Z"),
-            certificateIssueDate: new Date("2025-08-24T06:59:59.000Z"),
-            showcasePublishDate: new Date("2025-08-31T06:59:59.000Z"),
+            endDate: new Date("2025-08-18T04:59:59.000Z"),
+            soloProjectDeadline: new Date("2025-06-30T06:59:59.000Z"),
+            certificateIssueDate: new Date("2025-08-25T06:59:59.000Z"),
+            showcasePublishDate: new Date("2025-09-01T06:59:59.000Z"),
         },
     });
 };
