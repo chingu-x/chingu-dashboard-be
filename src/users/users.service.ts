@@ -5,6 +5,7 @@ import {
     fullUserDetailSelect,
     privateUserDetailSelect,
 } from "@/global/selects/users.select";
+import { CustomRequest } from "@/global/types/CustomRequest";
 
 @Injectable()
 export class UsersService {
@@ -164,7 +165,7 @@ export class UsersService {
         return this.formatUser(user);
     }
 
-    async submitUserApplication() {
-        return "User application submitted";
+    async submitUserApplication(req: CustomRequest) {
+        return `User application submitted, ${req.user.userId}`;
     }
 }

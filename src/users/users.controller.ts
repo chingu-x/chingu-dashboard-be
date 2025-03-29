@@ -180,7 +180,7 @@ export class UsersController {
             "<br/>This is part of the requirement for participating in most Chingu services like voyages",
     })
     @Post("/application")
-    async submitUserApplication() {
-        return this.usersService.submitUserApplication();
+    async submitUserApplication(@Request() req: CustomRequest) {
+        return this.usersService.submitUserApplication(req);
     }
 }
