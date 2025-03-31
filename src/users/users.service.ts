@@ -1,11 +1,18 @@
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import {
     fullUserDetailSelect,
     privateUserDetailSelect,
 } from "@/global/selects/users.select";
 import { CustomRequest } from "@/global/types/CustomRequest";
+import { questionIds } from "@/global/constants/questionIds";
+import { SubmitUserApplicationDto } from "@/users/dto/submit-user-application.dto";
+import { FormResponseDto } from "@/global/dtos/FormResponse.dto";
 
 @Injectable()
 export class UsersService {
@@ -32,6 +39,23 @@ export class UsersService {
                 id,
             },
         });
+    }
+
+    // TODO: potentially extract this to the shared module, if any other modules need a similar function
+    extractTextResponseByQuestionId(
+        responses: FormResponseDto[],
+        questionId: number,
+        key: string = "",
+    ) {
+        const filteredResponses = responses.find(
+            (response) => response.questionId === questionId,
+        );
+        if (!filteredResponses)
+            throw new BadRequestException(
+                `${key} (questionId: ${questionId}) is not provided`,
+            );
+
+        return filteredResponses.text;
     }
 
     async getUserRolesById(userId: string) {
@@ -165,7 +189,73 @@ export class UsersService {
         return this.formatUser(user);
     }
 
-    async submitUserApplication(req: CustomRequest) {
-        return `User application submitted, ${req.user.userId}`;
+    async submitUserApplication(
+        req: CustomRequest,
+        submitUserApplication: SubmitUserApplicationDto,
+    ) {
+        // In the admin dashboard, we would be able to set/link question id
+        // For now, we will hardcode it
+
+        const firstname = this.extractTextResponseByQuestionId(
+            submitUserApplication.responses,
+            questionIds.userApplication.firstname,
+            "Firstname",
+        );
+
+        const lastname = this.extractTextResponseByQuestionId(
+            submitUserApplication.responses,
+            questionIds.userApplication.lastname,
+            "Lastname",
+        );
+
+        const countryCode = this.extractTextResponseByQuestionId(
+            submitUserApplication.responses,
+            questionIds.userApplication.countryCode,
+            "CountryCode",
+        );
+
+        // gender is optional
+        const genderChoiceId = submitUserApplication.responses.find(
+            (response) => response.questionId === 51,
+        )?.optionChoiceId;
+        let genderAbbreviation: string | null = null;
+
+        if (genderChoiceId) {
+            const genderChoice = await this.prisma.optionChoice.findUnique({
+                where: {
+                    id: genderChoiceId,
+                },
+            });
+
+            if (!genderChoice) {
+                throw new BadRequestException(
+                    `Gender choice id is invalid (${genderChoiceId}`,
+                );
+            }
+
+            genderAbbreviation = genderChoice.text.split(" - ")[0];
+        }
+
+        return this.prisma.user.update({
+            where: {
+                id: req.user.userId,
+            },
+            data: {
+                firstName: firstname,
+                lastName: lastname,
+                countryCode,
+                gender: genderAbbreviation
+                    ? {
+                          connect: {
+                              abbreviation: genderAbbreviation,
+                          },
+                      }
+                    : {
+                          disconnect: true,
+                      },
+            },
+        });
+
+        // return `User application submitted, ${req.user.userId}, firstname=${firstname}, lastname=${lastname}, countryCode=${countryCode}`;
     }
 }

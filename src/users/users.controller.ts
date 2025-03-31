@@ -26,6 +26,8 @@ import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
 import { CheckAbilities } from "@/global/decorators/abilities.decorator";
 import { Action } from "@/ability/ability.factory/ability.factory";
 import { CustomRequest } from "@/global/types/CustomRequest";
+import { FormInputValidationPipe } from "@/pipes/form-input-validation";
+import { SubmitUserApplicationDto } from "@/users/dto/submit-user-application.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -180,7 +182,14 @@ export class UsersController {
             "<br/>This is part of the requirement for participating in most Chingu services like voyages",
     })
     @Post("/application")
-    async submitUserApplication(@Request() req: CustomRequest) {
-        return this.usersService.submitUserApplication(req);
+    async submitUserApplication(
+        @Request() req: CustomRequest,
+        @Body(new FormInputValidationPipe())
+        submitUserApplication: SubmitUserApplicationDto,
+    ) {
+        return this.usersService.submitUserApplication(
+            req,
+            submitUserApplication,
+        );
     }
 }
