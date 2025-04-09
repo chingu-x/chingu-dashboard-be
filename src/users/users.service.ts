@@ -15,6 +15,7 @@ import { questionIds } from "@/global/constants/questionIds";
 import { SubmitUserApplicationDto } from "@/users/dto/submit-user-application.dto";
 import { FormResponseDto } from "@/global/dtos/FormResponse.dto";
 import { GlobalService } from "@/global/global.service";
+import { FormTitles } from "@/global/constants/formTitles";
 
 @Injectable()
 export class UsersService {
@@ -201,95 +202,138 @@ export class UsersService {
         // In the admin dashboard, we would be able to set/link question id
         // For now, we will hardcode it
 
-        // TODO: also need to add a record to user application table
-        // TODO: put them all in a transaction
-
+        // Put everything in a transaction so if one part fail, the rest will roll back
         try {
-            const firstname = this.extractTextResponseByQuestionId(
-                submitUserApplication.responses,
-                questionIds.userApplication.firstname,
-                "Firstname",
-            );
-
-            const lastname = this.extractTextResponseByQuestionId(
-                submitUserApplication.responses,
-                questionIds.userApplication.lastname,
-                "Lastname",
-            );
-
-            const countryCode = this.extractTextResponseByQuestionId(
-                submitUserApplication.responses,
-                questionIds.userApplication.countryCode,
-                "CountryCode",
-            );
-
-            // extract gender from the responses, gender is optional
-            const genderChoiceId = submitUserApplication.responses.find(
-                (response) => response.questionId === 51,
-            )?.optionChoiceId;
-            let genderAbbreviation: string | null = null;
-
-            if (genderChoiceId) {
-                const genderChoice = await this.prisma.optionChoice.findUnique({
-                    where: {
-                        id: genderChoiceId,
-                    },
-                });
-
-                if (!genderChoice) {
-                    throw new BadRequestException(
-                        `Gender choice id is invalid (${genderChoiceId}`,
+            const userApplicationSubmission = await this.prisma.$transaction(
+                async (tx) => {
+                    const firstname = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.firstname,
+                        "Firstname",
                     );
-                }
 
-                genderAbbreviation = genderChoice.text.split(" - ")[0];
-            }
+                    const lastname = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.lastname,
+                        "Lastname",
+                    );
 
-            const responseArray = this.globalServices.responseDtoToArray(
-                submitUserApplication,
+                    const countryCode = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.countryCode,
+                        "CountryCode",
+                    );
+
+                    // extract gender from the responses, gender is optional
+                    const genderChoiceId = submitUserApplication.responses.find(
+                        (response) => response.questionId === 51,
+                    )?.optionChoiceId;
+                    let genderAbbreviation: string | null = null;
+
+                    if (genderChoiceId) {
+                        const genderChoice = await tx.optionChoice.findUnique({
+                            where: {
+                                id: genderChoiceId,
+                            },
+                        });
+
+                        if (!genderChoice) {
+                            throw new BadRequestException(
+                                `Gender choice id is invalid (${genderChoiceId}`,
+                            );
+                        }
+
+                        genderAbbreviation = genderChoice.text.split(" - ")[0];
+                    }
+
+                    const responseArray =
+                        this.globalServices.responseDtoToArray(
+                            submitUserApplication,
+                        );
+
+                    const responseGroup = await tx.responseGroup.create({
+                        data: {
+                            responses: {
+                                createMany: {
+                                    data: responseArray,
+                                },
+                            },
+                        },
+                    });
+
+                    // need to use connect for form here to avoid doing an extra query, so all of them have to be
+                    // connect instead of using the Ids
+                    const newUserApp = await tx.userApplication.create({
+                        data: {
+                            user: {
+                                connect: {
+                                    id: req.user.userId,
+                                },
+                            },
+                            form: {
+                                connect: {
+                                    title: FormTitles.userApplication,
+                                },
+                            },
+                            responseGroup: {
+                                connect: {
+                                    id: responseGroup.id,
+                                },
+                            },
+                        },
+                    });
+
+                    const updatedUser = await tx.user.update({
+                        where: {
+                            id: req.user.userId,
+                        },
+                        data: {
+                            firstName: firstname,
+                            lastName: lastname,
+                            countryCode,
+                            gender: genderAbbreviation
+                                ? {
+                                      connect: {
+                                          abbreviation: genderAbbreviation,
+                                      },
+                                  }
+                                : {
+                                      disconnect: true,
+                                  },
+                        },
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            countryCode: true,
+                            gender: {
+                                select: {
+                                    abbreviation: true,
+                                },
+                            },
+                        },
+                    });
+
+                    return {
+                        newUserApp,
+                        updatedUser,
+                    };
+                },
             );
 
-            const responseGroup = await this.prisma.responseGroup.create({
-                data: {
-                    responses: {
-                        createMany: {
-                            data: responseArray,
-                        },
-                    },
+            return {
+                id: userApplicationSubmission.newUserApp.id,
+                user: {
+                    firstName: userApplicationSubmission.updatedUser.firstName,
+                    lastName: userApplicationSubmission.updatedUser.firstName,
+                    gender: userApplicationSubmission.updatedUser.gender
+                        ?.abbreviation,
+                    countryCode:
+                        userApplicationSubmission.updatedUser.countryCode,
                 },
-            });
-
-            await this.prisma.userApplication.create({
-                data: {
-                    userId: req.user.userId,
-                    formId: 12,
-                    responseGroupId: responseGroup.id,
-                },
-            });
-
-            // catch unique constraint error
-
-            return this.prisma.user.update({
-                where: {
-                    id: req.user.userId,
-                },
-                data: {
-                    firstName: firstname,
-                    lastName: lastname,
-                    countryCode,
-                    gender: genderAbbreviation
-                        ? {
-                              connect: {
-                                  abbreviation: genderAbbreviation,
-                              },
-                          }
-                        : {
-                              disconnect: true,
-                          },
-                },
-            });
+            };
         } catch (e) {
-            if (e.code === "P2002") {
+            if (e.code === "P2002" || e.code === "P2014") {
                 throw new ConflictException(
                     `User ${req.user.userId} has already submitted a user application.`,
                 );

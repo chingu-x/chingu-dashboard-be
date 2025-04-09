@@ -13,11 +13,7 @@ import {
 import { UsersService } from "./users.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import {
-    FullUserResponse,
-    PrivateUserResponse,
-    UserResponse,
-} from "./users.response";
+import { FullUserResponse, PrivateUserResponse } from "./users.response";
 import {
     BadRequestErrorResponse,
     ConflictErrorResponse,
@@ -33,6 +29,7 @@ import { Action } from "@/ability/ability.factory/ability.factory";
 import { CustomRequest } from "@/global/types/CustomRequest";
 import { FormInputValidationPipe } from "@/pipes/form-input-validation";
 import { SubmitUserApplicationDto } from "@/users/dto/submit-user-application.dto";
+import { UserAppResponse } from "@/voyages/voyages.response";
 
 @Controller("users")
 @ApiTags("users")
@@ -227,7 +224,7 @@ export class UsersController {
         status: HttpStatus.CREATED,
         description:
             "The user application has been successfully submitted, and user record has been updated.",
-        type: UserResponse, //TODO: this needs to be updated
+        type: UserAppResponse,
         isArray: true,
     })
     @ApiResponse({
