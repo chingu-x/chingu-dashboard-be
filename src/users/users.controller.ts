@@ -13,9 +13,14 @@ import {
 import { UsersService } from "./users.service";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { FullUserResponse, PrivateUserResponse } from "./users.response";
+import {
+    FullUserResponse,
+    PrivateUserResponse,
+    UserResponse,
+} from "./users.response";
 import {
     BadRequestErrorResponse,
+    ConflictErrorResponse,
     ForbiddenErrorResponse,
     NotFoundErrorResponse,
     UnauthorizedErrorResponse,
@@ -176,10 +181,70 @@ export class UsersController {
 
     @ApiOperation({
         summary:
-            "[Permission: All registered users, can be unverified] Gets more information from the user after the initial registration",
+            "[Permission: All registered users, can be unverified Gets more information from the user after the initial registration",
         description:
             "User submits a form containing more information such as their name, country, goals, etc, using this endpoint. " +
-            "<br/>This is part of the requirement for participating in most Chingu services like voyages",
+            "<br/>This is part of the requirement for participating in most Chingu services like voyages" +
+            "<br/>A new user application record is created and the user's record is updated with the information provided." +
+            "<br/><code>" +
+            JSON.stringify([
+                {
+                    questionId: 53,
+                    text: "Nathaniel",
+                },
+                {
+                    questionId: 52,
+                    text: "Fisher",
+                },
+                {
+                    questionId: 51,
+                    optionChoiceId: 82,
+                },
+                {
+                    questionId: 50,
+                    text: "AU",
+                },
+                {
+                    questionId: 48,
+                    optionChoiceId: 77,
+                },
+                {
+                    questionId: 48,
+                    optionChoiceId: 79,
+                },
+                {
+                    questionId: 46,
+                    optionChoiceId: 68,
+                },
+                {
+                    questionId: 44,
+                    text: "https://www.linkedin.com/in/nate123",
+                },
+            ]) +
+            "</code><br>",
+    })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description:
+            "The user application has been successfully submitted, and user record has been updated.",
+        type: UserResponse, //TODO: this needs to be updated
+        isArray: true,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description:
+            "request body data error, e.g. invalid teamId, missing question id, missing response inputs",
+        type: BadRequestErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: "User is not logged in",
+        type: UnauthorizedErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: "The user has already submitted a user application.",
+        type: ConflictErrorResponse,
     })
     @Post("/application")
     async submitUserApplication(
