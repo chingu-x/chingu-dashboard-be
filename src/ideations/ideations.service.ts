@@ -122,23 +122,25 @@ export class IdeationsService {
         // teamId: number,
         updateIdeationDto: UpdateIdeationDto,
     ) {
+        // First check if user has permission to update this ideation
+        await manageOwnIdeationById(req.user, ideationId);
+
+        // Then validate the update data
+        if (!updateIdeationDto) {
+            throw new BadRequestException("Update data is required");
+        }
+
         const { title, description, vision } = updateIdeationDto;
 
-        await manageOwnIdeationById(req.user, ideationId);
+        // await manageOwnIdeationById(req.user, ideationId);
 
         // TODO: might need to check if user can update it
         //  (they should only be able to update it when they have the only vote)
         try {
             //only allow the user that created the idea to edit it
             return this.prisma.projectIdea.update({
-                where: {
-                    id: ideationId,
-                },
-                data: {
-                    title,
-                    description,
-                    vision,
-                },
+                where: { id: ideationId },
+                data: { title, description, vision },
             });
         } catch (e) {
             throw e;
