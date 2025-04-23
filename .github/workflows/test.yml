@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env: 
+    env:
       MJ_APIKEY_PUBLIC: ${{ secrets.MJ_APIKEY_PUBLIC }}
       MJ_APIKEY_PRIVATE: ${{ secrets.MJ_APIKEY_PRIVATE }}
       DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
@@ -38,7 +38,7 @@ jobs:
         run: |
           if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
             yarn test:unit
-          fi       
+          fi
 
       - name: Push latest schema to the test database
         run: npx prisma db push --accept-data-loss
@@ -47,4 +47,4 @@ jobs:
         run: |
           if [ ${{ github.event.pull_request.base.ref }} == "main" ]; then
             yarn test:e2e --testTimeout=300000
-          fi        
+          fi
