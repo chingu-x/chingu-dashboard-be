@@ -342,9 +342,5 @@ export class UsersService {
                 throw e;
             }
         }
-
-        // TODO: return the entity (maybe just the fields updated) but without sensitive information like the admin comments
-
-        // return `User application submitted, ${req.user.userId}, firstname=${firstname}, lastname=${lastname}, countryCode=${countryCode}`;
     }
 }
