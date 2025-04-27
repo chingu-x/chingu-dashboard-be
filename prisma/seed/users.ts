@@ -234,5 +234,15 @@ export const populateUsers = async () => {
             roleId: getRoleId(roles, "voyager"),
         },
     });
+
+    // user with minimal information - mainly for user application testing
+    await prisma.user.create({
+        data: {
+            email: "nate@gmail.com",
+            password: await hashPassword("password"),
+            emailVerified: false,
+        },
+    });
+
     console.log("Users Populated");
 };

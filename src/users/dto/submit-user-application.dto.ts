@@ -1,17 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsNumber, ValidateNested } from "class-validator";
 import { FormResponseDto } from "@/global/dtos/FormResponse.dto";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsArray, IsNotEmpty, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
-export class CreateVoyageProjectSubmissionDto {
-    @ApiProperty({
-        description: "Voyage team Id",
-        example: 2,
-    })
-    @IsNumber()
-    @IsNotEmpty()
-    voyageTeamId: number;
-
+export class SubmitUserApplicationDto {
     @ApiProperty({
         description: "An array of form responses",
         example: [

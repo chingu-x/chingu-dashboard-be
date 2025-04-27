@@ -1,14 +1,28 @@
 import { UserLookupByEmailDto } from "./dto/lookup-user-by-email.dto";
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import {
     fullUserDetailSelect,
     privateUserDetailSelect,
 } from "@/global/selects/users.select";
+import { CustomRequest } from "@/global/types/CustomRequest";
+import { questionIds } from "@/global/constants/questionIds";
+import { SubmitUserApplicationDto } from "@/users/dto/submit-user-application.dto";
+import { FormResponseDto } from "@/global/dtos/FormResponse.dto";
+import { GlobalService } from "@/global/global.service";
+import { FormTitles } from "@/global/constants/formTitles";
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private globalServices: GlobalService,
+    ) {}
 
     private formatUser = (user) => {
         return {
@@ -31,6 +45,23 @@ export class UsersService {
                 id,
             },
         });
+    }
+
+    // TODO: potentially extract this to the shared module, if any other modules need a similar function
+    extractTextResponseByQuestionId(
+        responses: FormResponseDto[],
+        questionId: number,
+        key: string = "",
+    ) {
+        const filteredResponses = responses.find(
+            (response) => response.questionId === questionId,
+        );
+        if (!filteredResponses)
+            throw new BadRequestException(
+                `${key} (questionId: ${questionId}) is not provided`,
+            );
+
+        return filteredResponses.text;
     }
 
     async getUserRolesById(userId: string) {
@@ -162,5 +193,154 @@ export class UsersService {
         }
 
         return this.formatUser(user);
+    }
+
+    async submitUserApplication(
+        req: CustomRequest,
+        submitUserApplication: SubmitUserApplicationDto,
+    ) {
+        // In the admin dashboard, we would be able to set/link question id
+        // For now, we will hardcode it
+
+        // Put everything in a transaction so if one part fail, the rest will roll back
+        try {
+            const userApplicationSubmission = await this.prisma.$transaction(
+                async (tx) => {
+                    const firstname = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.firstname,
+                        "Firstname",
+                    );
+
+                    const lastname = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.lastname,
+                        "Lastname",
+                    );
+
+                    const countryCode = this.extractTextResponseByQuestionId(
+                        submitUserApplication.responses,
+                        questionIds.userApplication.countryCode,
+                        "CountryCode",
+                    );
+
+                    // extract gender from the responses, gender is optional
+                    const genderChoiceId = submitUserApplication.responses.find(
+                        (response) => response.questionId === 51,
+                    )?.optionChoiceId;
+                    let genderAbbreviation: string | null = null;
+
+                    if (genderChoiceId) {
+                        const genderChoice = await tx.optionChoice.findUnique({
+                            where: {
+                                id: genderChoiceId,
+                            },
+                        });
+
+                        if (!genderChoice) {
+                            throw new BadRequestException(
+                                `Gender choice id is invalid (${genderChoiceId}`,
+                            );
+                        }
+
+                        genderAbbreviation = genderChoice.text.split(" - ")[0];
+                    }
+
+                    const responseArray =
+                        this.globalServices.responseDtoToArray(
+                            submitUserApplication,
+                        );
+
+                    const responseGroup = await tx.responseGroup.create({
+                        data: {
+                            responses: {
+                                createMany: {
+                                    data: responseArray,
+                                },
+                            },
+                        },
+                    });
+
+                    // need to use connect for form here to avoid doing an extra query, so all of them have to be
+                    // connect instead of using the Ids
+                    const newUserApp = await tx.userApplication.create({
+                        data: {
+                            user: {
+                                connect: {
+                                    id: req.user.userId,
+                                },
+                            },
+                            form: {
+                                connect: {
+                                    title: FormTitles.userApplication,
+                                },
+                            },
+                            responseGroup: {
+                                connect: {
+                                    id: responseGroup.id,
+                                },
+                            },
+                        },
+                    });
+
+                    const updatedUser = await tx.user.update({
+                        where: {
+                            id: req.user.userId,
+                        },
+                        data: {
+                            firstName: firstname,
+                            lastName: lastname,
+                            countryCode,
+                            gender: genderAbbreviation
+                                ? {
+                                      connect: {
+                                          abbreviation: genderAbbreviation,
+                                      },
+                                  }
+                                : {
+                                      disconnect: true,
+                                  },
+                        },
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            countryCode: true,
+                            gender: {
+                                select: {
+                                    abbreviation: true,
+                                },
+                            },
+                        },
+                    });
+
+                    return {
+                        newUserApp,
+                        updatedUser,
+                    };
+                },
+            );
+
+            return {
+                id: userApplicationSubmission.newUserApp.id,
+                user: {
+                    firstName: userApplicationSubmission.updatedUser.firstName,
+                    lastName: userApplicationSubmission.updatedUser.firstName,
+                    gender: userApplicationSubmission.updatedUser.gender
+                        ?.abbreviation,
+                    countryCode:
+                        userApplicationSubmission.updatedUser.countryCode,
+                },
+            };
+        } catch (e) {
+            if (e.code === "P2002" || e.code === "P2014") {
+                throw new ConflictException(
+                    `User ${req.user.userId} has already submitted a user application.`,
+                );
+            } else {
+                console.log(e);
+                throw e;
+            }
+        }
     }
 }
