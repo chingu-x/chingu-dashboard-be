@@ -9,6 +9,7 @@ import {
     fullUserDetailSelect,
     privateUserDetailSelect,
 } from "@/global/selects/users.select";
+import { GlobalService } from "@/global/global.service";
 
 // Extend Jest with custom matchers
 expect.extend({ toBeArray });
@@ -40,6 +41,12 @@ describe("UsersService", () => {
     const userOne = users[0];
     const email = userOne.email;
 
+    const mockGlobalService = {
+        responseDtoToArray: jest.fn((_dtoMock) => {
+            return [_dtoMock.responses];
+        }),
+    };
+
     beforeEach(async () => {
         // Create a testing module with necessary providers
         const module: TestingModule = await Test.createTestingModule({
@@ -48,6 +55,10 @@ describe("UsersService", () => {
                 {
                     provide: PrismaService,
                     useValue: prismaMock,
+                },
+                {
+                    provide: GlobalService,
+                    useValue: mockGlobalService,
                 },
             ],
         }).compile();
