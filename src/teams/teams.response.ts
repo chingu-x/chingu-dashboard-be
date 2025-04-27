@@ -39,6 +39,9 @@ export class VoyageTeamResponse {
     @ApiProperty({ example: 1 })
     tierId: number;
 
+    @ApiProperty({ example: "true" })
+    hasSelectedDefaultProject: boolean;
+
     @ApiProperty({ example: "2024-11-09T00:00:00.000Z" })
     endDate: Date;
 

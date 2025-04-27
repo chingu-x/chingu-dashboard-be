@@ -5,7 +5,11 @@ export default [
     },
     {
         name: "admin",
+        description: "Chingu admins who manage all voyages",
+    },
+    {
+        name: "voyageProjectTeam",
         description:
-            "Advanced Projects - Apps having both Front-end and Back-end components (FULL STACK)",
+            "Staff team members who create and update default voyage projects",
     },
 ];

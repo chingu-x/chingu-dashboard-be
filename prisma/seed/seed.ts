@@ -9,6 +9,7 @@ import { populateMeetings } from "./meetings";
 import { populateSoloProjects } from "./solo-project";
 import { populateVoyageApplications } from "./voyage-app";
 import { populateChecklists } from "./checklist";
+import { populateDefaultProjects } from "./default-projects";
 import { prisma } from "./prisma-client";
 import { populateUserApplications } from "@Prisma/seed/user-app";
 
@@ -40,6 +41,7 @@ export const seed = async () => {
     await populateUsers();
     await populateSprints();
     await populateVoyageTeams();
+    await populateDefaultProjects();
     await populateTeamResourcesAndProjectIdeas();
     await populateFormsAndResponses();
     await populateMeetings();

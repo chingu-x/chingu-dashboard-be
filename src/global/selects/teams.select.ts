@@ -19,6 +19,7 @@ export const publicVoyageTeamUserSelect = {
             name: true,
         },
     },
+    hasSelectedDefaultProject: true,
     endDate: true,
     voyageTeamMembers: {
         select: {

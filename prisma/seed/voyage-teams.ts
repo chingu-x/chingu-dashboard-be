@@ -19,6 +19,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: false,
             repoUrl:
                 "https://github.com/chingu-voyages/v46-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -122,6 +123,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -222,6 +224,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: false,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             tier: {
@@ -245,6 +248,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/v46-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -347,6 +351,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: false,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -450,6 +455,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/v46-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -552,6 +558,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -655,6 +662,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/v46-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -757,6 +765,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: false,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -860,6 +869,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/v46-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -962,6 +972,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: false,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -1067,6 +1078,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -1134,6 +1146,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -1201,6 +1214,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
@@ -1286,6 +1300,7 @@ export const populateVoyageTeams = async () => {
                     name: "Active",
                 },
             },
+            hasSelectedDefaultProject: true,
             repoUrl:
                 "https://github.com/chingu-voyages/soloproject-tier3-chinguweather",
             repoUrlBE: "https://github.com/chingu-voyages/Handbook",
