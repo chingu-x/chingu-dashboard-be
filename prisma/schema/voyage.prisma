@@ -14,9 +14,10 @@ model Voyage {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  voyageTeams        VoyageTeam[]
-  sprints            Sprint[]
-  voyageApplications VoyageApplication[]
+  voyageTeams          VoyageTeam[]
+  sprints              Sprint[]
+  voyageApplications   VoyageApplication[]
+  defaultVoyageProjects DefaultVoyageProject[]
 }
 
 model Sprint {
@@ -57,7 +58,8 @@ model Tier {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
 
-  voyageTeams VoyageTeam[]
+  voyageTeams          VoyageTeam[]
+  defaultVoyageProjects DefaultVoyageProject[]
 }
 
 model VoyageRole {
@@ -85,6 +87,7 @@ model VoyageTeam {
   tier          Tier?         @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   tierId        Int?
   endDate       DateTime
+  hasSelectedDefaultProject Boolean @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt
@@ -120,4 +123,17 @@ model VoyageTeamMember {
   TeamTechStackItem      TeamTechStackItem[]
 
   @@unique(fields: [userId, voyageTeamId], name: "userVoyageId")
+}
+
+model DefaultVoyageProject {
+  id       Int    @id @default(autoincrement())
+  repoUrl String
+  title   String
+  overview String
+  voyageId Int
+  voyage   Voyage @relation(fields: [voyageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  tierId   Int?
+  tier     Tier?  @relation(fields: [tierId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 }

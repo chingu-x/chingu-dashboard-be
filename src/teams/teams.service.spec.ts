@@ -23,6 +23,7 @@ const mockVoyageTeams = [
         deployedUrlBE:
             "https://stackoverflow.com/questions/4848964/difference-between-text-and-varchar-character-varying",
         tierId: 1,
+        hasSelectedDefaultProject: true,
         endDate: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
