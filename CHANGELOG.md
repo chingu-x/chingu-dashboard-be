@@ -13,6 +13,28 @@
 > MINOR version when you add functionality in a backward compatible manner <br/>
 > PATCH version when you make backward compatible bug fixes <br/>
 
+## [1.3.0-alpha](https://github.com/chingu-x/chingu-dashboard-be/compare/v1.2.0-alpha...v1.3.0-alpha) (2025-06-09)
+
+
+### Features
+
+* (user application) additional user information part 1 ([#248](https://github.com/chingu-x/chingu-dashboard-be/issues/248)) ([91d1163](https://github.com/chingu-x/chingu-dashboard-be/commit/91d1163647f1063826ff896f4e1cc594de90adb3))
+* (user application) additional user information part 1 ([#248](https://github.com/chingu-x/chingu-dashboard-be/issues/248)) ([9b16365](https://github.com/chingu-x/chingu-dashboard-be/commit/9b163651e443dee0aeac7009269100441adb4fe3))
+* Add POST endpoint to user application ([#253](https://github.com/chingu-x/chingu-dashboard-be/issues/253)) ([9b7420b](https://github.com/chingu-x/chingu-dashboard-be/commit/9b7420b142b144be45aaf6a75625f9ac96eedd2b))
+* Add POST endpoint to user application ([#253](https://github.com/chingu-x/chingu-dashboard-be/issues/253)) ([d99e6c7](https://github.com/chingu-x/chingu-dashboard-be/commit/d99e6c75e3063eab3db1923f5a6d5fd6cde9b2f8))
+* Add pre defined voyage projects (part 1) ([#250](https://github.com/chingu-x/chingu-dashboard-be/issues/250)) ([cd8c576](https://github.com/chingu-x/chingu-dashboard-be/commit/cd8c576f64f9300551497ecf5d419f34144e5a1b))
+* Add pre defined voyage projects (part 1) ([#250](https://github.com/chingu-x/chingu-dashboard-be/issues/250)) ([bcc4e0a](https://github.com/chingu-x/chingu-dashboard-be/commit/bcc4e0a09f0f741830579cadd67b963154f98d6e))
+* Multiple Parse Options support Stage1b - Add parseConfig to forms response and service models ([#242](https://github.com/chingu-x/chingu-dashboard-be/issues/242)) ([6a4f3c0](https://github.com/chingu-x/chingu-dashboard-be/commit/6a4f3c07dac76175fdf22511797995feef33c591))
+* Multiple Parse Options support Stage1b - Add parseConfig to forms response and service models ([#242](https://github.com/chingu-x/chingu-dashboard-be/issues/242)) ([467b57e](https://github.com/chingu-x/chingu-dashboard-be/commit/467b57e14c7d9b82195e9c9581c757f51f04e306))
+* Update form questions and options ([#246](https://github.com/chingu-x/chingu-dashboard-be/issues/246)) ([2a0d54a](https://github.com/chingu-x/chingu-dashboard-be/commit/2a0d54ae4b79cf4cace11e2b8c572c4e3d3e9caf))
+* Update form questions and options ([#246](https://github.com/chingu-x/chingu-dashboard-be/issues/246)) ([74b5682](https://github.com/chingu-x/chingu-dashboard-be/commit/74b56824d824bad6ae625be1129930bff2f4f52e))
+
+
+### Bug Fixes
+
+* fix server crash bug when tokens not found in db ([1523db6](https://github.com/chingu-x/chingu-dashboard-be/commit/1523db62453c4b3e3cc5f027504ba48f30ccdd12))
+* fix server crash bug when tokens not found in db ([d9bd111](https://github.com/chingu-x/chingu-dashboard-be/commit/d9bd1111685a468cc38f07925afbaa13cd47dd13))
+
 ## [1.2.0-alpha](https://github.com/chingu-x/chingu-dashboard-be/compare/1.1.0-alpha...v1.2.0-alpha) (2025-02-13)
 
 
